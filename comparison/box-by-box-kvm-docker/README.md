@@ -28,6 +28,14 @@ vagrant init centos/7
 vagrant up
 ```
 
+#### Install a test vagrant box with libvirt  provider support
+
+For ubuntu 16.04 you can build your own (see packer directory) or use an existing one like elastic/ubuntu-16.04
+
+```
+vagrant init elastic/ubuntu-16.04-x86_64
+```
+
 ### Provision system for testing CNFs on Docker
 
 Prereq: Ubuntu 18.04 LTS install
