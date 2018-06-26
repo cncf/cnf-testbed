@@ -12,9 +12,20 @@ Provision a Ubuntu 18.04 system
 
 Prereq: Ubuntu 18.04 LTS install
 
+**Manual install**
+
 Install Vagrant using debian packages from https://www.vagrantup.com/downloads.html
 
 Find the 64bit debian package and download to the Ubuntu host system
+
+**Script**
+
+```
+git clone git@github.com:cncf/cnfs.git
+cd cnfs/comparison/box-by-box-kvm-docker
+chmod +x install_kvm_prereqs.sh
+./install_kvm_prereqs.sh
+```
 
 #### Test that vagrant + libvirt is working
 
@@ -40,8 +51,20 @@ vagrant init elastic/ubuntu-16.04-x86_64
 
 Prereq: Ubuntu 18.04 LTS install
 
+**Manual**
 Install Docker following the docker-ce install documentation https://docs.docker.com/install/linux/docker-ce/ubuntu/
  * Use the docker package repository
+ 
+ 
+ **Script**
+ ```
+git clone git@github.com:cncf/cnfs.git
+cd cnfs/comparison/box-by-box-kvm-docker
+chmod +x install_docker_prereqs.sh
+./install_docker_prereqs.sh
+```
+
+#### Test that Docker is working correctly
 
 Test that docker is installed correctly with: `docker run hello-world`
 
