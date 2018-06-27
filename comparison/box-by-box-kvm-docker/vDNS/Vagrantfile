@@ -1,0 +1,26 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  #config.vm.box = "elastic/ubuntu-16.04-x86_64"
+  config.vm.synced_folder ".", "/vagrant"
+
+  config.vm.define "vDNS" do |c|
+		c.vm.box = "vDNSp2a"
+		c.vm.hostname = "vdns"
+    #c.vm.provision "shell", path: "v_dns_install.sh", privileged: true
+		c.vm.provider :libvirt do |libvirt|
+			libvirt.cpus = 4
+			libvirt.memory = 8192
+		end
+	end
+
+  config.vm.define "dnstest" do |c|
+		c.vm.box = "elastic/ubuntu-16.04-x86_64"
+		c.vm.hostname = "dnstest"
+		c.vm.provider :libvirt do |libvirt|
+			libvirt.cpus = 4
+			libvirt.memory = 4096
+		end
+	end
+end
