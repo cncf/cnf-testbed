@@ -7,12 +7,12 @@ sleep 1
 
 # Download DNS and DHCP config files
 cd /opt
-cp /vagrant/v_dns_init.sh .
-cp /vagrant/kea-dhcp4_no_hook.conf /etc/kea/kea-dhcp4.conf
+cp /build/v_dns_init.sh .
+cp /build/kea-dhcp4_no_hook.conf /etc/kea/kea-dhcp4.conf
 
 chmod +x v_dns_init.sh
 
-cp /vagrant/v_dns.sh /etc/init.d
+cp /build/v_dns.sh /etc/init.d
 chmod +x /etc/init.d/v_dns.sh
 update-rc.d v_dns.sh defaults
 

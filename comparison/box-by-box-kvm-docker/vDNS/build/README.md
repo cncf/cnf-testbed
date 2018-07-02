@@ -24,24 +24,12 @@ Note the image path.  Eg. `/var/lib/libvirt/images/vDNS_vDNS.img`
 
 Note the folder where the image is.  Eg. `/var/lib/libvirt/images`
 
-From the vagrant_box_data folder copy the following files
-- metadata.json
-- Vagrantfile
-to the folder found above
-
 Change to the folder where the image is.  (`cd /var/lib/libvirt/images`)
 
-Convert the image to qcow format with qemu-convert and rename it to have a ".img" extension.  Eg.
+Run the `create_box.sh` script from the repo specifying the image and the new vagrant box name.
 
 ```
-qemu-img convert -f raw -O qcow2 vDNS_vDNS.img vDNS.qcow2
-mv vDNS.qcow2 vDNS.img
-```
-
-Package the new image, meta data and Vagratfile:
-
-```
-tar zcvf vDNS-$(date +%Y%m%d-%H%M).box ./metadata.json ./Vagrantfile ./vDNS.img
+~/cnfs/tools/create_box.sh vm_build_vDNS.img vDNS15
 ```
 
 To use the box in vagrant you will need to add it with the following command: vagrant box add --name BOX_NAME PATH_TO_BOX
@@ -49,7 +37,7 @@ To use the box in vagrant you will need to add it with the following command: va
 Example:
 
 ```
-vagrant box add --name vDNS-p2a ~/vDNS-20180627-2133.box
+vagrant box add vDNS15 --name vDNS15
 ```
 
 It can then be used from your Vagrantfile
