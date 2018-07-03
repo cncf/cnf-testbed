@@ -1,0 +1,13 @@
+packet-generator new {
+  name dns8
+  rate 10
+  node ip4-input
+  size 100-100
+  no-recycle
+  data {
+    UDP: 104.130.226.226 -> 104.130.169.190
+    UDP: 15320 -> 53
+    length 48
+    hex 0x09860100000100000000000005686f73743807646e7364656d6f046f6e6170036f72670000010001
+  }
+}
