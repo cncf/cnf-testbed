@@ -8,6 +8,10 @@ The setup scripts are originally from https://github.com/onap/demo/blob/master/v
 
 ### Build the VM
 
+Install plugin to support disk resizing
+
+`vagrant plugin install vagrant-disksize`
+
 Build the VM with vagrant
 
 `vagrant up vDNS`

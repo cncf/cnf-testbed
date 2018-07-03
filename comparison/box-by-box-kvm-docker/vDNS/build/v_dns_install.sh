@@ -19,6 +19,9 @@ update-rc.d v_dns.sh defaults
 # Install Bind
 mkdir /etc/bind/zones
 sed -i "s/OPTIONS=.*/OPTIONS=\"-4 -u bind\"/g" /etc/default/bind9
+cp /build/db_dnsdemo_onap_org /etc/bind/zones/db.dnsdemo.onap.org
+cp /build/named.conf.options /etc/bind/
+cp /build/named.conf.local /etc/bind/
 
 echo "Starting DNS and DHCP services"
 ./v_dns_init.sh
