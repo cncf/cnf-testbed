@@ -50,3 +50,4 @@ To update you will need to remove the old box and image. Example:
 
 - `vagrant box remove vDNS`
 - `rm /var/lib/libvirt/images/vDNS_vagrant_box_image_0.img`
+- `virsh pool-refresh default`
