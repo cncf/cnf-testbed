@@ -1,0 +1,20 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "generic/ubuntu1604"
+
+  config.vm.provision "shell", path: "v_bng_install.sh", privileged: false
+  config.vm.synced_folder './', '/vagrant'
+  config.vm.define vm_name = "vBNG" do |config|
+    config.vm.hostname = vm_name
+    config.vm.provider :libvirt do |v|
+      v.cpus = 4
+      v.memory = 4096
+    end
+    config.vm.network :private_network, :ip => "10.3.0.10"
+    config.vm.network :private_network, :ip => "10.1.0.10"
+    config.vm.network :private_network, :ip => "10.0.101.10"
+  end
+end
