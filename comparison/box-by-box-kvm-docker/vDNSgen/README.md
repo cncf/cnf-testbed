@@ -14,12 +14,6 @@ SSH to the VNF
 
 `vagrant ssh vDNSgen`
 
-Start the packet generator
+Start the vDNS test
 
-`sudo ./vDNSgen/run_streams_dns.sh`
-
-### TODO
-
-Packets returned to the vDNSgen VNF currently doesn't reach VPP, but traffic can be observed at the local bridge
-
-`sudo tcpdump -nni br0`
+`sudo ./vDNSgen/dns_test.sh`

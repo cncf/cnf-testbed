@@ -1,12 +1,13 @@
 packet-generator new {
   name dns2
-  rate 10
+  rate 5000
   node ip4-input
   size 100-100
   no-recycle
+  interface GigabitEthernet0/6/0
   data {
     UDP: 104.130.226.226 -> 104.130.169.190
-    UDP: 15320 -> 53
+    UDP: 53 -> 53
     length 48
     hex 0x23550100000100000000000005686f73743207646e7364656d6f046f6e6170036f72670000010001
   }

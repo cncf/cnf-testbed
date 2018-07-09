@@ -7,9 +7,9 @@ Vagrant.configure("2") do |config|
   config.vm.define vm_name = "vDNSgen" do |config|
     config.vm.hostname = vm_name
     config.vm.provider :libvirt do |v|
-      v.cpus = 2
+      v.cpus = 3
       v.memory = 4096
     end
-    config.vm.network :private_network, :ip => "40.30.20.90"
+    config.vm.network :private_network, :ip => "40.30.20.90", libvirt__driver_queues:2
   end
 end
