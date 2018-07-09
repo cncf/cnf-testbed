@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "export DEBIAN_FRONTEND=noninteractive" | tee -a /etc/profile
+
 apt-get install -y sudo
 sudo apt-get install -y software-properties-common python-software-properties
 sudo add-apt-repository -s -y  ppa:openjdk-r/ppa
