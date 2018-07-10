@@ -110,8 +110,8 @@ sleep 1
 #sudo vppctl set interface ip address tapcli-0 $TAPCLI0_IPADDR"/"$IPADDR1_CIDR
 #sudo vppctl set ip arp tapcli-0 $DST_IPADDR $DST_MAC
 
-echo "Exiting scrpit before running 'run_streams_dns.sh'"
+#echo "Exiting script before running 'run_streams_dns.sh'"
 exit 0
 
-chmod +x run_streams_dns.sh
-./run_streams_dns.sh &>/dev/null &disown
+#chmod +x run_streams_dns.sh
+#./run_streams_dns.sh &>/dev/null &disown
