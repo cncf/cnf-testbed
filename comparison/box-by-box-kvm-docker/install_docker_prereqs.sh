@@ -19,3 +19,14 @@ sudo add-apt-repository -y  \
 sudo apt-get update
 
 sudo apt-get install -y docker-ce
+
+# Prepare Hugepages
+for i in $(ls /sys/devices/system/node/ | grep node); do
+  if [ "$(sudo cat /sys/devices/system/node/${i}/hugepages/hugepages-2048kB/nr_hugepages)" == "0" ]; then
+    sudo echo 2048 > /sys/devices/system/node/${i}/hugepages/hugepages-2048kB/nr_hugepages
+  fi
+done
+
+if [ ! -d "/dev/hugepages" ]; then
+  sudo mount -t hugetlbfs -o pagesize=2M none /dev/hugepages
+fi 
