@@ -4,6 +4,14 @@ mydir=$(dirname $0)
 
 cd $mydir
 
+if [ "$1" ] ; then
+  DNS_PACKET_RATE="$1"
+elif [ -z "${DNS_PACKET_RATE}" ] ; then
+  DNS_PACKET_RATE=10000
+fi
+
+echo "Using DNS Packet RATE $DNS_PACKET_RATE"
+
 ./build_container.sh
 
 if [ -z "$(docker network ls | grep dns-net)" ]; then
@@ -15,7 +23,7 @@ if [ -z "$(docker ps | grep vDNSgen)" ]; then
   sleep 2
   docker network connect dns-net vDNSgen
   sleep 2
-  docker exec vDNSgen ./cnf_vdnsgen_init.sh
+  docker exec -e DNS_PACKET_RATE="${DNS_PACKET_RATE}" vDNSgen ./cnf_vdnsgen_init.sh
   sleep 2
 fi
 

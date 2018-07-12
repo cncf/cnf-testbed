@@ -5,4 +5,4 @@ echo "Starting vDNS container"
 
 
 echo "Starting vDNSgen container and running tests"
-./vDNSgen/run_container_test.sh
+./vDNSgen/run_container_test.sh $1

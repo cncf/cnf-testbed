@@ -66,7 +66,14 @@ sudo vppctl set ip arp GigabitEthernet0/6/0 $DST_IPADDR $DST_MAC
 
 # Install packet streams
 
+if [ -z "$0" ] ; then
+  DNS_PACKET_RATE=$0
+elif [ -z "$DNS_PACKET_RATE" ] ; then
+  DNS_PACKET_RATE=10000
+fi
+
 #sudo sed -i 's/rate 10/rate 10000/g' /opt/dns_streams/stream_dns*
+sudo sed -i "s/rate 10/rate ${DNS_PACKET_RATE}/g" /opt/dns_streams/stream_dns*
 
 sudo sed -i -e "0,/UDP/ s/UDP:.*/UDP: "$IPADDR1" -> "$DST_IPADDR"/" /opt/dns_streams/stream_dns1
 sudo sed -i -e "0,/UDP/ s/UDP:.*/UDP: "$IPADDR1" -> "$DST_IPADDR"/" /opt/dns_streams/stream_dns2
@@ -89,6 +96,9 @@ sudo sed -i -e "0,/UDP/ s/UDP:.*/UDP: "$IPADDR1" -> "$DST_IPADDR"/" /opt/dns_str
 #sudo sed -i -e "s/.*-> 53.*/    UDP: $RANDOM -> 53/" /opt/dns_streams/stream_dns8
 #sudo sed -i -e "s/.*-> 53.*/    UDP: $RANDOM -> 53/" /opt/dns_streams/stream_dns9
 #sudo sed -i -e "s/.*-> 53.*/    UDP: $RANDOM -> 53/" /opt/dns_streams/stream_dns10
+
+sudo systemctl start vpp
+sleep 1
 
 sudo vppctl exec /opt/dns_streams/stream_dns1
 sudo vppctl exec /opt/dns_streams/stream_dns2
