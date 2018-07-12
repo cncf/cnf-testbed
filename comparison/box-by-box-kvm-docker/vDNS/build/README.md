@@ -1,10 +1,20 @@
-# vDNS VNF VM creation
+# vDNS NF
+
+Building a DNS NF container (CNF) and VM (VNF) using Bind9 and Kea DHCP
+
+The setup and install scripts are originally from https://github.com/onap/demo/blob/master/vnfs/vCPE/scripts
+
+## CNF container creation
+
+Build a docker container
+
+### Build the container
+
+`docker build -t vdns .`
+
+## VNF VM creation
 
 Build a vagrant box with libvirt support
-
-The VNF/CNF is using Bind9 and Kea DHCP
-
-The setup scripts are originally from https://github.com/onap/demo/blob/master/vnfs/vCPE/scripts
 
 ### Build the VM
 
