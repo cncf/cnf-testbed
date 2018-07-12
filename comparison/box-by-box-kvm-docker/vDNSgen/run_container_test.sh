@@ -1,11 +1,13 @@
 #! /bin/bash
 
+mydir=$(dirname $0)
+
+cd $mydir
+
+./build_container.sh
+
 if [ -z "$(docker network ls | grep dns-net)" ]; then
   docker network create --subnet=40.30.20.0/24 dns-net
-fi
-
-if [ -z "$(docker image list | grep vdnsgen)" ]; then
-  docker build -t vdnsgen .
 fi
 
 if [ -z "$(docker ps | grep vDNSgen)" ]; then
