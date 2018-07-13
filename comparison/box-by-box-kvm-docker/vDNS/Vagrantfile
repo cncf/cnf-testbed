@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "vDNS" do |c|
 		c.vm.box = "vDNS"
 		c.vm.hostname = "vdns"
-	        c.vm.provision "shell", path: "v_dns_init.sh", privileged: true
+    #c.vm.provision "shell", path: "v_dns_init.sh", privileged: true
 		c.vm.provider :libvirt do |libvirt|
 			libvirt.cpus = 4
 			libvirt.memory = 8192
