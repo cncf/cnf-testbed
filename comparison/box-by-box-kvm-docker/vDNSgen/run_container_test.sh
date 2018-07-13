@@ -23,10 +23,12 @@ if [ -z "$(docker ps | grep vDNSgen)" ]; then
   sleep 2
   docker network connect dns-net vDNSgen
   sleep 2
-  docker exec -e DNS_PACKET_RATE="${DNS_PACKET_RATE}" vDNSgen ./cnf_vdnsgen_init.sh
+  #docker exec -e DNS_PACKET_RATE="${DNS_PACKET_RATE}" vDNSgen ./cnf_vdnsgen_init.sh
+  docker exec vDNSgen ./cnf_vdnsgen_init.sh
   sleep 2
 fi
 
 sleep 2
 
-docker exec -it vDNSgen ./cnf_dns_test.sh
+echo "Starting DNS test script"
+docker exec -e DNS_PACKET_RATE="${DNS_PACKET_RATE}" -it vDNSgen ./cnf_dns_test.sh $DNS_PACKET_RATE

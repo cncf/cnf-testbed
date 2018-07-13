@@ -21,6 +21,8 @@ mask2cidr() {
     echo "$nbits"
 }
 
+SUDO=$(which sudo)
+
 IPADDR1_MASK=$(ifconfig eth1 | grep "Mask" | awk '{print $4}' | awk -F ":" '{print $2}')
 #IPADDR1_CIDR=$(mask2cidr $IPADDR1_MASK)
 
@@ -64,7 +66,15 @@ arp
 
 # Install packet streams
 
+
+if [ -z "$1" ] ; then
+  DNS_PACKET_RATE=$1
+fi
+
 #sudo sed -i 's/rate 10/rate 10000/g' /opt/dns_streams/stream_dns*
+if [ -n "$DNS_PACKET_RATE" ] ; then
+  $SUDO sed -i "s/rate 10/rate ${DNS_PACKET_RATE}/g" /opt/dns_streams/stream_dns*
+fi
 
 sed -i -e "0,/UDP/ s/UDP:.*/UDP: "$IPADDR1" -> "$DST_IPADDR"/" /opt/dns_streams/stream_dns*
 
@@ -90,6 +100,9 @@ sed -i "s#interface GigabitEthernet0/6/0#interface tapcli-0#g" /opt/dns_streams/
 #sudo sed -i -e "s/.*-> 53.*/    UDP: $RANDOM -> 53/" /opt/dns_streams/stream_dns8
 #sudo sed -i -e "s/.*-> 53.*/    UDP: $RANDOM -> 53/" /opt/dns_streams/stream_dns9
 #sudo sed -i -e "s/.*-> 53.*/    UDP: $RANDOM -> 53/" /opt/dns_streams/stream_dns10
+
+$SUDO systemctl restart vpp
+sleep 1
 
 vppctl exec /opt/dns_streams/stream_dns1
 vppctl exec /opt/dns_streams/stream_dns2

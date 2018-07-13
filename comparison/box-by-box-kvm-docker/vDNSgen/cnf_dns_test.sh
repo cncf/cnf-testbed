@@ -23,6 +23,15 @@ start_stream() {
 
 vppctl packet-gen disable
 
+if [ -z "$1" ] ; then
+  echo "DNS PACKET RATE passed to test script $1"
+  DNS_PACKET_RATE=$1
+fi
+
+if [ -n "$DNS_PACKET_RATE" ] ; then
+  ./set_dns_packet_rate.sh $DNS_PACKET_RATE
+fi
+
 increments=$(cat /opt/dns_streams/stream_dns1 | grep rate | awk '{print $2}')
 
 echo ""
