@@ -8,6 +8,7 @@ fi
 DNS_PACKET_RATE=$1
 
 SUDO=$(which sudo)
+$SUDO vppctl packet-gen disable
 echo "Updating rate to $DNS_PACKET_RATE"
 $SUDO sed -i "s/^\(\s*rate\s\)*[0-9]*$/\1${DNS_PACKET_RATE}/" /opt/dns_streams/stream_dns*
 
