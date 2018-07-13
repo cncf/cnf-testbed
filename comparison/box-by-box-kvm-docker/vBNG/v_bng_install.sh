@@ -18,6 +18,8 @@ sudo apt-get update -y
 sudo apt-get install --allow-unauthenticated -y make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates -y
 pip install jsonschema
 
+sudo apt-get -y install linux-headers-$(uname -r)
+
 # Install VPP
 export UBUNTU="xenial"
 export RELEASE=".stable.1804"
