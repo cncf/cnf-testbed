@@ -13,7 +13,7 @@ fi
 
 if [ -z "$(docker ps | grep -v vDNSgen | grep vDNS)" ]; then
   echo "Creating container"
-  docker create --privileged --name vDNS -t vdns
+  docker create --privileged --cpus 4 --name vDNS -t vdns
 
   echo "Connecting second interface to container"
   docker network connect dns-net --ip 40.30.20.110 vDNS
