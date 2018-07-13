@@ -8,10 +8,12 @@ cp /vagrant/v_packetgen_init.sh .
 cp /vagrant/vpacketgen.sh .
 cp /vagrant/run_streams_dns.sh .
 cp /vagrant/dns_test.sh .
+cp /vagrant/set_dns_packet_rate.sh .
 chmod +x v_packetgen_init.sh
 chmod +x vpacketgen.sh
 chmod +x run_streams_dns.sh
 chmod +x dns_test.sh
+chmod +x set_dns_packet_rate
 
 sudo apt-get update -y
 sudo apt-get install --allow-unauthenticated -y make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates -y

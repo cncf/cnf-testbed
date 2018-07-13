@@ -6,6 +6,7 @@ chmod +x cnf_vdnsgen_init.sh
 chmod +x cnf_vdnsgen.sh
 chmod +x run_streams_dns.sh
 chmod +x cnf_dns_test.sh
+chmod +x set_dns_packet_rate.sh
 
 apt-get update -y
 apt-get install --allow-unauthenticated -y make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates tcpdump iputils-ping dnsutils vim
