@@ -13,3 +13,4 @@ The setup scripts are originally from https://github.com/onap/demo/blob/master/v
 Currently doesn't have DHCP4 Proxy, AAA and connection to Signal and OAM networks
 
 ![Current Implementation of vBNG](https://github.com/cncf/cnfs/blob/master/comparison/box-by-box-kvm-docker/vBNG/vBNG.png)
+eth3 omitted as it is not currently used

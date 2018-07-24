@@ -50,10 +50,17 @@ mkdir nfvbench
 cd nfvbench
 cp /vagrant/nfvbench_config.cfg .
 
+sudo mkdir /opt/nfvbench
+
 sudo docker run --detach --net=host --privileged -v $PWD:/tmp/nfvbench -v /dev:/dev -v /lib/modules/$(uname -r):/lib/modules/$(uname -r) -v /usr/src:/usr/src --name nfvbench opnfv/nfvbench
-echo "alias nfvbench='sudo docker exec -it nfvbench nfvbench'" >> ~/.bashrc
+echo "alias nfvbench='sudo docker exec -it nfvbench nfvbench -c /tmp/nfvbench/nfvbench_config.cfg'" | sudo tee --append /root/.bashrc
+echo "alias nfvbench='sudo docker exec -it nfvbench nfvbench -c /tmp/nfvbench/nfvbench_config.cfg'" | tee --append ~/.bashrc
 
 sudo docker exec nfvbench sh -c 'make -C /opt/trex/v2.32/ko/src'
 
+nfvbench_dir="/proc/$(sudo docker inspect --format {{.State.Pid}} nfvbench)/root/nfvbench"
+sudo sed -i -e '191,193d' ${nfvbench_dir}/nfvbench/traffic_gen/trex.py
+sudo sed -i '191i\            STLVmFixIpv4(offset="IP")' ${nfvbench_dir}/nfvbench/traffic_gen/trex.py
+sudo sed -i '45s/STLVmFixChecksumHw/STLVmFixIpv4/' ${nfvbench_dir}/nfvbench/traffic_gen/trex.py
 
 
