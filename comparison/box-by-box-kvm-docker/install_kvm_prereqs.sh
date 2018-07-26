@@ -20,3 +20,20 @@ apt-get install -y qemu libvirt-bin ebtables dnsmasq
 apt-get install -y libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
 
 vagrant plugin install vagrant-libvirt
+
+# Prepare Hugepages
+echo "Setting up hugepages memory support"
+for i in $(ls /sys/devices/system/node/ | grep node); do
+  if [ "$(sudo cat /sys/devices/system/node/${i}/hugepages/hugepages-2048kB/nr_hugepages)" == "0" ]; then
+    sudo echo 10240 > /sys/devices/system/node/${i}/hugepages/hugepages-2048kB/nr_hugepages
+  fi
+done
+
+if [ ! -d "/dev/hugepages" ]; then
+  sudo mount -t hugetlbfs -o pagesize=2M none /dev/hugepages
+fi
+
+## Workaround to allow access to host sockets
+## Disables use of security driver for libvirt (QEMU)
+sed -i 's/#security_driver = "selinux"/security_driver = "none"/g' /etc/libvirt/qemu.conf
+service libvirtd restart

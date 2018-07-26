@@ -3,7 +3,6 @@
 sudo systemctl start vpp
 
 # The below tap configuration is not yet needed
-echo "EXITING v_bng_init.sh early!"
 exit 0 
 
 # wait for TAP_DEV to become active before setting a route
