@@ -11,9 +11,21 @@ for sock in "${SOCKET_NAMES[@]}"; do
   fi
 done
 
+input="$1"
+
 mydir=$(dirname $0)
 
 cd $mydir
+
+if [ "$input" == "clean" ]; then
+  vagrant destroy -f
+  exit 0
+fi
+
+state=$(vagrant status | grep vBNG | awk '{print $2}')
+if [ "$state" == "running" ]; then
+  exit 0
+fi
 
 vagrant up
 

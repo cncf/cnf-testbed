@@ -1,13 +1,13 @@
 <domain type='kvm'>
-  <name>vBNG_vBNG</name>
-  <uuid>635115b6-a523-43f7-848c-529ecdd85b08</uuid>
+  <name>Pktgen_Pktgen</name>
+  <uuid>c033cea6-c10c-48b5-a0f8-6f8be7229966</uuid>
   <memory unit='KiB'>4194304</memory>
   <currentMemory unit='KiB'>4194304</currentMemory>
   <memoryBacking>
     <hugepages/>
     <access mode='shared'/>
   </memoryBacking>
-  <vcpu placement='static'>4</vcpu>
+  <vcpu placement='static'>3</vcpu>
   <os>
     <type arch='x86_64' machine='pc-i440fx-bionic'>hvm</type>
     <boot dev='hd'/>
@@ -20,7 +20,7 @@
   <cpu mode='host-model' check='partial'>
     <model fallback='allow'/>
     <numa>
-      <cell id='0' cpus='0-3' memory='4194304' unit='KiB'/>
+      <cell id='0' cpus='0-2' memory='4194304' unit='KiB'/>
     </numa>
   </cpu>
   <clock offset='utc'/>
@@ -31,7 +31,7 @@
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source file='/var/lib/libvirt/images/vBNG_vBNG.img'/>
+      <source file='/var/lib/libvirt/images/Pktgen_Pktgen.img'/>
       <target dev='vda' bus='scsi'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
@@ -43,20 +43,22 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </controller>
     <interface type='network'>
-      <mac address='52:54:00:1e:25:07'/>
+      <mac address='52:54:00:a4:e6:4e'/>
       <source network='vagrant-libvirt'/>
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </interface>
     <interface type='vhostuser'>
-      <mac address='52:54:00:00:00:aa'/>
-      <source type='unix' path='/var/run/vpp/sock1.sock' mode='client'/>
+      <mac address='52:54:00:00:00:cc'/>
+      <source type='unix' path='/var/run/vpp/sock3.sock' mode='client'/>
       <model type='virtio'/>
+      <driver queues='2'/>
     </interface>
     <interface type='vhostuser'>
-      <mac address='52:54:00:00:00:bb'/>
-      <source type='unix' path='/var/run/vpp/sock2.sock' mode='client'/>
+      <mac address='52:54:00:00:00:dd'/>
+      <source type='unix' path='/var/run/vpp/sock4.sock' mode='client'/>
       <model type='virtio'/>
+      <driver queues='2'/>
     </interface>
     <serial type='pty'>
       <target type='isa-serial' port='0'>
