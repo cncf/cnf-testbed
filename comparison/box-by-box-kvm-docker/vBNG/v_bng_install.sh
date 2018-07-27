@@ -241,8 +241,8 @@ set interface ip address GigabitEthernet0/6/0 10.3.0.10/24
 set int state GigabitEthernet0/7/0 up
 set interface ip address GigabitEthernet0/7/0 10.1.0.10/24
 
-set ip arp static GigabitEthernet0/6/0 10.3.0.120 de:ad:00:00:00:00
-set ip arp static GigabitEthernet0/7/0 10.1.0.120 be:ef:00:00:00:00
+set ip arp static GigabitEthernet0/6/0 10.3.0.120 52:54:00:00:00:cc
+set ip arp static GigabitEthernet0/7/0 10.1.0.120 52:54:00:00:00:dd
 
 ##set int state ${BNG_GMUX_NIC} up
 ##set interface ip address ${BNG_GMUX_NIC} ${BNG_GMUX_NET_IPADDR}/${BNG_GMUX_NET_CIDR#*/}

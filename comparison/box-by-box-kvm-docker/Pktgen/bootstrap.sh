@@ -48,7 +48,7 @@ sudo docker pull opnfv/nfvbench
 cd ~
 mkdir nfvbench
 cd nfvbench
-cp /vagrant/nfvbench_config.cfg .
+cp ~/nfvbench_config.cfg .
 
 sudo mkdir /opt/nfvbench
 
