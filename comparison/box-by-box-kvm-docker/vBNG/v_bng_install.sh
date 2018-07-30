@@ -29,31 +29,6 @@ sudo apt-get update
 sudo apt-get install -y vpp vpp-dpdk-dkms vpp-lib vpp-dbg vpp-plugins vpp-dev
 sleep 1
 
-#REPO_URL_BLOB=$(cat /opt/config/repo_url_blob.txt)
-#REPO_URL_ARTIFACTS=$(cat /opt/config/repo_url_artifacts.txt)
-#DEMO_ARTIFACTS_VERSION=$(cat /opt/config/demo_artifacts_version.txt)
-#INSTALL_SCRIPT_VERSION=$(cat /opt/config/install_script_version.txt)
-#VPP_SOURCE_REPO_URL=$(cat /opt/config/vpp_source_repo_url.txt)
-#VPP_SOURCE_REPO_BRANCH=$(cat /opt/config/vpp_source_repo_branch.txt)
-#VPP_PATCH_URL=$(cat /opt/config/vpp_patch_url.txt)
-#CLOUD_ENV=$(cat /opt/config/cloud_env.txt)
-#BNG_GMUX_NET_CIDR=$(cat /opt/config/bng_gmux_net_cidr.txt)
-#BNG_GMUX_NET_IPADDR=$(cat /opt/config/bng_gmux_net_ipaddr.txt)
-#BRGEMU_BNG_NET_CIDR=$(cat /opt/config/brgemu_bng_net_cidr.txt)
-#BRGEMU_BNG_NET_IPADDR=$(cat /opt/config/brgemu_bng_net_ipaddr.txt)
-#CPE_SIGNAL_NET_CIDR=$(cat /opt/config/cpe_signal_net_cidr.txt)
-#CPE_SIGNAL_NET_IPADDR=$(cat /opt/config/cpe_signal_net_ipaddr.txt)
-#SDNC_IP_ADDR=$(cat /opt/config/sdnc_ip_addr.txt)
-
-# Convert Network CIDR to Netmask
-#cdr2mask () {
-#	# Number of args to shift, 255..255, first non-255 byte, zeroes
-#	set -- $(( 5 - ($1 / 8) )) 255 255 255 255 $(( (255 << (8 - ($1 % 8))) & 255 )) 0 0 0
-#	[ $1 -gt 1 ] && shift $1 || shift
-#	echo ${1-0}.${2-0}.${3-0}.${4-0}
-#}
-
-# Enable IPV4 forwarding through kernel
 sudo sed -i 's/^.*\(net.ipv4.ip_forward\).*/\1=1/g' /etc/sysctl.conf
 sudo sysctl -p /etc/sysctl.conf
 
@@ -73,13 +48,6 @@ sudo ifconfig eth1 down
 sudo ifconfig eth2 down
 sudo ip addr flush dev eth1
 sudo ip addr flush dev eth2
-
-##NICS=$(get_nic_pci_list)
-##NICS=`echo ${NICS} | sed 's/[0]\+\([0-9]\)/\1/g' | sed 's/[.:]/\//g'`
-
-##BRGEMU_BNG_NIC=GigabitEthernet`echo ${NICS} | cut -d " " -f 2` # second interface in list
-##CPE_SIGNAL_NIC=GigabitEthernet`echo ${NICS} | cut -d " " -f 4` # fourth interface in list
-##BNG_GMUX_NIC=GigabitEthernet`echo ${NICS} | cut -d " " -f 5` # fifth interface in list
 
 # Overwrite default VPP configuration 
 sudo bash -c "cat > /etc/vpp/startup.conf" <<EOF
@@ -121,10 +89,10 @@ cpu {
         ## Manual pinning of thread(s) to CPU core(s)
 
         ## Set logical CPU core where main thread runs
-        main-core 1
+        main-core 0
 
         ## Set logical CPU core(s) where worker threads are running
-        corelist-workers 2-3
+        corelist-workers 1-2
 
         ## Automatic pinning of thread(s) to CPU core(s)
 

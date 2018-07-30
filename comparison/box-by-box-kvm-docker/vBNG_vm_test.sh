@@ -5,6 +5,7 @@ if ! cmp -s "/etc/vpp/setup.gate" "VPP_Configs/vBNG_vm.conf" ; then
   echo "Updating VPP configuration"
   cp VPP_Configs/vBNG_vm.conf /etc/vpp/setup.gate
   service vpp restart
+  sleep 5
 fi
 
 input="$1"
