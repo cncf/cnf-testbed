@@ -20,6 +20,8 @@ for sock in "${SOCKET_NAMES[@]}"; do
   fi
 done
 
+cpus=( 4 5 6 )
+
 input="$1"
 
 mydir=$(dirname $0)
@@ -67,5 +69,12 @@ sleep 15
 cmd="cp /vagrant/boot* . && cp /vagrant/nfvb* . && chmod +x boot* && ./bootstrap.sh"
 #cmd="cp /vagrant/boot* . && cp /vagrant/nfvb* . && chmod +x boot*"
 vagrant ssh -c "$cmd"
+
+count=0
+new_id=$(virsh list | grep Pktgen_Pktgen | awk '{print $1}')
+for cpu in "${cpus[@]}"; do
+  virsh vcpupin ${new_id} ${count} ${cpu}
+  (( count++ ))
+done 
 
 run_nfvbench $input
