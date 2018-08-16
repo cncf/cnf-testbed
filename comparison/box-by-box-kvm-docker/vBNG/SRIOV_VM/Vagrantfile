@@ -3,17 +3,21 @@
 
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "generic/ubuntu1604"
-  config.vm.box_version = "1.8.14"
+  #config.vm.box = "generic/ubuntu1604"
+  config.vm.box = "vbng"
+  #config.vm.box_version = "1.8.14"
 
   config.vm.synced_folder './', '/vagrant'
   config.vm.define vm_name = "vBNG" do |config|
     config.vm.hostname = vm_name
+    config.vm.provision "shell", path: "vnf_vbng_install.sh", privileged: true
     config.vm.provider :libvirt do |v|
       v.cpus = 3
       v.numa_nodes = [
         {:cpus => "0-2", :memory => "4096"}
       ]
+      v.pci :bus => '0x18', :slot => '0x00', :function => '0x0'
+      v.pci :bus => '0x18', :slot => '0x00', :function => '0x1'
       v.memorybacking :hugepages
       v.memorybacking :access, :mode => 'shared'
     end
