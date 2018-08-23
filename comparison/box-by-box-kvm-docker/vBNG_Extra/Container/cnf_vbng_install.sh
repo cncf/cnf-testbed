@@ -86,7 +86,7 @@ cpu {
 
 dpdk {
         ## Change default settings for all intefaces
-        dev default {
+        #dev default {
                 ## Number of receive queues, enables RSS
                 ## Default is 1
                 #num-rx-queues 2
@@ -104,10 +104,10 @@ dpdk {
                 ## VLAN strip offload mode for interface
                 ## Default is off
                 # vlan-strip-offload on
-        }
+        #}
 
         ## Whitelist specific interface by specifying PCI address
-        dev 0000:18:00.0 dev 0000:18:00.1
+        dev 0000:18:00.2
 
         ## Whitelist specific interface by specifying PCI address and in
         ## addition specify custom parameters for this interface
@@ -169,26 +169,16 @@ EOF
 
 # Create interface configuration for VPP
 bash -c "cat > /etc/vpp/setup.gate" <<EOF
+bin memif_socket_filename_add_del add id 1 filename /run/vpp/memif1.sock
+bin memif_socket_filename_add_del add id 2 filename /run/vpp/memif2.sock
+create interface memif id 1 socket-id 1 hw-addr 52:54:00:00:00:aa slave
+create interface memif id 2 socket-id 2 hw-addr 52:54:00:00:00:bb slave
+set int ip addr memif1/1 10.3.0.10/24
+set int ip addr memif2/2 10.1.0.10/24
+set int state memif1/1 up
+set int state memif2/2 up
 
-set int state TenGigabitEthernet18/0/0 up
-set interface ip address TenGigabitEthernet18/0/0 10.3.0.10/24
-
-set int state TenGigabitEthernet18/0/1 up
-set interface ip address TenGigabitEthernet18/0/1 10.1.0.10/24
-
-set ip arp static TenGigabitEthernet18/0/0 10.3.0.120 3c:fd:fe:a8:ab:98
-set ip arp static TenGigabitEthernet18/0/1 10.1.0.120 3c:fd:fe:a8:ab:99
-
-#bin memif_socket_filename_add_del add id 1 filename /run/vpp/memif1.sock
-#bin memif_socket_filename_add_del add id 2 filename /run/vpp/memif2.sock
-#create interface memif id 1 socket-id 1 hw-addr 52:54:00:00:00:aa slave
-#create interface memif id 2 socket-id 2 hw-addr 52:54:00:00:00:bb slave
-#set int ip addr memif1/1 10.3.0.10/24
-#set int ip addr memif2/2 10.1.0.10/24
-#set int state memif1/1 up
-#set int state memif2/2 up
-
-#set ip arp static memif1/1 10.3.0.120 52:54:00:00:00:cc
-#set ip arp static memif2/2 10.1.0.120 52:54:00:00:00:dd
+set ip arp static memif1/1 10.3.0.120 3c:fd:fe:a8:ab:98
+set ip arp static memif2/2 10.1.0.120 3c:fd:fe:a8:ab:99
 EOF
 
