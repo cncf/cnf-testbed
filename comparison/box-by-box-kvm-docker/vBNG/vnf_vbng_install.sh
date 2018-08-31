@@ -1,22 +1,21 @@
-#! /bin/bash
+#!/bin/bash
+set -o xtrace  # print commands during script execution
 
-# Prepare files
-cd /vBNG
+sudo service vpp stop
 
-apt-get update -y
-apt-get install --allow-unauthenticated -y make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates vim
-pip install jsonschema
+pci_search="Ethernet"
+pci_devs=($(lspci | grep "$pci_search" | awk '{print $1}' | grep -v "00:05.0"))
+dev_list=""
+if [ ! "${#pci_devs[@]}" == "0" ]; then
+  for dev in ${pci_devs[@]}; do
+    dev_list+="dev 0000:$dev "
+  done
+fi
 
-# Install VPP
-export UBUNTU="xenial"
-export RELEASE=".stable.1804"
-rm /etc/apt/sources.list.d/99fd.io.list
-echo "deb [trusted=yes] https://nexus.fd.io/content/repositories/fd.io$RELEASE.ubuntu.$UBUNTU.main/ ./" | tee -a /etc/apt/sources.list.d/99fd.io.list
-apt-get update
-apt-get install -y vpp vpp-dpdk-dkms vpp-lib vpp-dbg vpp-plugins vpp-dev
-sleep 1
+sudo /vagrant/dpdk-devbind.py -b igb_uio ${pci_devs[@]}
 
-bash -c "cat > /etc/vpp/startup.conf" <<EOF
+# Overwrite default VPP configuration 
+sudo bash -c "cat > /etc/vpp/startup.conf" <<EOF
 
 unix {
   nodaemon
@@ -55,10 +54,10 @@ cpu {
         ## Manual pinning of thread(s) to CPU core(s)
 
         ## Set logical CPU core where main thread runs
-        main-core 7
+        main-core 0
 
         ## Set logical CPU core(s) where worker threads are running
-        corelist-workers 8-9
+        corelist-workers 1-2
 
         ## Automatic pinning of thread(s) to CPU core(s)
 
@@ -82,14 +81,14 @@ cpu {
         ## Scheduling priority is used only for "real-time policies (fifo and rr),
         ## and has to be in the range of priorities supported for a particular policy
         # scheduler-priority 50
-      }
+}
 
 dpdk {
         ## Change default settings for all intefaces
-        #dev default {
+        # dev default {
                 ## Number of receive queues, enables RSS
                 ## Default is 1
-                #num-rx-queues 2
+                # num-rx-queues 3
 
                 ## Number of transmit queues, Default is equal
                 ## to number of worker threads or 1 if no workers treads
@@ -104,10 +103,10 @@ dpdk {
                 ## VLAN strip offload mode for interface
                 ## Default is off
                 # vlan-strip-offload on
-        #}
+        # }
 
         ## Whitelist specific interface by specifying PCI address
-        dev 0000:18:00.2
+        ${dev_list}
 
         ## Whitelist specific interface by specifying PCI address and in
         ## addition specify custom parameters for this interface
@@ -127,8 +126,7 @@ dpdk {
 
         ## Change UIO driver used by VPP, Options are: igb_uio, vfio-pci,
         ## uio_pci_generic or auto (default)
-        #uio-driver vfio-pci
-        uio-driver igb_uio
+        # uio-driver vfio-pci
 
         ## Disable mutli-segment buffers, improves performance but
         ## disables Jumbo MTU support
@@ -141,12 +139,12 @@ dpdk {
 
         ## Change hugepages allocation per-socket, needed only if there is need for
         ## larger number of mbufs. Default is 256M on each detected CPU socket
-        # socket-mem 1024,1024
+        # socket-mem 2048,2048
 
         ## Disables UDP / TCP TX checksum offload. Typically needed for use
         ## faster vector PMDs (together with no-multi-seg)
         # no-tx-checksum-offload
-      }
+}
 
 
 # plugins {
@@ -167,21 +165,31 @@ dpdk {
         # plugin_path /home/bms/vpp/build-root/install-vpp-native/vpp/lib64/vpp_plugins
 EOF
 
-# Create interface configuration for VPP
-bash -c "cat > /etc/vpp/setup.gate" <<EOF
-bin memif_socket_filename_add_del add id 1 filename /run/vpp/memif1.sock
-bin memif_socket_filename_add_del add id 2 filename /run/vpp/memif2.sock
-create interface memif id 1 socket-id 1 hw-addr 52:54:00:00:00:aa slave rx-queues 2 tx-queues 2
-create interface memif id 2 socket-id 2 hw-addr 52:54:00:00:00:bb slave rx-queues 2 tx-queues 2
-set int ip addr memif1/1 1.1.0.10/8
-set int ip addr memif2/2 2.2.0.10/8
-set int state memif1/1 up
-set int state memif2/2 up
+sudo service vpp start
+sleep 10
 
-set ip arp static memif1/1 1.1.0.100 3c:fd:fe:a8:ab:98
-set ip arp static memif2/2 1.1.0.100 3c:fd:fe:a8:ab:99
+# Pre-heating the API so that the following works (workaround?)
+sudo vppctl show int
+
+intfs=($(sudo vppctl show int | grep Ethernet | awk '{print $1}'))
+if [ ! "${#intfs[@]}" == "2" ]; then
+  echo "ERROR: Number of interfaces should be 2 (is ${#intfs[@]})"
+  exit 1
+fi
+
+# Create interface configuration for VPP
+sudo bash -c "cat > /etc/vpp/setup.gate" <<EOF
+set int state ${intfs[0]} up
+set interface ip address ${intfs[0]} 1.1.0.10/8
+
+set int state ${intfs[1]} up
+set interface ip address ${intfs[1]} 2.2.0.10/8
+
+set ip arp static ${intfs[0]} 1.1.0.100 3c:fd:fe:a8:ab:98
+set ip arp static ${intfs[1]} 2.2.0.100 3c:fd:fe:a8:ab:99
 
 ip route add 10.0.0.0/8 via 1.1.0.100
 ip route add 20.0.0.0/8 via 2.2.0.100
 EOF
 
+sudo service vpp restart

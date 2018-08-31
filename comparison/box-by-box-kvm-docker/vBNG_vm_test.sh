@@ -16,13 +16,13 @@ if ! cmp -s "/etc/vpp/setup.gate" "VPP_Configs/${config_file}" ; then
   sleep 5
 fi
 
-if [ -f "/tmp/nfvbench.output" ]; then
-  rm /tmp/nfvbench.output
-fi
-
 input="$1"
 
 ./vBNG/run_vm.sh "$input"
+
+exit 0
+
+## BELOW PART IS NOT USED WHEN RUNNING PKTGEN ON SEPARATE MACHINE
 
 ./Pktgen/run_vm.sh "$input" 2>&1 | tee /tmp/nfvbench.output
 

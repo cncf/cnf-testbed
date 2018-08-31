@@ -3,12 +3,12 @@
 
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "generic/ubuntu1604"
-  config.vm.box_version = "1.8.14"
+  config.vm.box = "vbng"
 
   config.vm.synced_folder './', '/vagrant'
   config.vm.define vm_name = "vBNG" do |config|
     config.vm.hostname = vm_name
+    #config.vm.provision "shell", path: "vnf_vbng_install.sh", privileged: true
     config.vm.provider :libvirt do |v|
       v.cpus = 3
       v.numa_nodes = [

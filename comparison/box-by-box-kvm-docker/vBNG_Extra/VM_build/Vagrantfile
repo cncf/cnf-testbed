@@ -16,8 +16,6 @@ Vagrant.configure("2") do |config|
       v.numa_nodes = [
         {:cpus => "0-2", :memory => "4096"}
       ]
-      v.pci :bus => '0x18', :slot => '0x00', :function => '0x0'
-      v.pci :bus => '0x18', :slot => '0x00', :function => '0x1'
       v.memorybacking :hugepages
       v.memorybacking :access, :mode => 'shared'
     end

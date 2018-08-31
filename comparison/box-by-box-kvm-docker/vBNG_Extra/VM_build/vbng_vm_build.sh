@@ -19,13 +19,6 @@ sleep 1
 sudo sed -i 's/^.*\(net.ipv4.ip_forward\).*/\1=1/g' /etc/sysctl.conf
 sudo sysctl -p /etc/sysctl.conf
 
-get_nic_pci_list() {
-  while read -r line ; do
-    if [ "$line" != "${line#*network device}" ]; then
-      echo -n "${line%% *} "
-    fi
-  done < <(lspci)
-}
 sudo sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="isolcpus=1,2 nohz_full=1,2 rcu_nocbs=1,2"/g' /etc/default/grub
 sudo update-grub2
 

@@ -16,6 +16,9 @@ if ! cmp -s "/etc/vpp/setup.gate" "VPP_Configs/${config_file}" ; then
   sleep 5
 fi
 
+## EXIT AFTER UPDATING CONFIGURATION
+exit 0
+
 if [ -f "/tmp/nfvbench.output" ]; then
     rm /tmp/nfvbench.output
 fi

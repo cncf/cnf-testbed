@@ -21,6 +21,7 @@ if [ -z "$(vagrant plugin list |grep disksize)" ] ; then
 
     vagrant package --output vbng.box vbng
 
+    vagrant box add vbng.box --name vbng
 
     # To rebuild do the following:
     # - vagrant box remove vDNS

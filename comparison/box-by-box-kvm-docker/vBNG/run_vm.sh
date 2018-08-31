@@ -8,8 +8,12 @@ for sock in "${SOCKET_NAMES[@]}"; do
   if [ ! -e "${SOCKET_DIR}/${sock}" ]; then
     echo "ERROR - Socket ${SOCKET_DIR}/${sock} not found"
     exit 1
+  else
+    chown root:root ${SOCKET_DIR}/${sock}
   fi
 done
+
+cpus=( 7 8 9 )
 
 input="$1"
 
@@ -45,7 +49,14 @@ virsh define vBNG.xml
 
 vagrant reload
 
-cmd="cp /vagrant/v_bng_* . && chmod +x v_bng_* && ./v_bng_install.sh"
+count=0
+new_id=$(virsh list | grep vBNG_vBNG | awk '{print $1}')
+for cpu in "${cpus[@]}"; do
+  virsh vcpupin ${new_id} ${count} ${cpu}
+  (( count++ ))
+done
+
+cmd="cp /vagrant/vnf_vbng_install.sh . && chmod +x vnf_vbng_install.sh && ./vnf_vbng_install.sh"
 vagrant ssh -c "$cmd"
 
 echo ""
