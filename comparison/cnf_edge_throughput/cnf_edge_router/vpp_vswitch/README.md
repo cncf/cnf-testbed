@@ -38,8 +38,9 @@ Additional example configuration are in  [comparison/cnf_edge_throughput/cnf_edg
 Reference: [NSM Notes for configuring VPP with Mellanox Connectx-4 (PFs and VFs)](https://github.com/ligato/networkservicemesh/issues/270#issue-355769450)
 
 1. SSH into the server
-2. sed -i.bak 's/\(GRUB_CMDLINE_LINUX=\"\)/\1iommu=pt intel_iommu=on hugepagesz=2M hugepages=10240 isolcpus=2,4,6 nohz_full=2,4,6 rcu_nocbs=2,4,6 /' /etc/default/grub
-3. update-grub2
+2. `sed -i.bak 's/\(GRUB_CMDLINE_LINUX=\"\)/\1iommu=pt intel_iommu=on hugepagesz=2M hugepages=10240 isolcpus=2,4,6 nohz_full=2,4,6 rcu_nocbs=2,4,6 /' /etc/default/grub`
+3. `update-grub2`
+4. `reboot`
 
 
 ### Setting up layer-2 networking for a Layer 3 provisioned Packet.net machines
@@ -95,6 +96,7 @@ iface enp2s0d1 inet manual
     pre-up sleep 4
     bond-master bond0
 ```
+1. restart the network or reboot
 
 Test:
 - Set IPs on both machines.  Eg. First machine `ip addr add 172.16.99.31/24 dev enp2s0d1`, second machine `ip addr add 172.16.99.32/24 dev enp2s0d1`
