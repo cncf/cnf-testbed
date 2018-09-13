@@ -32,9 +32,19 @@ Additional example configuration are in  [comparison/cnf_edge_throughput/cnf_edg
 8. Select desired SSH keys
 9. Click Deploy Servers
 
+
+### Enable IOMMU and SR-IOV on the machines
+
+Reference: [NSM Notes for configuring VPP with Mellanox Connectx-4 (PFs and VFs)](https://github.com/ligato/networkservicemesh/issues/270#issue-355769450)
+
+1. SSH into the server
+2. sed -i.bak 's/\(GRUB_CMDLINE_LINUX=\"\)/\1iommu=pt intel_iommu=on hugepagesz=2M hugepages=10240 isolcpus=2,4,6 nohz_full=2,4,6 rcu_nocbs=2,4,6 /' /etc/default/grub
+3. update-grub2
+
+
 ### Setting up layer-2 networking for a Layer 3 provisioned Packet.net machines
 
-**Add VLANs to the layer-2 network**
+**Add VLANs to the layer-2 network from Packet.net web ui**
 
 If you need VLANs you can add them to the network.  For the CNF Edge Throughput comparison we are using two VLANS.
 
@@ -57,9 +67,8 @@ For each server that will be part of the same layer 2 network.  Eg. cnf-edge-m2x
 1. Click Mixed/Hybrid
 1. Click Convert to Mixed Networking
   * Wait for conversion to complete
-  
 
-**Add VLAN(s) to the server **
+**Add VLAN(s) to the server**
   
 1. Click Network screen for server (left column)
 1. Sroll to bottom of screen to find Layer 2 section
@@ -67,3 +76,34 @@ For each server that will be part of the same layer 2 network.  Eg. cnf-edge-m2x
 1. Select eth1 from the Interface drop-down
 1. Select the VLAN to add
 1. Click ADD button
+
+
+**Setup machine for the layer-2 network**
+
+1. Find the second interface which is part of the bonded interface. Eg. `awk '{print $2}' /sys/class/net/bond0/bonding/slaves`
+1. Update /etc/network/interfaces to remove the second device from the bond configuration.
+  * Delete device from bond-slaves on the bond0 device: bond-slaves enp2s0 enp2s0d1
+  * Delete the bond-master bond0 line from the iface configuration for the device. Example change:
+```
+iface enp2s0d1 inet manual
+    pre-up sleep 4
+    bond-master bond0
+```
+to
+```
+iface enp2s0d1 inet manual
+    pre-up sleep 4
+    bond-master bond0
+```
+
+Test:
+- Set IPs on both machines.  Eg. First machine `ip addr add 172.16.99.31/24 dev enp2s0d1`, second machine `ip addr add 172.16.99.32/24 dev enp2s0d1`
+  * If you have more than one VLAN be sure and set a VLAN id when setting an IP.  Eg. 
+```
+ip link add name enp2s0d1.1030 link enp2s0d1 type vlan id 1030 
+ip addr add 172.16.99.31/24 dev enp2s0d1.1030
+ifconfig enp2s0d1.1030 up
+```
+- ping from one machine to another using the new IP.  eg. `ping 172.16.99.31` from the 172.16.99.32 machine.
+
+
