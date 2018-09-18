@@ -41,3 +41,14 @@ Reference: [NSM Notes for configuring VPP with Mellanox Connectx-4 (PFs and VFs)
 2. `sed -i.bak 's/\(GRUB_CMDLINE_LINUX=\"\)/\1iommu=pt intel_iommu=on hugepagesz=2M hugepages=10240 isolcpus=2,4,6 nohz_full=2,4,6 rcu_nocbs=2,4,6 /' /etc/default/grub`
 3. `update-grub2`
 4. `reboot`
+
+
+**Install the Mellanox drivers, libs, tools and dependencies**
+
+```
+cd /tmp
+wget http://content.mellanox.com/ofed/MLNX_OFED-4.4-1.0.0.0/MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64.tgz
+tar zxvf MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64.tgz
+cd MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64
+./mlnxofedinstall --dpdk --upstream-libs --force
+```
