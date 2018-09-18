@@ -47,8 +47,7 @@ Reference: [NSM Notes for configuring VPP with Mellanox Connectx-4 (PFs and VFs)
 
 ```
 cd /tmp
-wget http://content.mellanox.com/ofed/MLNX_OFED-4.4-1.0.0.0/MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64.tgz
-tar zxvf MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64.tgz
-cd MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64
+wget http://content.mellanox.com/ofed/MLNX_OFED-4.4-2.0.7.0/MLNX_OFED_LINUX-4.4-2.0.7.0-ubuntu18.04-x86_64.tgz
+cd MLNX_OFED_LINUX-4.4-2.0.7.0-ubuntu18.04-x86_64/
 ./mlnxofedinstall --dpdk --upstream-libs --force
 ```
