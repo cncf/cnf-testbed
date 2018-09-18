@@ -41,3 +41,11 @@ Reference: [NSM Notes for configuring VPP with Mellanox Connectx-4 (PFs and VFs)
 2. `sed -i.bak 's/\(GRUB_CMDLINE_LINUX=\"\)/\1iommu=pt intel_iommu=on hugepagesz=2M hugepages=10240 isolcpus=2,4,6 nohz_full=2,4,6 rcu_nocbs=2,4,6 /' /etc/default/grub`
 3. `update-grub2`
 4. `reboot`
+
+
+**Install Docker**
+
+After cloning this repo
+
+- `cd cnfs/comparison/cnf_edge_throughput`
+- Run: [./install_docker_prereqs.sh](https://github.com/cncf/cnfs/tree/master/comparison/cnf_edge_throughput/install_docker_prereqs.sh)
