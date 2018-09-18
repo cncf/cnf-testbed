@@ -43,9 +43,16 @@ Reference: [NSM Notes for configuring VPP with Mellanox Connectx-4 (PFs and VFs)
 4. `reboot`
 
 
+**Install and configure common host software for the NFs**
+
+See [README-NF-common.md](README-NF-common.md)
+
+
 **Install Docker**
 
 After cloning this repo
 
 - `cd cnfs/comparison/cnf_edge_throughput`
 - Run: [./install_docker_prereqs.sh](https://github.com/cncf/cnfs/tree/master/comparison/cnf_edge_throughput/install_docker_prereqs.sh)
+
+
