@@ -13,6 +13,8 @@ if [ "$input" == "clean" ]; then
   exit 0
 fi
 
+sudo docker pull opnfv/nfvbench
+
 state="$(docker ps | grep nfvbench)"
 if [ -z "$state" ]; then
   sudo docker run --detach --net=host --privileged -v $PWD:/tmp/nfvbench -v /dev:/dev \
@@ -22,7 +24,9 @@ if [ -z "$state" ]; then
   #  sudo docker exec
   echo "Remember to update nfvbench_config.cfg with correct PCI addresses"
   # Below command updates the number of hugepages available for TRex, allowing more cores to be used
-  sudo docker exec -it nfvbench sed -i -e "s/512 /1024 /" -e "s/512\"/1024\"/" /opt/trex/$TREX_VER/trex-cfg
+  sudo docker exec -it nfvbench sed -i -e "s/512 /2048 /" -e "s/512\"/2048\"/" /opt/trex/$TREX_VER/trex-cfg
+  # Also change the mbuf factor to further reduce the memory usage
+  sudo docker exec -it nfvbench sed -i -e "s/--cfg {} &>/--cfg {} --mbuf-factor 0.2 &>/g" /nfvbench/nfvbench/traffic_server.py
 fi
 
 echo "NFVbench container running"
