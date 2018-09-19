@@ -57,7 +57,7 @@ Once this is done the server can be restarted using `reboot`
 
 **Install NFVbench**
 
-Start by installing the docker prerequisites using the provided `install_docker_prereqs.sh` script.
+Start by installing the docker prerequisites using the provided `install_docker_prereqs.sh` script which can be found in [comparison/cnf_edge_throughput](https://github.com/cncf/cnfs/tree/master/comparison/cnf_edge_throughput).
 
 Once completed, run the provided `run_container.sh` script that pulls NFVbench and runs the container.
 
