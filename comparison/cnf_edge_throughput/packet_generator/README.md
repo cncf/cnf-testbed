@@ -67,7 +67,38 @@ alias nfvbench="sudo docker exec -it nfvbench nfvbench -c /tmp/nfvbench/nfvbench
 ```
 Run `source ~/.bashrc` to apply the alias.
 
-TODO: add details on configuring PCI devices in config
+Find the PCI devices that will be used for traffic
+```
+lspci | grep Eth
+  - Run 'apt install pciutils' if lspci is not installed
+  5e:00.0 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]
+  5e:00.1 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]
+  5e:00.4 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx Virtual Function] (*)
+  5e:00.5 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx Virtual Function] (*)
+  - Note the IDs of the two virtual functions (in the above case the ones marked with *)
+```
+
+In `nfvbench_config.cfg`, update the "generator_profile" to match the PCI IDs collected in the previous step
+```
+generator_profile:
+    - name: trex-local
+      tool: TRex
+      ip: 127.0.0.1
+      cores: 7
+      software_mode: false
+      interfaces:
+        - port: 0
+          switch_port:
+          pci: "5e:00.4"
+        - port: 1
+          switch_port:
+          pci: "5e:00.5"
+      intf_speed: 10Gbps
+```
+In the same file, also update "vlans" to match the network configuration between the servers
+```
+vlans: [1070, 1064]
+```
 
 Verify that NFVbench is running using `nfvbench --status`. Output should be similar to what can be seen below
 ```
@@ -75,5 +106,13 @@ INFO Loading configuration file: /tmp/nfvbench/nfvbench_config.cfg
 INFO EXT chain with OpenStack mode disabled
 INFO Version: 0.0.0
 INFO Status: idle
+```
+
+The run specific settings for NFVbench can be changed in the configuration file, or it can be added as options through the command line.
+A few of the most useful options can be found below, while the full list is available using `nfvbench --help`. Take note that several options might not be relevant with the setup used here (external)
+```
+  --rate <rate>           Rate in pps (Kpps, Mpps) or bps (Kbps, Gbps). Also supports pdr, ndr and ndr_pdr.
+  --flow-count <flows>    Number of different flows to use for traffic. Useful when setup is configured with multiple queues (RSS)
+  --duration <sec>        Number of seconds that traffic will run. For pdr, ndr and ndr_pdr this is for each step of the binary search
 ```
 
