@@ -34,6 +34,8 @@ if [ ! -d "/dev/hugepages" ]; then
 fi
 
 ## Workaround to allow access to host sockets
-## Disables use of security driver for libvirt (QEMU)
+## Disables use of security driver for libvirt (QEMU) and sets user and group to root
 sed -i 's/#security_driver = "selinux"/security_driver = "none"/g' /etc/libvirt/qemu.conf
+sed -i 's/#user = "root"/user = "root"/g' /etc/libvirt/qemu.conf
+sed -i 's/#group = "root"/group = "root"/g' /etc/libvirt/qemu.conf
 service libvirtd restart

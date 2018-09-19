@@ -1,8 +1,25 @@
 #! /bin/bash
 
-# Don't install anything if VPP service exists
+# Function to update sysctl based on number of hugepages on server
+config_sysctl() {
+  hpages=$(cat /proc/meminfo | grep 'HugePages_Total' | awk '{print $2}')
+  if [ ! "$(cat /etc/sysctl.d/80-vpp.conf | grep 'vm.nr_hugepages=' | awk -F '=' '{print $2}')" == "$hpages" ]; then 
+    echo "Updating /etc/sysctl.d/80-vpp.conf"
+    sudo sed -i "s/vm.nr_hugepages=.*/vm.nr_hugepages=${hpages}/g" /etc/sysctl.d/80-vpp.conf
+    sudo sysctl -w vm.nr_hugepages=${hpages}
+    map_count=$(($hpages * 3))
+    sudo sed -i "s/vm.max_map_count=.*/vm.max_map_count=${map_count}/g" /etc/sysctl.d/80-vpp.conf
+    sudo sysctl -w vm.max_map_count=${map_count}
+    shmmax=$(($hpages * 2048 * 1024))
+    sudo sed -i "s/kernel.shmmax=.*/kernel.shmmax=${shmmax}/g" /etc/sysctl.d/80-vpp.conf
+    sudo sysctl -w kernel.shmmax=${shmmax}
+  fi
+}
+
+# If VPP is installed check/update config and exit
 if [ ! -z "$(systemctl | grep vpp.service)" ]; then
   echo "VPP already installed on instance"
+  config_sysctl
   echo "Exiting"
   exit 0
 fi
@@ -40,6 +57,8 @@ elif [ "$DISTRIB_CODENAME" == "xenial" ]; then
   apt-get install vpp vpp-lib vpp-plugins vpp-dbg vpp-dev vpp-api-java vpp-api-python vpp-api-lua
   touch /etc/vpp/setup.gate
   sed -i '8i\  startup-config /etc/vpp/setup.gate' /etc/vpp/startup.conf
+  config_sysctl
+  service vpp restart
 else
   echo "Unsupported environment - Try manual install"
   echo "Exiting"

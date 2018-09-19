@@ -9,6 +9,7 @@ pip install jsonschema
 
 # Install VPP
 export UBUNTU="xenial"
+#export UBUNTU="bionic"
 export RELEASE=".stable.1804"
 rm /etc/apt/sources.list.d/99fd.io.list
 echo "deb [trusted=yes] https://nexus.fd.io/content/repositories/fd.io$RELEASE.ubuntu.$UBUNTU.main/ ./" | tee -a /etc/apt/sources.list.d/99fd.io.list
@@ -55,10 +56,10 @@ cpu {
         ## Manual pinning of thread(s) to CPU core(s)
 
         ## Set logical CPU core where main thread runs
-        main-core 7
+        main-core 14
 
         ## Set logical CPU core(s) where worker threads are running
-        corelist-workers 8-9
+        corelist-workers 16,18
 
         ## Automatic pinning of thread(s) to CPU core(s)
 
@@ -107,7 +108,7 @@ dpdk {
         #}
 
         ## Whitelist specific interface by specifying PCI address
-        dev 0000:18:00.2
+        #dev 0000:18:00.2
 
         ## Whitelist specific interface by specifying PCI address and in
         ## addition specify custom parameters for this interface
@@ -173,15 +174,15 @@ bin memif_socket_filename_add_del add id 1 filename /run/vpp/memif1.sock
 bin memif_socket_filename_add_del add id 2 filename /run/vpp/memif2.sock
 create interface memif id 1 socket-id 1 hw-addr 52:54:00:00:00:aa slave rx-queues 2 tx-queues 2
 create interface memif id 2 socket-id 2 hw-addr 52:54:00:00:00:bb slave rx-queues 2 tx-queues 2
-set int ip addr memif1/1 1.1.0.10/8
-set int ip addr memif2/2 2.2.0.10/8
+set int ip addr memif1/1 172.16.10.10/24
+set int ip addr memif2/2 172.16.20.10/24
 set int state memif1/1 up
 set int state memif2/2 up
 
-set ip arp static memif1/1 1.1.0.100 3c:fd:fe:a8:ab:98
-set ip arp static memif2/2 1.1.0.100 3c:fd:fe:a8:ab:99
+set ip arp static memif1/1 172.16.10.100 8a:fd:d5:d5:d6:b6
+set ip arp static memif2/2 172.16.20.100 06:9c:b3:cc:f0:62
 
-ip route add 10.0.0.0/8 via 1.1.0.100
-ip route add 20.0.0.0/8 via 2.2.0.100
+ip route add 172.16.64.0/18 via 172.16.10.100
+ip route add 172.16.192.0/18 via 172.16.20.100
 EOF
 

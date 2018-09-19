@@ -85,10 +85,10 @@ cpu {
 
 dpdk {
         ## Change default settings for all intefaces
-        # dev default {
+        dev default {
                 ## Number of receive queues, enables RSS
                 ## Default is 1
-                # num-rx-queues 3
+                num-rx-queues 2
 
                 ## Number of transmit queues, Default is equal
                 ## to number of worker threads or 1 if no workers treads
@@ -97,13 +97,13 @@ dpdk {
                 ## Number of descriptors in transmit and receive rings
                 ## increasing or reducing number can impact performance
                 ## Default is 1024 for both rx and tx
-                # num-rx-desc 512
-                # num-tx-desc 512
+                num-rx-desc 512
+                num-tx-desc 512
 
                 ## VLAN strip offload mode for interface
                 ## Default is off
                 # vlan-strip-offload on
-        # }
+        }
 
         ## Whitelist specific interface by specifying PCI address
         ${dev_list}
@@ -180,16 +180,16 @@ fi
 # Create interface configuration for VPP
 sudo bash -c "cat > /etc/vpp/setup.gate" <<EOF
 set int state ${intfs[0]} up
-set interface ip address ${intfs[0]} 1.1.0.10/8
+set interface ip address ${intfs[0]} 172.16.10.10/24
 
 set int state ${intfs[1]} up
-set interface ip address ${intfs[1]} 2.2.0.10/8
+set interface ip address ${intfs[1]} 172.16.20.10/24
 
-set ip arp static ${intfs[0]} 1.1.0.100 3c:fd:fe:a8:ab:98
-set ip arp static ${intfs[1]} 2.2.0.100 3c:fd:fe:a8:ab:99
+set ip arp static ${intfs[0]} 172.16.10.100 8a:fd:d5:d5:d6:b6
+set ip arp static ${intfs[1]} 172.16.20.100 06:9c:b3:cc:f0:62
 
-ip route add 10.0.0.0/8 via 1.1.0.100
-ip route add 20.0.0.0/8 via 2.2.0.100
+ip route add 172.16.64.0/18 via 172.16.10.100
+ip route add 172.16.192.0/18 via 172.16.20.100
 EOF
 
 sudo service vpp restart

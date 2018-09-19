@@ -13,7 +13,7 @@ for sock in "${SOCKET_NAMES[@]}"; do
   fi
 done
 
-cpus=( 7 8 9 )
+cpus=( 14 16 18 )
 
 input="$1"
 
@@ -30,6 +30,10 @@ state=$(vagrant status | grep vBNG | awk '{print $2}')
 if [ "$state" == "running" ]; then
   exit 0
 fi
+
+echo "Restarting VPP to prepare for VM interfaces"
+service vpp restart
+sleep 5
 
 vagrant up
 
@@ -58,6 +62,17 @@ done
 
 cmd="cp /vagrant/vnf_vbng_install.sh . && chmod +x vnf_vbng_install.sh && ./vnf_vbng_install.sh"
 vagrant ssh -c "$cmd"
+sleep 5
+
+echo "Updating VPP configuration (rx-placement)"
+vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 0 worker 0
+vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 1 worker 1
+vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 2 worker 2
+vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 3 worker 3
+vppctl set interface rx-placement VirtualEthernet0/0/0 queue 0 worker 4
+vppctl set interface rx-placement VirtualEthernet0/0/0 queue 1 worker 5
+vppctl set interface rx-placement VirtualEthernet0/0/1 queue 0 worker 6
+vppctl set interface rx-placement VirtualEthernet0/0/1 queue 1 worker 7
 
 echo ""
 echo "## vBNG Started ##"
