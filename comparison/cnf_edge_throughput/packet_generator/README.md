@@ -37,7 +37,7 @@ GRUB_TIMEOUT=10
 GRUB_DISTRIBUTOR=Ubuntu
 GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=ttyS1,115200n8 biosdevname=0 net.ifnames=1"
 GRUB_CMDLINE_LINUX="numa_balancing=disable intel_pstate=disable intel_iommu=on iommu=pt isolcpus=2-55 nohz_full=2-55 rcu_nocbs=2-55
-hugepagesz=2M hugepages=8096"
+hugepagesz=2M hugepages=8192"
 GRUB_TERMINAL=serial
 GRUB_SERIAL_COMMAND="serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1"
 ```
@@ -54,4 +54,26 @@ exit 0
 Run `chmod +x /etc/rc.local` to ensure the file has sufficient permissions
 
 Once this is done the server can be restarted using `reboot`
+
+**Install NFVbench**
+
+Start by installing the docker prerequisites using the provided `install_docker_prereqs.sh` script.
+
+Once completed, run the provided `run_container.sh` script that pulls NFVbench and runs the container.
+
+To simplify use of NFVbench, ass the following line to `~/.bashrc`
+```
+alias nfvbench="sudo docker exec -it nfvbench nfvbench -c /tmp/nfvbench/nfvbench_config.cfg"
+```
+Run `source ~/.bashrc` to apply the alias.
+
+TODO: add details on configuring PCI devices in config
+
+Verify that NFVbench is running using `nfvbench --status`. Output should be similar to what can be seen below
+```
+INFO Loading configuration file: /tmp/nfvbench/nfvbench_config.cfg
+INFO EXT chain with OpenStack mode disabled
+INFO Version: 0.0.0
+INFO Status: idle
+```
 
