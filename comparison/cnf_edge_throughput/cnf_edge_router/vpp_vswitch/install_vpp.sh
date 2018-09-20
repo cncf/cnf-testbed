@@ -7,6 +7,22 @@ if [ ! "$1" == "0" ]; then
 fi
 }
 
+# Function to update sysctl based on number of hugepages on server
+config_sysctl() {
+  hpages=$(cat /proc/cmdline | grep -o 'hugepages=[^ ]*' | awk -F '=' '{print $2}')
+  if [ ! "$(cat /etc/sysctl.d/80-vpp.conf | grep 'vm.nr_hugepages=' | awk -F '=' '{print $2}')" == "$hpages" ]; then
+    echo "Updating /etc/sysctl.d/80-vpp.conf"
+    sudo sed -i "s/vm.nr_hugepages=.*/vm.nr_hugepages=${hpages}/g" /etc/sysctl.d/80-vpp.conf
+    sudo sysctl -w vm.nr_hugepages=${hpages}
+    map_count=$(($hpages * 3))
+    sudo sed -i "s/vm.max_map_count=.*/vm.max_map_count=${map_count}/g" /etc/sysctl.d/80-vpp.conf
+    sudo sysctl -w vm.max_map_count=${map_count}
+    shmmax=$(($hpages * 2048 * 1024))
+    sudo sed -i "s/kernel.shmmax=.*/kernel.shmmax=${shmmax}/g" /etc/sysctl.d/80-vpp.conf
+    sudo sysctl -w kernel.shmmax=${shmmax}
+  fi
+}
+
 mydir=$(dirname $0)
 cd $mydir
 
@@ -27,6 +43,7 @@ fi
 if [ ! -z "$(dpkg -l | awk '{print $2}' | grep vpp)" ]; then
   if [ ! "$input" == "clean" ]; then
     echo "VPP already installed"
+    config_sysctl
     echo "Existing installation can be removed using: $0 clean"
     exit 1
   else
@@ -63,6 +80,7 @@ check_status "$?"
 sleep 3
 if [ ! -z "$(dpkg -l | awk '{print $2}' | grep vpp)" ]; then
   echo "Build and installation complete"
+  config_sysctl
   echo "Reconfiguring VPP to vEdge CNF Configuration"
   cd ..
   ./reconfigure.sh CNF

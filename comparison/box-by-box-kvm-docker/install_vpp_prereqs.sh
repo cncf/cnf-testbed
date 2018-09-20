@@ -2,7 +2,7 @@
 
 # Function to update sysctl based on number of hugepages on server
 config_sysctl() {
-  hpages=$(cat /proc/meminfo | grep 'HugePages_Total' | awk '{print $2}')
+  hpages=$(cat /proc/cmdline | grep -o 'hugepages=[^ ]*' | awk -F '=' '{print $2}')
   if [ ! "$(cat /etc/sysctl.d/80-vpp.conf | grep 'vm.nr_hugepages=' | awk -F '=' '{print $2}')" == "$hpages" ]; then 
     echo "Updating /etc/sysctl.d/80-vpp.conf"
     sudo sed -i "s/vm.nr_hugepages=.*/vm.nr_hugepages=${hpages}/g" /etc/sysctl.d/80-vpp.conf
@@ -35,6 +35,8 @@ rm /etc/apt/sources.list.d/99fd.io.list
 echo "deb [trusted=yes] https://packagecloud.io/fdio/release/ubuntu/ bionic main" | tee -a /etc/apt/sources.list.d/99fd.io.list
 apt-get update
 apt-get install -y vpp vpp-lib vpp-plugins vpp-dbg vpp-dev vpp-api-java vpp-api-python vpp-api-lua
+
+config_sysctl
 
 exit 0
 
