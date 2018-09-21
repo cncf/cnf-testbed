@@ -7,6 +7,15 @@ if [ ! "$1" == "0" ]; then
 fi
 }
 
+update_startup() {
+if ! cmp -s "/etc/vpp/startup.conf" "VPP_configs/vEdge_startup.conf" ; then
+  echo "Updating VPP startup configuration"
+  cp VPP_configs/vEdge_startup.conf /etc/vpp/startup.conf
+  service vpp restart
+  sleep 5
+fi
+}
+
 # Function to update sysctl based on number of hugepages on server
 config_sysctl() {
   hpages=$(cat /proc/cmdline | grep -o 'hugepages=[^ ]*' | awk -F '=' '{print $2}')
@@ -81,6 +90,8 @@ sleep 3
 if [ ! -z "$(dpkg -l | awk '{print $2}' | grep vpp)" ]; then
   echo "Build and installation complete"
   config_sysctl
+  mkdir /etc/vpp/sockets
+  update_startup
   echo "Reconfiguring VPP to vEdge CNF Configuration"
   cd ..
   ./reconfigure.sh CNF
