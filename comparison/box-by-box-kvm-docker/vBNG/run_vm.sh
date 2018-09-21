@@ -13,7 +13,8 @@ for sock in "${SOCKET_NAMES[@]}"; do
   fi
 done
 
-cpus=( 14 16 18 )
+#cpus=( 14 16 18 )
+cpus=( 14 16 44 )
 
 input="$1"
 

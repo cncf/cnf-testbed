@@ -59,7 +59,8 @@ cpu {
         main-core 14
 
         ## Set logical CPU core(s) where worker threads are running
-        corelist-workers 16,18
+        #corelist-workers 16,18
+        corelist-workers 16,44
 
         ## Automatic pinning of thread(s) to CPU core(s)
 

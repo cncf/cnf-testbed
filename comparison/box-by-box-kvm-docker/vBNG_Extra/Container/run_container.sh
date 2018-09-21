@@ -20,6 +20,7 @@ fi
 
 # Below 'if running' Should not be needed, but keeping for now
 if [ -z "$(docker ps | grep vBNG)" ]; then
-  docker run --privileged --cpus 3 --cpuset-cpus 14,16,18 --device=/dev/hugepages/:/dev/hugepages/ -v "/etc/vpp/sockets/:/run/vpp/" -t -d --name vBNG vbng /usr/bin/vpp -c /etc/vpp/startup.conf
+  #docker run --privileged --cpus 3 --cpuset-cpus 14,16,18 --device=/dev/hugepages/:/dev/hugepages/ -v "/etc/vpp/sockets/:/run/vpp/" -t -d --name vBNG vbng /usr/bin/vpp -c /etc/vpp/startup.conf
+  docker run --privileged --cpus 3 --cpuset-cpus 14,16,44 --device=/dev/hugepages/:/dev/hugepages/ -v "/etc/vpp/sockets/:/run/vpp/" -t -d --name vBNG vbng /usr/bin/vpp -c /etc/vpp/startup.conf
 fi
 echo "vBNG container running"
