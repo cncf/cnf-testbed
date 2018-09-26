@@ -17,3 +17,7 @@ The CNF can be built without being started using `./build_container.sh`, and rem
 **Show memory usage of vEdge CNF**
 
 The "Resident Set Size" (RSS) memory usage of the vEdge CNF can be seen using `./get_rss.sh`  
+
+**Running multiple CNFs chained together ("multichain")**
+
+See [comparison/cnf_edge_throughput/vEdge/CNF/multichain/README.md](https://github.com/cncf/cnfs/blob/master/comparison/cnf_edge_throughput/vEdge/CNF/multichain/README.md) for details
