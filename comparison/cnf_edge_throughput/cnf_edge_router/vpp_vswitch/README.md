@@ -12,7 +12,7 @@ cd MLNX_OFED_LINUX-4.4-2*
 
 Update GRUB (`/etc/default/grub`) to include the following settings
 ```
-"numa_balancing=disable intel_pstate=disable intel_iommu=on iommu=pt isolcpus=2,4,6,8,10,12,30,32,34,36,38,40 nohz_full=2-27,30-55 rcu_nocbs=2-27,30-55 hugepagesz=2M hugepages=4096"
+"numa_balancing=disable intel_pstate=disable intel_iommu=on iommu=pt isolcpus=2,4,6,8,30,32,34,36 nohz_full=2-27,30-55 rcu_nocbs=2-27,30-55 hugepagesz=2M hugepages=4096"
 ```
 The full content of the file should look similar the one below
 ```
@@ -22,7 +22,7 @@ GRUB_HIDDEN_TIMEOUT_QUIET=true
 GRUB_TIMEOUT=10
 GRUB_DISTRIBUTOR=Ubuntu
 GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=ttyS1,115200n8 biosdevname=0 net.ifnames=1"
-GRUB_CMDLINE_LINUX="numa_balancing=disable intel_pstate=disable intel_iommu=on iommu=pt isolcpus=2,4,6,8,10,12,30,32,34,36,38,40 nohz_full=2-27,30-55 rcu_nocbs=2-27,30-55 hugepagesz=2M hugepages=4096"
+GRUB_CMDLINE_LINUX="numa_balancing=disable intel_pstate=disable intel_iommu=on iommu=pt isolcpus=2,4,6,8,30,32,34,36 nohz_full=2-27,30-55 rcu_nocbs=2-27,30-55 hugepagesz=2M hugepages=4096"
 GRUB_TERMINAL=serial
 GRUB_SERIAL_COMMAND="serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1"
 ```
