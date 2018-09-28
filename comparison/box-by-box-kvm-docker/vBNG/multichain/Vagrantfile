@@ -1,0 +1,75 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure('2') do |config|
+
+  config.vm.box = 'vbng'
+
+  config.vm.synced_folder './shared', '/vagrant'
+  config.vm.define vm_name = 'v1Edge' do |v1Edge|
+    v1Edge.vm.hostname = vm_name
+    v1Edge.vm.provider :libvirt do |v|
+      v.cpus = 3
+      v.numa_nodes = [
+        {:cpus => '0-2', :memory => '4096'}
+      ]
+      v.memorybacking :hugepages
+      v.memorybacking :access, :mode => 'shared'
+    end
+  end
+  config.vm.define vm_name = 'v2Edge' do |v2Edge|
+    v2Edge.vm.hostname = vm_name
+    v2Edge.vm.provider :libvirt do |v|
+      v.cpus = 3
+      v.numa_nodes = [
+        {:cpus => '0-2', :memory => '4096'}
+      ]
+      v.memorybacking :hugepages
+      v.memorybacking :access, :mode => 'shared'
+    end
+  end
+  config.vm.define vm_name = 'v3Edge' do |v3Edge|
+    v3Edge.vm.hostname = vm_name
+    v3Edge.vm.provider :libvirt do |v|
+      v.cpus = 3
+      v.numa_nodes = [
+        {:cpus => '0-2', :memory => '4096'}
+      ]
+      v.memorybacking :hugepages
+      v.memorybacking :access, :mode => 'shared'
+    end
+  end
+  config.vm.define vm_name = 'v4Edge' do |v4Edge|
+    v4Edge.vm.hostname = vm_name
+    v4Edge.vm.provider :libvirt do |v|
+      v.cpus = 3
+      v.numa_nodes = [
+        {:cpus => '0-2', :memory => '4096'}
+      ]
+      v.memorybacking :hugepages
+      v.memorybacking :access, :mode => 'shared'
+    end
+  end
+  config.vm.define vm_name = 'v5Edge' do |v5Edge|
+    v5Edge.vm.hostname = vm_name
+    v5Edge.vm.provider :libvirt do |v|
+      v.cpus = 3
+      v.numa_nodes = [
+        {:cpus => '0-2', :memory => '4096'}
+      ]
+      v.memorybacking :hugepages
+      v.memorybacking :access, :mode => 'shared'
+    end
+  end
+  config.vm.define vm_name = 'v6Edge' do |v6Edge|
+    v6Edge.vm.hostname = vm_name
+    v6Edge.vm.provider :libvirt do |v|
+      v.cpus = 3
+      v.numa_nodes = [
+        {:cpus => '0-2', :memory => '4096'}
+      ]
+      v.memorybacking :hugepages
+      v.memorybacking :access, :mode => 'shared'
+    end
+  end
+end

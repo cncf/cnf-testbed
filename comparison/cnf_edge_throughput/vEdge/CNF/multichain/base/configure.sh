@@ -125,11 +125,11 @@ set_remote_ips() {
 
 set_remote_macs() {
   if [[ "${cid}" == "1" ]]; then
-    remmac1=8a:fd:d5:d5:d6:b6
+    remmac1=${trex_mac1}
     remmac2=52:54:00:00:02:aa
   elif [[ "${cid}" == "${total}" ]]; then
     remmac1=52:54:00:00:0$(($cid - 1)):bb
-    remmac2=06:9c:b3:cc:f0:62
+    remmac2=${trex_mac1}
   else    
     remmac1=52:54:00:00:0$(($cid - 1)):bb
     remmac2=52:54:00:00:0$(($cid + 1)):aa
