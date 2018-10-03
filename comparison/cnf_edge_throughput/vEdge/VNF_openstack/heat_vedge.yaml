@@ -38,7 +38,7 @@ parameters:
     label: vEdge private IP address 
     description: Private IP address that is assigned to vEdge
 
-  vgw_name_0:
+  vedge_name_0:
     type: string
     label: vEdge  name
     description: Name of the vEdge
@@ -87,18 +87,16 @@ resources:
       network: { get_param: vedge_private_net_id }
       fixed_ips: [{"subnet": { get_param: vedge_private_subnet_id }, "ip_address": { get_param: vedge_private_ip_0 }}]
 
-  vgw_0:
+  vedge_0:
     type: OS::Nova::Server
     properties:
-      image: { get_param: vcpe_image_name }
-      flavor: { get_param: vcpe_flavor_name }
-      name: { get_param: vgw_name_0 }
+      image: { get_param: vedge_image_name }
+      flavor: { get_param: vedge_flavor_name }
+      name: { get_param: vedge_name_0 }
       key_name: { get_resource: my_keypair }
       networks:
         - network: { get_param: public_net_id }
-        - port: { get_resource: vgw_private_0_port }
-        - port: { get_resource: vgw_private_1_port }
-        - port: { get_resource: vgw_private_2_port }
+        - port: { get_resource: vedge_private_0_port }
       metadata: {vnf_id: { get_param: vnf_id }}
       user_data_format: RAW
       user_data:
@@ -112,6 +110,6 @@ resources:
             #mkdir /opt/config
             #echo "__script_version__" > /opt/config/script_version.txt
 
-            chmod +x v_gw_install.sh
-            ./v_gw_install.sh
+            chmod +x *.sh
+            ./*.sh
 
