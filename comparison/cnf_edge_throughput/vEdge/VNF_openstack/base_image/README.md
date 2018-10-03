@@ -13,6 +13,10 @@ complete output:
   virt-sysprep -v -x [...]
 ```
 
+**Build Openstack vEdge qcow image**
+
+sudo qemu-img convert -f raw -O qcow2 /root/.vagrant.d/boxes/vedge/0/libvirt/box.img vedge.qcow2
+
 **Remove existing vEdge box**
 
 Run `./build_vm.sh clean`
