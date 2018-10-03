@@ -1,13 +1,15 @@
-#!/bin/sh
+#! /bin/bash
 
 input="$1"
 
 if [ "$input" == "clean" ]; then
+  vagrant destroy -f
   vagrant box remove vedge
   virsh vol-delete vedge_vagrant_box_image_0.img --pool default
   virsh undefine vedge_vagrant_box_image_0
   virsh pool-refresh default
   rm -f vedge.box
+  exit 0
 fi
 
 

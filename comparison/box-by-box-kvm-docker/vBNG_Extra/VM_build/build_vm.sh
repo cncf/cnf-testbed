@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 if [ -z "$(vagrant plugin list |grep disksize)" ] ; then
 	  vagrant plugin install vagrant-disksize
