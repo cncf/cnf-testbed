@@ -54,6 +54,10 @@ parameters:
     type: string
     label: Public key
     description: Public key to be installed on the compute instance
+  script_version:
+    type: string
+    label: Installation script version number
+    description: Version number of the scripts that install the vEdge
 
 #############
 #           #
@@ -99,16 +103,20 @@ resources:
         - port: { get_resource: vedge_private_0_port }
       metadata: {vnf_id: { get_param: vnf_id }}
       user_data_format: RAW
-      user_data:
+      user_data: 
         str_replace:
           params:
+            __script_version__ : { get_param: script_version }
           template: |
             #!/bin/bash
 
-            # Create configuration files
-            #mkdir /opt/config
-            #echo "__script_version__" > /opt/config/script_version.txt
+            #Create configuration files
+            mkdir /opt/config
+            echo "__script_version__" > /opt/config/script_version.txt
 
-            chmod +x *.sh
-            ./*.sh
+            # Download and run install script
+            curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/__script_version__/comparison/cnf_edge_throughput/vEdge/VNF_openstack/base_image/vedge_vm_build.sh" -o /opt/vedge_vm_build.sh
+            cd /opt
+            chmod +x vedge_vm_build.sh
+            ./vedge_vm_build.sh
 
