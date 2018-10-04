@@ -46,6 +46,42 @@ create_interface_list() {
 EOF
 }
 
+update_rxq_pinning() {
+  echo "Updating VPP configuration (rx-placement)"
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 0 worker 0
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 1 worker 1
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 2 worker 2
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 3 worker 3
+
+  worker=4
+  for vEth in $(seq 0 $(($chains * 2 - 1))); do
+    vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}
+    echo "vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}"
+    vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 1 worker $(($worker + 1))
+    echo "vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 1 worker $(($worker + 1))"
+    worker=$(($worker + 2))
+    if [[ "${worker}" == "8" ]]; then worker=0; fi
+  done
+}
+
+update_cpu_pinning() {
+  core_count=0
+  for id in $(virsh list | grep multichain | grep running | awk '{print $1}'); do
+    echo "CPU Pinning v$(virsh dumpxml $id | grep '<name>' | sed 's/[^0-9]*//g')Edge"
+    for core in {0..2}; do
+      virsh vcpupin ${id} ${core} ${cpus[${core_count}]}
+      (( core_count++ ))
+    done
+  done
+}
+
+set_hostname() {
+  # Workaround for setting proper hostname in VNFs
+  # Vagrant sets same hostname for all VNFs in set
+  cmd="./update_hostname.sh ${1}"
+  vagrant ssh v${cid}Edge -c "${cmd}"
+}
+
 chains="$1"
 cleanup="$2"
 
@@ -53,7 +89,7 @@ cleanup="$2"
 if [[ -n ${chains//[0-9]/} ]] || [[ "$chains" -le "1" ]] ; then
   echo "ERROR: Chains must be integer value higher than 1"
   echo "  Provided: $0 $1 $2"
-  echo "Usage: $0 <Chains> [clean]"
+  echo "Usage: $0 <Chains> [clean|repin]"
   exit 1
 fi
 
@@ -83,10 +119,26 @@ for chain in $(seq 1 $chains); do
   echo ".."
 done
 
+if [ "$cleanup" == "repin" ] && [[ "${exit_flag}" == "1" ]]; then
+  echo "Reloading vEdge VNFs and updating RX queue pinning"
+  vagrant reload
+  sleep 5
+  update_rxq_pinning
+  update_cpu_pinning
+  for cid in $(seq 1 $chains); do
+    set_hostname $cid
+  done
+  echo "Done updating RX queue pinning"
+  exit 0
+elif [ "$cleanup" == "repin" ] && [[ "${exit_flag}" == "0" ]]; then
+  echo "ERROR: vEdge VNFs not running. Unable to update RX queue pinning"
+  exit 1
+fi
+
 if [[ "${exit_flag}" == "1" ]]; then
   echo "One or more VMs are running, please remove before running script"
   echo "  ${running_vms}"
-  echo "  Usage: $0 <Chains> [clean]"
+  echo "  Usage: $0 <Chains> [clean|repin]"
   exit 1
 fi  
 
@@ -116,36 +168,16 @@ done
 
 vagrant reload
 
-core_count=0
-for id in $(virsh list | grep multichain | grep running | awk '{print $1}'); do
-  echo "CPU Pinning v$(virsh dumpxml $id | grep '<name>' | sed 's/[^0-9]*//g')Edge"
-  for core in {0..2}; do
-    virsh vcpupin ${id} ${core} ${cpus[${core_count}]}
-    (( core_count++ ))
-  done
-done
+update_cpu_pinning
 
 for cid in $(seq 1 ${chains}); do
   cmd="cp /vagrant/* . && chmod +x vnf_vedge_install.sh && ./vnf_vedge_install.sh ${cid} ${chains}"
   vagrant ssh v${cid}Edge -c "$cmd"
+  set_hostname ${cid}
 done
 sleep 5
 
-echo "Updating VPP configuration (rx-placement)"
-vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 0 worker 0
-vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 1 worker 1
-vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 2 worker 2
-vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 3 worker 3
-
-worker=4
-for vEth in $(seq 0 $(($chains * 2 - 1))); do
-  vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}
-  echo "vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}"
-  vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 1 worker $(($worker + 1))
-  echo "vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 1 worker $(($worker + 1))"
-  worker=$(($worker + 2))
-  if [[ "${worker}" == "8" ]]; then worker=0; fi
-done
+update_rxq_pinning
 
 echo ""
 echo "## vEdge Chain Started ##"

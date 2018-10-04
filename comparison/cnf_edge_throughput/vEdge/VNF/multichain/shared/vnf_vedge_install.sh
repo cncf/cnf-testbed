@@ -27,7 +27,7 @@ unix {
   cli-listen /run/vpp/cli.sock
   gid vpp
   startup-config /etc/vpp/setup.gate
-  cli-prompt VNF#${cid}:
+  cli-prompt v${cid}Edge:
 }
 
 api-trace {
@@ -170,6 +170,6 @@ dpdk {
 EOF
 
 sudo service vpp start
-sleep 10
+sleep 5
 
 ./configure.sh $cid $total
