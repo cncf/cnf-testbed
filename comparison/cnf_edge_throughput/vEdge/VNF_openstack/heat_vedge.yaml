@@ -58,6 +58,11 @@ parameters:
     type: string
     label: Installation script version number
     description: Version number of the scripts that install the vEdge
+  vedge_state:
+    type: string
+    label: Build state
+    description: For setting the build state of vEdge
+
 
 #############
 #           #
@@ -107,12 +112,14 @@ resources:
         str_replace:
           params:
             __script_version__ : { get_param: script_version }
+            __vedge_state__ : { get_param: vedge_state }
           template: |
             #!/bin/bash
 
             #Create configuration files
             mkdir /opt/config
             echo "__script_version__" > /opt/config/script_version.txt
+            echo "__vedge_state__" > /opt/config/vedge_state.txt
 
             # Download and run install script
             curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/__script_version__/comparison/cnf_edge_throughput/vEdge/VNF_openstack/base_image/vedge_vm_build.sh" -o /opt/vedge_vm_build.sh
