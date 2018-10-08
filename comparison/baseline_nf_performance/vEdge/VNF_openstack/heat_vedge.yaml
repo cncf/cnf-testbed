@@ -1,0 +1,129 @@
+heat_template_version: rocky
+
+description: Heat template to deploy vEdge
+
+##############
+#            #
+# PARAMETERS #
+#            #
+##############
+
+parameters:
+  vedge_image_name:
+    type: string
+    label: Image name or ID
+    description: Image to be used for compute instance
+  vedge_flavor_name:
+    type: string
+    label: Flavor
+    description: Type of instance (flavor) to be used
+  public_net_id:
+    type: string
+    label: Public network name or ID
+    description: Public network that enables remote connection to VNF
+  vedge_private_net_id:
+    type: string
+    label: vEdge private network name or ID
+    description: Private network that connects vEdge
+  vedge_private_subnet_id:
+    type: string
+    label: vEdge private sub-network name or ID
+    description: vEdge private sub-network name or ID
+  vedge_private_net_cidr:
+    type: string
+    label: vEdge private network CIDR
+    description: The CIDR of the vEdge private network
+  vedge_private_ip_0:
+    type: string
+    label: vEdge private IP address 
+    description: Private IP address that is assigned to vEdge
+
+  vedge_name_0:
+    type: string
+    label: vEdge  name
+    description: Name of the vEdge
+  vnf_id:
+    type: string
+    label: VNF ID
+    description: The VNF ID
+  key_name:
+    type: string
+    label: Key pair name
+    description: Public/Private key pair name
+  pub_key:
+    type: string
+    label: Public key
+    description: Public key to be installed on the compute instance
+  script_version:
+    type: string
+    label: Installation script version number
+    description: Version number of the scripts that install the vEdge
+  vedge_state:
+    type: string
+    label: Build state
+    description: For setting the build state of vEdge
+
+
+#############
+#           #
+# RESOURCES #
+#           #
+#############
+
+resources:
+
+  random-str:
+    type: OS::Heat::RandomString
+    properties:
+      length: 4
+
+  my_keypair:
+    type: OS::Nova::KeyPair
+    properties:
+      name:
+        str_replace:
+          template: base_rand
+          params:
+            base: { get_param: key_name }
+            rand: { get_resource: random-str }
+      public_key: { get_param: pub_key }
+      save_private_key: false
+
+  # Virtual GW Instantiation
+  vedge_private_0_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: vedge_private_net_id }
+      fixed_ips: [{"subnet": { get_param: vedge_private_subnet_id }, "ip_address": { get_param: vedge_private_ip_0 }}]
+
+  vedge_0:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: vedge_image_name }
+      flavor: { get_param: vedge_flavor_name }
+      name: { get_param: vedge_name_0 }
+      key_name: { get_resource: my_keypair }
+      networks:
+        #- network: { get_param: public_net_id }
+        - port: { get_resource: vedge_private_0_port }
+      metadata: {vnf_id: { get_param: vnf_id }}
+      user_data_format: RAW
+      user_data: 
+        str_replace:
+          params:
+            __script_version__ : { get_param: script_version }
+            __vedge_state__ : { get_param: vedge_state }
+          template: |
+            #!/bin/bash
+
+            #Create configuration files
+            mkdir /opt/config
+            echo "__script_version__" > /opt/config/script_version.txt
+            echo "__vedge_state__" > /opt/config/vedge_state.txt
+
+            # Download and run install script
+            curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/__script_version__/comparison/cnf_edge_throughput/vEdge/VNF_openstack/base_image/vedge_vm_build.sh" -o /opt/vedge_vm_build.sh
+            cd /opt
+            chmod +x vedge_vm_build.sh
+            ./vedge_vm_build.sh
+
