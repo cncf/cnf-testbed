@@ -52,7 +52,7 @@ cp ~/nfvbench_config.cfg .
 
 sudo mkdir /opt/nfvbench
 
-sudo docker run --detach --net=host --privileged -v $PWD:/tmp/nfvbench -v /dev:/dev -v /lib/modules/$(uname -r):/lib/modules/$(uname -r) -v /usr/src:/usr/src --name nfvbench opnfv/nfvbench
+sudo docker run --detach --net=host --privileged -v $PWD:/tmp/nfvbench -v /dev:/dev -v /lib/modules/$(uname -r):/lib/modules/$(uname -r) -v /usr/src:/usr/src --name nfvbench opnfv/nfvbench:1.5.2
 echo "alias nfvbench='sudo docker exec -it nfvbench nfvbench -c /tmp/nfvbench/nfvbench_config.cfg'" | sudo tee --append /root/.bashrc
 echo "alias nfvbench='sudo docker exec -it nfvbench nfvbench -c /tmp/nfvbench/nfvbench_config.cfg'" | tee --append ~/.bashrc
 
