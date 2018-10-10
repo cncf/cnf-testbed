@@ -26,7 +26,7 @@ if [ -z "$state" ]; then
   # Below command updates the number of hugepages available for TRex, allowing more cores to be used
   sudo docker exec -it nfvbench sed -i -e "s/512 /2048 /" -e "s/512\"/2048\"/" /opt/trex/$TREX_VER/trex-cfg
   # Also change the mbuf factor to further reduce the memory usage
-  sudo docker exec -it nfvbench sed -i -e "s/--cfg {} &>/--cfg {} --mbuf-factor 0.2 &>/g" /nfvbench/nfvbench/traffic_server.py
+  sudo docker exec -it nfvbench sed -i -e "s/--cfg {} \&>/--cfg {} --mbuf-factor 0.2 \&>/g" /nfvbench/nfvbench/traffic_server.py
 fi
 
 echo "NFVbench container running"
