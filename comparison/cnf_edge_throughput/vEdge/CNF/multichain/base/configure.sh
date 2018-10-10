@@ -129,7 +129,7 @@ set_remote_macs() {
     remmac2=52:54:00:00:02:aa
   elif [[ "${cid}" == "${total}" ]]; then
     remmac1=52:54:00:00:0$(($cid - 1)):bb
-    remmac2=${trex_mac1}
+    remmac2=${trex_mac2}
   else    
     remmac1=52:54:00:00:0$(($cid - 1)):bb
     remmac2=52:54:00:00:0$(($cid + 1)):aa
