@@ -13,7 +13,7 @@ if [ "$input" == "clean" ]; then
   exit 0
 fi
 
-sudo docker pull opnfv/nfvbench
+sudo docker pull opnfv/nfvbench:1.5.2
 
 state="$(docker ps | grep nfvbench)"
 if [ -z "$state" ]; then

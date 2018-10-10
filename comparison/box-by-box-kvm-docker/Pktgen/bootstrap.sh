@@ -43,7 +43,7 @@ lspci | grep Ethernet
 #sudo systemctl daemon-reload
 #sudo systemctl restart docker
 
-sudo docker pull opnfv/nfvbench
+sudo docker pull opnfv/nfvbench:1.5.2
 
 cd ~
 mkdir nfvbench
