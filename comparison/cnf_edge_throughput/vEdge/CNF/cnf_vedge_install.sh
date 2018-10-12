@@ -56,10 +56,10 @@ cpu {
         ## Manual pinning of thread(s) to CPU core(s)
 
         ## Set logical CPU core where main thread runs
-        main-core 14
+        main-core 10
 
         ## Set logical CPU core(s) where worker threads are running
-        corelist-workers 16,18
+        corelist-workers 12,40
 
         ## Automatic pinning of thread(s) to CPU core(s)
 

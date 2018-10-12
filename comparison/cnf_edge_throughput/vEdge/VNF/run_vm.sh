@@ -12,7 +12,7 @@ for sock in "${SOCKET_NAMES[@]}"; do
   fi
 done
 
-cpus=( 14 16 18 )
+cpus=( 10 12 40 )
 
 input="$1"
 
@@ -36,7 +36,7 @@ sleep 5
 
 vagrant up
 
-id=$(virsh list | grep vEdge_vEdge | awk '{print $1}')
+id=$(virsh list | grep VNF_vEdge | awk '{print $1}')
 if [ -z "$id" ]; then
   echo "ERROR - vEdge VM not running"
   exit 1
@@ -53,7 +53,7 @@ virsh define vEdge.xml
 vagrant reload
 
 count=0
-new_id=$(virsh list | grep vEdge_vEdge | awk '{print $1}')
+new_id=$(virsh list | grep VNF_vEdge | awk '{print $1}')
 for cpu in "${cpus[@]}"; do
   virsh vcpupin ${new_id} ${count} ${cpu}
   (( count++ ))
@@ -64,14 +64,23 @@ vagrant ssh -c "$cmd"
 sleep 5
 
 echo "Updating VPP configuration (rx-placement)"
-vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 0 worker 0
-vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 1 worker 1
-vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 2 worker 2
-vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 3 worker 3
-vppctl set interface rx-placement VirtualEthernet0/0/0 queue 0 worker 4
-vppctl set interface rx-placement VirtualEthernet0/0/0 queue 1 worker 5
-vppctl set interface rx-placement VirtualEthernet0/0/1 queue 0 worker 6
-vppctl set interface rx-placement VirtualEthernet0/0/1 queue 1 worker 7
+if [ ! "$input" == "baseline" ]; then
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 0 worker 0
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 1 worker 1
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 2 worker 2
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 3 worker 3
+  vppctl set interface rx-placement VirtualEthernet0/0/0 queue 0 worker 4
+  vppctl set interface rx-placement VirtualEthernet0/0/0 queue 1 worker 5
+  vppctl set interface rx-placement VirtualEthernet0/0/1 queue 0 worker 6
+  vppctl set interface rx-placement VirtualEthernet0/0/1 queue 1 worker 7
+else
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 0 worker 0
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 1 worker 1
+  vppctl set interface rx-placement VirtualEthernet0/0/0 queue 0 worker 0
+  vppctl set interface rx-placement VirtualEthernet0/0/0 queue 1 worker 1
+  vppctl set interface rx-placement VirtualEthernet0/0/1 queue 0 worker 0
+  vppctl set interface rx-placement VirtualEthernet0/0/1 queue 1 worker 1
+fi
 
 echo ""
 echo "## vEdge VNF Started ##"

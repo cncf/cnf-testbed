@@ -2,6 +2,7 @@
 
 cid=$1
 total=$2
+baseline=$3
 
 ## Input validation ##
 if [ ! -e "/vEdge/in_container" ]; then
@@ -9,22 +10,35 @@ if [ ! -e "/vEdge/in_container" ]; then
   exit 1
 fi
 
-if [[ "$#" -ne "2" ]]; then
-  echo "ERROR - Two input arguments required"
-  echo "  Usage: $0 <Chain ID> <Total Chains>"
+if [[ "$#" -lt "2" ]]; then
+  echo "ERROR - At least 2 input arguments required"
+  echo "  Usage: $0 <Chain ID> <Total Chains> [baseline]"
+  exit 1
+fi
+
+if [ ! -z "${baseline}" ] && [ ! "${baseline}" == "baseline" ]; then
+  echo "ERROR - Invalid 3rd agument provided (${baseline})"
+  echo "  Usage: $0 <Chain ID> <Total Chains> [baseline]"
   exit 1
 fi
 
 if [[ -n ${cid//[0-9]/} ]] || [[ -n ${total//[0-9]/} ]]; then
-  echo "ERROR: Inputs must be an integer values"
-  echo "  Provided: $0 $1 $2"
-  echo "  Usage: $0 <Chain ID> <Total Chains>"
+  echo "ERROR: Chain inputs must be an integer values"
+  echo "  Provided: $0 $1 $2 $3"
+  echo "  Usage: $0 <Chain ID> <Total Chains> [baseline]"
   exit 1
 fi
 
-if [[ "$cid" -gt "6" ]] || [[ "$total" -gt "6" ]]; then
-  echo "ERROR - DEBUG: Only supports up to 6 chains"
-  exit 1
+if [ ! "${baseline}" == "baseline" ]; then
+  if [[ "$cid" -gt "6" ]] || [[ "$total" -gt "6" ]]; then
+    echo "ERROR - DEBUG: Only supports up to 6 chains"
+    exit 1
+  fi
+else
+  if [[ "$cid" -gt "8" ]] || [[ "$total" -gt "8" ]]; then
+    echo "ERROR - Baseline only supports up to 8 chains"
+    exit 1
+  fi
 fi
 
 if [[ "${total}" == "1" ]]; then
@@ -34,11 +48,17 @@ fi
 ######################
 
 ## Static parameters ##
-queues=2 # This could be moved out of this script as it also impacts host VPP
 trex_mac1=8a:fd:d5:d5:d6:b6
 trex_mac2=06:9c:b3:cc:f0:62
-main_cores=( 0 10 38 16 44 22 50 ) # The same list is required in the 'run_container.sh' script
-worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 ) # The same list is required in the 'run_container.sh' script 
+if [ ! "${baseline}" == "baseline" ]; then
+  queues=2
+  main_cores=( 0 10 38 16 44 22 50 ) # The same list is required in the 'run_container.sh' script
+  worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 ) # The same list is required in the 'run_container.sh' script
+else
+  queues=2 # Keeping this at two since most queues don't interact with Host VPP
+  main_cores=( 0 4 32 10 38 16 44 22 50 )
+  worker_cores=( 0 6,34 8,36 12,40 14,42 18,46 20,48 24,52 26,54 )
+fi
 ######################
 
 ## Functions ##

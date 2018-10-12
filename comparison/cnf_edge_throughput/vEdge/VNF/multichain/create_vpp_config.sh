@@ -1,25 +1,34 @@
 #! /bin/bash
 
-if [[ "$#" -ne "3" ]]; then
-  echo "ERROR - Three input arguments required"
-  echo "  Usage: $0 <Chains> <VLAN#1> <VLAN#2>"
+if [[ "$#" -lt "3" ]]; then
+  echo "ERROR - At least 3 input arguments required"
+  echo "  Usage: $0 <Chains> <VLAN#1> <VLAN#2> [baseline]"
   exit 1
 fi
 
 chains="$1"
 vlans=( "$2" "$3" )
+baseline="$4"
 
 if [[ -n ${chains//[0-9]/} ]] || [[ -n ${vlans[0]//[0-9]/} ]] || [[ -n ${vlans[1]//[0-9]/} ]]; then
   echo "ERROR: Inputs must be an integer values"
-  echo "  Provided: $0 $1 $2 $3"
-  echo "  Usage: $0 <Chains> <VLAN#1> <VLAN#2>"
+  echo "  Provided: $0 $1 $2 $3 $4"
+  echo "  Usage: $0 <Chains> <VLAN#1> <VLAN#2> [baseline]"
   exit 1
 fi
 
-if [[ "${chains}" -le "1" ]] || [[ "${chains}" -gt "6" ]]; then
-  echo "ERROR - DEBUG: Only supports betwen 2-6 chains"
-  echo "  Usage: $0 <Chains> <VLAN#1> <VLAN#2>"
-  exit 1
+if [ ! "${baseline}" == "baseline" ]; then
+  if [[ "${chains}" -le "1" ]] || [[ "${chains}" -gt "6" ]]; then
+    echo "ERROR - DEBUG: Only supports betwen 2-6 chains"
+    echo "  Usage: $0 <Chains> <VLAN#1> <VLAN#2> [baseline]"
+    exit 1
+  fi
+else
+  if [[ "${chains}" -le "1" ]] || [[ "${chains}" -gt "8" ]]; then
+    echo "ERROR - DEBUG: Baseline only supports betwen 2-8 chains"
+    echo "  Usage: $0 <Chains> <VLAN#1> <VLAN#2> [baseline]"
+    exit 1
+  fi
 fi
 
 conf_file="vEdge_multichain_vpp.conf"
