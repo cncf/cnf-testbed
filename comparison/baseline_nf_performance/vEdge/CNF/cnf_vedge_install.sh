@@ -179,8 +179,8 @@ set int ip addr memif2/2 172.16.20.10/24
 set int state memif1/1 up
 set int state memif2/2 up
 
-set ip arp static memif1/1 172.16.10.100 8a:fd:d5:d5:d6:b6
-set ip arp static memif2/2 172.16.20.100 06:9c:b3:cc:f0:62
+set ip arp static memif1/1 172.16.10.100 3c:fd:fe:bd:f8:60
+set ip arp static memif2/2 172.16.20.100 3c:fd:fe:bd:f8:61
 
 ip route add 172.16.64.0/18 via 172.16.10.100
 ip route add 172.16.192.0/18 via 172.16.20.100

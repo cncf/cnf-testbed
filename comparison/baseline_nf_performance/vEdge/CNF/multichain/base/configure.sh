@@ -35,10 +35,10 @@ fi
 
 ## Static parameters ##
 queues=2 # This could be moved out of this script as it also impacts host VPP
-trex_mac1=8a:fd:d5:d5:d6:b6
-trex_mac2=06:9c:b3:cc:f0:62
-main_cores=( 0 10 38 16 44 22 50 ) # The same list is required in the 'run_container.sh' script
-worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 ) # The same list is required in the 'run_container.sh' script 
+trex_mac1=3c:fd:fe:bd:f8:60
+trex_mac2=3c:fd:fe:bd:f8:61
+main_cores=( 0 5 61 8 64 11 67 ) # The same list is required in the 'run_container.sh' script
+worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 ) # The same list is required in the 'run_container.sh' script
 ######################
 
 ## Functions ##
@@ -174,6 +174,7 @@ cpu {
 dpdk {
   uio-driver igb_uio
   no-multi-seg
+  dev 0000:18:00.2
 }
 EOF
 
