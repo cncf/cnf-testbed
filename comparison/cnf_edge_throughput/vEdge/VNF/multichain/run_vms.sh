@@ -48,20 +48,35 @@ EOF
 
 update_rxq_pinning() {
   echo "Updating VPP configuration (rx-placement)"
-  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 0 worker 0
-  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 1 worker 1
-  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 2 worker 2
-  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 3 worker 3
+  if [ ! "${cleanup}" == "baseline" ]; then
+    vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 0 worker 0
+    vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 1 worker 1
+    vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 2 worker 2
+    vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 3 worker 3
+  else
+    vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 0 worker 0
+    vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 1 worker 1
+  fi
 
-  worker=4
-  for vEth in $(seq 0 $(($chains * 2 - 1))); do
-    vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}
-    echo "vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}"
-    vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 1 worker $(($worker + 1))
-    echo "vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 1 worker $(($worker + 1))"
-    worker=$(($worker + 2))
-    if [[ "${worker}" == "8" ]]; then worker=0; fi
-  done
+  if [ ! "${cleanup}" == "baseline" ]; then
+    worker=4
+    for vEth in $(seq 0 $(($chains * 2 - 1))); do
+      vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}
+      echo "vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}"
+      vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 1 worker $(($worker + 1))
+      echo "vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 1 worker $(($worker + 1))"
+      worker=$(($worker + 2))
+      if [[ "${worker}" == "8" ]]; then worker=0; fi
+    done
+  else
+    worker=0
+    for vEth in $(seq 0 $(($chains * 2 - 1))); do
+      vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}
+      echo "vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}"
+      vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 1 worker $(($worker + 1))
+      echo "vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 1 worker $(($worker + 1))"
+    done
+  fi
 }
 
 update_cpu_pinning() {
@@ -89,12 +104,16 @@ cleanup="$2"
 if [[ -n ${chains//[0-9]/} ]] || [[ "$chains" -le "1" ]] ; then
   echo "ERROR: Chains must be integer value higher than 1"
   echo "  Provided: $0 $1 $2"
-  echo "Usage: $0 <Chains> [clean|repin]"
+  echo "Usage: $0 <Chains> [clean|repin|baseline]"
   exit 1
 fi
 
 VLANs="1070 1064"
-cpus=( 10 12 40 38 14 42 16 18 46 44 20 48 22 24 52 50 26 54 )
+if [ ! "${cleanup}" == "baseline" ]; then
+  cpus=( 10 12 40 38 14 42 16 18 46 44 20 48 22 24 52 50 26 54 )
+else
+  cpus=( 4 6 34 32 8 36 10 12 40 38 14 42 16 18 46 44 20 48 22 24 52 50 26 54 )
+fi
 
 mydir=$(dirname $0)
 
@@ -138,12 +157,12 @@ fi
 if [[ "${exit_flag}" == "1" ]]; then
   echo "One or more VMs are running, please remove before running script"
   echo "  ${running_vms}"
-  echo "  Usage: $0 <Chains> [clean|repin]"
+  echo "  Usage: $0 <Chains> [clean|repin|baseline]"
   exit 1
 fi  
 
 echo "Updating & Restarting VPP to prepare for VM interfaces"
-./create_vpp_config.sh ${chains} ${VLANs}
+./create_vpp_config.sh ${chains} ${VLANs} ${cleanup}
 update_vpp_config
 
 ./create_vagrantfile.sh ${chains}
