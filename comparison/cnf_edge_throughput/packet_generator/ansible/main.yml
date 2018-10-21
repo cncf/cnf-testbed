@@ -1,7 +1,21 @@
 ---
 - hosts: localhost
+  vars:
+    config_network_bonds: true
+    config_network_bridges: false
+    config_network_interfaces: true
+    enable_configured_interfaces_after_defining: true
+    network_bonds:
+      - name: 'bond0'
+        parameters:
+        slaves:
+          - 'enp2s0'
+    network_interfaces:
+      - name: enp2s0
+        addl_settings:
   roles:
-    - { role: "nickjj.docker", tags: ["docker"] }
-    - grub
-    - mellanox 
+    #- { role: "nickjj.docker", tags: ["docker"] }
+    - mrlesmithjr.config-interfaces
+    #- grub
+    #- mellanox 
 
