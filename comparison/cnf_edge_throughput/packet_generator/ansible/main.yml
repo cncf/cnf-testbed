@@ -7,12 +7,59 @@
     enable_configured_interfaces_after_defining: true
     network_bonds:
       - name: 'bond0'
+        configure: true
+        method: 'static'
+        address: '147.75.88.239'
+        netmask: '255.255.255.254'
+        gateway: '147.75.88.238'
         parameters:
+          - param: 'bond-downdelay'
+            val: '200'
+          - param: 'bond-miimon'
+            val: '100'
+          - param: 'bond-mode'
+            val: '4'
+          - param: 'bond-updelay'
+            val: '200'
+          - param: 'bond-xmit_hash_policy'
+            val: 'layer3+4'
+          - param: 'bond-lacp-rate'
+            val: '1'
+          - param: 'dns-nameservers'
+            val: '147.75.207.207 147.75.207.208'
         slaves:
           - 'enp2s0'
+          #- 'enp2s0d1' Disable second slave interface
+      - name: 'bond0:0'
+        configure: true
+        method: 'static'
+        address: '10.88.160.137'
+        netmask: '255.255.255.254'
+        parameters:
+          - param: 'post-up'
+            val: 'route add -net 10.0.0.0/8 gw 10.88.160.136'
+          - param: 'post-down'
+            val: 'route del -net 10.0.0.0/8 gw 10.88.160.136'
     network_interfaces:
       - name: enp2s0
-        addl_settings:
+        configure: true
+        method: 'manual'
+        parameters:
+          - param:
+            val: 'bond-master bond0'
+      - name: enp2s0d1
+        configure: true
+        method: 'manual'
+        parameters:
+          - param: 'pre-up'
+            val: 'sleep 4'
+          #- param: 'bond-master' Disable bond-master for second slave interface
+          #  val: 'bond0'
+      - name: enp2s0d1.1030
+        configure: true
+        method: 'static'
+        address: '172.16.99.31'
+        netmask: '255.255.255.0'
   roles:
     #- { role: "nickjj.docker", tags: ["docker"] }
     - mrlesmithjr.config-interfaces
