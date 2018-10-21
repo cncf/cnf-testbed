@@ -1,0 +1,42 @@
+---
+- name: Install python-pexpect, required for ansible expect module
+  apt:
+    name: python-pexpect
+
+- name: Get tarball
+  get_url:
+    url: http://content.mellanox.com/ofed/MLNX_OFED-4.1-1.0.2.0/MLNX_OFED_LINUX-4.1-1.0.2.0-ubuntu16.04-x86_64.tgz
+    dest: /tmp/MLNX_OFED_LINUX-4.1-1.0.2.0-ubuntu16.04-x86_64.tgz
+
+- name: Expand the tarball
+  unarchive:
+    src: /tmp/MLNX_OFED_LINUX-4.1-1.0.2.0-ubuntu16.04-x86_64.tgz
+    dest: /tmp
+    remote_src: true
+
+- name: Install the tarball
+  command: ./mlnxofedinstall --all --force
+  args: 
+    chdir: /tmp/MLNX_OFED_LINUX-4.1-1.0.2.0-ubuntu16.04-x86_64
+
+- name: Restart openibd
+  service: 
+    name: openibd
+    state: restarted
+
+- name: Start MST
+  command: mst start
+
+- name: Fetch Mellanox device path
+  shell: >
+            mst status | 
+            awk '{print $1}' | 
+            awk 'NR==8'
+  register: result
+
+- name: Configure Mellanox driver and respond 
+  expect:
+    command: mlxconfig -d {{result.stdout}} set SRIOV_EN=1 NUM_OF_VFS=2 
+    echo: yes
+    responses: 
+      "Apply new Configuration.*": "y" 
