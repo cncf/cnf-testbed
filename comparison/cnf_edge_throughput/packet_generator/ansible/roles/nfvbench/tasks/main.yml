@@ -46,3 +46,8 @@
 
 - name: Change the mbuf factor to further reduce the memory usage
   command: docker exec -i nfvbench sed -i -e "s/--cfg {} \&>/--cfg {} --mbuf-factor 0.2 \&>/g" /nfvbench/nfvbench/traffic_server.py
+
+- name: Add alias for running nfvbench
+  lineinfile: 
+    path: /root/.bashrc
+    line: 'alias nfvbench="sudo docker exec -it nfvbench nfvbench -c /tmp/nfvbench/nfvbench_config.cfg"'
