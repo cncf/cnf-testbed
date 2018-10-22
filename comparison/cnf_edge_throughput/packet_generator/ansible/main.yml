@@ -1,5 +1,9 @@
 ---
 - hosts: localhost
+  pre_tasks:
+  - name: Install Vlan Package
+    apt: 
+      name: vlan
   vars:
     config_network_bonds: true
     config_network_bridges: false
@@ -12,9 +16,9 @@
       - name: 'bond0'
         configure: true
         method: 'static'
-        address: '147.75.88.239'
+        address: '147.75.88.217'
         netmask: '255.255.255.254'
-        gateway: '147.75.88.238'
+        gateway: '147.75.88.216'
         parameters:
           - param: 'bond-downdelay'
             val: '200'
@@ -34,13 +38,13 @@
       - name: 'bond0:0'
         configure: true
         method: 'static'
-        address: '10.88.160.137'
+        address: '10.88.160.139'
         netmask: '255.255.255.254'
         parameters:
           - param: 'post-up'
-            val: 'route add -net 10.0.0.0/8 gw 10.88.160.136'
+            val: 'route add -net 10.0.0.0/8 gw 10.88.160.138'
           - param: 'post-down'
-            val: 'route del -net 10.0.0.0/8 gw 10.88.160.136'
+            val: 'route del -net 10.0.0.0/8 gw 10.88.160.138'
     network_interfaces:
       - name: enp2s0
         configure: true
