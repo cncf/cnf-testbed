@@ -30,6 +30,15 @@
       name: vlan
   
   vars:
+    docker_registries:
+      - registry_url: "https://index.docker.io/v1/"
+    docker_package_dependencies:
+      - "apt-transport-https"
+      - "ca-certificates"
+      - "software-properties-common"
+      - "gnupg2"
+      - "cron"
+      - "python-pip"
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
@@ -92,4 +101,5 @@
     - mrlesmithjr.config-interfaces
     - grub
     - mellanox 
+    - nfvbench
 
