@@ -4,51 +4,27 @@
   - name: Get bond interface slaves
     setup:
       filter: "{{ ansible_bond0.slaves }}"
-  - name: Echo second bond0 interface
-    debug: 
-      msg: "Second Bond {{ ansible_bond0.slaves[1] }}"
   - name: Get dns servers
     setup: 
       filter: "{{ ansible_dns.nameservers }}"
-  - name: Echo nameservers
-    debug:
-      msg: "Nameservers {{ ansible_dns.nameservers }}"
   - name: Get Bond0 Public IP
     setup: 
       filter: "{{ ansible_bond0.ipv4.address }}"
-  - name: Echo Public IP
-    debug: 
-      msg: "Public IP {{ ansible_bond0.ipv4.address }}"
   - name: Get bond0 netmask
     setup: 
       filter: "{{ ansible_bond0.ipv4.netmask }}"
   - name: Echo bond0 netmask
-    debug: 
-      msg: "Bond0 Netmask {{ ansible_bond0.ipv4.netmask }}"
-  - name: Get bond0 gw
     setup: 
       filter: "{{ ansible_default_ipv4.gateway }}"
-  - name: Echo bond0 gateway
-    debug:
-      msg: "Bond0 Gateway {{ ansible_default_ipv4.gateway }}"
   - name: Get bond0 internal address
     setup: 
       filter: "{{ ansible_bond0_0.ipv4.address }}"
-  - name: Echo bond0 internal address
-    debug:
-      msg: "Bond0 internal address {{ ansible_bond0_0.ipv4.address }}"
   - name: Get bond0 internal netmask
     setup:
       filter: "{{ ansible_bond0_0.ipv4.netmask }}"
-  - name: Echo bon0 internal netmask
-    debug:
-      msg: "Bond0 internal netmask {{ ansible_bond0_0.ipv4.netmask }}"
   - name: Get bond0 internal gw
     setup:
       filter: "{{ ansible_bond0_0.ipv4.network }}"
-  - name: Echo bond0 internal gw
-    debug:
-      msg: "Bond0 internal gw {{ ansible_bond0_0.ipv4.network }}"
   - name: Install Vlan Package
     apt: 
       name: vlan
@@ -59,15 +35,15 @@
     config_network_interfaces: true
     enable_configured_interfaces_after_defining: true
     dns_nameservers:
-      - '147.75.207.207'
-      - '147.75.207.208'
+      - "{{ ansible_dns.nameservers[0] }}"
+      - "{{ ansible_dns.nameservers[0] }}"
     network_bonds:
       - name: 'bond0'
         configure: true
         method: 'static'
-        address: '147.75.88.217'
-        netmask: '255.255.255.254'
-        gateway: '147.75.88.216'
+        address: "{{ ansible_bond0.ipv4.address }}"
+        netmask: "{{ ansible_bond0.ipv4.netmask }}"
+        gateway: "{{ ansible_default_ipv4.gateway }}"
         parameters:
           - param: 'bond-downdelay'
             val: '200'
@@ -82,41 +58,38 @@
           - param: 'bond-lacp-rate'
             val: '1'
         slaves:
-          - 'enp2s0'
-          #- 'enp2s0d1' Disable second slave interface
+          - "{{ ansible_bond0.slaves[0] }}"
       - name: 'bond0:0'
         configure: true
         method: 'static'
-        address: '10.88.160.139'
-        netmask: '255.255.255.254'
+        address: "{{ ansible_bond0_0.ipv4.address }}"
+        netmask: "{{ ansible_bond0_0.ipv4.netmask }}"
         parameters:
           - param: 'post-up'
-            val: 'route add -net 10.0.0.0/8 gw 10.88.160.138'
+            val: "route add -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
           - param: 'post-down'
-            val: 'route del -net 10.0.0.0/8 gw 10.88.160.138'
+            val: "route del -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
     network_interfaces:
-      - name: enp2s0
+      - name: "{{ ansible_bond0.slaves[0] }}"
         configure: true
         method: 'manual'
         parameters:
           - param:
             val: 'bond-master bond0'
-      - name: enp2s0d1
+      - name: "{{ ansible_bond0.slaves[1] }}"
         configure: true
         method: 'manual'
         parameters:
           - param: 'pre-up'
             val: 'sleep 4'
-          #- param: 'bond-master' Disable bond-master for second slave interface
-          #  val: 'bond0'
-      - name: enp2s0d1.1030
+      - name: "{{ ansible_bond0.slaves[1] }}.1030"
         configure: true
         method: 'static'
         address: '172.16.99.31'
         netmask: '255.255.255.0'
   roles:
-    #- { role: "nickjj.docker", tags: ["docker"] }
-    #- mrlesmithjr.config-interfaces
-    #- grub
-    #- mellanox 
+    - { role: "nickjj.docker", tags: ["docker"] }
+    - mrlesmithjr.config-interfaces
+    - grub
+    - mellanox 
 
