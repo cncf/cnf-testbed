@@ -1,0 +1,11 @@
+---
+- name: Fetch nodes
+  shell: > 
+            ls /sys/devices/system/node/ | 
+            grep node | 
+            paste -s -d ','
+  register: result
+
+- name: Prepare Hugepages
+  command: echo 4096 > /sys/devices/system/node/{{ item }}/hugepages/hugepages-2048kB/nr_hugepages
+  with_items: "{{ result.stdout.split(',') }}"
