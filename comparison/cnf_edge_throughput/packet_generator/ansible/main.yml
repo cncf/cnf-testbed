@@ -1,6 +1,9 @@
 ---
 - hosts: localhost
   pre_tasks:
+  - name: Install Vlan Package
+    apt: 
+      name: vlan
   - name: Get bond interface slaves
     setup:
       filter: "{{ ansible_bond0.slaves }}"
@@ -25,11 +28,16 @@
   - name: Get bond0 internal gw
     setup:
       filter: "{{ ansible_bond0_0.ipv4.network }}"
-  - name: Install Vlan Package
-    apt: 
-      name: vlan
-  
+  - name: Get trex_port_0 pci id
+    setup: 
+      filter: "{{ ansible_enp2s0d1.pciid }}"
+  - name: Get trex_port_1 pci id
+    setup: 
+      filter: "{{ ansible_eno2.pciid }}"
   vars:
+    trex_port_0_pci: "{{ ansible_enp2s0d1.pciid }}"
+    trex_port_1_pci: "{{ ansible_eno2.pciid }}"
+    vlan_ids: 1070, 1064
     docker_registries:
       - registry_url: "https://index.docker.io/v1/"
     docker_package_dependencies:

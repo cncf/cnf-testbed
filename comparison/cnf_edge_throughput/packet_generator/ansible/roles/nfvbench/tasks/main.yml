@@ -51,3 +51,6 @@
   lineinfile: 
     path: /root/.bashrc
     line: 'alias nfvbench="sudo docker exec -it nfvbench nfvbench -c /tmp/nfvbench/nfvbench_config.cfg"'
+
+- name: Write nfvbench config file
+  template: src=nfvbench_config.j2 dest={{ playbook_dir }}/nfvbench_config.cfg
