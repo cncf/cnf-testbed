@@ -1,4 +1,4 @@
-**Deploy the Packet Generator to Packet.net using Terraform
+**Deploy the Packet Generator to Packet.net using Terraform**
 
 Start by ensuring that your system ssh keys are availiable under ~/.ssh/id_rsa and you have added the matching public key to your packet.net account.
 
