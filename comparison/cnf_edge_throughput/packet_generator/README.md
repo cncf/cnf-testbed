@@ -1,3 +1,16 @@
+**Deploy the Packet Generator to Packet.net using Terraform
+
+Start by ensuring that your system ssh keys are availiable under ~/.ssh/id_rsa and you have added the matching public key to your packet.net account.
+
+```
+git clone https://github.com/cncf/cnfs.git
+cd cnfs/comparison/cnf_edge_throughput/packet_generator
+export PACKET_PROJECT_ID=YOUR_PACKET_PROJECT_ID 
+export PACKET_AUTH_TOKEN=YOUR_PACKET_API_KEY
+./terraform.sh
+```
+
+
 **Install the Mellanox drivers, libs, tools and dependencies**
 
 Note: We are using an older version of the Mellanox_OFED to work with Ubuntu 16.04 (what's needed by the TRex NFVbench uses).
