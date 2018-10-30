@@ -7,12 +7,16 @@ resource "packet_device" "cnfs" {
   billing_cycle    = "${ var.packet_billing_cycle }"
   operating_system = "${ var.packet_operating_system }"
  
-  connection {}
+  connection {
+    type     = "ssh"
+    user     = "root"
+    private_key = "${ file("/root/.ssh/id_rsa")}"
+}
   
   provisioner "ansible" {
     plays {
       playbook ={
-        file_path = "/root/cnfs/comparison/cnf_edge_throughput/packet_generator/ansible/main.yml"
+        file_path = "${ var.playbook }"
       }
     }
   }
