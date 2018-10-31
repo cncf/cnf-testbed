@@ -7,9 +7,10 @@ class PacketHttp
 
   # url_extention: '', request_body: '', post: false
   def api(options ={})
+
     (post = true) if options[:post]
     packet_url = "#{@packet_url}#{options[:url_extention]}"
-    p "full url: #{packet_url}"
+    # p "full url: #{packet_url}"  if verbose
     packet_uri = URI::encode(packet_url)
     uri = URI.parse(packet_uri)
 
