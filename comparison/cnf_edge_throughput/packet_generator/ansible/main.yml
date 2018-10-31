@@ -1,6 +1,9 @@
 ---
-- hosts: localhost
+- hosts: all
   pre_tasks:
+  - name: Apt update
+    apt:
+      update_cache: yes
   - name: Install Vlan Package
     apt: 
       name: vlan
@@ -34,13 +37,17 @@
   - name: Get trex_port_1 pci id
     setup: 
       filter: "{{ ansible_eno2.pciid }}"
+  post_tasks:
+  - name: Reboot Server
+    reboot:
+    
   vars:
     trex_port_0_pci: "{{ ansible_enp2s0d1.pciid }}"
     trex_port_1_pci: "{{ ansible_eno2.pciid }}"
     vlan_ids: 1070, 1064
     docker__registries:
       - registry_url: "https://index.docker.io/v1/"
-    docker_package_dependencies:
+    docker__package_dependencies:
       - "apt-transport-https"
       - "ca-certificates"
       - "software-properties-common"
@@ -105,8 +112,8 @@
         address: '172.16.99.31'
         netmask: '255.255.255.0'
   roles:
-    - { role: "ansible-docker", tags: ["docker"] }
-    - ansible-config-interfaces
+    - { role: "nickjj.docker", tags: ["docker"] }
+    - mrlesmithjr.config-interfaces
     - grub
     - mellanox 
     - nfvbench
