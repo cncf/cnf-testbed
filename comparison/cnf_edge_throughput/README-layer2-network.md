@@ -15,7 +15,7 @@ From the Packet.net web portal
 1. Choose a descriptive name eg. "1st sjc1 CNF testing dataplane network"
 1. Click Add button
 
-**Covert network from layer-3 to a hybrid (layer-2 + layer-3) network from the Packet web ui**
+**Convert network from layer-3 to a hybrid (layer-2 + layer-3) network from the Packet web ui**
 
 For each server that will be part of the same layer 2 network.  Eg. cnf-edge-m2xl-04 and cnf-pktgen-m2xl-04
 
