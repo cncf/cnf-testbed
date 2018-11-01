@@ -15,6 +15,7 @@ Vagrant.configure("2") do |config|
       ]
       v.memorybacking :hugepages
       v.memorybacking :access, :mode => 'shared'
+      v.pci :bus => '0x5e', :slot => '0x00', :function => '0x3'
     end
   end
 end

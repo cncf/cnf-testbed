@@ -2,14 +2,14 @@
 
 # Only run configuration is sockets are available
 # Consider moving variables to top-level script (vBNG_vm_test.sh)
-SOCKET_DIR="/var/run/vpp"
-SOCKET_NAMES=( sock1.sock sock2.sock )
-for sock in "${SOCKET_NAMES[@]}"; do
-  if [ ! -e "${SOCKET_DIR}/${sock}" ]; then
-    echo "ERROR - Socket ${SOCKET_DIR}/${sock} not found"
-    exit 1
-  fi
-done
+#SOCKET_DIR="/var/run/vpp"
+#SOCKET_NAMES=( sock1.sock sock2.sock )
+#for sock in "${SOCKET_NAMES[@]}"; do
+#  if [ ! -e "${SOCKET_DIR}/${sock}" ]; then
+#    echo "ERROR - Socket ${SOCKET_DIR}/${sock} not found"
+#    exit 1
+#  fi
+#done
 
 input="$1"
 
@@ -35,15 +35,15 @@ if [ -z "$id" ]; then
   exit 1
 fi
 
-virsh dumpxml --inactive --security-info $id > vBNG.xml
+#virsh dumpxml --inactive --security-info $id > vBNG.xml
 
-line=$(grep -HrIin "<serial type='pty'>" vBNG.xml | awk -F ':' '{print $2}')
+#line=$(grep -HrIin "<serial type='pty'>" vBNG.xml | awk -F ':' '{print $2}')
 
-sed -i "$((line-1))r Interfaces" vBNG.xml
+#sed -i "$((line-1))r Interfaces" vBNG.xml
 
-virsh define vBNG.xml
+#virsh define vBNG.xml
 
-vagrant reload
+#vagrant reload
 
 cmd="cp /vagrant/v_bng_* . && chmod +x v_bng_* && ./v_bng_install.sh"
 vagrant ssh -c "$cmd"

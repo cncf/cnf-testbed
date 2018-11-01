@@ -141,7 +141,7 @@ dpdk {
         # }
 
         ## Whitelist specific interface by specifying PCI address
-        dev 0000:00:06.0 dev 0000:00:07.0
+        dev 0000:00:06.0
 
         ## Whitelist specific interface by specifying PCI address and in
         ## addition specify custom parameters for this interface
@@ -206,11 +206,11 @@ sudo bash -c "cat > /etc/vpp/setup.gate" <<EOF
 set int state GigabitEthernet0/6/0 up
 set interface ip address GigabitEthernet0/6/0 10.3.0.10/24
 
-set int state GigabitEthernet0/7/0 up
-set interface ip address GigabitEthernet0/7/0 10.1.0.10/24
+#set int state GigabitEthernet0/7/0 up
+#set interface ip address GigabitEthernet0/7/0 10.1.0.10/24
 
-set ip arp static GigabitEthernet0/6/0 10.3.0.120 52:54:00:00:00:cc
-set ip arp static GigabitEthernet0/7/0 10.1.0.120 52:54:00:00:00:dd
+#set ip arp static GigabitEthernet0/6/0 10.3.0.120 52:54:00:00:00:cc
+#set ip arp static GigabitEthernet0/7/0 10.1.0.120 52:54:00:00:00:dd
 
 ##set int state ${BNG_GMUX_NIC} up
 ##set interface ip address ${BNG_GMUX_NIC} ${BNG_GMUX_NET_IPADDR}/${BNG_GMUX_NET_CIDR#*/}
