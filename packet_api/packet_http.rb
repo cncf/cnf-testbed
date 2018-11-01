@@ -10,7 +10,7 @@ class PacketHttp
 
     (post = true) if options[:post]
     packet_url = "#{@packet_url}#{options[:url_extention]}"
-    # p "full url: #{packet_url}"  if verbose
+    # p "full url: #{packet_url}"
     packet_uri = URI::encode(packet_url)
     uri = URI.parse(packet_uri)
 
