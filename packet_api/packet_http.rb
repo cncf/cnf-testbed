@@ -10,6 +10,7 @@ class PacketHttp
 
     (post = true) if options[:post]
     packet_url = "#{@packet_url}#{options[:url_extention]}"
+    # this next line will make the tests fail
     # p "full url: #{packet_url}"
     packet_uri = URI::encode(packet_url)
     uri = URI.parse(packet_uri)

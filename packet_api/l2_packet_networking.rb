@@ -14,8 +14,8 @@ OptionParser.new do |opts|
 	opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
 		options[:verbose] = v
 	end
-	opts.on("-nPROJECT", "--project=PROJECT", "Project name") do |n|
-		options[:project] = n
+	opts.on("-nPROJECTNAME", "--project-name=PROJECT", "Project name") do |n|
+		options[:project_name] = n
 	end
 	opts.on("-nSERVER", "--server=SERVER", "Server name") do |n|
 		options[:server] = n
@@ -35,11 +35,11 @@ OptionParser.new do |opts|
 	opts.on("-nTOKEN", "--token=TOKEN", "API TOKEN") do |n|
 		options[:token] = n
 	end
-	opts.on("-nFACILITY", "--token=FACILITY", "Facility where the work will be performed") do |n|
+	opts.on("-nFACILITY", "--facility=FACILITY", "Facility where the work will be performed") do |n|
 		options[:facility] = n
 	end
 	opts.on("-nPACKETURL", "--packet-url=PACKETURL", "Packet url e.g. api.packet.net") do |n|
-		options[:packet-url] = n
+		options[:packet_url] = n
 	end
 	opts.on_tail("-h", "--help", "Show this message") do
 		puts opts 
@@ -69,7 +69,7 @@ else
 end
 
 if options[:packet_url]
-	packet_url = options[:packet_url]
+	packet_url = "https://#{options[:packet_url]}"
 else
 	packet_url = "https://#{ENV['PACKET_API_URL']}"
 end
