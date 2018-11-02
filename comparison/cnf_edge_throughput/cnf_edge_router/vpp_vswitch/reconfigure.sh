@@ -31,8 +31,6 @@ if ! cmp -s "/etc/vpp/setup.gate" "VPP_configs/${config_file}" ; then
   echo "Updating VPP Setup configuration"
   cp VPP_configs/${config_file} /etc/vpp/setup.gate
   do_restart=1
-  service vpp restart
-  sleep 5
 fi
 
 if [[ "${do_restart}" == "1" ]]; then
