@@ -3,6 +3,15 @@ require 'spec_helper'
  # *** Assign your packet api token in the .env file and then source it before running rspec ***
 RSpec.describe 'Packet Test Suite', type: :aruba  do
   context "Packet test" do
+    it 'tests bond-interface' do
+      cmd = "ruby ../../l2_packet_networking.rb --server layer2test-01 --bond-interface eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'" 
+      run(cmd)
+      sleep(10)
+      stop_all_commands
+
+      expect(last_command_started.output).to eq("success\n")
+    end
+
     it 'tests disbond-interface' do
       cmd = "ruby ../../l2_packet_networking.rb --server layer2test-01 --disbond-interface eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'" 
       run(cmd)

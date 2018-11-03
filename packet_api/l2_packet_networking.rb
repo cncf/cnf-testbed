@@ -29,6 +29,9 @@ OptionParser.new do |opts|
   opts.on("-nINTERFACE", "--disbond-interface=INTERFACE", "Interface to disbond") do |n|
     options[:disbond_port] = n
   end
+  opts.on("-nINTERFACE", "--bond-interface=INTERFACE", "Interface to bond") do |n|
+    options[:bond_port] = n
+  end
   opts.on("-nVLAN", "--assign-vlan=VLAN", "VLAN to assign to a port. use --assign-vlan-port to designate port") do |n|
     options[:assign_vlan] = n
   end
@@ -59,8 +62,8 @@ end.parse!
 pp options  if options[:verbose]
 pp ARGV if options[:verbose]
 
-if options[:delete_vlan].nil? && options[:unassign_vlan].nil? && options[:assign_vlan].nil? && options[:disbond_port].nil? && options[:create_vlan].nil?
-  puts "You must select delete_vlan, unassign_vlan, assign-vlan, disbond-interface, or create vlan!"
+if options[:bond_port].nil? && options[:delete_vlan].nil? && options[:unassign_vlan].nil? && options[:assign_vlan].nil? && options[:disbond_port].nil? && options[:create_vlan].nil?
+  puts "You must select delete_vlan, unassign_vlan, assign-vlan, bond-interface, disbond-interface, or create vlan!"
   exit
 end
 if options[:unassign_vlan] && (options[:unassign_vlan_port].nil? || options[:server].nil?)
@@ -79,6 +82,10 @@ end
 
 if options[:delete_vlan] &&  options[:facility].nil?
   puts "You must provide a facility to call delete-vlan!"
+  exit
+end
+if options[:bond_port] && options[:server].nil?
+  puts "You must provide a server if you select bond-interface!"
   exit
 end
 if options[:disbond_port] && options[:server].nil?
@@ -137,6 +144,19 @@ if options[:disbond_port]
   disbond_response = phttp.api(post: true, url_extention: "/ports/#{disbond_port['id']}/disbond")
   parsed_response = JSON.parse(disbond_response.body) 
   p "parsed disbond_response: #{parsed_response}"  if options[:verbose]
+  if parsed_response["id"]
+    puts "success"
+  else 
+    puts "failure"
+  end
+end
+
+if options[:bond_port]
+  bond_port = device["network_ports"].find{|x| x["name"]==options[:bond_port]}
+  p "bond_port: #{bond_port}"  if options[:verbose]
+  bond_response = phttp.api(post: true, url_extention: "/ports/#{bond_port['id']}/bond")
+  parsed_response = JSON.parse(bond_response.body) 
+  p "parsed bond_response: #{parsed_response}"  if options[:verbose]
   if parsed_response["id"]
     puts "success"
   else 
