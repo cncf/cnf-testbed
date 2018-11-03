@@ -1,4 +1,4 @@
-**Deploy a K8s cluster to Packet.net
+**Deploy a K8s cluster to Packet.net**
 
 Set your Packet.net account project & api tokens.
 Then run deploy_cluster.sh
