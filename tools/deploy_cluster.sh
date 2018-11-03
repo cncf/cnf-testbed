@@ -13,6 +13,15 @@ docker run \
   -e TF_VAR_packet_master_device_plan=t1.small \
   -e TF_VAR_packet_worker_device_plan=c1.xlarge \
   -e TF_VAR_packet_operating_system=ubuntu_18_04 \
+  -e TF_VAR_etcd_artifact=https://storage.googleapis.com/etcd/v3.2.8/etcd-v3.2.8-linux-amd64.tar.gz \
+  -e TF_VAR_cni_artifact=https://github.com/containernetworking/cni/releases/download/v0.6.0/cni-amd64-v0.6.0.tgz \
+  -e TF_VAR_cni_plugins_artifact=https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
+  -e TF_VAR_kubelet_artifact=https://storage.googleapis.com/kubernetes-release/release/v1.12.2/bin/linux/amd64/kubelet \
+  -e TF_VAR_kube_apiserver_artifact=https://storage.googleapis.com/kubernetes-release/release/v1.12.2/bin/linux/amd64/kube-apiserver \
+  -e TF_VAR_kube_controller_manager_artifact=https://storage.googleapis.com/kubernetes-release/release/v1.12.2/bin/linux/amd64/kube-controller-manager
+  -e TF_VAR_kube_scheduler_artifact=https://storage.googleapis.com/kubernetes-release/release/v1.12.2/bin/linux/amd64/kube-scheduler
+  -e TF_VAR_kube_proxy_image=gcr.io/google_containers/kube-proxy
+  -e TF_VAR_kube_proxy_tag=v1.12.2
   -e TF_VAR_packet_project_id=$PACKET_PROJECT_ID \
   -e PACKET_AUTH_TOKEN=$PACKET_AUTH_TOKEN \
   -ti registry.cidev.cncf.ci/cncf/cross-cloud/provisioning:master
