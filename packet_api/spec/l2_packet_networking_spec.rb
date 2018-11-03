@@ -53,7 +53,7 @@ RSpec.describe 'Packet Test Suite', type: :aruba  do
       sleep(10)
       stop_all_commands
 
-      cmd = "ruby ../../l2_packet_networking.rb --delete-vlan watsonvlan1 --project-name='CNCF CNFs' --packet-url='api.packet.net' ty='ewr1' "
+      cmd = "ruby ../../l2_packet_networking.rb --delete-vlan watsonvlan1 --project-name='CNCF CNFs' --packet-url='api.packet.net' --facility='ewr1'  "
       run(cmd)
       sleep(10)
       stop_all_commands

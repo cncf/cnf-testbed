@@ -71,6 +71,16 @@ if options[:assign_vlan] && (options[:assign_vlan_port].nil? || options[:server]
   puts "You must provide a vlan port and server if you select assign-vlan!"
   exit
 end
+
+if options[:create_vlan] &&  options[:facility].nil?
+  puts "You must provide a facility to call create-vlan!"
+  exit
+end
+
+if options[:delete_vlan] &&  options[:facility].nil?
+  puts "You must provide a facility to call delete-vlan!"
+  exit
+end
 if options[:disbond_port] && options[:server].nil?
   puts "You must provide a server if you select disbond-interface!"
   exit
