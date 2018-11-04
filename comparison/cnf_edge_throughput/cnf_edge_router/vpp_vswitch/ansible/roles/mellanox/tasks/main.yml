@@ -3,21 +3,43 @@
   apt:
     name: python-pexpect
 
-- name: Get tarball
+- name: Get tarball for mellanox_4.1
   get_url:
     url: http://content.mellanox.com/ofed/MLNX_OFED-4.1-1.0.2.0/MLNX_OFED_LINUX-4.1-1.0.2.0-ubuntu16.04-x86_64.tgz
     dest: /tmp/MLNX_OFED_LINUX-4.1-1.0.2.0-ubuntu16.04-x86_64.tgz
+  when: mellanox_4.1
 
-- name: Expand the tarball
+- name: Get tarball for mellanox_4.4
+  get_url:
+    url: http://content.mellanox.com/ofed/MLNX_OFED-4.4-1.0.0.0/MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64.tgz
+    dest: /tmp/MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64.tgz
+  when: mellanox_4.4
+
+- name: Expand tarball for mellanox_4.1
   unarchive:
     src: /tmp/MLNX_OFED_LINUX-4.1-1.0.2.0-ubuntu16.04-x86_64.tgz
     dest: /tmp
     remote_src: true
+  when: mellanox_4.1
 
-- name: Install the tarball
+- name: Expand tarball for mellanox_4.4
+  unarchive:
+    src: /tmp/MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64.tgz
+    dest: /tmp
+    remote_src: true
+  when: mellanox_4.4
+
+- name: Install mellanox_4.1
   command: ./mlnxofedinstall --all --force
   args: 
     chdir: /tmp/MLNX_OFED_LINUX-4.1-1.0.2.0-ubuntu16.04-x86_64
+  when: mellanox_4.1
+
+- name: Install mellanox_4.4
+  command: ./mlnxofedinstall --dpdk --upstream-libs --force
+  args: 
+    chdir: /tmp/MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64
+  when: mellanox_4.4
 
 - name: Restart openibd
   service: 
