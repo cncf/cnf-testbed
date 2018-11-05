@@ -1,0 +1,109 @@
+---
+- hosts: all
+  pre_tasks:
+  - name: Apt update
+    apt:
+      update_cache: yes
+  - name: Install Vlan Package
+    apt: 
+      name: vlan
+  - name: Get bond interface slaves
+    setup:
+      filter: "{{ ansible_bond0.slaves }}"
+  - name: Get dns servers
+    setup: 
+      filter: "{{ ansible_dns.nameservers }}"
+  - name: Get Bond0 Public IP
+    setup: 
+      filter: "{{ ansible_bond0.ipv4.address }}"
+  - name: Get bond0 netmask
+    setup: 
+      filter: "{{ ansible_bond0.ipv4.netmask }}"
+  - name: Echo bond0 netmask
+    setup: 
+      filter: "{{ ansible_default_ipv4.gateway }}"
+  - name: Get bond0 internal address
+    setup: 
+      filter: "{{ ansible_bond0_0.ipv4.address }}"
+  - name: Get bond0 internal netmask
+    setup:
+      filter: "{{ ansible_bond0_0.ipv4.netmask }}"
+  - name: Get bond0 internal gw
+    setup:
+      filter: "{{ ansible_bond0_0.ipv4.network }}"
+  - name: Get trex_port_0 pci id
+    setup: 
+      filter: "{{ ansible_eno2.pciid }}"
+  - name: Get trex_port_1 pci id
+    setup: 
+      filter: "{{ ansible_eno3.pciid }}"
+  post_tasks:
+  - name: Reboot Server
+    reboot:
+    
+  vars:
+    trex_port_0_pci: "{{ ansible_eno2.pciid }}"
+    trex_port_1_pci: "{{ ansible_eno3.pciid }}"
+    vlan_ids: 1076, 1078
+    docker__registries:
+      - registry_url: "https://index.docker.io/v1/"
+    docker__package_dependencies:
+      - "apt-transport-https"
+      - "ca-certificates"
+      - "software-properties-common"
+      - "gnupg2"
+      - "cron"
+      - "python-pip"
+    config_network_bonds: true
+    config_network_bridges: false
+    config_network_interfaces: true
+    enable_configured_interfaces_after_defining: true
+    dns_nameservers:
+      - "{{ ansible_dns.nameservers[0] }}"
+      - "{{ ansible_dns.nameservers[0] }}"
+    network_bonds:
+      - name: 'bond0'
+        configure: true
+        method: 'static'
+        address: "{{ ansible_bond0.ipv4.address }}"
+        netmask: "{{ ansible_bond0.ipv4.netmask }}"
+        gateway: "{{ ansible_default_ipv4.gateway }}"
+        parameters:
+          - param: 'bond-downdelay'
+            val: '200'
+          - param: 'bond-miimon'
+            val: '100'
+          - param: 'bond-mode'
+            val: '4'
+          - param: 'bond-updelay'
+            val: '200'
+          - param: 'bond-xmit_hash_policy'
+            val: 'layer3+4'
+          - param: 'bond-lacp-rate'
+            val: '1'
+        slaves:
+          - "{{ ansible_bond0.slaves[0] }}"
+      - name: 'bond0:0'
+        configure: true
+        method: 'static'
+        address: "{{ ansible_bond0_0.ipv4.address }}"
+        netmask: "{{ ansible_bond0_0.ipv4.netmask }}"
+        parameters:
+          - param: 'post-up'
+            val: "route add -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
+          - param: 'post-down'
+            val: "route del -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
+    network_interfaces:
+      - name: "{{ ansible_bond0.slaves[0] }}"
+        configure: true
+        method: 'manual'
+        parameters:
+          - param:
+            val: 'bond-master bond0'
+  roles:
+    - { role: "nickjj.docker", tags: ["docker"] }
+    - mrlesmithjr.config-interfaces
+    - grub_intel
+    - intel
+    - nfvbench_intel
+
