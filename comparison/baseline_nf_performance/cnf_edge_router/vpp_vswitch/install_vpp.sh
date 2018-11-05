@@ -1,75 +1,166 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
-check_status() {
-if [ ! "$1" == "0" ]; then
-  echo "Previous function returned an error - Stopping script"
-  exit 1
-fi
+set -exuo pipefail
+
+function die () {
+    # Print the message to standard error end exit with error code specified
+    # by the second argument.
+    #
+    # Hardcoded values:
+    # - The default error message.
+    # Arguments:
+    # - ${1} - The whole error message, be sure to quote. Optional
+    # - ${2} - the code to exit with, default: 1.
+
+    set -x
+    set +eu
+    warn "${1:-Unspecified run-time error occurred!}"
+    exit "${2:-1}"
 }
 
-update_startup() {
-if ! cmp -s "/etc/vpp/startup.conf" "VPP_configs/vEdge_startup.conf" ; then
-  echo "Updating VPP startup configuration"
-  cp VPP_configs/vEdge_startup.conf /etc/vpp/startup.conf
-  service vpp restart
-  sleep 5
-fi
+function warn () {
+    # Print the message to standard error.
+    #
+    # Arguments:
+    # - ${@} - The text of the message.
+
+    echo "$@" >&2
 }
 
-# Function to update sysctl based on number of hugepages on server
-config_sysctl() {
-  hpages="4096" # Static to match CSIT server configuration
-  if [ ! "$(cat /etc/sysctl.d/80-vpp.conf | grep 'vm.nr_hugepages=' | awk -F '=' '{print $2}')" == "$hpages" ]; then
-    echo "Updating /etc/sysctl.d/80-vpp.conf"
-    sudo sed -i "s/vm.nr_hugepages=.*/vm.nr_hugepages=${hpages}/g" /etc/sysctl.d/80-vpp.conf
-    sudo sysctl -w vm.nr_hugepages=${hpages}
-    map_count=$(($hpages * 3))
-    sudo sed -i "s/vm.max_map_count=.*/vm.max_map_count=${map_count}/g" /etc/sysctl.d/80-vpp.conf
-    sudo sysctl -w vm.max_map_count=${map_count}
-    shmmax=$(($hpages * 2048 * 1024))
-    sudo sed -i "s/kernel.shmmax=.*/kernel.shmmax=${shmmax}/g" /etc/sysctl.d/80-vpp.conf
-    sudo sysctl -w kernel.shmmax=${shmmax}
-  fi
+function restart_vpp () {
+    # Restarts VPP service.
+
+    set -exuo pipefail
+
+    warn "Restarting of VPP ....."
+    sudo service vpp restart || die "Service restart failed!"
+    sleep 5 || die
 }
 
-mydir=$(dirname $0)
-cd $mydir
+function update_startup() {
+    # Update VPP startup configuration.
 
-input="$1"
+    set -exuo pipefail
 
-# Check if VPP is already installed
-if [ ! -z "$(dpkg -l | awk '{print $2}' | grep vpp)" ]; then
-  if [ ! "$input" == "clean" ]; then
-    echo "VPP already installed"
-    config_sysctl
-    update_startup
-    echo "Existing installation can be removed using: $0 clean"
-    exit 1
-  else
-    rm -rf vpp
-    for pkg in $(dpkg -l | awk '{print $2}' | grep vpp); do
-      sudo dpkg -r $pkg
-    done
-    echo "VPP build directory and packages removed"
-    exit 0
-  fi
-fi
+    if ! cmp -s "/etc/vpp/startup.conf" "VPP_configs/vEdge_startup.conf" ; then
+        warn "Updating VPP startup configuration."
+        cp VPP_configs/vEdge_startup.conf /etc/vpp/startup.conf || {
+            die "Failed to copy startup config!"
+        }
+        restart_vpp || die
+    fi
+}
 
-# Build and install VPP
-curl -s https://packagecloud.io/install/repositories/fdio/1807/script.deb.sh | sudo bash
-sudo apt-get update 
-sudo apt-get -y install vpp vpp-plugins vpp-dbg vpp-dev vpp-api-java vpp-api-python vpp-api-lua
-sleep 3
-if [ ! -z "$(dpkg -l | awk '{print $2}' | grep vpp)" ]; then
-  echo "Build and installation complete"
-  config_sysctl
-  mkdir /etc/vpp/sockets
-  update_startup
-  echo "Reconfiguring VPP to vEdge CNF Configuration"
-  cd ..
-  ./reconfigure.sh CNF
-else
-  echo "Something went wrong while building and installing"
-  exit 1
-fi
-exit 0
+
+function config_sysctl() {
+    # Function to update sysctl based on number of hugepages on server.
+
+    set -exuo pipefail
+
+    hpages="32768" # Enough to support 8 VNFs with current image
+    vpp_config="/etc/sysctl.d/80-vpp.conf"
+    vpp_hpages="$(grep 'vm.nr_hugepages=' ${vpp_config} | awk -F '=' '{print $2}')"
+    if [ ! "${vpp_hpages}" == "${hpages}" ]; then
+        warn "Updating ${vpp_config}."
+        sudo sed -i "s/vm.nr_hugepages=.*/vm.nr_hugepages=${hpages}/g" "${vpp_config}" || {
+            die "Changing ${vpp_config} failed!"
+        }
+        sudo sysctl -w vm.nr_hugepages="${hpages}" || {
+            die "Increasing system huge pages failed!"
+        }
+        map_count="$(($hpages * 3))"
+        sudo sed -i "s/vm.max_map_count=.*/vm.max_map_count=${map_count}/g" "${vpp_config}" || {
+            die "Changing ${vpp_config} failed!"
+        }
+        sudo sysctl -w vm.max_map_count="${map_count}" || {
+            die "Increasing system max map count failed!"
+        }
+        shmmax="$(($hpages * 2048 * 1024))"
+        sudo sed -i "s/kernel.shmmax=.*/kernel.shmmax=${shmmax}/g" "${vpp_config}" || {
+            die "Changing ${vpp_config} failed!"
+        }
+        sudo sysctl -w kernel.shmmax=${shmmax} || {
+            die "Increasing kernel shmmax failed!"
+        }
+    fi
+}
+
+function installed () {
+
+    set -exuo pipefail
+
+    # Check if the given utility is installed. Fail if not installed.
+    #
+    # Arguments:
+    # - ${1} - Utility to check.
+    # Returns:
+    # - 0 - If command is installed.
+    # - 1 - If command is not installed.
+
+    command -v "${1}"
+}
+
+function is_vpp_installed () {
+    # Function to update sysctl based on number of hugepages on server.
+
+    set -exuo pipefail
+
+    # Check if VPP is already installed
+    if installed vpp; then
+        if [ "${1-}" == "clean" ]; then
+            #rm -rf vpp
+            for pkg in $(dpkg -l | awk '{print $2}' | grep vpp); do
+                sudo dpkg -r "${pkg}" || {
+                    die "Removal of vpp package ${pkg} failed!"
+                }
+            done
+            warn "VPP build directory and packages removed."
+            exit 0
+        else
+            warn "VPP already installed."
+            config_sysctl || die
+            update_startup || die
+            warn "Existing installation can be removed using: $0 clean."
+            exit 1
+        fi
+    fi
+}
+
+function install_vpp () {
+    # Install vpp.
+
+    set -exuo pipefail
+
+    VPP_VERSION="18.10-release"
+    artifacts=()
+    vpp=(vpp vpp-dbg vpp-dev vpp-lib vpp-plugins)
+    if [ -z "${VPP_VERSION-}" ]; then
+        artifacts+=(${vpp[@]})
+    else
+        artifacts+=(${vpp[@]/%/=${VPP_VERSION-}})
+    fi
+    curl -s https://packagecloud.io/install/repositories/fdio/release/script.deb.sh | sudo bash
+    sudo apt-get install -y "${artifacts[@]}" || die "VPP installation failed!"
+    sleep 1
+
+    if installed vpp; then
+        warn "Build and installation complete."
+        config_sysctl || die
+        mkdir -p /etc/vpp/sockets || die "Creating socket dir failed!"
+        update_startup || die
+        warn "Reconfiguring VPP to vEdge CNF Configuration."
+        sudo ./reconfigure.sh CNF baseline || die "Reconfiguration failed!"
+        exit 0
+    else
+        warn "Something went wrong while building and installing."
+        exit 1
+    fi
+}
+
+BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
+    die "Some error during localizing this source directory!"
+}
+cd "${BASH_FUNCTION_DIR}" || die
+
+is_vpp_installed ${1-} || die
+install_vpp || die
