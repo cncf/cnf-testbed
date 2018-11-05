@@ -1,0 +1,10 @@
+---
+- name: Grub Configuration
+  lineinfile: 
+    dest: /etc/default/grub 
+    regexp: ^GRUB_CMDLINE_LINUX= 
+    line: GRUB_CMDLINE_LINUX="console=tty0 console=ttyS1,115200n8 biosdevname=0 net.ifnames=1 iommu=pt intel_iommu=on hugepagesz=2M hugepages=10240 isolcpus=2,4,6 nohz_full=2,4,6 rcu_nocbs=2,4,6"
+
+- name: Update Grub
+  command: update-grub2
+

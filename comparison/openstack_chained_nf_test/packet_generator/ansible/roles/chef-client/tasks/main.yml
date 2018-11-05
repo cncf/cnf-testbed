@@ -1,0 +1,52 @@
+- name: Install chef client via the omnibus installer
+  shell: curl -L https://omnitruck.chef.io/install.sh | bash
+
+- name: Make /etc/chef directory
+  file:
+    state: directory
+    dest: /etc/chef
+    mode: 0644
+- name: Move chef openstack secret to /etc/chef
+  copy:
+    src: /root/openstack-chef/.chef/encrypted_data_bag_secret
+    dest: /etc/chef/encrypted_data_bag_secret
+    remote_src: True
+
+- name: Locally upload the chef recieps
+  command: knife cookbook upload -a -z --include-dependencies --cookbook-path cookbooks/
+  args:
+    chdir: /root/openstack-chef/
+
+- name: find the controller host address
+  set_fact:
+    host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
+
+- name: install updated environment file
+  template:
+    src: multinode.json
+    dest: /root/openstack-chef/environments/multinode.json
+
+- name: create openstack neutron config directory
+  file:
+    state: directory
+    dest: /etc/neutron
+    mode: 0644
+
+- name: create an empty neutron ml2 .ini file
+  file:
+    state: touch
+    dest: /etc/neutron/plugin.ini
+    mode: 644
+
+- name: Launch Chef based OpenStack installer on First (controller) node
+  command: chef-client -z -E multinode -r 'role[multinode-controller]'
+  args:
+    chdir: /root/openstack-chef
+  when: host_0_address == inventory_hostname
+ 
+- name: Launch Chef based OpenStack installer on Other (compute) nodes
+  command: chef-client -z -E multinode -r 'role[multinode-controller]'
+  args:
+    chdir: /root/openstack-chef
+  when: not host_0_address == inventory_hostname
+ 

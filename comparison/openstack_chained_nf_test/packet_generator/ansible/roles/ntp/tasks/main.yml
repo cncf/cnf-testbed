@@ -1,0 +1,18 @@
+- name: intall ntp client on centos
+  yum:
+    name: ['ntp','git-core']
+  when: ansible_os_family == "RedHat"
+
+
+- name: install ntp client on debian
+  apt:
+    name: ['ntp','git']
+  when: ansible_os_family == "Debian"
+
+- name: sync ntp
+  command: ntpq -np
+
+- name: start ntp service
+  service:
+    name: ntpd
+    state: restarted

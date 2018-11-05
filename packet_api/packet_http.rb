@@ -8,8 +8,10 @@ class PacketHttp
   # url_extention: '', request_body: '', post: false
   def api(options ={})
 
+    (delete = true) if options[:delete]
     (post = true) if options[:post]
     packet_url = "#{@packet_url}#{options[:url_extention]}"
+    # this next line will make the tests fail
     # p "full url: #{packet_url}"
     packet_uri = URI::encode(packet_url)
     uri = URI.parse(packet_uri)
@@ -17,6 +19,8 @@ class PacketHttp
     response = Net::HTTP.start(uri.host, uri.port, :use_ssl => true) do |http|
       if post 
         request = Net::HTTP::Post.new uri 
+      elsif delete
+        request = Net::HTTP::Delete.new uri 
       else
         request = Net::HTTP::Get.new uri 
       end
