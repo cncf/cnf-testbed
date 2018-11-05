@@ -15,6 +15,14 @@ export PACKET_OPERATING_SYSTEM="ubuntu_16_04"
 ./terraform.sh
 ```
 
+
+Running the ansible provisioning on an existing system:
+```
+docker run -v $(pwd)/ansible:/ansible -v ~/.ssh/id_rsa:/root/.ssh/id_rsa  --entrypoint /bin/bash -ti cnfdeploytools:latest
+cd /ansible
+ansible-playbook -i "IP_OF_PACKET_MACHINE," main.yml
+```
+
 **Install the Mellanox drivers, libs, tools and dependencies**
 
 Note: We are using an older version of the Mellanox_OFED to work with Ubuntu 16.04 (what's needed by the TRex NFVbench uses).
