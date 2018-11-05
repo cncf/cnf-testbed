@@ -1,4 +1,61 @@
 ---
+- name: Apt update
+  apt: 
+    update_cache: yes
+
+- name: Install git
+  apt:
+    name: git
+
+- name: Clone Repo
+  git:
+    repo: 'https://gerrit.fd.io/r/vpp'
+    dest: /srv/vpp
+    version: origin/stable/1807
+
+- name: Set VPP Users
+  command: sed -i '/vpp_uses_dpdk_mlx5_pmd/s/^# //g' build-data/platforms/vpp.mk 
+  args:
+    chdir: /srv/vpp
+
+- name: Build Install Deb
+  expect: 
+    chdir: /srv/vpp
+    command: make install-dep
+    echo: yes
+    responses:
+      "Do you want to continue.*": "Y"
+
+- name: Build dpdk
+  command: make dpdk-install-dev DPDK_MLX5_PMD=y
+  args:
+    chdir: /srv/vpp
+
+- name: Build release
+  command: make build-release
+  args:
+    chdir: /srv/vpp
+
+- name: Build pkg
+  command: make pkg-deb vpp_uses_dpdk_mlx5_pmd=yes
+  args:
+    chdir: /srv/vpp
+
+- name: Install vpp-lib
+  command: dpkg -i build-root/vpp-lib*
+  args: 
+    chdir: /srv/vpp
+
+- name: Install vpp_18
+  command: dpkg -i build-root/vpp_18*
+  args:
+    chdir: /srv/vpp
+
+- name: Intall vpp plugins
+  command: dpkg -i build-root/vpp-plugins*
+  args:
+    chdir: /srv/vpp
+
 - name: Fetch nodes
   shell: > 
             ls /sys/devices/system/node/ | 
@@ -9,3 +66,4 @@
 - name: Prepare Hugepages
   command: echo 4096 > /sys/devices/system/node/{{ item }}/hugepages/hugepages-2048kB/nr_hugepages
   with_items: "{{ result.stdout.split(',') }}"
+
