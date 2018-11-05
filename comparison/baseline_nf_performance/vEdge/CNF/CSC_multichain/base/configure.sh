@@ -2,6 +2,7 @@
 
 cid=$1
 total=$2
+baseline=$3
 
 ## Input validation ##
 if [ ! -e "/vEdge/in_container" ]; then
@@ -9,36 +10,56 @@ if [ ! -e "/vEdge/in_container" ]; then
   exit 1
 fi
 
-if [[ "$#" -ne "2" ]]; then
-  echo "ERROR - Two input arguments required"
-  echo "  Usage: $0 <Chain ID> <Total Chains>"
+if [[ "$#" -lt "2" ]]; then
+  echo "ERROR - At least 2 input arguments required"
+  echo "  Usage: $0 <Chain ID> <Total Chains> [baseline]"
+  exit 1
+fi
+
+if [ ! -z "${baseline}" ] && [ ! "${baseline}" == "baseline" ]; then
+  echo "ERROR - Invalid 3rd agument provided (${baseline})"
+  echo "  Usage: $0 <Chain ID> <Total Chains> [baseline]"
   exit 1
 fi
 
 if [[ -n ${cid//[0-9]/} ]] || [[ -n ${total//[0-9]/} ]]; then
-  echo "ERROR: Inputs must be an integer values"
-  echo "  Provided: $0 $1 $2"
-  echo "  Usage: $0 <Chain ID> <Total Chains>"
+  echo "ERROR: Chain inputs must be an integer values"
+  echo "  Provided: $0 $1 $2 $3"
+  echo "  Usage: $0 <Chain ID> <Total Chains> [baseline]"
   exit 1
 fi
 
-if [[ "$cid" -gt "8" ]] || [[ "$total" -gt "8" ]]; then
-  echo "ERROR - DEBUG: Only supports up to 6 chains"
-  exit 1
+if [ ! "${baseline}" == "baseline" ]; then
+  if [[ "$cid" -gt "6" ]] || [[ "$total" -gt "6" ]]; then
+    echo "ERROR - DEBUG: Only supports up to 6 chains"
+    exit 1
+  fi
+else
+  if [[ "$cid" -gt "8" ]] || [[ "$total" -gt "8" ]]; then
+    echo "ERROR - Baseline only supports up to 8 chains"
+    exit 1
+  fi
 fi
 
 if [[ "${total}" == "1" ]]; then
   echo "ERROR - DEBUG: Script currently doesn't support single chain"
   exit 1
 fi
+
 ######################
 
 ## Static parameters ##
-queues=1 # This could be moved out of this script as it also impacts host VPP
 trex_mac1=3c:fd:fe:bd:f8:60
 trex_mac2=3c:fd:fe:bd:f8:61
-main_cores=( 0 5 61 8 64 11 67 14 70 ) # The same list is required in the 'run_container.sh' script
-worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 ) # The same list is required in the 'run_container.sh' script
+if [ ! "${baseline}" == "baseline" ]; then
+  queues=1
+  main_cores=( 0 10 38 16 44 22 50 ) # The same list is required in the 'run_container.sh' script
+  worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 ) # The same list is required in the 'run_container.sh' script
+else
+  queues=1 # 1 has slightly higher throughput, but keeping 2 for consistency across configurations
+  main_cores=( 0 4 32 10 38 16 44 22 50 )
+  worker_cores=( 0 6,34 8,36 12,40 14,42 18,46 20,48 24,52 26,54 )
+fi
 ######################
 
 ## Functions ##
@@ -49,29 +70,13 @@ set_startup_vals() {
 }
 
 set_socket_names() {
-  if [[ "${cid}" == "1" ]]; then
-    sock1=memif1
-    sock2=int1
-  elif [[ "${cid}" == "${total}" ]]; then
-    sock1=int$(($cid - 1))
-    sock2=memif2
-  else
-    sock1=int$(($cid - 1))
-    sock2=int${cid}
-  fi  
+  sock1=memif$(($cid * 2 - 1))
+  sock2=memif$(($cid * 2))
 }
 
 set_memif_ids() {
-  if [[ "${cid}" == "1" ]]; then
-    memid1=1
-    memid2=10
-  elif [[ "${cid}" == "${total}" ]]; then
-    memid1=$(($cid + 8))
-    memid2=2
-  else
-    memid1=$(($cid + 8))
-    memid2=$(($cid + 9))
-  fi
+  memid1=$(($cid * 2 - 1))
+  memid2=$(($cid * 2))
 }
 
 set_macs() {
@@ -84,16 +89,6 @@ set_macs() {
   else
     mac1=52:54:00:00:0${cid}:aa
     mac2=52:54:00:00:0${cid}:bb
-  fi
-}
-
-set_owners() {
-  if [[ "${cid}" == "${total}" ]]; then
-    owner1=slave
-    owner2=slave
-  else
-    owner1=slave
-    owner2=master
   fi
 }
 
@@ -142,7 +137,6 @@ set_startup_vals
 set_socket_names
 set_memif_ids
 set_macs
-set_owners
 set_subnets
 set_remote_ips
 set_remote_macs
@@ -171,31 +165,21 @@ cpu {
   corelist-workers ${workers}
 }
 
-dpdk {
-  no-pci
-  # dev default {
-    # num-rx-queues 2
-    # num-rx-desc 1024
-    # num-tx-desc 1024
-  # }
-  # dev 0000:18:00.2
-  # uio-driver igb_uio
-  no-multi-seg
-  no-tx-checksum-offload
-}
-
 plugins {
   plugin default { disable }
-  plugin dpdk_plugin.so { enable }
   plugin memif_plugin.so { enable }
 }
+#dpdk {
+#  uio-driver igb_uio
+#  no-multi-seg
+#}
 EOF
 
 bash -c "cat > /etc/vpp/setup.gate" <<EOF
 bin memif_socket_filename_add_del add id 1 filename /root/sockets/${sock1}.sock
 bin memif_socket_filename_add_del add id 2 filename /root/sockets/${sock2}.sock
-create interface memif id ${memid1} socket-id 1 hw-addr ${mac1} ${owner1} rx-queues ${queues} tx-queues ${queues}
-create interface memif id ${memid2} socket-id 2 hw-addr ${mac2} ${owner2} rx-queues ${queues} tx-queues ${queues}
+create interface memif id ${memid1} socket-id 1 hw-addr ${mac1} slave rx-queues ${queues} tx-queues ${queues}
+create interface memif id ${memid2} socket-id 2 hw-addr ${mac2} slave rx-queues ${queues} tx-queues ${queues}
 set int ip addr memif1/${memid1} ${subnet1}
 set int ip addr memif2/${memid2} ${subnet2}
 set int state memif1/${memid1} up

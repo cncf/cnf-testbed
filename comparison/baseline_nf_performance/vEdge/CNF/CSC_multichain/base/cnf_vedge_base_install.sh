@@ -9,7 +9,7 @@ apt-get install --allow-unauthenticated -y make gcc libcurl4-openssl-dev python-
 pip install jsonschema
 
 # Install VPP
-VPP_VERSION="18.10-release"
+VPP_VERSION="18.04-release"
 artifacts=()
 vpp=(vpp vpp-dbg vpp-dev vpp-lib vpp-plugins)
 if [ -z "${VPP_VERSION-}" ]; then
