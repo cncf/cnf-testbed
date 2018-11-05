@@ -6,9 +6,11 @@ parentdir3="$(dirname "$parentdir2")"
 
 
 if [ "$1" = "dual_mellanox" ] ; then
+  PACKET_MASTER_DEVICE_PLAN="m2.xlarge.x86"
   PLAYBOOK_NAME="packet_generator_dual_mellanox.yml"
 elif [ "$1" = "quad_intel" ] ; then
-  PLAYBOOK_NAME="packet_generator_dual_mellanox.yml"
+  PACKET_MASTER_DEVICE_PLAN="m2.xlarge.x86"
+  PLAYBOOK_NAME="packet_generator_quad_intel.yml"
 else
   echo "Usage: $0 <dual_mellanox|quad_intel>"
   exit 1
