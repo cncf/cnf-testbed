@@ -22,7 +22,7 @@ if [[ -n ${cid//[0-9]/} ]] || [[ -n ${total//[0-9]/} ]]; then
   exit 1
 fi
 
-if [[ "$cid" -gt "6" ]] || [[ "$total" -gt "6" ]]; then
+if [[ "$cid" -gt "8" ]] || [[ "$total" -gt "8" ]]; then
   echo "ERROR - DEBUG: Only supports up to 6 chains"
   exit 1
 fi
@@ -34,11 +34,11 @@ fi
 ######################
 
 ## Static parameters ##
-queues=2 # This could be moved out of this script as it also impacts host VPP
+queues=1 # This could be moved out of this script as it also impacts host VPP
 trex_mac1=3c:fd:fe:bd:f8:60
 trex_mac2=3c:fd:fe:bd:f8:61
-main_cores=( 0 5 61 8 64 11 67 ) # The same list is required in the 'run_container.sh' script
-worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 ) # The same list is required in the 'run_container.sh' script
+main_cores=( 0 5 61 8 64 11 67 14 70 ) # The same list is required in the 'run_container.sh' script
+worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 ) # The same list is required in the 'run_container.sh' script
 ######################
 
 ## Functions ##
@@ -172,9 +172,22 @@ cpu {
 }
 
 dpdk {
-  uio-driver igb_uio
+  no-pci
+  # dev default {
+    # num-rx-queues 2
+    # num-rx-desc 1024
+    # num-tx-desc 1024
+  # }
+  # dev 0000:18:00.2
+  # uio-driver igb_uio
   no-multi-seg
-  dev 0000:18:00.2
+  no-tx-checksum-offload
+}
+
+plugins {
+  plugin default { disable }
+  plugin dpdk_plugin.so { enable }
+  plugin memif_plugin.so { enable }
 }
 EOF
 

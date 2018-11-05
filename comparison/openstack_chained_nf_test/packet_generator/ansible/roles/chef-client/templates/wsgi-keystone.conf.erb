@@ -1,0 +1,37 @@
+<%= node['openstack']['identity']['custom_template_banner'] %>
+
+<VirtualHost <%= @params[:server_host] %>:<%= @params[:server_port] %>>
+    WSGIDaemonProcess identity processes=5 threads=1 user=<%= @params[:user] %> group=<%= @params[:group] %> display-name=%{GROUP}
+    WSGIProcessGroup identity
+    WSGIScriptAlias / <%= @params[:server_entry] %>
+    WSGIApplicationGroup %{GLOBAL}
+    WSGIPassAuthorization On
+
+    ErrorLogFormat "%{cu}t %M"
+    ErrorLog <%= @params[:log_dir] %>/identity.log
+    CustomLog <%= @params[:log_dir] %>/identity_access.log combined
+    <% if [true, 'true', 'True'].include?(@params[:log_debug]) -%>
+    LogLevel debug
+    <% end -%>
+
+    <Directory /usr/bin>
+        Require all granted
+    </Directory>
+
+    <% if @params[:use_ssl] -%>
+    SSLEngine On
+    SSLCertificateFile <%= @params[:cert_file] %>
+    SSLCertificateKeyFile <%= @params[:key_file] %>
+    SSLCACertificatePath <%= @params[:ca_certs_path] %>
+      <% if @params[:chain_file] %>
+    SSLCertificateChainFile <%= @params[:chain_file] %>
+      <% end -%>
+    SSLProtocol <%= @params[:protocol] %>
+      <% if @params[:ciphers] -%>
+    SSLCipherSuite <%= @params[:ciphers] %>
+      <% end -%>
+      <% if @params[:cert_required] -%>
+    SSLVerifyClient require
+      <% end -%>
+    <% end -%>
+</VirtualHost>

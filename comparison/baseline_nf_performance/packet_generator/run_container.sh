@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -exuo pipefail
+set -euo pipefail
 
 function die () {
     # Print the message to standard error end exit with error code specified
@@ -29,8 +29,8 @@ function warn () {
 
 function clean_nfvbench () {
     # Remove nfvbench container
-    
-    set -exuo pipefail
+
+    set -euo pipefail
 
     docker rm --force nfvbench || {
         die "Failed to remove container!"
@@ -42,7 +42,7 @@ function clean_nfvbench () {
 function start_nfvbench () {
     # Start nfvbench container
 
-    set -exuo pipefail
+    set -euo pipefail
 
     trex_ver='v2.32'
     nfvbench_ver="opnfv/nfvbench:2.0.1"
@@ -51,19 +51,19 @@ function start_nfvbench () {
         die "Failed to pull container!"
     }
     if [ -z "$(docker inspect -f {{.State.Running}} nfvbench)" ]; then
-      docker run --detach --net=host --privileged -v $PWD:/tmp/nfvbench \
-          -v /dev:/dev -v /lib/modules/$(uname -r):/lib/modules/$(uname -r) \
-          --name nfvbench "${nfvbench_ver}" || {
-          die "Failed to start nfvbench container!"
-      }
-      warn "Remember to update nfvbench_config.cfg with correct PCI addresses."
-      # Below command updates the number of hugepages available for TRex,
-      # allowing more cores to be used
-      docker exec -it nfvbench \
-	  sed -i -e "s/512 /2048 /" -e "s/512\"/2048\"/" /opt/trex/"${trex_ver}"/trex-cfg || die
-      # Also change the mbuf factor to further reduce the memory usage
-      docker exec -it nfvbench \
-	  sed -i -e "s/--cfg {} \&>/--cfg {} --mbuf-factor 0.2 \&>/g" /nfvbench/nfvbench/traffic_server.py || die
+        docker run --detach --net=host --privileged -v $PWD:/tmp/nfvbench \
+            -v /dev:/dev -v /lib/modules/$(uname -r):/lib/modules/$(uname -r) \
+            --name nfvbench "${nfvbench_ver}" || {
+            die "Failed to start nfvbench container!"
+        }
+        warn "Remember to update nfvbench_config.cfg with correct PCI addresses."
+        # Below command updates the number of hugepages available for TRex,
+        # allowing more cores to be used
+        docker exec -it nfvbench \
+        sed -i -e "s/512 /2048 /" -e "s/512\"/2048\"/" /opt/trex/"${trex_ver}"/trex-cfg || die
+        # Also change the mbuf factor to further reduce the memory usage
+        docker exec -it nfvbench \
+        sed -i -e "s/--cfg {} \&>/--cfg {} --mbuf-factor 0.2 \&>/g" /nfvbench/nfvbench/traffic_server.py || die
     fi
 
     warn "NFVbench container running."

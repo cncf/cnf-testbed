@@ -11,15 +11,15 @@ if [[ -n ${chains//[0-9]/} ]] || [[ "$chains" -le "1" ]] ; then
   exit 1
 fi
 
-if [[ "$chains" -gt "6" ]]; then
-  echo "ERROR - DEBUG: Only supports up to 6 chains"
+if [[ "$chains" -gt "8" ]]; then
+  echo "ERROR - DEBUG: Only supports up to 8 chains"
   exit 1
 fi
 ######################
 
 ## Static parameters ##
-main_cores=( 0 5 61 8 64 11 67 )
-worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 )
+main_cores=( 0 5 61 8 64 11 67 14 70 )
+worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
 ######################
 
 mydir=$(dirname $0)
@@ -29,7 +29,7 @@ cd $mydir
 if [ "$cleanup" == "clean" ]; then
   # Only removes container, not image
   for chain in $(seq 1 $chains); do
-    docker rm v${chain}Edge -f
+    docker rm --force v${chain}Edge
   done
   exit 0
 fi
@@ -41,7 +41,7 @@ for chain in $(seq 1 $chains); do
     docker run --privileged --cpus 3 --cpuset-cpus ${main_cores[${chain}]},${worker_cores[${chain}]} --device=/dev/hugepages/:/dev/hugepages/ -v "/etc/vpp/sockets/:/root/sockets/" -t -d --name v${chain}Edge vedge_chain /vEdge/configure.sh ${chain} ${chains}
   fi
   echo "v${chain}Edge container started"
-  sleep 5
+  sleep 10
 done
 
 # Restart VPP to get correct queue pinning of Memifs

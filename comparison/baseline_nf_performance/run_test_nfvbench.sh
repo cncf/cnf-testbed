@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -exuo pipefail
+set -euo pipefail
 
 function die () {
     # Print the message to standard error end exit with error code specified
@@ -31,14 +31,16 @@ function run_bench () {
     # Runs nvfbench and output results into directory
     #
     # Variables read:
-    # - BASH_FUNCTION_DIR - Path to script directory.
-    # - RATES - Path to script directory.
-    # - ITERATIONS - Number of bench iterations.
-    # - DURATION - Duration of bench iterations.
-    # - PREFIX - Prefix for results.
+    # - ${BASH_FUNCTION_DIR} - Path to script directory.
+    # - ${RATES - Path to script directory.
+    # - ${ITERATIONS} - Number of bench iterations.
+    # - ${DURATION} - Duration of bench iterations.
+    # - ${PREFIX} - Prefix for results.
+
+    set -euo pipefail
 
     pushd "${BASH_FUNCTION_DIR}" || die "Change dir failed!"
-    out_dir="results/${PREFIX}/${NODENESS}"
+    out_dir="results/$(date +%d-%b)/${PREFIX}/${NODENESS}"
     if [ ! -d "${out_dir}" ]; then
         warn "Creating directory ${out_dir}"
         mkdir -p "${out_dir}" || die "Create output dir failed!"
@@ -64,8 +66,8 @@ function run_bench () {
 BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
     die "Some error during localizing this source directory."
 }
-PREFIX="vsc"
-RATES=( ndr )
+PREFIX="csc"
+RATES=( "${2:-20Gbps}" )
 ITERATIONS=1
 DURATION=30
 NODENESS=${1:-1}
