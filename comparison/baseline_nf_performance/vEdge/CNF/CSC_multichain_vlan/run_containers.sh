@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -exuo pipefail
+set -euo pipefail
 
 
 function clean_containers () {
@@ -10,7 +10,7 @@ function clean_containers () {
     # - ${CHAINS} - Number of parallel chains.
     # - ${NODENESS} - Number of NFs in chain.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     for chain in $(seq 1 "${CHAINS}"); do
         for node in $(seq 1 "${NODENESS}"); do
@@ -40,7 +40,7 @@ function die () {
 function restart_vpp () {
     # Restarts VPP service.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     warn "Restarting of VPP ....."
     sudo service vpp restart || die "Service restart failed!"
@@ -51,7 +51,7 @@ function restart_vpp () {
 function update_vpp_config() {
     # Update VPP configuration.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     if ! cmp -s "/etc/vpp/setup.gate" "vEdge_csc_vpp.conf"; then
         warn "Updating VPP configuration."
@@ -73,7 +73,7 @@ function validate_input() {
     # - ${NODENESS} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [cleanup|baseline].
 
-    set -exuo pipefail
+    set -euo pipefail
 
     CHAINS="${1}"
     NODENESS="${2}"
@@ -111,7 +111,7 @@ function run_containers () {
     # - ${NODENESS} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [cleanup|baseline].
 
-    set -exuo pipefail
+    set -euo pipefail
 
     VLANS=(1070 1064)
 

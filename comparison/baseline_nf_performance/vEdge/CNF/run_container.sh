@@ -1,12 +1,12 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
-input="$1"
+input="${1}"
 
 mydir=$(dirname $0)
 
-cd $mydir
+cd ${mydir}
 
-if [ "$input" == "clean" ]; then
+if [ "${input}" == "clean" ]; then
   # Only removes container, not image
   docker rm --force vEdge
   exit 0

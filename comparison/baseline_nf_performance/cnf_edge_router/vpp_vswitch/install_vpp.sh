@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -exuo pipefail
+set -euo pipefail
 
 function die () {
     # Print the message to standard error end exit with error code specified
@@ -30,7 +30,7 @@ function warn () {
 function restart_vpp () {
     # Restarts VPP service.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     warn "Restarting of VPP ....."
     sudo service vpp restart || die "Service restart failed!"
@@ -40,7 +40,7 @@ function restart_vpp () {
 function update_startup() {
     # Update VPP startup configuration.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     if ! cmp -s "/etc/vpp/startup.conf" "VPP_configs/vEdge_startup.conf" ; then
         warn "Updating VPP startup configuration."
@@ -55,7 +55,7 @@ function update_startup() {
 function config_sysctl() {
     # Function to update sysctl based on number of hugepages on server.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     hpages="32768" # Enough to support 8 VNFs with current image
     vpp_config="/etc/sysctl.d/80-vpp.conf"
@@ -87,7 +87,7 @@ function config_sysctl() {
 
 function installed () {
 
-    set -exuo pipefail
+    set -euo pipefail
 
     # Check if the given utility is installed. Fail if not installed.
     #
@@ -103,7 +103,7 @@ function installed () {
 function is_vpp_installed () {
     # Function to update sysctl based on number of hugepages on server.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     # Check if VPP is already installed
     if installed vpp; then
@@ -120,8 +120,7 @@ function is_vpp_installed () {
             warn "VPP already installed."
             config_sysctl || die
             update_startup || die
-            warn "Existing installation can be removed using: $0 clean."
-            exit 1
+            die "Existing installation can be removed using: ${0} clean!"
         fi
     fi
 }
@@ -129,7 +128,7 @@ function is_vpp_installed () {
 function install_vpp () {
     # Install vpp.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     VPP_VERSION="18.10-release"
     artifacts=()
@@ -152,8 +151,7 @@ function install_vpp () {
         sudo ./reconfigure.sh CNF baseline || die "Reconfiguration failed!"
         exit 0
     else
-        warn "Something went wrong while building and installing."
-        exit 1
+        die "Something went wrong while building and installing!"
     fi
 }
 

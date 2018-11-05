@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -exuo pipefail
+set -euo pipefail
 
 function die () {
     # Print the message to standard error end exit with error code specified
@@ -31,11 +31,13 @@ function run_bench () {
     # Runs nvfbench and output results into directory
     #
     # Variables read:
-    # - BASH_FUNCTION_DIR - Path to script directory.
-    # - RATES - Path to script directory.
-    # - ITERATIONS - Number of bench iterations.
-    # - DURATION - Duration of bench iterations.
-    # - PREFIX - Prefix for results.
+    # - ${BASH_FUNCTION_DIR} - Path to script directory.
+    # - ${RATES - Path to script directory.
+    # - ${ITERATIONS} - Number of bench iterations.
+    # - ${DURATION} - Duration of bench iterations.
+    # - ${PREFIX} - Prefix for results.
+
+    set -euo pipefail
 
     pushd "${BASH_FUNCTION_DIR}" || die "Change dir failed!"
     out_dir="results/$(date +%d-%b)/${PREFIX}/${NODENESS}"

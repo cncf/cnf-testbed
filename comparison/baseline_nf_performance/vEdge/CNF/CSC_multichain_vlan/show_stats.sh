@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -exuo pipefail
+set -euo pipefail
 
 
 function die () {
@@ -29,7 +29,7 @@ function validate_input() {
     # - ${CHAINS} - Number of parallel chains.
     # - ${NODENESS} - Number of NFs in chain.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     CHAINS="${1}"
     NODENESS="${2}"

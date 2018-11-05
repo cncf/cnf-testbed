@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -exuo pipefail
+set -euo pipefail
 
 function die () {
     # Print the message to standard error end exit with error code specified
@@ -30,7 +30,7 @@ function warn () {
 function restart_vpp () {
     # Restarts VPP service.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     warn "Restarting of VPP ....."
     sudo service vpp restart || die "Service restart failed!"

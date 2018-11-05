@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -exuo pipefail
+set -euo pipefail
 
 
 function append_vpp_config () {
@@ -11,7 +11,7 @@ function append_vpp_config () {
     # Variable read:
     # - ${VPP_CONF_FILE} - VPP configuration file.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     echo "${1-}" | sudo tee -a "${VPP_CONF_FILE}"
 }
@@ -23,7 +23,7 @@ function clean_vpp_config () {
     # Variable set:
     # - ${VPP_CONF_FILE} - VPP configuration file.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     VPP_CONF_FILE="vEdge_csc_vpp.conf"
     if [ -f "${VPP_CONF_FILE}" ]; then
@@ -57,7 +57,7 @@ function generate_vpp_config () {
     # - ${NODENESS} - Number of NFs in chain.
     # - ${VLANS} - Base VLANs.
 
-    set -exuo pipefail
+    set -euo pipefail
 
     domains=$(( "${CHAINS}" * ("${NODENESS}" + 1 ) ))
     for domain in $(seq 1 ${domains}); do
@@ -115,7 +115,7 @@ function validate_input() {
     # - ${NODENESS} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [cleanup|baseline].
 
-    set -exuo pipefail
+    set -euo pipefail
 
     if [[ "${#}" -lt "3" ]]; then
         warn "Usage: ${0} <Chains> <Nodeness> <VLAN#1> <VLAN#2>"
