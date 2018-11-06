@@ -11,8 +11,8 @@
 
 - name: Get tarball for mellanox_4.4
   get_url:
-    url: http://content.mellanox.com/ofed/MLNX_OFED-4.4-1.0.0.0/MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64.tgz
-    dest: /tmp/MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64.tgz
+    url: http://content.mellanox.com/ofed/MLNX_OFED-4.4-2.0.7.0/MLNX_OFED_LINUX-4.4-2.0.7.0-ubuntu18.04-x86_64.tgz
+    dest: /tmp/MLNX_OFED_LINUX-4.4-2.0.7.0-ubuntu18.04-x86_64.tgz
   when: mellanox_4_4
 
 - name: Expand tarball for mellanox_4.1
@@ -24,7 +24,7 @@
 
 - name: Expand tarball for mellanox_4.4
   unarchive:
-    src: /tmp/MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64.tgz
+    src: /tmp/MLNX_OFED_LINUX-4.4-2.0.7.0-ubuntu18.04-x86_64.tgz
     dest: /tmp
     remote_src: true
   when: mellanox_4_4
@@ -38,7 +38,7 @@
 - name: Install mellanox_4.4
   command: ./mlnxofedinstall --dpdk --upstream-libs --force
   args: 
-    chdir: /tmp/MLNX_OFED_LINUX-4.4-1.0.0.0-ubuntu18.04-x86_64
+    chdir: /tmp/MLNX_OFED_LINUX-4.4-2.0.7.0-ubuntu18.04-x86_64
   when: mellanox_4_4
 
 - name: Restart openibd
@@ -48,6 +48,7 @@
 
 - name: Start MST
   command: mst start
+  when: mellanox_4_1
 
 - name: Fetch Mellanox device path
   shell: >
@@ -62,3 +63,4 @@
     echo: yes
     responses: 
       "Apply new Configuration.*": "y" 
+  when: mellanox_4_1
