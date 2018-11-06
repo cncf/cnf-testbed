@@ -29,7 +29,6 @@ function validate_input() {
     # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
     # - ${NODENESS} - Number of NFs in chain.
-    # - ${OPERATION} - Operation bit [baseline].
 
     set -euo pipefail
 
@@ -45,12 +44,6 @@ function validate_input() {
     CHAIN="${1}"
     NODE="${2}"
     NODENESS="${3}"
-    OPERATION="${4-}"
-
-    if [ ! -z "${OPERATION}" ] && [ ! "${OPERATION}" == "baseline" ]; then
-        warn "  Usage: $0 <Chain ID> <Node ID> <Total Chains> [baseline]"
-        die "ERROR - Invalid 4th agument provided (${OPERATION})"
-    fi
 
     if [[ -n ${CHAIN//[0-9]/} ]] || [[ -n ${NODE//[0-9]/} ]] || [[ -n ${NODENESS//[0-9]/} ]]; then
         die "ERROR: Chain, node and nodeness must be an integer values!"
@@ -115,8 +108,41 @@ function set_memif_ids () {
 
     set -euo pipefail
 
-    MEMID1=$(((${CHAIN} - 1) * ${NODENESS} * 2 + (${NODE} * 2 - 1)))
-    MEMID2=$(((${CHAIN} - 1) * ${NODENESS} * 2 + (${NODE} * 2)))
+    if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
+        MEMID1=$(((${CHAIN} - 1)  * 2 + 1))
+        MEMID2=$(((${CHAIN} - 1)  * 2 + 2))
+    elif [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" != "1" ]]; then
+        MEMID1=$(((${CHAIN} - 1)  * 2 + 1))
+        MEMID2=10
+    elif [[ "${NODE}" == "${NODENESS}" ]]; then
+        MEMID1=$((${NODE} + 8))
+        MEMID2=$(((${CHAIN} - 1)  * 2 + 2))
+    else
+        MEMID1=$((${NODE} + 8))
+        MEMID2=$((${NODE} + 9))
+    fi
+}
+
+
+function set_owners () {
+    # Set memif IDs.
+    #
+    # Variable read:
+    # - ${NODE} - Node ID.
+    # - ${NODENESS} - Number of NFs in chain.
+    # Variable set:
+    # - ${OWNER1} - East memif role.
+    # - ${OWNER2} - West memif role.
+
+    set -euo pipefail
+
+    if [[ "${NODE}" == "${NODENESS}" ]]; then
+        OWNER1=slave
+        OWNER2=slave
+    else
+        OWNER1=slave
+        OWNER2=master
+    fi
 }
 
 
@@ -190,8 +216,19 @@ function set_socket_names () {
 
     set -euo pipefail
 
-    SOCK1=memif$(((${CHAIN} - 1) * ${NODENESS} * 2 + (${NODE} * 2 - 1)))
-    SOCK2=memif$(((${CHAIN} - 1) * ${NODENESS} * 2 + (${NODE} * 2)))
+    if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
+        SOCK1=memif$(((${CHAIN} - 1)  * 2 + 1))
+        SOCK2=memif$(((${CHAIN} - 1)  * 2 + 2))
+    elif [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" != "1" ]]; then
+        SOCK1=memif$(((${CHAIN} - 1)  * 2 + 1))
+        SOCK2=int${CHAIN}1
+    elif [[ "${NODE}" == "${NODENESS}" ]]; then
+        SOCK1=int${CHAIN}$((${NODE} - 1))
+        SOCK2=memif$(((${CHAIN} - 1)  * 2 + 2))
+    else
+        SOCK1=int${CHAIN}$((${NODE} - 1))
+        SOCK2=int${CHAIN}${NODE}
+    fi
 }
 
 
@@ -236,19 +273,11 @@ function set_startup_vals () {
 
     set -euo pipefail
 
-    if [ "${OPERATION}" == "baseline" ]; then
-        QUEUES=1
-        # The same list is required in the 'run_container.sh' script
-        main_cores=( 0 5 61 8 64 11 67 14 70 )
-        # The same list is required in the 'run_container.sh' script
-        worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
-    else
-        QUEUES=2
-        # The same list is required in the 'run_container.sh' script
-        main_cores=( 0 5 61 8 64 11 67 14 70 )
-        # The same list is required in the 'run_container.sh' script
-        worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
-    fi
+    QUEUES=1
+    # The same list is required in the 'run_container.sh' script
+    main_cores=( 0 5 61 8 64 11 67 14 70 )
+    # The same list is required in the 'run_container.sh' script
+    worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
 
     MAIN_CORE=${main_cores[${NODE}]}
     WORKERS=${worker_cores[${NODE}]}
@@ -260,6 +289,7 @@ set_startup_vals || die
 set_socket_names || die
 set_memif_ids || die
 set_macs || die
+set_owners || die
 set_subnets || die
 set_remote_ips || die
 set_remote_macs || die
@@ -311,8 +341,8 @@ EOF
 bash -c "cat > /etc/vpp/setup.gate" <<EOF
 bin memif_socket_filename_add_del add id 1 filename /root/sockets/${SOCK1}.sock
 bin memif_socket_filename_add_del add id 2 filename /root/sockets/${SOCK2}.sock
-create interface memif id ${MEMID1} socket-id 1 hw-addr ${MAC1} slave rx-queues ${QUEUES} tx-queues ${QUEUES}
-create interface memif id ${MEMID2} socket-id 2 hw-addr ${MAC2} slave rx-queues ${QUEUES} tx-queues ${QUEUES}
+create interface memif id ${MEMID1} socket-id 1 hw-addr ${MAC1} ${OWNER1} rx-queues ${QUEUES} tx-queues ${QUEUES}
+create interface memif id ${MEMID2} socket-id 2 hw-addr ${MAC2} ${OWNER2} rx-queues ${QUEUES} tx-queues ${QUEUES}
 set int ip addr memif1/${MEMID1} ${SUBNET1}
 set int ip addr memif2/${MEMID2} ${SUBNET2}
 set int state memif1/${MEMID1} up

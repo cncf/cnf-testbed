@@ -55,7 +55,7 @@ function update_vpp_config() {
 
     if ! cmp -s "/etc/vpp/setup.gate" "vEdge_csc_vpp.conf"; then
         warn "Updating VPP configuration."
-        cp vEdge_csc_vpp.conf /etc/vpp/setup.gate || {
+        cp vEdge_csp_vpp.conf /etc/vpp/setup.gate || {
             die "Failed to copy VPP configuration!"
         }
         restart_vpp || die
@@ -149,8 +149,8 @@ function run_containers () {
                     --cpuset-cpus "${MAIN_CORES[${node}]}","${WORKER_CORES[${node}]}" \
                     --device=/dev/hugepages/:/dev/hugepages/ \
                     --volume "/etc/vpp/sockets/:/root/sockets/" \
-                    --name "${dcr_name}" vedge_csc \
-                    /vEdge/configure.sh "${chain}" "${node}" "${NODENESS}" "${baseline}" || {
+                    --name "${dcr_name}" vedge_chain \
+                    /vEdge/configure.sh "${chain}" "${node}" "${NODENESS}" || {
                     die "Failed to start ${dcr_name} container!"
                 }
             fi
@@ -161,6 +161,7 @@ function run_containers () {
     # Restart VPP to get correct queue pinning of Memifs.
     restart_vpp || die
 }
+
 
 BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
     die "Some error during localizing this source directory!"

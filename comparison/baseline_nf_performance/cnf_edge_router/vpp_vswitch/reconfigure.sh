@@ -39,17 +39,25 @@ function restart_vpp () {
 
 case "${1}" in
   VNF)
-    config_file="vEdge_vnf.conf"
+    if [ "${3-}" == "vlan" ]; then
+        config_file="vEdge_vnf_vlan.conf"
+    else
+        config_file="vEdge_vnf.conf"
+    fi
     ;;
   CNF)
-    config_file="vEdge_cnf.conf"
+    if [ "${3-}" == "vlan" ]; then
+        config_file="vEdge_cnf_vlan.conf"
+    else
+        config_file="vEdge_cnf.conf"
+    fi
     ;;
   *)
-    warn "Usage: $0 {VNF|CNF} [baseline]"
+    warn "Usage: $0 {VNF|CNF} [baseline] [vlan]"
     die
 esac
 
-if [ "${2}" == "baseline" ]; then
+if [ "${2-}" == "baseline" ]; then
   startup="vEdge_baseline_startup.conf"
 else
   startup="vEdge_startup.conf"
@@ -57,13 +65,17 @@ fi
 
 if ! cmp -s "/etc/vpp/startup.conf" "VPP_configs/${startup}" ; then
   warn "Updating VPP Startup configuration."
-  cp VPP_configs/"${startup}" /etc/vpp/startup.conf || die "Config copy failed!"
+  sudo cp VPP_configs/"${startup}" /etc/vpp/startup.conf || {
+      die "Config copy failed!"
+  }
   restart_vpp || die
 fi
 
 # Update VPP configuration to match vBNG test case
 if ! cmp -s "/etc/vpp/setup.gate" "VPP_configs/${config_file}" ; then
   warn "Updating VPP configuration."
-  cp VPP_configs/"${config_file}" /etc/vpp/setup.gate || die "Config copy failed!"
+  sudo cp VPP_configs/"${config_file}" /etc/vpp/setup.gate || {
+      die "Config copy failed!"
+  }
   restart_vpp || die
 fi
