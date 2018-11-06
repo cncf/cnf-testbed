@@ -33,17 +33,17 @@
       filter: "{{ ansible_bond0_0.ipv4.network }}"
   - name: Get trex_port_0 pci id
     setup: 
-      filter: "{{ ansible_enp2s0d1.pciid }}"
+      filter: "{{ ansible_enp94s0f0.pciid }}"
   - name: Get trex_port_1 pci id
     setup: 
-      filter: "{{ ansible_eno2.pciid }}"
+      filter: "{{ ansible_enp94s0f1.pciid }}"
   post_tasks:
   - name: Reboot Server
     reboot:
     
   vars:
-    trex_port_0_pci: "{{ ansible_enp2s0d1.pciid }}"
-    trex_port_1_pci: "{{ ansible_eno2.pciid }}"
+    trex_port_0_pci: "{{ ansible_enp94s0f0.pciid }}"
+    trex_port_1_pci: "{{ ansible_enp94s0f1.pciid }}"
     vlan_ids: 1070, 1064
     docker__registries:
       - registry_url: "https://index.docker.io/v1/"
