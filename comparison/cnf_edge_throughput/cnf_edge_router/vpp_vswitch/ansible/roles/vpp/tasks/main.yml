@@ -57,14 +57,32 @@
   args:
     chdir: /srv/vpp
 
-- name: Fetch nodes
-  shell: > 
-            ls /sys/devices/system/node/ | 
-            grep node | 
-            paste -s -d ','
-  register: result
+- name: Create vpp directory
+  file: path=/etc/vpp/sockets state=directory
 
-- name: Prepare Hugepages
-  command: echo 4096 > /sys/devices/system/node/{{ item }}/hugepages/hugepages-2048kB/nr_hugepages
-  with_items: "{{ result.stdout.split(',') }}"
+- name: Write vpp baseline startup config file
+  template: src=vEdge_baseline_startup.conf.j2 dest=/etc/vpp/startup.conf
+  when: baseline
 
+- name: Write vpp startup config file
+  template: src=vEdge_startup.conf.j2 dest=/etc/vpp/startup.conf
+  when: not baseline
+
+- name: Update CNF VPP configuration
+  template: src=vEdge_cnf.conf.j2 dest=/etc/vpp/setup.gate
+  when: cnf
+
+- name: Update VNF VPP configuration
+  template:  src=vEdge_vnf.conf.j2 dest=/etc/vpp/setup.gate
+  when: vnf
+
+- name: Restart vpp
+  service: 
+    name: vpp
+    state: restarted
+
+- name: Write hugepages sys.conf
+  template: src=80-vpp.conf.j2 dest=/etc/sysctl.d/80-vpp.conf
+
+- name: Refresh sysctl
+  command: sysctl -p
