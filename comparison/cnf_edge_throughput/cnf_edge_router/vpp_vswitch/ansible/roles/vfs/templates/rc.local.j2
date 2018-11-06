@@ -1,0 +1,4 @@
+#!/bin/sh -e
+echo 8 > /sys/class/net/{{ interface }}/device/sriov_numvfs
+ip link set {{ interface }} vf 0 trust on
+ip link set {{ interface }} vf 1 trust on
