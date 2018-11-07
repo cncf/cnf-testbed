@@ -40,8 +40,8 @@ https://github.com/cncf/cnfs/archive/master.zip
 Once you have the repository on the build machine, we can build a Docker container that will allow us to launch our instance:
 
 ```
-cd cnfs/comparison/openstack_chained_nf_test/packet_generator
-docker build . -t terraform:latest
+cd cnfs/comparison/openstack_chained_nf_test/deploy_openstack
+docker build -t cnfdeploytools:latest  ../../../tools/deploy/
 ```
 
 ## SSH "root" key for Ansible
@@ -72,3 +72,5 @@ If L2 tenant networks are going to be used in the packet environment (perhaps wi
 ## Host buildout and configuration
 
 We're now at a point where we have our build image, we have our security credentials defined, and we have the network infomration we'll need for the deployment
+
+See [README for deploying from docker](deploy_openstack/README.md)

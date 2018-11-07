@@ -1,6 +1,6 @@
-**Deploy an OpenStack clsuter to Packet**
+**Deploy an OpenStack cluster to Packet**
 
-Start by ensuring that your system ssh keys are availiable under ~/.ssh/id_rsa and you have added the matching public key to your packet.net account.
+Start by ensuring that your system ssh keys are availiable under ~/.ssh/id_rsa and you have added the matching public key to your Packet.net account.
 
 Set the environment variables for the project id (PACKET_PROJECT_ID), API key (PACKET_AUTH_TOKEN), facility (PACKET_FACILITY), machine type (PACKET_MASTER_DEVICE_PLAN) and OS (PACKET_OPERATING_SYSTEM).
 
