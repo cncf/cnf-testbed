@@ -5,6 +5,7 @@
 - name: get openstack-chef code 
   git: 
     repo: https://git.openstack.org/openstack/openstack-chef
+    version: stable/queens
     dest: /root/openstack-chef
   ignore_errors: True
     
@@ -16,4 +17,3 @@
   shell: tar cf - cookbooks/ | (cd /root/openstack-chef; tar xf -)
   args:
     chdir: /root/.berkshelf/
-
