@@ -208,14 +208,14 @@ function set_subnets () {
     set -euo pipefail
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
-        SUBNET1=172.16.1$(( ${CHAIN} - 1 )).10/24
-        SUBNET2=172.16.2$(( ${CHAIN} - 1 )).10/24
+        SUBNET1=172.16.10.1$(( ${CHAIN} - 1 ))/24
+        SUBNET2=172.16.20.1$(( ${CHAIN} - 1 ))/24
     elif [[ "${NODE}" == "1" ]]; then
-        SUBNET1=172.16.1$(( ${CHAIN} - 1 )).10/24
+        SUBNET1=172.16.10.1$(( ${CHAIN} - 1 ))/24
         SUBNET2=172.16.31.10/24
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
         SUBNET1=172.16.$(($NODE + 29)).11/24
-        SUBNET2=172.16.2$(( ${CHAIN} - 1 )).10/24
+        SUBNET2=172.16.20.1$(( ${CHAIN} - 1 ))/24
     else
         SUBNET1=172.16.$(($NODE + 29)).11/24
         SUBNET2=172.16.$(($NODE + 30)).10/24

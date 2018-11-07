@@ -66,7 +66,7 @@ function run_bench () {
 BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
     die "Some error during localizing this source directory."
 }
-PREFIX="csc"
+PREFIX="test"
 RATES=( "${2:-20Gbps}" )
 ITERATIONS=1
 DURATION=30
