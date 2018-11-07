@@ -3,7 +3,7 @@ docker run \
   --rm \
   --dns 147.75.69.23 --dns 8.8.8.8 \
   -v $(pwd)/data:/cncf/data \
-  -v $(pwd)/override.tf:/cncf/packet/override.tf \
+  -v $(pwd)/k8s_cluster_override.tf:/cncf/packet/override.tf \
   -e NAME=packet \
   -e CLOUD=packet \
   -e COMMAND=deploy \

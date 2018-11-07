@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "generic/ubuntu1604"
+  config.vm.box_version = "1.8.14"
+
+  config.vm.synced_folder './shared', '/build'
+  config.disksize.size = "2G"
+  config.vm.define vm_name = "vedge" do |config|
+    config.vm.hostname = vm_name
+    config.vm.provision "shell", path: "vedge_vm_build.sh", privileged: true
+    config.vm.provider :libvirt do |v|
+      v.cpus = 3
+      v.numa_nodes = [
+        {:cpus => "0-2", :memory => "4096"}
+      ]
+      v.memorybacking :hugepages
+      v.memorybacking :access, :mode => 'shared'
+    end
+  end
+end
