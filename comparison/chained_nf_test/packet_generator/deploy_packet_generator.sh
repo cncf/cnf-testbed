@@ -25,6 +25,7 @@ docker build -t cnfdeploytools:latest .
 popd
 
 docker run \
+  -v "$(pwd):/workspace" \
   -v "${project_root}/comparison/ansible:/ansible" \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
@@ -35,7 +36,7 @@ docker run \
   -e TF_VAR_packet_master_device_plan=${PACKET_MASTER_DEVICE_PLAN} \
   -e TF_VAR_packet_operating_system=${PACKET_OPERATING_SYSTEM} \
   -e TF_VAR_playbook=/ansible/$PLAYBOOK_NAME \
-  -ti cnfdeploytools:latest apply -auto-approve
+  -ti cnfdeploytools:latest apply -auto-approve -state=/workspace/terraform.tfstate
 
 # To drop to a shell:
 #  --entrypoint /bin/bash \

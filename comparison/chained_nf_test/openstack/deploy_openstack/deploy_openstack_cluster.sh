@@ -25,6 +25,7 @@ docker build -t cnfdeploytools:latest .
 popd
 
 docker run \
+  -v "$(pwd):/workspace" \
   -v "${project_root}/comparison/ansible:/ansible" \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
@@ -32,4 +33,4 @@ docker run \
   -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
   -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \
   -e TF_VAR_playbook=/ansible/openstack_chef_deploy.yml \
-  -ti cnfdeploytools:latest $CMD
+  -ti cnfdeploytools:latest $CMD -auto-approve -state=/workspace/terraform.tfstate
