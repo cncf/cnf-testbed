@@ -48,10 +48,10 @@ EOF
 
 update_rxq_pinning() {
   echo "Updating VPP configuration (rx-placement)"
-  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 0 worker 0
-  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 1 worker 1
-  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 2 worker 2
-  vppctl set interface rx-placement TwentyFiveGigabitEthernet5e/0/1 queue 3 worker 3
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet3b/0/1 queue 0 worker 0
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet3b/0/1 queue 1 worker 1
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet3b/0/1 queue 2 worker 2
+  vppctl set interface rx-placement TwentyFiveGigabitEthernet3b/0/1 queue 3 worker 3
 
   worker=4
   for vEth in $(seq 0 $(($chains * 2 - 1))); do

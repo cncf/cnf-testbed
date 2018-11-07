@@ -1,20 +1,24 @@
-#!/bin/bash
-set -o xtrace  # print commands during script execution
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+chain=${1}
+node=${2}
+nodeness=${3}
 
 sudo service vpp stop
 
-pci_search="Ethernet"
-pci_devs=($(lspci | grep "$pci_search" | awk '{print $1}' | grep -v "00:05.0"))
-dev_list=""
-if [ ! "${#pci_devs[@]}" == "0" ]; then
-  for dev in ${pci_devs[@]}; do
-    dev_list+="dev 0000:$dev "
-  done
+pci_search=":1000:0200"
+pci_devs=($(lspci -d "${pci_search}" | awk '{print $1}' | grep -v "00:05.0"))
+if [ "${#pci_devs[@]}" == "0" ]; then
+    echo "ERROR: No PCI devices detected!"
+    exit 1
 fi
 
-sudo /vagrant/dpdk-devbind.py -b uio_pci_generic ${pci_devs[@]}
+chmod +x /vagrant/dpdk-devbind.py && \
+    sudo /vagrant/dpdk-devbind.py -b uio_pci_generic ${pci_devs[@]} || true
 
-# Overwrite default VPP configuration 
+# Overwrite default VPP configuration
 sudo bash -c "cat > /etc/vpp/startup.conf" <<EOF
 
 unix {
@@ -24,6 +28,7 @@ unix {
   cli-listen /run/vpp/cli.sock
   gid vpp
   startup-config /etc/vpp/setup.gate
+  cli-prompt c${chain}v${node}Edge:
 }
 
 api-trace {
@@ -85,7 +90,7 @@ cpu {
 
 dpdk {
         ## Change default settings for all intefaces
-        dev default {
+        #dev default {
                 ## Number of receive queues, enables RSS
                 ## Default is 1
                 #num-rx-queues 2
@@ -103,10 +108,10 @@ dpdk {
                 ## VLAN strip offload mode for interface
                 ## Default is off
                 # vlan-strip-offload on
-        }
+        #}
 
         ## Whitelist specific interface by specifying PCI address
-        ${dev_list}
+        ${pci_devs[@]/#/dev 0000:}
 
         ## Whitelist specific interface by specifying PCI address and in
         ## addition specify custom parameters for this interface
@@ -135,7 +140,7 @@ dpdk {
         ## Increase number of buffers allocated, needed only in scenarios with
         ## large number of interfaces and worker threads. Value is per CPU socket.
         ## Default is 16384
-        num-mbufs 128000
+        #num-mbufs 128000
 
         ## Change hugepages allocation per-socket, needed only if there is need for
         ## larger number of mbufs. Default is 256M on each detected CPU socket
@@ -146,50 +151,13 @@ dpdk {
         no-tx-checksum-offload
 }
 
-
 plugins {
-        ## Adjusting the plugin path depending on where the VPP plugins are
-        #       path /home/bms/vpp/build-root/install-vpp-native/vpp/lib64/vpp_plugins
-
-        ## Disable all plugins by default and then selectively enable specific plugins
-        plugin default { disable }
-        plugin dpdk_plugin.so { enable }
-        plugin acl_plugin.so { enable }
-
-        ## Enable all plugins by default and then selectively disable specific plugins
-        # plugin dpdk_plugin.so { disable }
-        # plugin acl_plugin.so { disable }
+  plugin default { disable }
+  plugin dpdk_plugin.so { enable }
 }
-
-        ## Alternate syntax to choose plugin path
-        # plugin_path /home/bms/vpp/build-root/install-vpp-native/vpp/lib64/vpp_plugins
 EOF
 
 sudo service vpp start
-sleep 10
+sleep 5
 
-# Pre-heating the API so that the following works (workaround?)
-sudo vppctl show int
-
-intfs=($(sudo vppctl show int | grep Ethernet | awk '{print $1}'))
-if [ ! "${#intfs[@]}" == "2" ]; then
-  echo "ERROR: Number of interfaces should be 2 (is ${#intfs[@]})"
-  exit 1
-fi
-
-# Create interface configuration for VPP
-sudo bash -c "cat > /etc/vpp/setup.gate" <<EOF
-set int state ${intfs[0]} up
-set interface ip address ${intfs[0]} 172.16.10.10/24
-
-set int state ${intfs[1]} up
-set interface ip address ${intfs[1]} 172.16.20.10/24
-
-set ip arp static ${intfs[0]} 172.16.10.100 3c:fd:fe:bd:f8:60
-set ip arp static ${intfs[1]} 172.16.20.100 3c:fd:fe:bd:f8:61
-
-ip route add 172.16.64.0/18 via 172.16.10.100
-ip route add 172.16.192.0/18 via 172.16.20.100
-EOF
-
-sudo service vpp restart
+chmod +x ./configure.sh && sudo ./configure.sh ${chain} ${node} ${nodeness}

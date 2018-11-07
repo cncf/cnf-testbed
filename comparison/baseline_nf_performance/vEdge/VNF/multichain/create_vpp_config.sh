@@ -42,12 +42,12 @@ done
 
 echo "" >> ${conf_file}
 
-echo "create sub TwentyFiveGigabitEthernet5e/0/1 ${vlans[0]}" >> ${conf_file}
-echo "create sub TwentyFiveGigabitEthernet5e/0/1 ${vlans[1]}" >> ${conf_file}
+echo "create sub TwentyFiveGigabitEthernet3b/0/1 ${vlans[0]}" >> ${conf_file}
+echo "create sub TwentyFiveGigabitEthernet3b/0/1 ${vlans[1]}" >> ${conf_file}
 
 echo "" >> ${conf_file}
 
-echo "set int l2 bridge TwentyFiveGigabitEthernet5e/0/1.${vlans[0]} 1" >> ${conf_file}
+echo "set int l2 bridge TwentyFiveGigabitEthernet3b/0/1.${vlans[0]} 1" >> ${conf_file}
 echo "set int l2 bridge VirtualEthernet0/0/0 1" >> ${conf_file}
 
 vEth=1
@@ -62,13 +62,13 @@ done
 echo "" >> ${conf_file}
 
 echo "set int l2 bridge VirtualEthernet0/0/$((${sockets} - 1)) ${domains}" >> ${conf_file}
-echo "set int l2 bridge TwentyFiveGigabitEthernet5e/0/1.${vlans[1]} ${domains}" >> ${conf_file}
+echo "set int l2 bridge TwentyFiveGigabitEthernet3b/0/1.${vlans[1]} ${domains}" >> ${conf_file}
 
 echo "" >> ${conf_file}
 
-echo "set int state TwentyFiveGigabitEthernet5e/0/1 up" >> ${conf_file}
-echo "set int state TwentyFiveGigabitEthernet5e/0/1.${vlans[0]} up" >> ${conf_file}
-echo "set int state TwentyFiveGigabitEthernet5e/0/1.${vlans[1]} up" >> ${conf_file}
+echo "set int state TwentyFiveGigabitEthernet3b/0/1 up" >> ${conf_file}
+echo "set int state TwentyFiveGigabitEthernet3b/0/1.${vlans[0]} up" >> ${conf_file}
+echo "set int state TwentyFiveGigabitEthernet3b/0/1.${vlans[1]} up" >> ${conf_file}
 
 echo "" >> ${conf_file}
 
@@ -78,7 +78,7 @@ done
 
 echo "" >> ${conf_file}
 
-echo "set interface l2 tag-rewrite TwentyFiveGigabitEthernet5e/0/1.${vlans[0]} pop 1" >> ${conf_file}
-echo "set interface l2 tag-rewrite TwentyFiveGigabitEthernet5e/0/1.${vlans[1]} pop 1" >> ${conf_file}
+echo "set interface l2 tag-rewrite TwentyFiveGigabitEthernet3b/0/1.${vlans[0]} pop 1" >> ${conf_file}
+echo "set interface l2 tag-rewrite TwentyFiveGigabitEthernet3b/0/1.${vlans[1]} pop 1" >> ${conf_file}
 
 exit 0
