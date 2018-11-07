@@ -161,3 +161,4 @@ sudo service vpp start
 sleep 5
 
 chmod +x ./configure.sh && sudo ./configure.sh ${chain} ${node} ${nodeness}
+chmod +x ./update_hostname.sh && sudo ./update_hostname.sh ${chain} ${node}

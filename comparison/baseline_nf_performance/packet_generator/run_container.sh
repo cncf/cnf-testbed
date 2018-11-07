@@ -45,7 +45,7 @@ function start_nfvbench () {
     set -euo pipefail
 
     trex_ver='v2.32'
-    nfvbench_ver="opnfv/nfvbench:2.0.1"
+    nfvbench_ver="opnfv/nfvbench:2.0.3"
 
     docker pull "${nfvbench_ver}" || {
         die "Failed to pull container!"
