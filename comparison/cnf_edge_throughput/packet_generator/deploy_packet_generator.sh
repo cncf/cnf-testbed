@@ -24,7 +24,11 @@ pushd "$deploy_tools_path"
 docker build -t cnfdeploytools:latest .
 popd
 
-docker run -v $(pwd)/ansible:/ansible -v ~/.ssh/id_rsa:/root/.ssh/id_rsa -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub -v "${tool_path}/terraform-ansible/:/terraform" \
+docker run \
+  -v "${project_root}/comparison/ansible:/ansible" \
+  -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
+  -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
+  -v "${tool_path}/terraform-ansible/:/terraform" \
   -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
   -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \
   -e TF_VAR_packet_facility=${PACKET_FACILITY} \
@@ -36,4 +40,3 @@ docker run -v $(pwd)/ansible:/ansible -v ~/.ssh/id_rsa:/root/.ssh/id_rsa -v ~/.s
 # To drop to a shell:
 #  --entrypoint /bin/bash \
 #  -ti cnfdeploytools:latest
-

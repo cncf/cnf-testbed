@@ -4,9 +4,26 @@
   - name: Apt update
     apt:
       update_cache: yes
+    when: ansible_os_family == "Debian"
+
+  - name: Install EPEL Package
+    yum: 
+      name: epel-release
+    when: ansible_os_family == "RedHat"
+  - name: Yum update
+    yum:
+      update_cache: yes
+    when: ansible_os_family == "RedHat"
+
   - name: Install Vlan Package
     apt: 
       name: vlan
+    when: ansible_os_family == "Debian"
+  - name: Install Vlan Package
+    yum: 
+      name: vconfig
+    when: ansible_os_family == "RedHat"
+   
   - name: Get bond interface slaves
     setup:
       filter: "{{ ansible_bond0.slaves }}"
@@ -33,27 +50,20 @@
       filter: "{{ ansible_bond0_0.ipv4.network }}"
   - name: Get trex_port_0 pci id
     setup: 
-      filter: "{{ ansible_eno2.pciid }}"
+      filter: "{{ ansible_enp1s0f0.pciid }}"
   - name: Get trex_port_1 pci id
     setup: 
-      filter: "{{ ansible_eno3.pciid }}"
-  post_tasks:
-  - name: Reboot Server
-    reboot:
+      filter: "{{ ansible_enp1s0f1.pciid }}"
+#  post_tasks:
+#  - name: Reboot Server
+#    reboot:
+#      reboot_timeout: 3600
+#    ignore_errors: True
     
   vars:
-    trex_port_0_pci: "{{ ansible_eno2.pciid }}"
-    trex_port_1_pci: "{{ ansible_eno3.pciid }}"
-    vlan_ids: 1076, 1078
-    docker__registries:
-      - registry_url: "https://index.docker.io/v1/"
-    docker__package_dependencies:
-      - "apt-transport-https"
-      - "ca-certificates"
-      - "software-properties-common"
-      - "gnupg2"
-      - "cron"
-      - "python-pip"
+    trex_port_0_pci: "{{ ansible_enp2s0d1.pciid }}"
+    trex_port_1_pci: "{{ ansible_eno2.pciid }}"
+    vlan_ids: 1072, 1080
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
@@ -100,10 +110,22 @@
         parameters:
           - param:
             val: 'bond-master bond0'
-  roles:
-    - { role: "nickjj.docker", tags: ["docker"] }
-    - mrlesmithjr.config-interfaces
-    - grub_intel
-    - intel
-    - nfvbench_intel
+      - name: "{{ ansible_bond0.slaves[1] }}"
+        configure: true
+        method: 'manual'
+        parameters:
+          - param: 'pre-up'
+            val: 'sleep 4'
+      - name: "{{ ansible_bond0.slaves[1] }}.1030"
+        configure: true
+        method: 'static'
+        address: '172.16.99.31'
+        netmask: '255.255.255.0'
 
+  roles:
+    - grub_openstack
+    - ntp
+    - chef_openstack
+    - chef-client_openstack
+    #- ruby
+    #- nfvbench
