@@ -9,12 +9,25 @@ deploy_tools_path="${tool_path}/deploy"
 
 ######  
 
+
+if [ "$myname" = "deploy_packet_generator.sh" ] ; then
+  CMD="apply -auto-approve"
+elif [ "$myname" = "destroy_packet_generator.sh" ] ; then
+  CMD="destroy -force"
+else
+  echo "Unknown command"
+  exit 1
+fi
+
+
 if [ "$1" = "dual_mellanox" ] ; then
   PACKET_MASTER_DEVICE_PLAN="m2.xlarge.x86"
   PLAYBOOK_NAME="packet_generator_dual_mellanox.yml"
+  TF_OVERRIDE_FILE="dual_mellanox_override.tf"
 elif [ "$1" = "quad_intel" ] ; then
   PACKET_MASTER_DEVICE_PLAN="m2.xlarge.x86"
   PLAYBOOK_NAME="packet_generator_quad_intel.yml"
+  TF_OVERRIDE_FILE="quad_intel_reserved_override.tf"
 else
   echo "Usage: $0 <dual_mellanox|quad_intel>"
   exit 1
@@ -30,13 +43,14 @@ docker run \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
   -v "${tool_path}/terraform-ansible/:/terraform" \
+  -v "$(pwd)/${TF_OVERRIDE_FILE}:/terraform/override.tf" \
   -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
   -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \
   -e TF_VAR_packet_facility=${PACKET_FACILITY} \
   -e TF_VAR_packet_master_device_plan=${PACKET_MASTER_DEVICE_PLAN} \
   -e TF_VAR_packet_operating_system=${PACKET_OPERATING_SYSTEM} \
   -e TF_VAR_playbook=/ansible/$PLAYBOOK_NAME \
-  -ti cnfdeploytools:latest apply -auto-approve -state=/workspace/terraform.tfstate
+  -ti cnfdeploytools:latest $CMD -state=/workspace/terraform.tfstate
 
 # To drop to a shell:
 #  --entrypoint /bin/bash \
