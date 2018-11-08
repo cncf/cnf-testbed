@@ -48,20 +48,20 @@
 #  - name: Get bond0 internal gw
 #    setup:
 #      filter: "{{ ansible_bond0_0.ipv4.network }}"
-  - name: Get trex_port_0 pci id
-    setup: 
-      filter: "{{ ansible_enp2s0d1.pciid }}"
-  - name: Get trex_port_1 pci id
-    setup: 
-      filter: "{{ ansible_eno2.pciid }}"
+#  - name: Get trex_port_0 pci id
+#    setup: 
+#      filter: "{{ ansible_enp2s0d1.pciid }}"
+#  - name: Get trex_port_1 pci id
+#    setup: 
+#      filter: "{{ ansible_eno2.pciid }}"
   post_tasks:
   #- name: Reboot Server
   #  reboot:
    
   vars:
-    trex_port_0_pci: "{{ ansible_enp2s0d1.pciid }}"
-    trex_port_1_pci: "{{ ansible_eno2.pciid }}"
-    vlan_ids: 1072, 1080
+#    trex_port_0_pci: "{{ ansible_enp2s0d1.pciid }}"
+#    trex_port_1_pci: "{{ ansible_eno2.pciid }}"
+    vlan_ids: "{{ vlans }}"
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
@@ -114,12 +114,12 @@
         parameters:
           - param: 'pre-up'
             val: 'sleep 4'
-      - name: "{{ ansible_bond0.slaves[1] }}.1072"
+      - name: "{{ ansible_bond0.slaves[1] }}.{{vlan_ids[0]}}"
         configure: true
         method: 'static'
         address: '172.16.99.31'
         netmask: '255.255.255.0'
-      - name: "{{ ansible_bond0.slaves[1] }}.1080"
+      - name: "{{ ansible_bond0.slaves[1] }}.{{vlan_ids[1]}}"
         configure: true
         method: 'static'
         address: '172.16.100.31'
@@ -128,9 +128,4 @@
   roles:
     - grub
     - ntp
-    - chef
-    - chef-client
-#- hosts: all
-#  roles:
-#    - chef
-#    - chef-client
+
