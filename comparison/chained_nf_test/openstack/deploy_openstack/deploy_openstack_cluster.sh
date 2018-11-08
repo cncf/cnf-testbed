@@ -3,7 +3,7 @@
 myname=$(basename $0)
 myfullpath=$(readlink -f $0)
 mypath=$(dirname $myfullpath)
-project_root=$(cd ../../../ ; pwd -P)
+project_root=$(cd ../../../../ ; pwd -P)
 tool_path="${project_root}/tools"
 deploy_tools_path="${tool_path}/deploy"
 
