@@ -1,16 +1,16 @@
 ---
 - name: Get Kernal Version
-  setup: 
+  setup:
     filter: "{{ ansible_kernel }}"
 
 - name: Docker start opnfv/nfvbench
   docker_container:
     name: nfvbench
-    image: opnfv/nfvbench:2.0.1
+    image: opnfv/nfvbench:2.0.3
     state: started
     network_mode: host
     privileged: true
-    volumes: 
+    volumes:
       - "{{ playbook_dir }}:/tmp/nfvbench"
       - /dev:/dev
       - /lib/modules/{{ ansible_kernel }}:/lib/modules/{{ ansible_kernel }}
@@ -23,9 +23,9 @@
   command: docker exec -i nfvbench sed -i -e "s/--cfg {} \&>/--cfg {} --mbuf-factor 0.2 \&>/g" /nfvbench/nfvbench/traffic_server.py
 
 - name: Add alias for running nfvbench
-  lineinfile: 
+  lineinfile:
     path: /root/.bashrc
     line: 'alias nfvbench="sudo docker exec -it nfvbench nfvbench -c /tmp/nfvbench/nfvbench_config.cfg"'
 
 - name: Write nfvbench config file
-  template: src=nfvbench_config_201.j2 dest={{ playbook_dir }}/nfvbench_config.cfg
+  template: src=nfvbench_config_203.j2 dest={{ playbook_dir }}/nfvbench_config.cfg

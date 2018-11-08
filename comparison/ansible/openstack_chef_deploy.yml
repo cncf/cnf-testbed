@@ -7,7 +7,7 @@
     when: ansible_os_family == "Debian"
 
   - name: Install EPEL Package
-    yum: 
+    yum:
       name: epel-release
     when: ansible_os_family == "RedHat"
   - name: Yum update
@@ -16,31 +16,31 @@
     when: ansible_os_family == "RedHat"
 
   - name: Install Vlan Package
-    apt: 
+    apt:
       name: vlan
     when: ansible_os_family == "Debian"
   - name: Install Vlan Package
-    yum: 
+    yum:
       name: vconfig
     when: ansible_os_family == "RedHat"
-   
+
   - name: Get bond interface slaves
     setup:
       filter: "{{ ansible_bond0.slaves }}"
   - name: Get dns servers
-    setup: 
+    setup:
       filter: "{{ ansible_dns.nameservers }}"
   - name: Get Bond0 Public IP
-    setup: 
+    setup:
       filter: "{{ ansible_bond0.ipv4.address }}"
   - name: Get bond0 netmask
-    setup: 
+    setup:
       filter: "{{ ansible_bond0.ipv4.netmask }}"
   - name: Echo bond0 netmask
-    setup: 
+    setup:
       filter: "{{ ansible_default_ipv4.gateway }}"
   - name: Get bond0 internal address
-    setup: 
+    setup:
       filter: "{{ ansible_bond0_0.ipv4.address }}"
   - name: Get bond0 internal netmask
     setup:
@@ -49,21 +49,24 @@
     setup:
       filter: "{{ ansible_bond0_0.ipv4.network }}"
   - name: Get trex_port_0 pci id
-    setup: 
+    setup:
       filter: "{{ ansible_enp1s0f0.pciid }}"
   - name: Get trex_port_1 pci id
-    setup: 
+    setup:
       filter: "{{ ansible_enp1s0f1.pciid }}"
 #  post_tasks:
 #  - name: Reboot Server
 #    reboot:
 #      reboot_timeout: 3600
 #    ignore_errors: True
-    
+
   vars:
     trex_port_0_pci: "{{ ansible_enp2s0d1.pciid }}"
     trex_port_1_pci: "{{ ansible_eno2.pciid }}"
-    vlan_ids: 1072, 1080
+    nfvbench_service_chain_count: 1
+    nfvbench_mac_addrs_left: "'52:54:00:00:00:aa'"
+    nfvbench_mac_addrs_right: "'52:54:00:00:00:bb'"
+    nfvbench_vlan_ids: 1070, 1064
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
