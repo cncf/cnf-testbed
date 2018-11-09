@@ -1,0 +1,50 @@
+---
+- name: Include Configuration
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_os_family }}.yml"
+  when: not etcd_config_only|bool
+
+- name: Install system dependencies for synchronize
+  package: name={{ item }}
+  with_flattened: "{{ etcd_install_dependencies }}"
+  when: not etcd_config_only|bool
+
+- name: Download etcd
+  get_url: url={{ etcd_download_url }}
+           dest={{ etcd_download_dir }}/{{ etcd_download_filename }}
+           sha256sum={{ etcd_checksum }}
+  when: not etcd_config_only|bool
+
+- name: Unarchive etcd
+  unarchive: copy=no
+             src={{ etcd_download_dir }}/{{ etcd_download_filename }}
+             dest={{ etcd_download_dir }}
+             creates="{{ etcd_download_dir }}/{{ etcd_release }}/etcd"
+  when: not etcd_config_only|bool
+
+- name: Copy binaries from archive into etcd dir
+  synchronize: src="{{ etcd_download_dir }}/{{ etcd_release }}/{{ item }}"
+               dest="{{ etcd_dir }}"
+               archive=True
+  delegate_to: "{{ inventory_hostname }}"
+  with_items:
+    - etcd
+    - etcdctl
+  when: not etcd_config_only|bool
+
+- name: Add etcd upstart service
+  template: src=etc/init/etcd.conf.j2
+            dest=/etc/init/etcd.conf
+            mode=0644
+  when: ansible_service_mgr == "upstart"
+  notify:
+    - Restart etcd
+
+- name: Add etcd systemd service
+  template: src=etc/systemd/system/etcd.service.j2
+            dest=/etc/systemd/system/etcd.service
+            mode=0644
+  when: ansible_service_mgr == "systemd"
+  notify:
+    - Restart etcd

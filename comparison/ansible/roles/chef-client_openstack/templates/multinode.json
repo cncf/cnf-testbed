@@ -14,6 +14,9 @@
   },
   "override_attributes": {
     "openstack": {
+      "network_lbaas": {
+        "enabled": false
+      },
       "apt": {
         "unattended_upgrades": {
           "enable": false
@@ -32,6 +35,7 @@
         },
         "admin": {
           "identity": {
+            "server_host": "{{ host_0_address }}",
             "host": "{{ host_0_address }}"
           },
           "network": {
@@ -142,6 +146,11 @@
         },
         "mq": {
           "host": "{{ host_0_address }}"
+        },
+        "public": {
+          "identity": {
+            "host": "{{ host_0_address }}"
+           }
         },
         "main": {
           "identity": {

@@ -6,20 +6,21 @@
     state: directory
     dest: /etc/chef
     mode: 0644
+
 - name: Move chef openstack secret to /etc/chef
   copy:
     src: /root/openstack-chef/.chef/encrypted_data_bag_secret
-    dest: /etc/chef/encrypted_data_bag_secret
+    dest: /etc/chef/openstack_data_bag_secret
     remote_src: True
+
+- name: find the controller host address
+  set_fact:
+    host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
 
 - name: Locally upload the chef recieps
   command: knife cookbook upload -a -z --include-dependencies --cookbook-path cookbooks/
   args:
     chdir: /root/openstack-chef/
-
-- name: find the controller host address
-  set_fact:
-    host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
 
 - name: install updated environment file
   template:
@@ -38,6 +39,11 @@
     dest: /etc/neutron/plugin.ini
     mode: 644
 
+- name: remove the neutron lbaas horizon plugin
+  template:
+    src: multinode-controller.json
+    dest: /root/openstack-chef/roles/multinode-controller.json
+
 - name: Launch Chef based OpenStack installer on First (controller) node
   command: chef-client -z -E multinode -r 'role[multinode-controller]'
   args:
@@ -45,7 +51,7 @@
   when: host_0_address == inventory_hostname
  
 - name: Launch Chef based OpenStack installer on Other (compute) nodes
-  command: chef-client -z -E multinode -r 'role[multinode-controller]'
+  command: chef-client -z -E multinode -r 'role[multinode-compute]'
   args:
     chdir: /root/openstack-chef
   when: not host_0_address == inventory_hostname

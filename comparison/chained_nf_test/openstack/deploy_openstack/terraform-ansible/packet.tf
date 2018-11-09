@@ -11,6 +11,7 @@ resource "packet_device" "cnfs" {
     type     = "ssh"
     user     = "root"
     private_key = "${ file("/root/.ssh/id_rsa")}"
+    timeout = "120m"
 }
   
   provisioner "ansible" {
