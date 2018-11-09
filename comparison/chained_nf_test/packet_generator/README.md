@@ -12,7 +12,7 @@ export PACKET_AUTH_TOKEN=YOUR_PACKET_API_KEY
 export PACKET_FACILITY="sjc1"
 export PACKET_MASTER_DEVICE_PLAN="x1.small.x86"
 export PACKET_OPERATING_SYSTEM="ubuntu_16_04"
-./terraform.sh
+./deploy_packet_generator.sh dual_mellanox
 ```
 
 
