@@ -1,0 +1,52 @@
+---
+# Installation Variables
+etcd_config_only: False
+etcd_daemon: "systemctl"
+
+# Download Variables
+etcd_version: v2.3.3
+etcd_checksum: cfd19ac19972528f28f83443175601f732e0b04d5b58a4074cbb4f5a7cf32031.
+etcd_platform: linux
+etcd_arch: amd64
+etcd_release: "etcd-{{ etcd_version }}-{{ etcd_platform }}-{{ etcd_arch }}"
+etcd_download_url: "https://github.com/coreos/etcd/releases/download/{{ etcd_version }}/{{ etcd_release }}.tar.gz"
+etcd_download_dir: /usr/local/src
+etcd_download_filename: "{{ etcd_release }}.tar.gz"
+
+# Runtime Variables
+etcd_dir: /usr/local/sbin
+etcd_data_dir: /var/cache/etcd/state
+etcd_cmd: "{{ etcd_dir }}/etcd"
+etcd_user: root # The user only applies to EL distros
+
+# Networking Variables
+etcd_interface: lo
+etcd_client_interface: "{{ etcd_interface }}"
+etcd_peer_interface: "{{ etcd_interface }}"
+etcd_client_port: 2379
+etcd_peer_port: 2380
+etcd_peers_group: etcd
+etcd_url_scheme: http
+etcd_client_url_scheme: "{{ etcd_url_scheme }}"
+etcd_peer_url_scheme: "{{ etcd_url_scheme }}"
+
+etcd_initial_cluster_state: new
+etcd_initial_cluster_token: etcd-cluster-1
+
+etcd_initial_advertise_peer_urls: "{{ etcd_peer_url_scheme }}://{{ hostvars[inventory_hostname]['ansible_' + etcd_peer_interface]['ipv4']['address'] }}:{{ etcd_peer_port }}"
+etcd_listen_peer_urls:  "{{ etcd_peer_url_scheme }}://{{ hostvars[inventory_hostname]['ansible_' + etcd_peer_interface]['ipv4']['address'] }}:{{ etcd_peer_port }}"
+etcd_advertise_client_urls: "{{ etcd_client_url_scheme }}://{{ hostvars[inventory_hostname]['ansible_' + etcd_client_interface]['ipv4']['address'] }}:{{ etcd_client_port }}"
+etcd_listen_client_urls: "{{ etcd_client_url_scheme }}://{{ hostvars[inventory_hostname]['ansible_' + etcd_client_interface]['ipv4']['address'] }}:{{ etcd_client_port }}"
+
+etcd_client_cert_file: ~
+etcd_client_key_file: ~
+etcd_client_cert_auth: False
+etcd_client_trusted_ca_file: ~
+
+etcd_peer_cert_file: ~
+etcd_peer_key_file: ~
+etcd_peer_client_cert_auth: False
+etcd_peer_trusted_ca_file: ~
+
+etcd_discovery: ~
+etcd_discovery_srv: ~

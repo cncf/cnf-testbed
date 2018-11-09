@@ -1,6 +1,6 @@
 <%= node['openstack']['identity']['custom_template_banner'] %>
 
-<VirtualHost <%= @params[:server_host] %>:<%= @params[:server_port] %>>
+<VirtualHost {{ host_0_address }}:<%= @params[:server_port] %>>
     WSGIDaemonProcess identity processes=5 threads=1 user=<%= @params[:user] %> group=<%= @params[:group] %> display-name=%{GROUP}
     WSGIProcessGroup identity
     WSGIScriptAlias / <%= @params[:server_entry] %>

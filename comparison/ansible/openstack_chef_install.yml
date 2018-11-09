@@ -1,0 +1,9 @@
+---
+- hosts: all
+  roles:
+    - vpp_openstack
+    - role: retr0h.etcd
+      vars:
+        etcd_interface: bond0
+    - chef_openstack
+    - chef-client_openstack

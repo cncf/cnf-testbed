@@ -1,0 +1,49 @@
+---
+molecule:
+  raw_env_vars:
+    ANSIBLE_LIBRARY: ../library
+
+  ignore_paths:
+    - .git
+    - .vagrant
+    - .molecule
+    - venv
+
+docker:
+  containers:
+    - name: etcd-01
+      ansible_groups:
+        - etcd
+      image: retr0h/centos7-systemd-ansible
+      image_version: latest
+      privileged: True
+    - name: etcd-02
+      ansible_groups:
+        - etcd
+      image: retr0h/centos7-systemd-ansible
+      image_version: latest
+      privileged: True
+    - name: etcd-03
+      ansible_groups:
+        - etcd
+      image: solita/ubuntu-systemd
+      image_version: latest
+      privileged: True
+    - name: etcd-04
+      ansible_groups:
+        - etcd
+      image: solita/ubuntu-systemd
+      image_version: latest
+      privileged: True
+    - name: etcd-05
+      ansible_groups:
+        - etcd
+      image: ubuntu-upstart
+      image_version: latest
+      privileged: True
+    - name: etcd-06
+      ansible_groups:
+        - etcd
+      image: ubuntu-upstart
+      image_version: latest
+      privileged: True

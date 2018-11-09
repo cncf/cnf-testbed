@@ -39,34 +39,17 @@
   - name: Echo bond0 netmask
     setup:
       filter: "{{ ansible_default_ipv4.gateway }}"
-  - name: Get bond0 internal address
-    setup:
-      filter: "{{ ansible_bond0_0.ipv4.address }}"
-  - name: Get bond0 internal netmask
-    setup:
-      filter: "{{ ansible_bond0_0.ipv4.netmask }}"
-  - name: Get bond0 internal gw
-    setup:
-      filter: "{{ ansible_bond0_0.ipv4.network }}"
-  - name: Get trex_port_0 pci id
-    setup:
-      filter: "{{ ansible_enp1s0f0.pciid }}"
-  - name: Get trex_port_1 pci id
-    setup:
-      filter: "{{ ansible_enp1s0f1.pciid }}"
-#  post_tasks:
-#  - name: Reboot Server
-#    reboot:
-#      reboot_timeout: 3600
-#    ignore_errors: True
+
+  post_tasks:
+  - name: Reboot Server
+    reboot:
 
   vars:
-    trex_port_0_pci: "{{ ansible_enp2s0d1.pciid }}"
-    trex_port_1_pci: "{{ ansible_eno2.pciid }}"
     nfvbench_service_chain_count: 1
     nfvbench_mac_addrs_left: "'52:54:00:00:00:aa'"
     nfvbench_mac_addrs_right: "'52:54:00:00:00:bb'"
     nfvbench_vlan_ids: 1070, 1064
+   
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
@@ -96,16 +79,6 @@
             val: '1'
         slaves:
           - "{{ ansible_bond0.slaves[0] }}"
-      - name: 'bond0:0'
-        configure: true
-        method: 'static'
-        address: "{{ ansible_bond0_0.ipv4.address }}"
-        netmask: "{{ ansible_bond0_0.ipv4.netmask }}"
-        parameters:
-          - param: 'post-up'
-            val: "route add -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
-          - param: 'post-down'
-            val: "route del -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
     network_interfaces:
       - name: "{{ ansible_bond0.slaves[0] }}"
         configure: true
@@ -119,16 +92,17 @@
         parameters:
           - param: 'pre-up'
             val: 'sleep 4'
-      - name: "{{ ansible_bond0.slaves[1] }}.1030"
+      - name: "{{ ansible_bond0.slaves[1] }}.{{vlan_ids[0]}}"
         configure: true
         method: 'static'
         address: '172.16.99.31'
+        netmask: '255.255.255.0'
+      - name: "{{ ansible_bond0.slaves[1] }}.{{vlan_ids[1]}}"
+        configure: true
+        method: 'static'
+        address: '172.16.100.31'
         netmask: '255.255.255.0'
 
   roles:
     - grub_openstack
     - ntp
-    - chef_openstack
-    - chef-client_openstack
-    #- ruby
-    #- nfvbench
