@@ -1,0 +1,8 @@
+---
+- hosts: all
+  roles:
+    - grub
+    - vpp
+    - role: retr0h.etcd
+      vars:
+        etcd_interface: bond0

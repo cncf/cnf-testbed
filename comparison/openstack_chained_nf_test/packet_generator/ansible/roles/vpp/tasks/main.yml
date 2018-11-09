@@ -1,0 +1,21 @@
+- name: add vpp apt repo for Debian
+  apt_repository:
+    repo: deb [trusted=yes] https://nexus.fd.io/content/repositories/fd.io.ubuntu.xenial.main/ ./
+  when: ansible_os_family == "Debian"
+- name: add vpp apps for Debian
+  apt:
+    name: ['vpp-lib','vpp','vpp-plugins']
+  when: ansible_os_family == "Debian"
+
+- name: add rpm rep for RedHat
+  yum_repository:
+    name: fdio-stable-1801
+    description: fd.io stable/1801 branch latest merge
+    baseurl: https://nexus.fd.io/content/repositories/fd.io.centos7/
+    enabled: yes
+    gpgcheck: no
+  when: ansible_os_family == "RedHat"
+- name: add vpp for RedHat
+  yum:
+    name: vpp
+    state: installed
