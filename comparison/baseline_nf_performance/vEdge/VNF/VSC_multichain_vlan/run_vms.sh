@@ -154,13 +154,17 @@ function update_cpu_pinning () {
     cpus=( 5 6 62 61 7 63 8 9 65 64 10 66 11 12 68 67 13 69 14 15 71 70 16 72 )
     core_count=0
     for id in $(virsh list --state-running | grep multichain | awk '{print $1}'); do
-        warn "CPU Pinning $(virsh dominfo ${id} | grep Name | awk '{print $2}')"
+        vagrant_id="$(virsh dominfo ${id} | grep 'Name' | awk '{print $2}' | awk -F _ '{print $4}')"
+        warn "CPU Pinning: Chain ${vagrant_id:1:1}, Node ${vagrant_id:3:1}"
         for core in {0..2}; do
             sudo virsh vcpupin ${id} ${core} ${cpus[${core_count}]} || {
                 die "Failed to repin VM cores!"
             }
             (( core_count++ ))
         done
+        if [[ "${vagrant_id:3:1}" == "${NODENESS}" ]]; then
+            core_count=0
+        fi
     done
 }
 
