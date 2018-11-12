@@ -82,7 +82,7 @@ function generate_vpp_config () {
         append_vpp_config "create sub TwentyFiveGigabitEthernet3b/0/1 ${vlan_w}"
         append_vpp_config ""
         append_vpp_config "set int l2 bridge TwentyFiveGigabitEthernet3b/0/0.${vlan_e} $(( ${offset} + 1 )) "
-        mEth=$(( "${chain}" * ("${NODENESS}" * 2) + 1 ))
+        mEth=$(( "${chain}" * 2 + 1 ))
         append_vpp_config "set int l2 bridge memif${mEth}/${mEth} $(( ${offset} + 1 ))"
         ((++mEth))
         append_vpp_config "set int l2 bridge memif${mEth}/${mEth} $((${offset} + 2))"

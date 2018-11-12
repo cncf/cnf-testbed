@@ -29,29 +29,36 @@ elif [ "$1" = "quad_intel" ] ; then
   PLAYBOOK_NAME="packet_generator_quad_intel.yml"
   TF_OVERRIDE_FILE="quad_intel_reserved_override.tf"
 else
-  echo "Usage: $0 <dual_mellanox|quad_intel>"
+  echo "Usage: $0 <dual_mellanox|quad_intel> [ansible-inventory-file]"
   exit 1
 fi
 
-pushd "$deploy_tools_path" 
+pushd "$deploy_tools_path"
 docker build -t cnfdeploytools:latest .
 popd
 
-docker run \
-  -v "$(pwd):/workspace" \
-  -v "${project_root}/comparison/ansible:/ansible" \
-  -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
-  -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
-  -v "${tool_path}/terraform-ansible/:/terraform" \
-  -v "$(pwd)/${TF_OVERRIDE_FILE}:/terraform/override.tf" \
-  -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
-  -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \
-  -e TF_VAR_packet_facility=${PACKET_FACILITY} \
-  -e TF_VAR_packet_master_device_plan=${PACKET_MASTER_DEVICE_PLAN} \
-  -e TF_VAR_packet_operating_system=${PACKET_OPERATING_SYSTEM} \
-  -e TF_VAR_playbook=/ansible/$PLAYBOOK_NAME \
-  -ti cnfdeploytools:latest $CMD -state=/workspace/terraform.tfstate
-
+if [ -z "$2" ] ; then
+  docker run \
+    -v "$(pwd):/workspace" \
+    -v "${project_root}/comparison/ansible:/ansible" \
+    -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
+    -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
+    -v "${tool_path}/terraform-ansible/:/terraform" \
+    -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
+    -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \
+    -e TF_VAR_packet_facility=${PACKET_FACILITY} \
+    -e TF_VAR_packet_master_device_plan=${PACKET_MASTER_DEVICE_PLAN} \
+    -e TF_VAR_packet_operating_system=${PACKET_OPERATING_SYSTEM} \
+    -e TF_VAR_playbook=/ansible/$PLAYBOOK_NAME \
+    -ti cnfdeploytools:latest apply -auto-approve -state=/workspace/terraform.tfstate
+else
+  docker run \
+    -v "$(pwd):/workspace" \
+    -v "${project_root}/comparison/ansible:/ansible" \
+    -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
+    -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
+    --entrypoint=ansible-playbook -ti cnfdeploytools:latest /ansible/$PLAYBOOK_NAME --inventory-file="/workspace/$2"
+fi
 # To drop to a shell:
 #  --entrypoint /bin/bash \
 #  -ti cnfdeploytools:latest
