@@ -1,0 +1,34 @@
+[DEFAULT]
+[ml2]
+tenant_network_types = vlan
+extension_drivers = port_security
+type_drivers = vlan,flat
+mechanism_drivers = vpp
+
+[ml2_type_vlan]
+network_vlan_ranges = 1000:2000
+
+[ml2_type_flat]
+flat_networks = physnet
+
+[securitygroup]
+firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+
+[ml2_vpp]
+jwt_signing = False
+etcd_insecure_explicit_disable_https = True
+l3_hosts = localhost
+gpe_locators =
+gpe_src_cidr =
+enable_vpp_restart = False
+physnets = physnet:{{ vlan_interface }}
+etcd_pass =
+etcd_user =
+etcd_port = 2379
+etcd_host = {% for host in groups['etcd'] -%}
+   {% if loop.last -%}
+{{ hostvars[host]['ansible_bond0']['ipv4']['address'] }}
+   {%- else -%}
+{{ hostvars[host]['ansible_bond0']['ipv4']['address'] }},
+   {%- endif %}
+{% endfor %}

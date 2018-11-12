@@ -1,3 +1,27 @@
+# Get chef and chef OpenStack cookbooks
+- name: get chef package
+  yum:
+    name: https://packages.chef.io/files/stable/chefdk/3.4.38/el/7/chefdk-3.4.38-1.el7.x86_64.rpm
+  when: ansible_os_family == 'RedHat'
+- name: get chef package
+  apt:
+    deb: https://packages.chef.io/files/stable/chefdk/3.2.30/ubuntu/18.04/chefdk_3.2.30-1_amd64.deb
+  when: ansible_os_family == 'Debian'
+- name: get openstack-chef code 
+  git: 
+    repo: https://git.openstack.org/openstack/openstack-chef
+    version: stable/queens
+    dest: /root/openstack-chef
+  ignore_errors: True
+    
+- name: run the berks command in the openstack-chef repo
+  command: berks install
+  args:
+    chdir: /root/openstack-chef
+- name: move berks downloaded code to openstack-chef directory
+  shell: tar cf - cookbooks/ | (cd /root/openstack-chef; tar xf -)
+  args:
+    chdir: /root/.berkshelf/
 - name: Install chef client via the omnibus installer
   shell: curl -L https://omnitruck.chef.io/install.sh | bash
 
@@ -13,6 +37,7 @@
     dest: /etc/chef/openstack_data_bag_secret
     remote_src: True
 
+# Update cookbooks, roles, and environments
 - name: find the controller host address
   set_fact:
     host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
@@ -33,19 +58,29 @@
     dest: /etc/neutron
     mode: 0644
 
-- name: create an empty neutron ml2 .ini file
+- name: create an empty neutron plugin.ini file
   file:
     state: touch
     dest: /etc/neutron/plugin.ini
     mode: 644
 
-- name: remove the neutron lbaas horizon plugin
+- name: Update the multinode-controller role
   template:
     src: multinode-controller.json
     dest: /root/openstack-chef/roles/multinode-controller.json
 
+- name: Update the multinode-compute role
+  template:
+    src: multinode-compute.json
+    dest: /root/openstack-chef/roles/multinode-compute.json
+
+- name: Simplify the multinode-network service
+  template:
+    src: multinode-network.json
+    dest: /root/openstack-chef/roles/multinode-network.json
+
 - name: Launch Chef based OpenStack installer on First (controller) node
-  command: chef-client -z -E multinode -r 'role[multinode-controller]'
+  command: chef-client -z -E multinode -r 'role[multinode-controller]' -r 'role[multinode-network]'
   args:
     chdir: /root/openstack-chef
   when: host_0_address == inventory_hostname

@@ -13,6 +13,6 @@ docker run \
   -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
   -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \
   -e TF_VAR_playbook=/ansible/openstack_infra_setup.yml \
-  -ti terraform:latest destroy -force \
+  -ti cnfdeploytools:latest destroy -force \
   -state=/terraform/openstack.tfstate
-rm ansible/inventory
+rm ${parentdir2}/ansible/inventory
