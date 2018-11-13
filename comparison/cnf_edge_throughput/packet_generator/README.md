@@ -1,15 +1,41 @@
+**Deploy the Packet Generator to an existing Packet.net node**
+
+Start by ensuring that your system ssh keys are availiable under ~/.ssh/id_rsa and you have added the matching publickey to your packet.net account. Create an ansible inventory file with the desired hosts to provisioned, see ansible-inventory.example.
+
+Example usage:
+```
+git clone https://github.com/cncf/cnfs.git
+cd cnfs/comparison/cnf_edge_throughput/packet_generator
+- Update ansible-inventory.example with desired nodes
+./deploy_packet_generator.sh dual_mellanox ansible-inventory.example
+```
+
+
+
 **Deploy the Packet Generator to Packet.net using Terraform**
 
-Start by ensuring that your system ssh keys are availiable under ~/.ssh/id_rsa and you have added the matching public key to your packet.net account.
+Start by ensuring that your system ssh keys are availiable under ~/.ssh/id_rsa and you have added the matching public key to your packet.net account. Set the environment variables for the project id (PACKET_PROJECT_ID), API key (PACKET_AUTH_TOKEN), facility (PACKET_FACILITY), machine type (PACKET_MASTER_DEVICE_PLAN) and OS (PACKET_OPERATING_SYSTEM).
+
+Example usage:
 
 ```
 git clone https://github.com/cncf/cnfs.git
 cd cnfs/comparison/cnf_edge_throughput/packet_generator
 export PACKET_PROJECT_ID=YOUR_PACKET_PROJECT_ID 
 export PACKET_AUTH_TOKEN=YOUR_PACKET_API_KEY
+export PACKET_FACILITY="sjc1"
+export PACKET_MASTER_DEVICE_PLAN="x1.small.x86"
+export PACKET_OPERATING_SYSTEM="ubuntu_16_04"
 ./terraform.sh
 ```
 
+
+Running the ansible provisioning on an existing system:
+```
+docker run -v $(pwd)/ansible:/ansible -v ~/.ssh/id_rsa:/root/.ssh/id_rsa  --entrypoint /bin/bash -ti cnfdeploytools:latest
+cd /ansible
+ansible-playbook -i "IP_OF_PACKET_MACHINE," main.yml
+```
 
 **Install the Mellanox drivers, libs, tools and dependencies**
 

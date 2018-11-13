@@ -1,0 +1,31 @@
+---
+- name: Get Kernal Version
+  setup:
+    filter: "{{ ansible_kernel }}"
+
+- name: Docker start opnfv/nfvbench
+  docker_container:
+    name: nfvbench
+    image: opnfv/nfvbench:2.0.3
+    state: started
+    network_mode: host
+    privileged: true
+    volumes:
+      - "{{ playbook_dir }}:/tmp/nfvbench"
+      - /dev:/dev
+      - /lib/modules/{{ ansible_kernel }}:/lib/modules/{{ ansible_kernel }}
+      - /usr/src:/usr/src
+
+- name: Update the number of hugepages available for TRex
+  command: docker exec -i nfvbench sed -i -e "s/512 /2048 /" -e "s/512\"/2048\"/" /opt/trex/v2.32/trex-cfg
+
+- name: Change the mbuf factor to further reduce the memory usage
+  command: docker exec -i nfvbench sed -i -e "s/--cfg {} \&>/--cfg {} --mbuf-factor 0.2 \&>/g" /nfvbench/nfvbench/traffic_server.py
+
+- name: Add alias for running nfvbench
+  lineinfile:
+    path: /root/.bashrc
+    line: 'alias nfvbench="sudo docker exec -it nfvbench nfvbench -c /tmp/nfvbench/nfvbench_config.cfg"'
+
+- name: Write nfvbench config file
+  template: src=nfvbench_config_203.j2 dest={{ playbook_dir }}/nfvbench_config.cfg

@@ -1,0 +1,32 @@
+- name: find bond interface second interface
+  set_fact:
+    vlan_interface: "{{ hostvars[inventory_hostname].ansible_bond0.slaves[1] }}"
+  ignore_errors: true
+  register: bond0_slave_1
+- name: get PCI bus info for interface
+  set_fact:
+    vlan_pci_id: "{{ 'ansible_' + vlan_interface + '.pciid' }}"
+  when: bond0_slave_1.changed
+- name: remove second slave interface from bond0
+  shell: echo "-{{vlan_interface}}" > /sys/class/net/bond0/bonding/slaves
+  register: remove_slave
+  when: bond0_slave_1.changed
+
+- debug: var=remove_slave
+
+- name: remove bond config from ifcfg-{{vlan_interface}}
+  lineinfile:
+    regexpr: "MASTER=.*"
+    state: absent
+  when:  ansible_os_family == "RedHat" and  bond0_slave_1.changed
+- name: remove bond config from ifcfg-{{vlan_interface}}
+  lineinfile:
+    regexpr: "SLAVE=.*"
+    state: absent
+  when:  ansible_os_family == "RedHat" and  bond0_slave_1.changed
+- name: bring ex-slave interface down
+  command: ifdown {{vlan_interface}}
+  when:  bond0_slave_1.changed or remove_slave.changed
+- name: bring ex-slave interface up
+  command: ifup {{vlan_interface}}
+  when:  bond0_slave_1.changed or remove_slave.changed

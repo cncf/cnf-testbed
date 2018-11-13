@@ -1,0 +1,244 @@
+{
+  "name": "multinode",
+  "default_attributes": {
+    "apache": {
+      "listen": [
+
+      ]
+    },
+    "yum": {
+      "epel": {
+        "enabled": false
+      }
+    }
+  },
+  "override_attributes": {
+    "openstack": {
+      "network_lbaas": {
+        "enabled": false
+      },
+      "apt": {
+        "unattended_upgrades": {
+          "enable": false
+        },
+        "update_apt_cache": true
+      },
+      "sysctl": {
+        "net.ipv4.ip_forward": 1
+      },
+      "endpoints": {
+        "db": {
+          "host": "{{ host_0_address }}"
+        },
+        "mq": {
+          "host": "{{ host_0_address }}"
+        },
+        "admin": {
+          "identity": {
+            "server_host": "{{ host_0_address }}",
+            "host": "{{ host_0_address }}"
+          },
+          "network": {
+            "host": "{{ host_0_address }}"
+          },
+          "image_api": {
+            "host": "{{ host_0_address }}"
+          },
+          "image_registry": {
+            "host": "{{ host_0_address }}"
+          },
+          "block-storage": {
+            "host": "{{ host_0_address }}"
+          },
+          "compute-api": {
+            "host": "{{ host_0_address }}"
+          },
+          "compute-metadata-api": {
+            "host": "{{ host_0_address }}"
+          },
+          "compute-novnc": {
+            "host": "{{ host_0_address }}"
+          },
+          "orchestration-api": {
+            "host": "{{ host_0_address }}"
+          },
+          "orchestration-api-cfn": {
+            "host": "{{ host_0_address }}"
+          },
+          "placement-api": {
+            "host": "{{ host_0_address }}"
+          }
+        },
+        "internal": {
+          "identity": {
+            "host": "{{ host_0_address }}"
+          },
+          "network": {
+            "host": "{{ host_0_address }}"
+          },
+          "image_api": {
+            "host": "{{ host_0_address }}"
+          },
+          "image_registry": {
+            "host": "{{ host_0_address }}"
+          },
+          "block-storage": {
+            "host": "{{ host_0_address }}"
+          },
+          "compute-api": {
+            "host": "{{ host_0_address }}"
+          },
+          "compute-metadata-api": {
+            "host": "{{ host_0_address }}"
+          },
+          "compute-novnc": {
+            "host": "{{ host_0_address }}"
+          },
+          "orchestration-api": {
+            "host": "{{ host_0_address }}"
+          },
+          "orchestration-api-cfn": {
+            "host": "{{ host_0_address }}"
+          },
+          "placement-api": {
+            "host": "{{ host_0_address }}"
+          }
+        },
+        "public": {
+          "identity": {
+            "host": "{{ host_0_address }}"
+          },
+          "network": {
+            "host": "{{ host_0_address }}"
+          },
+          "image_api": {
+            "host": "{{ host_0_address }}"
+          },
+          "image_registry": {
+            "host": "{{ host_0_address }}"
+          },
+          "block-storage": {
+            "host": "{{ host_0_address }}"
+          },
+          "compute-api": {
+            "host": "{{ host_0_address }}"
+          },
+          "compute-metadata-api": {
+            "host": "{{ host_0_address }}"
+          },
+          "compute-novnc": {
+            "host": "{{ host_0_address }}"
+          },
+          "orchestration-api": {
+            "host": "{{ host_0_address }}"
+          },
+          "orchestration-api-cfn": {
+            "host": "{{ host_0_address }}"
+          },
+          "placement-api": {
+            "host": "{{ host_0_address }}"
+          }
+        }
+      },
+      "bind_service": {
+        "db": {
+          "host": "{{ host_0_address }}"
+        },
+        "mq": {
+          "host": "{{ host_0_address }}"
+        },
+        "public": {
+          "identity": {
+            "host": "{{ host_0_address }}"
+           }
+        },
+        "main": {
+          "identity": {
+            "host": "0.0.0.0"
+          }
+        },
+        "admin": {
+          "identity": {
+            "host": "0.0.0.0"
+          }
+        },
+        "all": {
+          "network": {
+            "host": "0.0.0.0"
+          },
+          "image_api": {
+            "host": "0.0.0.0"
+          },
+          "image_registry": {
+            "host": "0.0.0.0"
+          },
+          "block-storage": {
+            "host": "0.0.0.0"
+          },
+          "compute-api": {
+            "host": "0.0.0.0"
+          },
+          "compute-metadata-api": {
+            "host": "0.0.0.0"
+          },
+          "compute-novnc": {
+            "host": "0.0.0.0"
+          },
+          "orchestration-api": {
+            "host": "0.0.0.0"
+          },
+          "orchestration-api-cfn": {
+            "host": "0.0.0.0"
+          },
+          "placement-api": {
+            "host": "0.0.0.0"
+          }
+        }
+      },
+      "dashboard": {
+        "server_hostname": "{{ host_0_address }}"
+      },
+      "mq": {
+        "user": "admin"
+      },
+      "network": {
+        "plugins": {
+          "ml2_openvswitch": {
+            "conf": {
+              "ml2_type_vxlan": {
+                "vni_ranges": "65537:69999",
+                "vxlan_group": "239.1.1.40"
+              }
+            }
+          }
+        },
+        "tun_network_bridge_interface": "enp0s8",
+        "conf": {
+          "DEFAULT": {
+            "service_plugins": "vpp-router"
+          },
+          "transport_url": {
+            "rabbit_host": "{{ host_0_address }}"
+          },
+          "ml2": {
+            "tenant_network_types": "vlan"
+          }
+        }
+      },
+      "image": {
+        "image_upload": true
+      },
+      "compute": {
+        "conf": {
+          "libvirt": {
+            "cpu_type": "none",
+            "virt_type": "qemu"
+          },
+          "transport_url": {
+            "rabbit_host": "{{ host_0_address }}"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+---
+- name: Load VFIO-PCI on startup
+  lineinfile:
+    path: /etc/modules
+    insertafter: EOF
+    line: 'vfio-pci'
