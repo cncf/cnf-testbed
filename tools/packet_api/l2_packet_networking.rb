@@ -20,6 +20,10 @@ OptionParser.new do |opts|
   opts.on("-nSERVER", "--server=SERVER", "Server name") do |n|
     options[:server] = n
   end
+  opts.on("-nINSTANCE", "--instance-id=INSTANCEID", "Instance ID") do |n|
+    options[:instance_id] = n
+  end
+
   opts.on("-nVLAN", "--create-vlan=VLAN", "VLAN to create") do |n|
     options[:create_vlan] = n
   end
@@ -66,12 +70,12 @@ if options[:bond_port].nil? && options[:delete_vlan].nil? && options[:unassign_v
   puts "You must select delete_vlan, unassign_vlan, assign-vlan, bond-interface, disbond-interface, or create vlan!"
   exit
 end
-if options[:unassign_vlan] && (options[:unassign_vlan_port].nil? || options[:server].nil?)
-  puts "You must provide a vlan port and server if you select unassign-vlan!"
+if options[:unassign_vlan] && (options[:unassign_vlan_port].nil? || (options[:server].nil? && options[:instance_id].nil?))
+  puts "You must provide a vlan port and server (or instance id) if you select unassign-vlan!"
   exit
 end
-if options[:assign_vlan] && (options[:assign_vlan_port].nil? || options[:server].nil?)
-  puts "You must provide a vlan port and server if you select assign-vlan!"
+if options[:assign_vlan] && (options[:assign_vlan_port].nil? || (options[:server].nil? && options[:instance_id].nil?))
+  puts "You must provide a vlan port and server (or instance id) if you select assign-vlan!"
   exit
 end
 
@@ -84,12 +88,12 @@ if options[:delete_vlan] &&  options[:facility].nil?
   puts "You must provide a facility to call delete-vlan!"
   exit
 end
-if options[:bond_port] && options[:server].nil?
-  puts "You must provide a server if you select bond-interface!"
+if options[:bond_port] && (options[:server].nil? && options[:instance_id].nil?)
+  puts "You must provide a server (or instance id) if you select bond-interface!"
   exit
 end
-if options[:disbond_port] && options[:server].nil?
-  puts "You must provide a server if you select disbond-interface!"
+if options[:disbond_port] && (options[:server].nil? && options[:instance_id].nil?)
+  puts "You must provide a server (or instance id) if you select disbond-interface!"
   exit
 end
 if options[:token]
@@ -130,12 +134,30 @@ p "project_id: #{project_id}"  if options[:verbose]
 # 2. Get facility ID for facility name (use env)
 # 3. Upsert SSH key (done in the terraform setup)
 # 4. Get 1st and 2nd device ids for each server names
-devices = phttp.api(url_extention: "/projects/#{project_id}/devices")
-parsed_devices = JSON.parse(devices.body) 
 
-selected_1st_device = parsed_devices["devices"].find{|x| x["hostname"]=="#{options[:server]}"}
-p "Selected 1st Server: #{selected_1st_device}"  if options[:verbose]
-device = selected_1st_device
+if options[:server] or options[:instance_id]
+  devices = phttp.api(url_extention: "/projects/#{project_id}/devices?per_page=1000")
+  parsed_devices = JSON.parse(devices.body) 
+
+  if options[:instance_id]
+    selected_1st_device = parsed_devices["devices"].find{|x| x["id"]=="#{options[:instance_id]}"}
+  else
+    selected_1st_device = parsed_devices["devices"].find{|x| x["hostname"]=="#{options[:server]}"}
+  end
+
+  if selected_1st_device.nil?
+    if options[:instance_id]
+      puts "Could not find device with instance ID '#{options[:instance_id]}'"
+    else
+      puts "Could not find device with hostname '#{options[:server]}'"
+    end
+    exit 1
+  end
+
+  p "Selected 1st Server: #{selected_1st_device}"  if options[:verbose]
+  device = selected_1st_device
+end
+
 # 5. Get 1st (bonded), 2nd (1st interface), and 3rd (2nd interface) ports for each device id
 # 6. Debond 1 port (2nd)
 if options[:disbond_port]
