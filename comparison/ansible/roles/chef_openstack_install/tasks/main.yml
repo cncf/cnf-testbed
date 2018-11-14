@@ -80,7 +80,7 @@
     dest: /root/openstack-chef/roles/multinode-network.json
 
 - name: Launch Chef based OpenStack installer on First (controller) node
-  command: chef-client -z -E multinode -r 'role[multinode-controller]' -r 'role[multinode-network]'
+  command: chef-client -z -E multinode -r 'role[multinode-controller]'
   args:
     chdir: /root/openstack-chef
   when: host_0_address == inventory_hostname

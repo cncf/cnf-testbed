@@ -203,11 +203,23 @@
       },
       "network": {
         "plugins": {
-          "ml2_openvswitch": {
+          "ml2_vpp": {
             "conf": {
-              "ml2_type_vxlan": {
-                "vni_ranges": "65537:69999",
-                "vxlan_group": "239.1.1.40"
+              "ml2_type_vlan": {
+                "vlan_ranges": "1000:2000"
+              },
+              "ml2_vpp": {
+                "jwt_signing": "False",
+                "etcd_insecure_explicit_disable_https": "True",
+                "l3_hosts": "{{hostvars[groups['etcd'][0]].ansible_bond0.ipv4.address}}",
+                "gpe_locators ": "=",
+                "gpe_src_cidr ": "=",
+                "enable_vpp_restart ": "= False",
+                "etcd_pass ": "=",
+                "etcd_user ": "=",
+                "etcd_port ": "= 2379",
+                "etcd_host ": "= 147.75.39.95",
+                "physnets ": "physnet:{{ vlan_interface }}"
               }
             }
           }
@@ -215,7 +227,7 @@
         "tun_network_bridge_interface": "enp0s8",
         "conf": {
           "DEFAULT": {
-            "service_plugins": "vpp-router"
+            "service_plugins": "router"
           },
           "transport_url": {
             "rabbit_host": "{{ host_0_address }}"

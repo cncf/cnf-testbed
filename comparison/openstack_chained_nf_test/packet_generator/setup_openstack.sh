@@ -6,8 +6,8 @@ parentdir3="$(dirname "$parentdir2")"
 echo "DIR $parentdir3"
 NODE_NAME=${NODE_NAME:-openstack}
 NODE_COUNT=${NODE_COUNT:-4}
-PACKET_OS=${PACKET_OS:-ubuntu_16_04}
-PACKET_FACILITY=${PACKET_FACILITY:-ewr1}
+PACKET_OS=${PACKET_OS:-centos_7}
+PACKET_FACILITY=${PACKET_FACILITY:-sjc1}
 docker run \
   -v ${parentdir2}/ansible:/ansible \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
