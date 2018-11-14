@@ -1,4 +1,5 @@
 FROM golang:1.11-alpine3.7 as golang
+MAINTAINER "Denver Williams <denver@debian.nz>"
 
 RUN apk --no-cache add git make
 RUN git clone https://github.com/denverwilliams/terraform-provisioner-ansible.git \
@@ -6,8 +7,7 @@ RUN git clone https://github.com/denverwilliams/terraform-provisioner-ansible.gi
     cd $GOPATH/src/github.com/radekg/terraform-provisioner-ansible/ && \
     make build-linux 
 
-FROM ubuntu:latest
-MAINTAINER "Denver Williams <denver@debian.nz>"
+FROM ubuntu:packet_api
 
 ENV TERRAFORM_VERSION=0.11.10
 ENV TERRAFORM_ANSIBLE=v2.0.1
@@ -27,6 +27,7 @@ RUN apt update && \
 # Copy Terraform Ansible Plugin
 RUN mkdir -p ~/.terraform.d/plugins/
 COPY --from=golang /root/.terraform.d/plugins/terraform-provisioner-ansible /root/.terraform.d/plugins/terraform-provisioner-ansible
+
 
 WORKDIR /terraform
 ENTRYPOINT ["/bin/terraform"]
