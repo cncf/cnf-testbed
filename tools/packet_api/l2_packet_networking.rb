@@ -36,14 +36,20 @@ OptionParser.new do |opts|
   opts.on("-nINTERFACE", "--bond-interface=INTERFACE", "Interface to bond") do |n|
     options[:bond_port] = n
   end
-  opts.on("-nVLAN", "--assign-vlan=VLAN", "VLAN to assign to a port. use --assign-vlan-port to designate port") do |n|
+  opts.on("-nVLAN", "--assign-vlan=VLAN", "VLAN to assign to a port. use --assign-vlan-port to designate port.","WARNING: Assigning VLAN by description is not unique") do |n|
     options[:assign_vlan] = n
+  end
+  opts.on("-nVLANID", "--assign-vlan-id=VLANID", "VLAN ID to assign to a port. use --assign-vlan-port to designate port") do |n|
+    options[:assign_vlan_id] = n
   end
   opts.on("-nVLANPORT", "--assign-vlan-port=VLANPORT", "INTERFACE to assign to VLAN") do |n|
     options[:assign_vlan_port] = n
   end
   opts.on("-nVLAN", "--unassign-vlan=VLAN", "VLAN to unassign to a port. use --unassign-vlan-port to designate port") do |n|
     options[:unassign_vlan] = n
+  end
+  opts.on("-nVLANID", "--unassign-vlan-id=VLANID", "VLAN ID to unassign to a port. use --unassign-vlan-port to designate port") do |n|
+    options[:unassign_vlan_id] = n
   end
   opts.on("-nVLANPORT", "--unassign-vlan-port=VLANPORT", "INTERFACE to unassign VLAN") do |n|
     options[:unassign_vlan_port] = n
@@ -66,7 +72,8 @@ end.parse!
 pp options  if options[:verbose]
 pp ARGV if options[:verbose]
 
-if options[:bond_port].nil? && options[:delete_vlan].nil? && options[:unassign_vlan].nil? && options[:assign_vlan].nil? && options[:disbond_port].nil? && options[:create_vlan].nil?
+if options[:bond_port].nil? && options[:delete_vlan].nil? && options[:unassign_vlan].nil? && options[:unassign_vlan_id].nil? &&
+    options[:assign_vlan_id].nil? && options[:assign_vlan].nil? && options[:disbond_port].nil? && options[:create_vlan].nil?
   puts "You must select delete_vlan, unassign_vlan, assign-vlan, bond-interface, disbond-interface, or create vlan!"
   exit
 end
@@ -232,9 +239,14 @@ if options[:delete_vlan]
     puts 'failure'
   end
 end
+
 # 8. Convert 3rd port to layer 2 (don't need to do this ... the disbond makes the network a 'hybrid' network
+#
 # 9. Assign 2nd port to 1st vlan (don't do this, lease 1st nic bonded)
 # 10. Assign 3rd port to 2nd vlan 
+
+# assign vlan based on VLAN description
+# WARNING: vlan description is not unique and may return the wrong vlan id
 if options[:assign_vlan]
   # find vland based on description
   vlans_response = phttp.api(url_extention: "/projects/#{project_id}/virtual-networks")
@@ -242,6 +254,10 @@ if options[:assign_vlan]
   p "parsed vlans_response: #{parsed_vlans}"  if options[:verbose]
   # 7.b Get existing vlan if it exists by description
   vlan1 = parsed_vlans["virtual_networks"].find{|x| x["description"] == "#{options[:assign_vlan]}"}
+  if vlan1.nil?
+    puts "No VLAN found for #{options[:assign_vlan]}"
+    exit 1
+  end
   p "existing_vlan1: #{vlan1}"  if options[:verbose]
   vlan_port = device["network_ports"].find{|x| x["name"]==options[:assign_vlan_port]}
   p "vlan port: #{vlan_port}"  if options[:verbose]
@@ -260,6 +276,66 @@ if options[:assign_vlan]
   end
 end
 
+# assign vlan based on VLAN ID (vxlan)
+if options[:assign_vlan_id]
+  vlans_response = phttp.api(url_extention: "/projects/#{project_id}/virtual-networks")
+  parsed_vlans = JSON.parse(vlans_response.body) 
+  p "parsed vlans_response: #{parsed_vlans}"  if options[:verbose]
+  # 7.b Get existing vlan if it exists by description
+  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["vxlan"] == options[:assign_vlan_id].to_i}
+  if vlan1.nil?
+    puts "No VLAN found for #{options[:assign_vlan_id]}"
+    exit 1
+  end
+  p "existing_vlan1: #{vlan1}"  if options[:verbose]
+  vlan_port = device["network_ports"].find{|x| x["name"]==options[:assign_vlan_port]}
+  p "vlan port: #{vlan_port}"  if options[:verbose]
+  p "vlan port id: #{vlan_port["id"]}"  if options[:verbose]
+  assign_vlan_response = phttp.api(post: true, 
+                                   url_extention: "/ports/#{vlan_port['id']}/assign",
+                                   request_body: {
+                                     "vnid" => "#{vlan1["id"]}"
+                                   })
+  parsed_response = JSON.parse(assign_vlan_response.body) 
+  p "parsed assign_vlan_response: #{parsed_response}"  if options[:verbose]
+  if parsed_response["id"] || (parsed_response["errors"] && parsed_response["errors"].find{|x| x =~ /already assigned/})
+    puts "success"
+  else
+    puts "failure"
+  end
+end
+
+# unassign vlan based on VLAN ID (vxlan)
+if options[:unassign_vlan_id]
+  # find vland based on description
+  vlans_response = phttp.api(url_extention: "/projects/#{project_id}/virtual-networks")
+  parsed_vlans = JSON.parse(vlans_response.body) 
+  p "parsed vlans_response: #{parsed_vlans}"  if options[:verbose]
+  # 7.b Get existing vlan if it exists by description
+  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["vxlan"] == options[:unassign_vlan_id].to_i}
+  if vlan1.nil?
+    puts "No VLAN found for #{options[:unassign_vlan_id]}"
+    exit 1
+  end
+  p "existing_vlan1: #{vlan1}"  if options[:verbose]
+  vlan_port = device["network_ports"].find{|x| x["name"]==options[:unassign_vlan_port]}
+  p "vlan port: #{vlan_port}"  if options[:verbose]
+  p "vlan port id: #{vlan_port["id"]}"  if options[:verbose]
+  unassign_vlan_response = phttp.api(post: true, 
+                                     url_extention: "/ports/#{vlan_port['id']}/unassign",
+                                     request_body: {
+                                       "vnid" => "#{vlan1["id"]}"
+                                     })
+  parsed_response = JSON.parse(unassign_vlan_response.body) 
+  p "parsed unassign_vlan_response: #{parsed_response}"  if options[:verbose]
+  if parsed_response["id"] || (parsed_response["errors"] && parsed_response["errors"].find{|x| x =~ /not assigned/})
+    puts "success"
+  else
+    puts "failure"
+  end
+end
+
+# unassign vlan based on VLAN description
 if options[:unassign_vlan]
   # find vland based on description
   vlans_response = phttp.api(url_extention: "/projects/#{project_id}/virtual-networks")

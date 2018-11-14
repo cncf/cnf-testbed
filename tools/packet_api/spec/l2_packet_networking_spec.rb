@@ -40,6 +40,21 @@ RSpec.describe 'Packet Test Suite', type: :aruba  do
       expect(last_command_started.output).to eq("success\n")
     end
 
+    # TODO: finish vlan id assign/unassign tests
+    # it 'tests assign-vlan-id.rb' do
+    #   cmd = "ruby ../../l2_packet_networking.rb --create-vlan watsonvlan1 --project-name='CNCF CNFs' --packet-url='api.packet.net' --facility='ewr1' "
+    #   run(cmd)
+    #   vid = last_command_started.output
+    #
+    #   cmd = "ruby ../../l2_packet_networking.rb --server layer2test-01 --assign-vlan-id #{vid} --assign-vlan-port eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'" 
+    #   run(cmd)
+    #   sleep(10)
+    #   stop_all_commands
+    #
+    #   expect(last_command_started.output).to eq("success\n")
+    # end
+    #
+
     it 'tests unassign-vlan.rb' do
       cmd = "ruby ../../l2_packet_networking.rb --server layer2test-01 --assign-vlan watsonvlan1 --assign-vlan-port eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'" 
       run(cmd)
