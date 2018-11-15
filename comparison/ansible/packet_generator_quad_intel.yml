@@ -38,8 +38,8 @@
     setup:
       filter: "{{ ansible_eno3.pciid }}"
   post_tasks:
-  - name: Reboot Server
-    reboot:
+  # - name: Reboot Server
+  #   reboot:
 
   vars:
     trex_port_0_pci: "{{ ansible_eno2.pciid }}"
@@ -109,4 +109,3 @@
     - grub_intel_packet_generator
     - intel_nic
     - nfvbench_intel
-
