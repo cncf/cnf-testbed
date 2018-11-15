@@ -3,7 +3,7 @@
 update_vpp_config() {
   if ! cmp -s "/etc/vpp/setup.gate" "vEdge_csc_vpp.conf" ; then
     echo "Updating VPP configuration"
-    cp vEdge_csc_vpp.conf /etc/vpp/setup.gate
+    sudo cp vEdge_csc_vpp.conf /etc/vpp/setup.gate
     service vpp restart
     sleep 5
   fi
@@ -51,19 +51,19 @@ cd $mydir
 if [ "$cleanup" == "clean" ]; then
   # Only removes container, not image
   for chain in $(seq 1 $chains); do
-    docker rm v${chain}Edge -f
+    sudo docker rm v${chain}Edge -f
   done
   exit 0
 fi
 
-./build_container.sh
+chmod +x ./build_container.sh && ./build_container.sh
 
-./create_vpp_config.sh ${chains} ${VLANs} ${baseline}
+chmod +x ./create_vpp_config.sh && ./create_vpp_config.sh ${chains} ${VLANs} ${baseline}
 update_vpp_config
 
 for chain in $(seq 1 $chains); do
   if [ -z "$(docker ps | grep v${chain}Edge)" ]; then
-    docker run --privileged --cpus 3 --cpuset-cpus ${main_cores[${chain}]},${worker_cores[${chain}]} --device=/dev/hugepages/:/dev/hugepages/ -v "/etc/vpp/sockets/:/root/sockets/" -t -d --name v${chain}Edge vedge_csc /vEdge/configure.sh ${chain} ${chains} ${baseline}
+    sudo docker run --privileged --cpus 3 --cpuset-cpus ${main_cores[${chain}]},${worker_cores[${chain}]} --device=/dev/hugepages/:/dev/hugepages/ -v "/etc/vpp/sockets/:/root/sockets/" -t -d --name v${chain}Edge vedge_csc /vEdge/configure.sh ${chain} ${chains} ${baseline}
   fi
   echo "v${chain}Edge container started"
   sleep 10

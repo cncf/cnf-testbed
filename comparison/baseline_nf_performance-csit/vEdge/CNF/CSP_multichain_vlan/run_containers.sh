@@ -55,7 +55,7 @@ function update_vpp_config() {
 
     if ! cmp -s "/etc/vpp/setup.gate" "vEdge_csc_vpp.conf"; then
         warn "Updating VPP configuration."
-        cp vEdge_csp_vpp.conf /etc/vpp/setup.gate || {
+        sudo cp vEdge_csp_vpp.conf /etc/vpp/setup.gate || {
             die "Failed to copy VPP configuration!"
         }
         restart_vpp || die

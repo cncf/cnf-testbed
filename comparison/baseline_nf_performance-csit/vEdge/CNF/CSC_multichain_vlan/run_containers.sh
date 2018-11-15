@@ -14,7 +14,7 @@ function clean_containers () {
 
     for chain in $(seq 1 "${CHAINS}"); do
         for node in $(seq 1 "${NODENESS}"); do
-            docker rm --force "c${chain}n${node}Edge" || true
+            sudo docker rm --force "c${chain}n${node}Edge" || true
         done
     done
 }
@@ -55,7 +55,7 @@ function update_vpp_config() {
 
     if ! cmp -s "/etc/vpp/setup.gate" "vEdge_csc_vpp.conf"; then
         warn "Updating VPP configuration."
-        cp vEdge_csc_vpp.conf /etc/vpp/setup.gate || {
+        sudo cp vEdge_csc_vpp.conf /etc/vpp/setup.gate || {
             die "Failed to copy VPP configuration!"
         }
         restart_vpp || die
@@ -130,11 +130,11 @@ function run_containers () {
         WORKER_CORES=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
     fi
 
-    ./build_container.sh || {
+    chmod +x ./build_container.sh && ./build_container.sh || {
         die "Failed to build container!"
     }
     # Create vpp configuration.
-    ./create_vpp_config.sh "${CHAINS}" "${NODENESS}" ${VLANS[@]} || {
+    chmod +x ./create_vpp_config.sh && ./create_vpp_config.sh "${CHAINS}" "${NODENESS}" ${VLANS[@]} || {
         die "Failed to create VPP config!"
     }
     update_vpp_config || {
@@ -145,7 +145,7 @@ function run_containers () {
         for node in $(seq 1 "${NODENESS}"); do
             dcr_name="c${chain}n${node}Edge"
             if [ -z "$(docker inspect -f {{.State.Running}} ${dcr_name})" ]; then
-                docker run --privileged --cpus 3 --tty --detach \
+                sudo docker run --privileged --cpus 3 --tty --detach \
                     --cpuset-cpus "${MAIN_CORES[${node}]}","${WORKER_CORES[${node}]}" \
                     --device=/dev/hugepages/:/dev/hugepages/ \
                     --volume "/etc/vpp/sockets/:/root/sockets/" \
