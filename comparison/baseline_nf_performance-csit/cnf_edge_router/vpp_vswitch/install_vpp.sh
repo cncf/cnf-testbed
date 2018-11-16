@@ -44,7 +44,7 @@ function update_startup() {
 
     if ! cmp -s "/etc/vpp/startup.conf" "VPP_configs/vEdge_startup.conf" ; then
         warn "Updating VPP startup configuration."
-        cp VPP_configs/vEdge_startup.conf /etc/vpp/startup.conf || {
+        sudo cp VPP_configs/vEdge_startup.conf /etc/vpp/startup.conf || {
             die "Failed to copy startup config!"
         }
         restart_vpp || die
@@ -148,7 +148,7 @@ function install_vpp () {
         mkdir -p /etc/vpp/sockets || die "Creating socket dir failed!"
         update_startup || die
         warn "Reconfiguring VPP to vEdge CNF Configuration."
-        sudo ./reconfigure.sh CNF baseline || die "Reconfiguration failed!"
+        chmod +x ./reconfigure.sh && sudo ./reconfigure.sh CNF baseline || die "Reconfiguration failed!"
         exit 0
     else
         die "Something went wrong while building and installing!"

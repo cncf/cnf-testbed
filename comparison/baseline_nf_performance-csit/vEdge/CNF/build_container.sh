@@ -12,12 +12,12 @@ if [ "${input}" == "clean" ]; then
   fi
   # Only removes image
   echo "Removing 'vedge' docker image"
-  docker image rm vedge_single
+  sudo docker image rm vedge_single
   exit 0
 fi
 
 if [ -z "$(docker image list | grep vedge_single)" ]; then
-  docker build -t vedge_single .
+  sudo docker build -t vedge_single .
 else
   echo "Skipping build of container as it already exists.  Remove and rerun to build again"
 fi

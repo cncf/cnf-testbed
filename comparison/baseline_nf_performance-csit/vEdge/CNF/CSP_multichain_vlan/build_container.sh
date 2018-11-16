@@ -33,13 +33,13 @@ BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
 cd "${BASH_FUNCTION_DIR}" || die
 
 if [ "${1-}" == "clean" ]; then
-    docker image rm vedge_chain || die "Removing docker image failed!"
+    sudo docker image rm vedge_chain || die "Removing docker image failed!"
     warn "Container image removed."
     exit 0
 fi
 
 if [ -z "$(docker image list | grep vedge_chain)" ]; then
-    docker build -t vedge_chain . || die "Building docker image failed!"
+    sudo docker build -t vedge_chain . || die "Building docker image failed!"
     warn "Container image built."
 else
     warn "Skipping build of container as it already exists. Remove and rerun to build again."
