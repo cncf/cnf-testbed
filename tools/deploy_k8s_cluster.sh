@@ -1,18 +1,32 @@
 #!/bin/bash
+myname=$(basename $0)
+myfullpath=$(readlink -f $0)
+mypath=$(dirname $myfullpath)
+project_root=$(cd ../ ; pwd -P)
+tool_path="${project_root}/tools"
+deploy_tools_path="${tool_path}/deploy"
+
+######  
+
 docker run \
   --rm \
   --dns 147.75.69.23 --dns 8.8.8.8 \
   -v $(pwd)/data:/cncf/data \
   -v $(pwd)/k8s_cluster_override.tf:/cncf/packet/override.tf \
+  -v $(pwd)/k8s_worker_override.tf:/cncf/packet/modules/worker/override.tf \
+  -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
+  -v "${project_root}/comparison/ansible:/ansible" \
   -e NAME=packet \
   -e CLOUD=packet \
   -e COMMAND=deploy \
   -e BACKEND=file \
+  -e TF_VAR_playbook=$PLAYBOOK \
   -e TF_VAR_master_node_count=$MASTER_NODE_COUNT \
   -e TF_VAR_worker_node_count=$WORKER_NODE_COUNT \
   -e TF_VAR_packet_master_device_plan=$MASTER_NODE_TYPE \
   -e TF_VAR_packet_worker_device_plan=$WORKER_NODE_TYPE \
   -e TF_VAR_packet_operating_system=$NODE_OS \
+  -e TF_VAR_packet_facility=$FACILITY \
   -e TF_VAR_etcd_artifact=https://storage.googleapis.com/etcd/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz \
   -e TF_VAR_cni_artifact=https://github.com/containernetworking/cni/releases/download/${CNI_VERSION}/cni-amd64-${CNI_VERSION}.tgz \
   -e TF_VAR_cni_plugins_artifact=https://github.com/containernetworking/plugins/releases/download/${CNI_VERSION}/cni-plugins-amd64-${CNI_VERSION}.tgz \

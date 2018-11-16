@@ -1,0 +1,22 @@
+---
+# ./ PACKET create vlan and save vlan ids
+# ./ PACKET disbond interfaces
+# ./ PACKET assign vlan
+
+- import_playbook: packet_layer2.yml
+  vars:
+    #server_list: quadtestb-08
+    quad_intel: true
+    delete_vlan: false
+    unassign_interface: false
+    add_interface_to_bond: false
+    vlans:
+      vlan1:
+        desc: foo
+        interface: eth1
+      vlan2:
+        desc: bar
+        interface: eth1
+      vlan3:
+        desc: baz
+        interface: eth3
