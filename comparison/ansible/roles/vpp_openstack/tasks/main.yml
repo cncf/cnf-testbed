@@ -1,23 +1,37 @@
-- name: get VPP install script for RedHat
-  get_url:
-    url: https://packagecloud.io/install/repositories/fdio/release/script.rpm.sh
-    dest: /root/vpp.sh
-    mode: 0755
+- name: setup vpp repo for RedHat
+  template:
+    src: fdio.repo
+    dest: /etc/yum.repos.d/fdio.repo
   when: ansible_os_family == "RedHat"
   register: vpp_sh_rh
 
-- name: get VPP install script for Ubuntu
-  get_url:
-    url: https://packagecloud.io/install/repositories/fdio/release/script.deb.sh
-    dest: /root/vpp.sh
-    mode: 0755
+#- name: get VPP install script for RedHat
+#  get_url:
+#    url: https://packagecloud.io/install/repositories/fdio/release/script.rpm.sh
+#    dest: /root/vpp.sh
+#    mode: 0755
+#  when: ansible_os_family == "RedHat"
+#  register: vpp_sh_rh
+
+- name: setup vpp repo for Ubuntu
+  template:
+    src: 99fd.io.list
+    dest: /etc/apt/sources.list.d/99fd.io.list
   when: ansible_os_family == "Debian"
   register: vpp_sh_deb
 
-- name: run VPP install script
-  command: /root/vpp.sh
-  when: vpp_sh_rh.changed or vpp_sh_deb.changed
+#- name: get VPP install script for Ubuntu
+#  get_url:
+#    url: https://packagecloud.io/install/repositories/fdio/release/script.deb.sh
+#    dest: /root/vpp.sh
+#    mode: 0755
+#  when: ansible_os_family == "Debian"
+#  register: vpp_sh_deb
 
+#- name: run VPP install script
+#  command: /root/vpp.sh
+#  when: vpp_sh_rh.changed or vpp_sh_deb.changed
+#
 - name: install dpdk on RedHat
   yum:
     name: ['libibverbs','dpdk']
@@ -25,6 +39,7 @@
 
 - name: install dpdk on Debian
   yum:
+    update_cache: yes
     name: ['libibverbs-dev','dpdk']
   when: ansible_os_family == "Debian"
 
@@ -35,6 +50,7 @@
 
 - name: install vpp service(s) Ubuntu
   apt:
+    update_cache: yes
     name: ["vpp","vpp-plugins","vpp-dev","vpp-dbg","vpp-api-python","vpp-api-lua","vpp-api-java"]
   when: ansible_os_family == "Debian"
 

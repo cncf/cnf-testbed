@@ -31,7 +31,7 @@
       vlan_interface: "{{ansible_bond0.slaves[1]}}"
   - name: Get Bond0 Slave1 PCIid
     set_fact:
-      vlan_pciid: "{{hostvars[inventory_hostname]['ansible_' + vlan_interface]['pciid']}}
+      vlan_pciid: "{{hostvars[inventory_hostname]['ansible_' + vlan_interface]['pciid']}}"
   - name: Add host and VPP interface to inventory
     delegate_to: localhost
     shell: echo "{{inventory_hostname}} vlan_interface={{vlan_interface}} vlan_pciid={{vlan_pciid}}" >> /ansible/inventory
