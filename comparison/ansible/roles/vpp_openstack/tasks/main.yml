@@ -38,6 +38,16 @@
     name: ["vpp","vpp-plugins","vpp-dev","vpp-dbg","vpp-api-python","vpp-api-lua","vpp-api-java"]
   when: ansible_os_family == "Debian"
 
+- name: install vpp startup with vlan interface pciid
+  template:
+    src: startup.conf
+    dest: /etc/vpp/startup.conf
+
+- name: install vpp interface setup
+  template:
+    src: vpp-interface.conf
+    dest: /etc/vpp-interface.conf
+
 - name: restart vpp service
   service:
     name: vpp
@@ -71,3 +81,42 @@
 - name: install openstack networking-vpp plugin
   pip:
     name: /root/networking-vpp
+
+- name: add vpp-agent script
+  template:
+    src: vpp-agent
+    dest: /usr/local/bin/vpp-agent
+    mode: 0755
+
+- name: add vpp-agent systemd service
+  template:
+    src: vpp-agent.service
+    dest: /usr/lib/systemd/system/vpp-agent.service
+    mode: 0644
+
+- name: add vpp-agent multi-user.wants link
+  file:
+    state: link
+    src: /usr/lib/systemd/system/vpp-agent.service
+    dest: /etc/systemd/system/multi-user.target.wants/vpp-agent.service
+
+- name: restart neutron service
+  service:
+    name: neutron-server
+    state: restarted
+  ignore_errors: true
+
+- name: restart vpp-agent service
+  service:
+    enabled: true
+    name: vpp-agent
+    state: restarted
+
+#- name: uninstall sqlparse
+#  pip:
+#    name: sqlparse
+#    state: absent
+#- name: uninstall sqlparse
+#  pip:
+#    name: sqlparse
+#    state: latest

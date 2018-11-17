@@ -42,6 +42,6 @@
 - name: bring ex-slave interface down
   command: ifdown {{vlan_interface}}
   when:  master_absent.changed or slave_absent.changed
-#- name: bring ex-slave interface up
-#  command: ifup {{vlan_interface}}
-#  when:  master_absent.changed or slave_absent.changed
+- name: bring ex-slave interface up
+  command: ifup {{vlan_interface}}
+  when:  master_absent.changed or slave_absent.changed

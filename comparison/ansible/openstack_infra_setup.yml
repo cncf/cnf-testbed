@@ -26,21 +26,16 @@
       name: vconfig
     when: ansible_os_family == "RedHat"
 
-  - name: Get bond interface slaves
-    setup:
-      filter: "{{ ansible_bond0.slaves }}"
-  - name: Get dns servers
-    setup:
-      filter: "{{ ansible_dns.nameservers }}"
-  - name: Get Bond0 Public IP
-    setup:
-      filter: "{{ ansible_bond0.ipv4.address }}"
-  - name: Get bond0 netmask
-    setup:
-      filter: "{{ ansible_bond0.ipv4.netmask }}"
-  - name: Echo bond0 netmask
-    setup:
-      filter: "{{ ansible_default_ipv4.gateway }}"
+  - name: Get Bond0 Slave1 interface
+    set_fact:
+      vlan_interface: "{{ansible_bond0.slaves[1]}}"
+  - name: Get Bond0 Slave1 PCIid
+    set_fact:
+      vlan_pciid: "{{hostvars[inventory_hostname]['ansible_' + vlan_interface]['pciid']}}
+  - name: Add host and VPP interface to inventory
+    delegate_to: localhost
+    shell: echo "{{inventory_hostname}} vlan_interface={{vlan_interface}} vlan_pciid={{vlan_pciid}}" >> /ansible/inventory
+      
 
   vars:
     nfvbench_service_chain_count: 1

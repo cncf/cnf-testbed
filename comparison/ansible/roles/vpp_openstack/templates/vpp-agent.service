@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenStack VPP Agent
+After=syslog.target network.target neutron.server
+
+[Service]
+Type=notify
+User=neutron
+ExecStart=/usr/local/bin/vpp-agent --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini --log-file /var/log/vpp/vpp-agent.log
+PrivateTmp=true
+NotifyAccess=all
+KillMode=process
+Restart=on-failure
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
