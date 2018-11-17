@@ -10,8 +10,28 @@ module "worker_templates" {
 #  hardware_reservation_id = "your-reservation_id"
 #}
 
-#resource "packet_device" "workers" {
-#  hardware_reservation_id = "your-reservation_id"
-#}
+
+# Provision L2 Networking 
+
+# resource "packet_device" "workers" {
+  # TODO: exclude by reservation ids, tag, hostname
+  #       or include a set of reservation ids
+  #       then use next-available
+  # hardware_reservation_id = "d211457b-ee32-4abc-a218-8334a1879e08"
+  # provisioner "ansible" {
+  #   plays {
+  #     playbook ={
+  #       file_path = "${ var.playbook }"
+  #     }
+  #     extra_vars = {
+  #       extra = {
+  #         variables = {
+  #           server_list = "${ join(",", packet_device.workers.*.hostname) }"
+  #         }
+  #       }
+  #     }
+  #   }
+  # }
+# }
 
 

@@ -1,0 +1,15 @@
+---
+- name: Configure Packet switch layer-2
+  import_playbook: packet_layer2.yml
+
+- name: Provision quad port intel machine as a Packet Generator 
+  import_playbook: packet_generator_quad_intel.yml
+  vars:
+    nfvbench_vlan_ids: "{{ hostvars.localhost.vlans.vlan1.vid }}, {{ hostvars.localhost.vlans.vlan2.vid }}"
+  when: quad_intel is defined and skip_provisioning is undefined
+
+- name: Provision dual port mellanox machine as a Packet Generator 
+  import_playbook: packet_generator_dual_mellanox.yml
+  vars:
+    nfvbench_vlan_ids: "{{ hostvars.localhost.vlans.vlan1.vid }}, {{ hostvars.localhost.vlans.vlan2.vid }}"
+  when: dual_mellanox is defined and skip_provisioning is undefined
