@@ -50,17 +50,14 @@ function run_bench () {
     for rate in "${RATES[@]}"; do
         for iter in $(seq 1 "${ITERATIONS}"); do
             warn "Running test: ${PREFIX}, Rate: ${rate}, Iteration ${iter}"
-            dcr_image="nfvbench"
-            dcr_param="--interactive "
-            dcr_param+="--tty "
-            nfv_param="nfvbench -c /tmp/nfvbench/nfvbench_config.cfg "
+            nfv_param="nfvbench "
             nfv_param+="--rate ${rate} "
             nfv_param+="--flow-count 1024 "
             nfv_param+="--duration ${DURATION} "
             nfv_param+="--json /tmp/nfvbench/${CHAINS}${PREFIX}_${NODENESS}_${rate}-${iter}.log"
             results="${out_dir}/${PREFIX}-${rate}-${iter}.log"
-            params=(${dcr_param} ${dcr_image} ${nfv_param})
-            sudo docker exec "${params[@]}" 2>&1 | tee -a "${results}"
+            params=(${nfv_param})
+            sudo "${params[@]}" 2>&1 | tee -a "${results}"
         done
     done
     popd || die "Change dir failed!"
@@ -72,7 +69,7 @@ BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
 CHAINS="${1:-1}"
 NODENESS="${2:-1}"
 PREFIX="${3:-csp}"
-RATES=( 18500000 ndr )
+RATES=( 18500000pps ndr )
 ITERATIONS=1
 DURATION=30
 
