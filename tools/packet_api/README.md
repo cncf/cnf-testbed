@@ -39,6 +39,19 @@ Example:
 ruby l2_packet_networking.rb --server layer2test-01 --assign-vlan watsonvlan1 --assign-vlan-port eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'
 ```
 
+*ASSIGN VLAN ID*
+
+Option(s):
+- --assign-vlan-id <vlan id> => 
+- --assign-vlan-port <packet interface>
+- --facility <facility short name>
+
+Example:
+
+```
+ruby l2_packet_networking.rb --server layer2test-01 --assign-vlan-id 1100 --assign-vlan-port eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'
+```
+
 *UNASSIGN VLAN*
 
 Option(s):
@@ -49,7 +62,20 @@ Option(s):
 Example:
 
 ```
-ruby l2_packet_networking.rb --server layer2test-01 --assign-vlan watsonvlan1 --assign-vlan-port eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'
+ruby l2_packet_networking.rb --server layer2test-01 --unassign-vlan watsonvlan1 --assign-vlan-port eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'
+```
+
+*UNASSIGN VLAN ID*
+
+Option(s):
+- --unassign-vlan-id <vlan id> => 
+- --unassign-vlan-port <packet interface>
+- --facility <facility short name>
+
+Example:
+
+```
+ruby l2_packet_networking.rb --server layer2test-01 --unassign-vlan 1100 --assign-vlan-port eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'
 ```
 
 *DELETE VLAN*
