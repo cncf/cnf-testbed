@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vpp-deployment
+  labels:
+    app: vpp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vpp
+  template:
+    metadata:
+      labels:
+        app: vpp
+    spec:
+      containers:
+      - name: "test"
+        image: vedge_single
+        args: [ "/usr/bin/vpp", "/etc/vpp/startup.conf" ]
+        volumeMounts:
+        - name: hugepages
+          mountPath: /etc/hugepages/
+        - name: vpp-socket
+          mountPath: /run/vpp/
+        securityContext:
+          privileged: true
+      volumes:
+        - name: hugepages
+          hostPath:
+            path: /dev/hugepages/
+        - name: vpp-socket
+          hostPath:
+            path: /etc/vpp/sockets/
+          
