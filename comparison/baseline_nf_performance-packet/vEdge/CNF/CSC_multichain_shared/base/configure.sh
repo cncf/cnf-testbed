@@ -29,6 +29,7 @@ function validate_input() {
     # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
     # - ${NODENESS} - Number of NFs in chain.
+    # - ${OPERATION} - Operation bit [baseline].
 
     set -euo pipefail
 
@@ -44,6 +45,12 @@ function validate_input() {
     CHAIN="${1}"
     NODE="${2}"
     NODENESS="${3}"
+    OPERATION="${4-}"
+
+    if [ ! -z "${OPERATION}" ] && [ ! "${OPERATION}" == "baseline" ]; then
+        warn "  Usage: $0 <Chain ID> <Node ID> <Total Chains> [baseline]"
+        die "ERROR - Invalid 4th agument provided (${OPERATION})"
+    fi
 
     if [[ -n ${CHAIN//[0-9]/} ]] || [[ -n ${NODE//[0-9]/} ]] || [[ -n ${NODENESS//[0-9]/} ]]; then
         die "ERROR: Chain, node and nodeness must be an integer values!"
@@ -53,8 +60,8 @@ function validate_input() {
         die "ERROR: Chain must be an integer value between 1-8!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "8" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-8!"
+    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "6" ]]; then
+        die "ERROR: Nodeness must be an integer value between 1-6!"
     fi
 }
 
@@ -73,6 +80,7 @@ function set_macs () {
     # Set interface MACs.
     #
     # Variable read:
+    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
@@ -82,17 +90,17 @@ function set_macs () {
     set -euo pipefail
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
-        MAC1=52:54:00:00:00:aa
-        MAC2=52:54:00:00:00:bb
+        MAC1=52:54:0$(( ${CHAIN} - 1 )):00:00:aa
+        MAC2=52:54:0$(( ${CHAIN} - 1 )):00:00:bb
     elif [[ "${NODE}" == "1" ]]; then
-        MAC1=52:54:00:00:00:aa
-        MAC2=52:54:00:00:01:bb
+        MAC1=52:54:0$(( ${CHAIN} - 1 )):00:00:aa
+        MAC2=52:54:0$(( ${CHAIN} - 1 )):00:01:bb
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
-        MAC1=52:54:00:00:0${NODE}:aa
-        MAC2=52:54:00:00:00:bb
+        MAC1=52:54:0$(( ${CHAIN} - 1 )):00:0${NODE}:aa
+        MAC2=52:54:0$(( ${CHAIN} - 1 )):00:00:bb
     else
-        MAC1=52:54:00:00:0${NODE}:aa
-        MAC2=52:54:00:00:0${NODE}:bb
+        MAC1=52:54:0$(( ${CHAIN} - 1 )):00:0${NODE}:aa
+        MAC2=52:54:0$(( ${CHAIN} - 1 )):00:0${NODE}:bb
     fi
 }
 
@@ -108,41 +116,8 @@ function set_memif_ids () {
 
     set -euo pipefail
 
-    if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
-        MEMID1=$(((${CHAIN} - 1)  * 2 + 1))
-        MEMID2=$(((${CHAIN} - 1)  * 2 + 2))
-    elif [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" != "1" ]]; then
-        MEMID1=$(((${CHAIN} - 1)  * 2 + 1))
-        MEMID2=10
-    elif [[ "${NODE}" == "${NODENESS}" ]]; then
-        MEMID1=$((${NODE} + 8))
-        MEMID2=$(((${CHAIN} - 1)  * 2 + 2))
-    else
-        MEMID1=$((${NODE} + 8))
-        MEMID2=$((${NODE} + 9))
-    fi
-}
-
-
-function set_owners () {
-    # Set memif IDs.
-    #
-    # Variable read:
-    # - ${NODE} - Node ID.
-    # - ${NODENESS} - Number of NFs in chain.
-    # Variable set:
-    # - ${OWNER1} - East memif role.
-    # - ${OWNER2} - West memif role.
-
-    set -euo pipefail
-
-    if [[ "${NODE}" == "${NODENESS}" ]]; then
-        OWNER1=slave
-        OWNER2=slave
-    else
-        OWNER1=slave
-        OWNER2=master
-    fi
+    MEMID1=$(((${CHAIN} - 1) * ${NODENESS} * 2 + (${NODE} * 2 - 1)))
+    MEMID2=$(((${CHAIN} - 1) * ${NODENESS} * 2 + (${NODE} * 2)))
 }
 
 
@@ -179,6 +154,7 @@ function set_remote_macs () {
     #
     # Variable read:
     # - ${NODE} - Node ID.
+    # - ${CHAIN} - Chain ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${REMMAC1} - East MAC.
@@ -194,13 +170,13 @@ function set_remote_macs () {
         REMMAC2=${trex_mac2}
     elif [[ "${NODE}" == "1" ]]; then
         REMMAC1=${trex_mac1}
-        REMMAC2=52:54:00:00:02:aa
+        REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:02:aa
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
-        REMMAC1=52:54:00:00:0$(($NODE - 1)):bb
+        REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
         REMMAC2=${trex_mac2}
     else
-        REMMAC1=52:54:00:00:0$(($NODE - 1)):bb
-        REMMAC2=52:54:00:00:0$(($NODE + 1)):aa
+        REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
+        REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE + 1)):aa
     fi
 }
 
@@ -216,19 +192,8 @@ function set_socket_names () {
 
     set -euo pipefail
 
-    if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
-        SOCK1=memif$(((${CHAIN} - 1)  * 2 + 1))
-        SOCK2=memif$(((${CHAIN} - 1)  * 2 + 2))
-    elif [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" != "1" ]]; then
-        SOCK1=memif$(((${CHAIN} - 1)  * 2 + 1))
-        SOCK2=int${CHAIN}1
-    elif [[ "${NODE}" == "${NODENESS}" ]]; then
-        SOCK1=int${CHAIN}$((${NODE} - 1))
-        SOCK2=memif$(((${CHAIN} - 1)  * 2 + 2))
-    else
-        SOCK1=int${CHAIN}$((${NODE} - 1))
-        SOCK2=int${CHAIN}${NODE}
-    fi
+    SOCK1=memif$(((${CHAIN} - 1) * ${NODENESS} * 2 + (${NODE} * 2 - 1)))
+    SOCK2=memif$(((${CHAIN} - 1) * ${NODENESS} * 2 + (${NODE} * 2)))
 }
 
 
@@ -273,11 +238,19 @@ function set_startup_vals () {
 
     set -euo pipefail
 
-    QUEUES=1
-    # The same list is required in the 'run_container.sh' script
-    main_cores=( 0 10 38 16 44 22 50 )
-    # The same list is required in the 'run_container.sh' script
-    worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
+    if [ "${OPERATION}" == "baseline" ]; then
+        QUEUES=1
+        # The same list is required in the 'run_container.sh' script
+        main_cores=( 0 10 38 16 44 22 50 )
+        # The same list is required in the 'run_container.sh' script
+        worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
+    else
+        QUEUES=2
+        # The same list is required in the 'run_container.sh' script
+        main_cores=( 0 10 38 16 44 22 50 )
+        # The same list is required in the 'run_container.sh' script
+        worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
+    fi
 
     MAIN_CORE=${main_cores[${NODE}]}
     WORKERS=${worker_cores[${NODE}]}
@@ -289,7 +262,6 @@ set_startup_vals || die
 set_socket_names || die
 set_memif_ids || die
 set_macs || die
-set_owners || die
 set_subnets || die
 set_remote_ips || die
 set_remote_macs || die
@@ -341,8 +313,8 @@ EOF
 bash -c "cat > /etc/vpp/setup.gate" <<EOF
 bin memif_socket_filename_add_del add id 1 filename /root/sockets/${SOCK1}.sock
 bin memif_socket_filename_add_del add id 2 filename /root/sockets/${SOCK2}.sock
-create interface memif id ${MEMID1} socket-id 1 hw-addr ${MAC1} ${OWNER1} rx-queues ${QUEUES} tx-queues ${QUEUES}
-create interface memif id ${MEMID2} socket-id 2 hw-addr ${MAC2} ${OWNER2} rx-queues ${QUEUES} tx-queues ${QUEUES}
+create interface memif id ${MEMID1} socket-id 1 hw-addr ${MAC1} slave rx-queues ${QUEUES} tx-queues ${QUEUES}
+create interface memif id ${MEMID2} socket-id 2 hw-addr ${MAC2} slave rx-queues ${QUEUES} tx-queues ${QUEUES}
 set int ip addr memif1/${MEMID1} ${SUBNET1}
 set int ip addr memif2/${MEMID2} ${SUBNET2}
 set int state memif1/${MEMID1} up

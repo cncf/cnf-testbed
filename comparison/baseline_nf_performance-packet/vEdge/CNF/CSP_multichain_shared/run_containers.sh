@@ -55,7 +55,7 @@ function update_vpp_config() {
 
     if ! cmp -s "/etc/vpp/setup.gate" "vEdge_csc_vpp.conf"; then
         warn "Updating VPP configuration."
-        sudo cp vEdge_csc_vpp.conf /etc/vpp/setup.gate || {
+        sudo cp vEdge_csp_vpp.conf /etc/vpp/setup.gate || {
             die "Failed to copy VPP configuration!"
         }
         restart_vpp || die
@@ -130,11 +130,11 @@ function run_containers () {
         WORKER_CORES=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
     fi
 
-    chmod +x ./build_container.sh && ./build_container.sh || {
+    chmod +x build_container.sh && sudo ./build_container.sh || {
         die "Failed to build container!"
     }
     # Create vpp configuration.
-    chmod +x ./create_vpp_config.sh && ./create_vpp_config.sh "${CHAINS}" "${NODENESS}" ${VLANS[@]} || {
+    chmod +x create_vpp_config.sh && sudo ./create_vpp_config.sh "${CHAINS}" "${NODENESS}" ${VLANS[@]} || {
         die "Failed to create VPP config!"
     }
     update_vpp_config || {
@@ -149,8 +149,8 @@ function run_containers () {
                     --cpuset-cpus "${MAIN_CORES[${node}]}","${WORKER_CORES[${node}]}" \
                     --device=/dev/hugepages/:/dev/hugepages/ \
                     --volume "/etc/vpp/sockets/:/root/sockets/" \
-                    --name "${dcr_name}" vedge_csc \
-                    /vEdge/configure.sh "${chain}" "${node}" "${NODENESS}" "${baseline}" || {
+                    --name "${dcr_name}" vedge_chain \
+                    /vEdge/configure.sh "${chain}" "${node}" "${NODENESS}" || {
                     die "Failed to start ${dcr_name} container!"
                 }
             fi
@@ -161,6 +161,7 @@ function run_containers () {
     # Restart VPP to get correct queue pinning of Memifs.
     restart_vpp || die
 }
+
 
 BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
     die "Some error during localizing this source directory!"

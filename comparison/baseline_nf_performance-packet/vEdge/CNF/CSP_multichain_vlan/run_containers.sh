@@ -122,12 +122,12 @@ function run_containers () {
     # Create CORE lists.
     if [ ! "${OPERATION}" == "baseline" ]; then
         baseline=""
-        MAIN_CORES=( 0 5 61 8 64 11 67 14 70 )
-        WORKER_CORES=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
+        MAIN_CORES=( 0 10 38 16 44 22 50 )
+        WORKER_CORES=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
     else
         baseline="baseline"
-        MAIN_CORES=( 0 5 61 8 64 11 67 14 70 )
-        WORKER_CORES=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
+        MAIN_CORES=( 0 10 38 16 44 22 50 )
+        WORKER_CORES=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
     fi
 
     chmod +x build_container.sh && sudo ./build_container.sh || {

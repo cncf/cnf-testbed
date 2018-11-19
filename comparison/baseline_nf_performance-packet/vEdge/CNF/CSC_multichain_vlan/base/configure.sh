@@ -60,8 +60,8 @@ function validate_input() {
         die "ERROR: Chain must be an integer value between 1-8!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "8" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-8!"
+    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "6" ]]; then
+        die "ERROR: Nodeness must be an integer value between 1-6!"
     fi
 }
 
@@ -80,6 +80,7 @@ function set_macs () {
     # Set interface MACs.
     #
     # Variable read:
+    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
@@ -89,17 +90,17 @@ function set_macs () {
     set -euo pipefail
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
-        MAC1=52:54:00:00:00:aa
-        MAC2=52:54:00:00:00:bb
+        MAC1=52:54:0$(( ${CHAIN} - 1 )):00:00:aa
+        MAC2=52:54:0$(( ${CHAIN} - 1 )):00:00:bb
     elif [[ "${NODE}" == "1" ]]; then
-        MAC1=52:54:00:00:00:aa
-        MAC2=52:54:00:00:01:bb
+        MAC1=52:54:0$(( ${CHAIN} - 1 )):00:00:aa
+        MAC2=52:54:0$(( ${CHAIN} - 1 )):00:01:bb
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
-        MAC1=52:54:00:00:0${NODE}:aa
-        MAC2=52:54:00:00:00:bb
+        MAC1=52:54:0$(( ${CHAIN} - 1 )):00:0${NODE}:aa
+        MAC2=52:54:0$(( ${CHAIN} - 1 )):00:00:bb
     else
-        MAC1=52:54:00:00:0${NODE}:aa
-        MAC2=52:54:00:00:0${NODE}:bb
+        MAC1=52:54:0$(( ${CHAIN} - 1 )):00:0${NODE}:aa
+        MAC2=52:54:0$(( ${CHAIN} - 1 )):00:0${NODE}:bb
     fi
 }
 
@@ -160,21 +161,21 @@ function set_remote_macs () {
 
     set -euo pipefail
 
-    trex_mac1=3c:fd:fe:bd:f8:60
-    trex_mac2=3c:fd:fe:bd:f8:61
+    trex_mac1=e4:43:4b:2e:b1:d1
+    trex_mac2=e4:43:4b:2e:b1:d2
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
         REMMAC1=${trex_mac1}
         REMMAC2=${trex_mac2}
     elif [[ "${NODE}" == "1" ]]; then
         REMMAC1=${trex_mac1}
-        REMMAC2=52:54:00:00:02:aa
+        REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:02:aa
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
-        REMMAC1=52:54:00:00:0$(($NODE - 1)):bb
+        REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
         REMMAC2=${trex_mac2}
     else
-        REMMAC1=52:54:00:00:0$(($NODE - 1)):bb
-        REMMAC2=52:54:00:00:0$(($NODE + 1)):aa
+        REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
+        REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE + 1)):aa
     fi
 }
 
@@ -239,15 +240,15 @@ function set_startup_vals () {
     if [ "${OPERATION}" == "baseline" ]; then
         QUEUES=1
         # The same list is required in the 'run_container.sh' script
-        main_cores=( 0 5 61 8 64 11 67 14 70 )
+        main_cores=( 0 10 38 16 44 22 50 )
         # The same list is required in the 'run_container.sh' script
-        worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
+        worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
     else
         QUEUES=2
         # The same list is required in the 'run_container.sh' script
-        main_cores=( 0 5 61 8 64 11 67 14 70 )
+        main_cores=( 0 10 38 16 44 22 50 )
         # The same list is required in the 'run_container.sh' script
-        worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
+        worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
     fi
 
     MAIN_CORE=${main_cores[${NODE}]}
