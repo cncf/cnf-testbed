@@ -14,7 +14,7 @@ This project provides a way to reproduce chained vnf vs cnf testing results.
 
 ## Example pictures showing test topologies
 
-![openstack](https://github.com/cncf/cnfs/comparison/kubecon18-chained_nf_test/docs/images/openstack_overview.jpg)
+![openstack](https://raw.githubusercontent.com/cncf/cnfs/master/comparison/kubecon18-chained_nf_test/docs/images/openstack_overview.jpg)
 
 ## Steps to execute performance test
 
