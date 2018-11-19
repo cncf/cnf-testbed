@@ -43,7 +43,7 @@ This project provides a way to reproduce chained vnf vs cnf testing results.
     cd cnfs/comparison/kubecon18-chained_nf_test
     cp template.env global.env
     emacs global.env
-    . .global.env  
+    . ./global.env  
     ```
 1. Kubernetes deploy and test execution 
     1. Build k8s cluster on packet 
