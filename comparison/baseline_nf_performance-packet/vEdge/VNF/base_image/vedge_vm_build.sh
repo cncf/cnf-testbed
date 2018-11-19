@@ -8,12 +8,16 @@ pip install jsonschema
 sudo apt-get -y install linux-headers-$(uname -r)
 
 # Install VPP
-export UBUNTU="xenial"
-export RELEASE=".stable.1804"
-sudo rm /etc/apt/sources.list.d/99fd.io.list
-sudo echo "deb [trusted=yes] https://nexus.fd.io/content/repositories/fd.io$RELEASE.ubuntu.$UBUNTU.main/ ./" | sudo tee -a /etc/apt/sources.list.d/99fd.io.list
-sudo apt-get update
-sudo apt-get install -y vpp vpp-dpdk-dkms vpp-lib vpp-dbg vpp-plugins vpp-dev
+VPP_VERSION="18.10-release"
+artifacts=()
+vpp=(vpp vpp-dbg vpp-dev vpp-lib vpp-plugins)
+if [ -z "${VPP_VERSION-}" ]; then
+    artifacts+=(${vpp[@]})
+else
+    artifacts+=(${vpp[@]/%/=${VPP_VERSION-}})
+fi
+curl -s https://packagecloud.io/install/repositories/fdio/release/script.deb.sh | bash
+apt-get install -y "${artifacts[@]}"
 sleep 1
 
 sudo sed -i 's/^.*\(net.ipv4.ip_forward\).*/\1=1/g' /etc/sysctl.conf

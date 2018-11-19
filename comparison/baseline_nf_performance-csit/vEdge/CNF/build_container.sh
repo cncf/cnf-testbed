@@ -11,7 +11,7 @@ if [ "${input}" == "clean" ]; then
     exit 0
   fi
   # Only removes image
-  echo "Removing 'vedge' docker image"
+  echo "Removing 'vedge_single' docker image"
   sudo docker image rm vedge_single
   exit 0
 fi
