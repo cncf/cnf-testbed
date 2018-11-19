@@ -80,6 +80,7 @@ function set_macs () {
     # Set interface MACs.
     #
     # Variable read:
+    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
@@ -89,17 +90,17 @@ function set_macs () {
     set -euo pipefail
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
-        MAC1=52:54:00:00:00:aa
-        MAC2=52:54:00:00:00:bb
+        MAC1=52:54:0$(( ${CHAIN} - 1 )):00:00:aa
+        MAC2=52:54:0$(( ${CHAIN} - 1 )):00:00:bb
     elif [[ "${NODE}" == "1" ]]; then
-        MAC1=52:54:00:00:00:aa
-        MAC2=52:54:00:00:01:bb
+        MAC1=52:54:0$(( ${CHAIN} - 1 )):00:00:aa
+        MAC2=52:54:0$(( ${CHAIN} - 1 )):00:01:bb
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
-        MAC1=52:54:00:00:0${NODE}:aa
-        MAC2=52:54:00:00:00:bb
+        MAC1=52:54:0$(( ${CHAIN} - 1 )):00:0${NODE}:aa
+        MAC2=52:54:0$(( ${CHAIN} - 1 )):00:00:bb
     else
-        MAC1=52:54:00:00:0${NODE}:aa
-        MAC2=52:54:00:00:0${NODE}:bb
+        MAC1=52:54:0$(( ${CHAIN} - 1 )):00:0${NODE}:aa
+        MAC2=52:54:0$(( ${CHAIN} - 1 )):00:0${NODE}:bb
     fi
 }
 
@@ -168,13 +169,13 @@ function set_remote_macs () {
         REMMAC2=${trex_mac2}
     elif [[ "${NODE}" == "1" ]]; then
         REMMAC1=${trex_mac1}
-        REMMAC2=52:54:00:00:02:aa
+        REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:02:aa
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
-        REMMAC1=52:54:00:00:0$(($NODE - 1)):bb
+        REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
         REMMAC2=${trex_mac2}
     else
-        REMMAC1=52:54:00:00:0$(($NODE - 1)):bb
-        REMMAC2=52:54:00:00:0$(($NODE + 1)):aa
+        REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
+        REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE + 1)):aa
     fi
 }
 

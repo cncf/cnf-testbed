@@ -103,6 +103,8 @@ function set_memif_ids () {
     #
     # Variable read:
     # - ${NODE} - Node ID.
+    # - ${CHAIN} - Chain ID.
+    # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${MEMID1} - East memifID.
     # - ${MEMID2} - West memifID.
@@ -152,6 +154,7 @@ function set_remote_ips () {
     #
     # Variable read:
     # - ${NODE} - Node ID.
+    # - ${CHAIN} - Chain ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${REMIP1} - East IP.
