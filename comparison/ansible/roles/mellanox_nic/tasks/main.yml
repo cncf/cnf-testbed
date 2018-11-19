@@ -39,4 +39,7 @@
     command: mlxconfig -d {{result.stdout}} set SRIOV_EN=1 NUM_OF_VFS=2 
     echo: yes
     responses: 
-      "Apply new Configuration.*": "y" 
+      "Apply new Configuration.*": "y"
+
+- name: Enable VFs
+  template: src=rc.local.j2 dest=/etc/rc.local
