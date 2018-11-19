@@ -12,6 +12,7 @@
     repo: https://git.openstack.org/openstack/openstack-chef
     version: stable/queens
     dest: /root/openstack-chef
+    update: false
   ignore_errors: True
     
 - name: run the berks command in the openstack-chef repo
@@ -73,11 +74,6 @@
   template:
     src: multinode-compute.json
     dest: /root/openstack-chef/roles/multinode-compute.json
-
-- name: Simplify the multinode-network service
-  template:
-    src: multinode-network.json
-    dest: /root/openstack-chef/roles/multinode-network.json
 
 - name: Launch Chef based OpenStack installer on First (controller) node
   command: chef-client -z -E multinode -r 'role[multinode-controller]'
