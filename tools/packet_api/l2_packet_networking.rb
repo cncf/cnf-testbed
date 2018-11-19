@@ -74,7 +74,7 @@ pp ARGV if options[:verbose]
 
 if options[:bond_port].nil? && options[:delete_vlan].nil? && options[:unassign_vlan].nil? && options[:unassign_vlan_id].nil? &&
     options[:assign_vlan_id].nil? && options[:assign_vlan].nil? && options[:disbond_port].nil? && options[:create_vlan].nil?
-  puts "You must select delete_vlan, unassign_vlan, assign-vlan, bond-interface, disbond-interface, or create vlan!"
+  puts "You must select delete_vlan, unassign_vlan, assign-vlan, bond-interface, disbond-interface, or create-vlan or -h for help!"
   exit
 end
 if options[:unassign_vlan] && (options[:unassign_vlan_port].nil? || (options[:server].nil? && options[:instance_id].nil?))
