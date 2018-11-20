@@ -21,7 +21,7 @@ This project provides a way to reproduce chained vnf vs cnf testing results.
 
 1. Install prereq software on your desktop machine
     1. [docker](https://docs.docker.com/install/)
-    1. [git](https://www.github.com)
+    1. [git](https://help.github.com/articles/set-up-git/)
 
 1. Create [packet] account
 
