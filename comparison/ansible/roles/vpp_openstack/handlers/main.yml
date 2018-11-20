@@ -1,0 +1,10 @@
+- name: Restart neutron-server
+  service:
+    name: neutron-server
+    state: restarted
+
+- name: Restart vpp-agent
+  service:
+    enabled: true
+    name: vpp-agent
+    state: restarted

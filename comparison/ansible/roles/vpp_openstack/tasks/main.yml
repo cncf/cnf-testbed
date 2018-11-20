@@ -69,15 +69,10 @@
     name: vpp
     state: restarted
 
-- name: create ml2 config dir
-  file:
-    dest: /etc/neutron/plugins/ml2
-    state: directory
-
-- name: update ml2 config for vpp
+- name: update plugins config for vpp
   template:
     src: ml2_conf.j2
-    dest: /etc/neutron/plugins/ml2/ml2_conf.ini
+    dest: /etc/neutron/plugin.ini
 
 - name: enable python pip - RedHat
   yum:
@@ -94,9 +89,17 @@
     repo: https://github.com/openstack/networking-vpp
     dest: /root/networking-vpp
     update: no
+
 - name: install openstack networking-vpp plugin
   pip:
     name: /root/networking-vpp
+
+- name: migrate neutron vpp database
+  command: neutron-db-manage --subproject networking-vpp --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini upgrade head
+
+- name: bring ex-slave interface down
+  command: ifdown {{vlan_interface}}
+  ignore_errors: true
 
 - name: add vpp-agent script
   template:
@@ -115,24 +118,12 @@
     state: link
     src: /usr/lib/systemd/system/vpp-agent.service
     dest: /etc/systemd/system/multi-user.target.wants/vpp-agent.service
+  notify:
+  - Restart neutron-server
+  - Restart vpp-agent
 
-- name: restart neutron service
-  service:
-    name: neutron-server
-    state: restarted
-  ignore_errors: true
-
-- name: restart vpp-agent service
-  service:
-    enabled: true
-    name: vpp-agent
-    state: restarted
-
-#- name: uninstall sqlparse
-#  pip:
-#    name: sqlparse
-#    state: absent
-#- name: uninstall sqlparse
-#  pip:
-#    name: sqlparse
-#    state: latest
+- name: add create_vlans.sh openstack client script
+  template:
+    src: create_vlans.sh
+    dest: /root/create_vlans.sh
+    mode: 0755
