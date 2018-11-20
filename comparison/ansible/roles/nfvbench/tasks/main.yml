@@ -1,23 +1,4 @@
 ---
-- name: Fetch nodes
-  shell: > 
-            ls /sys/devices/system/node/ | 
-            grep node | 
-            paste -s -d ','
-  register: result
-
-- name: Prepare Hugepages
-  command: echo 4096 > /sys/devices/system/node/{{ item }}/hugepages/hugepages-2048kB/nr_hugepages
-  with_items: "{{ result.stdout.split(',') }}"
-
-- name: Mount Hugepages
-  mount: 
-    path: /dev/hugepages
-    src: none
-    fstype: hugetlbfs
-    opts: pagesize=2M
-    state: present
-
 - name: Get Kernal Version
   setup: 
     filter: "{{ ansible_kernel }}"
@@ -25,7 +6,7 @@
 - name: Docker start opnfv/nfvbench
   docker_container:
     name: nfvbench
-    image: opnfv/nfvbench:1.5.2
+    image: opnfv/nfvbench:2.0.5
     state: started
     network_mode: host
     privileged: true
@@ -53,4 +34,4 @@
     line: 'alias nfvbench="sudo docker exec -it nfvbench nfvbench -c /tmp/nfvbench/nfvbench_config.cfg"'
 
 - name: Write nfvbench config file
-  template: src=nfvbench_config.j2 dest={{ playbook_dir }}/nfvbench_config.cfg
+  template: src=nfvbench_config_205_mlx.j2 dest={{ playbook_dir }}/nfvbench_config.cfg

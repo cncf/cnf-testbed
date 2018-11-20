@@ -93,14 +93,13 @@ function generate_vpp_config () {
         done
         append_vpp_config "set int l2 bridge memif${mEth}/${mEth} $((${offset} + (${NODENESS} + 1 )))"
         append_vpp_config "set int l2 bridge TwentyFiveGigabitEthernet3b/0/1.${vlan_w} $((${offset} + (${NODENESS} + 1 )))"
-        append_vpp_config ""
-        append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/0.${vlan_e} up"
-        append_vpp_config "set interface l2 tag-rewrite TwentyFiveGigabitEthernet3b/0/0.${vlan_e} pop 1"
-        append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/1.${vlan_w} up"
-        append_vpp_config "set interface l2 tag-rewrite TwentyFiveGigabitEthernet3b/0/1.${vlan_w} pop 1"
-        append_vpp_config "set int mtu 9200 TwentyFiveGigabitEthernet3b/0/0"
-        append_vpp_config "set int mtu 9200 TwentyFiveGigabitEthernet3b/0/1"
+        append_vpp_config "set int state twentyfivegigabitethernet3b/0/0.${vlan_e} up"
+        append_vpp_config "set interface l2 tag-rewrite twentyfivegigabitethernet3b/0/0.${vlan_e} pop 1"
+        append_vpp_config "set int state twentyfivegigabitethernet3b/0/1.${vlan_w} up"
+        append_vpp_config "set interface l2 tag-rewrite twentyfivegigabitethernet3b/0/1.${vlan_w} pop 1"
     done
+    append_vpp_config "set int mtu 9200 TwentyFiveGigabitEthernet3b/0/0"
+    append_vpp_config "set int mtu 9200 TwentyFiveGigabitEthernet3b/0/1"
     append_vpp_config ""
     for meth in $(seq 1 "${sockets}"); do
         append_vpp_config "set int state memif${meth}/${meth} up"

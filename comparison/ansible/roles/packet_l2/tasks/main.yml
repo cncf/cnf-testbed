@@ -19,32 +19,9 @@
   with_nested:
     - "{{ server_list.split(',') }}"
     - "{{ vlans }}"
-  when: teardown_layer2 is undefined or teardown_layer2 == false
 
 - name: Assign vlan to interface
   command: ruby /packet_api/l2_packet_networking.rb --server={{ item[0] }} --assign-vlan-id={{ vlans[item[1]].vid }} --assign-vlan-port={{ vlans[item[1]].interface }} --project-name="{{ project_name }}" --packet-url='api.packet.net'
   with_nested:
     - "{{ server_list.split(',') }}"
     - "{{ vlans }}"
-  when: teardown_layer2 is undefined or teardown_layer2 == false
-
- ### Tear things down and put it back to the default setup
-
-- name: Unassign vlan from interface
-  command: ruby /packet_api/l2_packet_networking.rb --server={{ item[0] }} --unassign-vlan-id={{ vlans[item[1]].vid }} --unassign-vlan-port={{ vlans[item[1]].interface }} --project-name="{{ project_name }}" --packet-url='api.packet.net'
-  with_nested:
-    - "{{ server_list.split(',') }}"
-    - "{{ vlans }}"
-  when: unassign_interface or teardown_layer2 is defined and teardown_layer2 == true
-
-- name: Add interface to bond0, for all specifed nodes
-  command: ruby /packet_api/l2_packet_networking.rb --server={{ item[0] }} --bond-interface={{ vlans[item[1]].interface }} --project-name="{{ project_name }}"  --packet-url='api.packet.net'
-  with_nested:
-    - "{{ server_list.split(',') }}"
-    - "{{ vlans }}"
-  when: add_interface_to_bond or teardown_layer2 is defined and teardown_layer2 == true
-
-- name: Delete my vlans
-  command: ruby /packet_api/l2_packet_networking.rb --delete-vlan="{{ deploy_env }}{{ item.key }}" --project-name="{{ project_name }}" --packet-url='api.packet.net' --facility="{{ facility }}"
-  with_dict: "{{ vlans }}"
-  when: delete_vlan or teardown_layer2 is defined and teardown_layer2 == true
