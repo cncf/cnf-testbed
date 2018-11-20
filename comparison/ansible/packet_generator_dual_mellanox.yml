@@ -31,23 +31,51 @@
   - name: Get bond0 internal gw
     setup:
       filter: "{{ ansible_bond0_0.ipv4.network }}"
+  - name: Install Docker
+    include_role:
+      name: { role: "nickjj.docker", tags: ["docker"] }
+  - name: Configure interfaces
+    include_role:
+      name: mrlesmithjr.config-interfaces
+  - name: Configure GRUB
+    include_role:
+      name: grub_mellanox_packet_generator
+  - name: Do Mellanox setup
+    include_role:
+      name: mellanox_nic
+  - name: Reboot following MLX setup
+    reboot:
+  - name: Ensure rc.local has been started
+    service:
+      name: rc-local
+      state: started
+  - name: Sleep for 10 seconds to ensure VFs are available
+    wait_for: timeout=10
+  - name: Update Facts
+    setup:
+  - name: Sleep for 10 seconds to ensure Facts are updated
+    wait_for: timeout=10
   - name: Get trex_port_0 pci id
     setup:
-      filter: "{{ ansible_enp94s0f0.pciid }}"
+      filter: "{{ ansible_enp94s0f4.pciid }}"
   - name: Get trex_port_1 pci id
     setup:
-      filter: "{{ ansible_enp94s0f1.pciid }}"
+      filter: "{{ ansible_enp94s0f5.pciid }}"
   post_tasks:
   - name: Reboot Server
     reboot:
+  - name: Restart NFVbench
+    docker_container:
+      name: nfvbench
+      restart: yes
 
   vars:
-    trex_port_0_pci: "{{ ansible_enp94s0f0.pciid }}"
-    trex_port_1_pci: "{{ ansible_enp94s0f1.pciid }}"
+    trex_port_0_pci: "{{ ansible_enp94s0f4.pciid }}"
+    trex_port_1_pci: "{{ ansible_enp94s0f5.pciid }}"
+    mellanox_pf: "enp94s0f1"
     nfvbench_service_chain_count: 1
     nfvbench_mac_addrs_left: "'52:54:00:00:00:aa'"
     nfvbench_mac_addrs_right: "'52:54:00:00:00:bb'"
-    nfvbench_vlan_ids: 1070, 1064
     docker__registries:
       - registry_url: "https://index.docker.io/v1/"
     docker__package_dependencies:
@@ -103,21 +131,6 @@
         parameters:
           - param:
             val: 'bond-master bond0'
-      - name: "{{ ansible_bond0.slaves[1] }}"
-        configure: true
-        method: 'manual'
-        parameters:
-          - param: 'pre-up'
-            val: 'sleep 4'
-      - name: "{{ ansible_bond0.slaves[1] }}.1030"
-        configure: true
-        method: 'static'
-        address: '172.16.99.31'
-        netmask: '255.255.255.0'
   roles:
-    - { role: "nickjj.docker", tags: ["docker"] }
-    - mrlesmithjr.config-interfaces
-    - grub_mellanox_packet_generator # Feed vlan ids here 
-    - mellanox_nic
     - nfvbench
 

@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
 input="$1"
 
@@ -6,7 +6,7 @@ mydir=$(dirname $0)
 cd $mydir
 
 if [ "$input" == "clean" ]; then
-  if [ ! -z "$(docker ps | grep vEdge)" ]; then
+  if [ ! -z "$(docker inspect -f {{.State.Running}} vEdge)" ]; then
     echo "Remove container before removing image"
     exit 0
   fi
