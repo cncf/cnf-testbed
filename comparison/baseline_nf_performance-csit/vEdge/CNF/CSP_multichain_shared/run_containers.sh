@@ -117,7 +117,7 @@ function run_containers () {
 
     set -euo pipefail
 
-    VLANS=(1070 1064)
+    VLANS=()
 
     # Create CORE lists.
     if [ ! "${OPERATION}" == "baseline" ]; then

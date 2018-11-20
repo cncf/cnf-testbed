@@ -58,7 +58,7 @@ function generate_vpp_config () {
     # - ${VLANS} - Base VLANs.
 
     set -euo pipefail
-
+    set +u
     domains=$(( "${NODENESS}" + 1 ))
     for domain in $(seq 1 ${domains}); do
         append_vpp_config "create bridge-domain ${domain}"
@@ -73,13 +73,16 @@ function generate_vpp_config () {
     append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/0 up"
     append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/1 up"
     append_vpp_config ""
-    append_vpp_config "create sub TwentyFiveGigabitEthernet3b/0/0 ${VLANS[0]}"
-    append_vpp_config "create sub TwentyFiveGigabitEthernet3b/0/1 ${VLANS[1]}"
+    if [ ${#VLANS[@]} -ne 0 ]; then
+        append_vpp_config "create sub TwentyFiveGigabitEthernet3b/0/0 ${VLANS[0]}"
+        append_vpp_config "create sub TwentyFiveGigabitEthernet3b/0/1 ${VLANS[1]}"
+        append_vpp_config "set interface l2 tag-rewrite TwentyFiveGigabitEthernet3b/0/0${VLANS[0]/#/.} pop 1"
+        append_vpp_config "set interface l2 tag-rewrite TwentyFiveGigabitEthernet3b/0/1${VLANS[1]/#/.} pop 1"
+    fi
     append_vpp_config ""
-    append_vpp_config "set int l2 bridge TwentyFiveGigabitEthernet3b/0/0.${VLANS[0]} 1"
+    append_vpp_config "set int l2 bridge TwentyFiveGigabitEthernet3b/0/0${VLANS[0]/#/.} 1"
     for chain in $(seq 0 $(( "${CHAINS}" - 1 ))); do
         offset=$(("${NODENESS}" + 1 ))
-
         mEth=$(( "${chain}" * ("${NODENESS}" * 2) + 1 ))
         append_vpp_config "set int l2 bridge memif${mEth}/${mEth} 1"
         ((++mEth))
@@ -92,18 +95,17 @@ function generate_vpp_config () {
         append_vpp_config "set int l2 bridge memif${mEth}/${mEth} $((${NODENESS} + 1))"
         append_vpp_config ""
     done
-    append_vpp_config "set int l2 bridge TwentyFiveGigabitEthernet3b/0/1.${VLANS[1]} $((${NODENESS} + 1))"
+    append_vpp_config "set int l2 bridge TwentyFiveGigabitEthernet3b/0/1${VLANS[1]/#/.} $((${NODENESS} + 1))"
     append_vpp_config ""
-    append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/0.${VLANS[0]} up"
-    append_vpp_config "set interface l2 tag-rewrite TwentyFiveGigabitEthernet3b/0/0.${VLANS[0]} pop 1"
-    append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/1.${VLANS[1]} up"
-    append_vpp_config "set interface l2 tag-rewrite TwentyFiveGigabitEthernet3b/0/1.${VLANS[1]} pop 1"
+    append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/0${VLANS[0]/#/.} up"
+    append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/1${VLANS[1]/#/.} up"
     append_vpp_config "set int mtu 9200 TwentyFiveGigabitEthernet3b/0/0"
     append_vpp_config "set int mtu 9200 TwentyFiveGigabitEthernet3b/0/1"
     append_vpp_config ""
     for meth in $(seq 1 "${sockets}"); do
         append_vpp_config "set int state memif${meth}/${meth} up"
     done
+    set -u
 }
 
 function validate_input() {
