@@ -92,9 +92,9 @@ function generate_vpp_config () {
         append_vpp_config "set interface l2 tag-rewrite TenGigabitEthernet1a/0/2.${vlan_e} pop 1"
         append_vpp_config "set int state TenGigabitEthernet1a/0/2.${vlan_w} up"
         append_vpp_config "set interface l2 tag-rewrite TenGigabitEthernet1a/0/2.${vlan_w} pop 1"
-        append_vpp_config "set int mtu 9200 TenGigabitEthernet1a/0/1"
-        append_vpp_config "set int mtu 9200 TenGigabitEthernet1a/0/2"
     done
+    append_vpp_config "set int mtu 9200 TenGigabitEthernet1a/0/1"
+    append_vpp_config "set int mtu 9200 TenGigabitEthernet1a/0/2"
     append_vpp_config ""
     for meth in $(seq 1 "${sockets}"); do
         append_vpp_config "set int state memif${meth}/${meth} up"

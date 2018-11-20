@@ -69,13 +69,13 @@ function generate_vpp_config () {
         append_vpp_config "create vhost-user socket /var/run/vpp/sock${socket}.sock server"
     done
     append_vpp_config ""
-    append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/0 up"
-    append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/1 up"
+    append_vpp_config "set int state TenGigabitEthernet1a/0/1 up"
+    append_vpp_config "set int state TenGigabitEthernet1a/0/2 up"
     append_vpp_config ""
-    append_vpp_config "create sub TwentyFiveGigabitEthernet3b/0/0 ${VLANS[0]}"
-    append_vpp_config "create sub TwentyFiveGigabitEthernet3b/0/1 ${VLANS[1]}"
+    append_vpp_config "create sub TenGigabitEthernet1a/0/1 ${VLANS[0]}"
+    append_vpp_config "create sub TenGigabitEthernet1a/0/2 ${VLANS[1]}"
     append_vpp_config ""
-    append_vpp_config "set int l2 bridge TwentyFiveGigabitEthernet3b/0/0.${VLANS[0]} 1"
+    append_vpp_config "set int l2 bridge TenGigabitEthernet1a/0/1.${VLANS[0]} 1"
     for chain in $(seq 0 $(( "${CHAINS}" - 1 ))); do
         offset=$(("${NODENESS}" + 1 ))
 
@@ -90,15 +90,15 @@ function generate_vpp_config () {
         done
         append_vpp_config "set int l2 bridge VirtualEthernet0/0/${vEth} $((${NODENESS} + 1 ))"
     done
-    append_vpp_config "set int l2 bridge TwentyFiveGigabitEthernet3b/0/1.${VLANS[1]} $((${NODENESS} + 1 ))"
+    append_vpp_config "set int l2 bridge TenGigabitEthernet1a/0/2.${VLANS[1]} $((${NODENESS} + 1 ))"
     append_vpp_config ""
-    append_vpp_config "set interface l2 tag-rewrite TwentyFiveGigabitEthernet3b/0/0.${VLANS[0]} pop 1"
-    append_vpp_config "set interface l2 tag-rewrite TwentyFiveGigabitEthernet3b/0/1.${VLANS[1]} pop 1"
+    append_vpp_config "set interface l2 tag-rewrite TenGigabitEthernet1a/0/1.${VLANS[0]} pop 1"
+    append_vpp_config "set interface l2 tag-rewrite TenGigabitEthernet1a/0/2.${VLANS[1]} pop 1"
     append_vpp_config ""
-    append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/0.${VLANS[0]} up"
-    append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/1.${VLANS[1]} up"
-    append_vpp_config "set int mtu 9200 TwentyFiveGigabitEthernet3b/0/0"
-    append_vpp_config "set int mtu 9200 TwentyFiveGigabitEthernet3b/0/1"
+    append_vpp_config "set int state TenGigabitEthernet1a/0/1.${VLANS[0]} up"
+    append_vpp_config "set int state TenGigabitEthernet1a/0/2.${VLANS[1]} up"
+    append_vpp_config "set int mtu 9200 TenGigabitEthernet1a/0/1"
+    append_vpp_config "set int mtu 9200 TenGigabitEthernet1a/0/2"
     for veth in $(seq 0 "${sockets}"); do
         append_vpp_config "set int state VirtualEthernet0/0/${veth} up"
     done
@@ -135,8 +135,8 @@ function validate_input() {
         die "ERROR - DEBUG: Only supports up to 1-8 chains!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "8" ]]; then
-        die "ERROR - DEBUG: Only supports up to 1-8 nodes per chain!"
+    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "6" ]]; then
+        die "ERROR - DEBUG: Only supports up to 1-6 nodes per chain!"
     fi
 }
 

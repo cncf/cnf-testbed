@@ -151,7 +151,7 @@ function update_cpu_pinning () {
 
     set -euo pipefail
 
-    cpus=( 5 6 62 61 7 63 8 9 65 64 10 66 11 12 68 67 13 69 14 15 71 70 16 72 )
+    cpus=( 10 12 40 38 14 42 16 18 46 44 20 48 22 24 52 50 26 54 )
     core_count=0
     for id in $(virsh list --state-running | grep multichain | awk '{print $1}'); do
         vagrant_id="$(virsh dominfo ${id} | grep 'Name' | awk '{print $2}' | awk -F _ '{print $4}')"
@@ -207,8 +207,8 @@ function validate_input() {
         die "ERROR: Chains must be an integer value between 1-8!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "8" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-8!"
+    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "6" ]]; then
+        die "ERROR: Nodeness must be an integer value between 1-6!"
     fi
 }
 
@@ -246,7 +246,7 @@ BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
 }
 cd "${BASH_FUNCTION_DIR}" || die
 
-VLANS=( 1070 1064 )
+VLANS=( 1076 1078 )
 
 validate_input "${@}" || die
 if [ "${OPERATION}" == "clean" ]; then

@@ -80,8 +80,8 @@ function set_macs () {
     # Set interface MACs.
     #
     # Variable read:
-    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
+    # - ${CHAIN} - Chain ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${MAC1} - East MAC.
@@ -110,6 +110,8 @@ function set_memif_ids () {
     #
     # Variable read:
     # - ${NODE} - Node ID.
+    # - ${CHAIN} - Chain ID.
+    # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${MEMID1} - East memifID.
     # - ${MEMID2} - West memifID.
@@ -154,6 +156,7 @@ function set_remote_macs () {
     #
     # Variable read:
     # - ${NODE} - Node ID.
+    # - ${CHAIN} - Chain ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${REMMAC1} - East MAC.
@@ -185,6 +188,8 @@ function set_socket_names () {
     #
     # Variable read:
     # - ${NODE} - Node ID.
+    # - ${CHAIN} - Chain ID.
+    # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${SOCK1} - East socket.
     # - ${SOCK2} - West socket.
@@ -201,6 +206,7 @@ function set_subnets () {
     #
     # Variable read:
     # - ${NODE} - Node ID.
+    # - ${CHAIN} - Chain ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${SUBNET1} - East subnet.

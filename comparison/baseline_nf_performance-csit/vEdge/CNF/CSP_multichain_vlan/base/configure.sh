@@ -102,7 +102,9 @@ function set_memif_ids () {
     # Set memif IDs.
     #
     # Variable read:
+    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
+    # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${MEMID1} - East memifID.
     # - ${MEMID2} - West memifID.
@@ -129,6 +131,7 @@ function set_owners () {
     # Set memif IDs.
     #
     # Variable read:
+    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:

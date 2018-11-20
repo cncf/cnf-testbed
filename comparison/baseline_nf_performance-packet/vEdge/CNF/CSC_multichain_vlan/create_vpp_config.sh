@@ -70,8 +70,8 @@ function generate_vpp_config () {
         append_vpp_config "create interface memif id ${socket} socket-id ${socket} master"
     done
     append_vpp_config ""
-    append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/0 up"
-    append_vpp_config "set int state TwentyFiveGigabitEthernet3b/0/1 up"
+    append_vpp_config "set int state TenGigabitEthernet1a/0/1 up"
+    append_vpp_config "set int state TenGigabitEthernet1a/0/2 up"
     append_vpp_config ""
     for chain in $(seq 0 $(( "${CHAINS}" -1 ))); do
         vlan_e=$(("${VLANS[0]}" + "${chain}"))
@@ -98,9 +98,9 @@ function generate_vpp_config () {
         append_vpp_config "set interface l2 tag-rewrite TenGigabitEthernet1a/0/1.${vlan_e} pop 1"
         append_vpp_config "set int state TenGigabitEthernet1a/0/2.${vlan_w} up"
         append_vpp_config "set interface l2 tag-rewrite TenGigabitEthernet1a/0/2.${vlan_w} pop 1"
-        append_vpp_config "set int mtu 9200 TenGigabitEthernet1a/0/1"
-        append_vpp_config "set int mtu 9200 TenGigabitEthernet1a/0/2"
     done
+    append_vpp_config "set int mtu 9200 TenGigabitEthernet1a/0/1"
+    append_vpp_config "set int mtu 9200 TenGigabitEthernet1a/0/2"
     append_vpp_config ""
     for meth in $(seq 1 "${sockets}"); do
         append_vpp_config "set int state memif${meth}/${meth} up"

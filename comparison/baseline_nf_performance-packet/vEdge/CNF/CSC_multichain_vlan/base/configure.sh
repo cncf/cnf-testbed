@@ -109,7 +109,9 @@ function set_memif_ids () {
     # Set memif IDs.
     #
     # Variable read:
+    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
+    # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${MEMID1} - East memifID.
     # - ${MEMID2} - West memifID.
@@ -153,6 +155,7 @@ function set_remote_macs () {
     # Set ARP MACs.
     #
     # Variable read:
+    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
@@ -184,7 +187,9 @@ function set_socket_names () {
     # Set socket names.
     #
     # Variable read:
+    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
+    # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${SOCK1} - East socket.
     # - ${SOCK2} - West socket.
@@ -200,6 +205,7 @@ function set_subnets () {
     # Set subnets.
     #
     # Variable read:
+    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
