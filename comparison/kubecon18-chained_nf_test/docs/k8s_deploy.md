@@ -4,6 +4,7 @@
 
 ```
 pushd ../tools
+docker build -t ubuntu:packet_api -f packet_api/Dockerfile  packet_api/
 docker build -t cnfdeploytools:latest .
 popd
 ```
