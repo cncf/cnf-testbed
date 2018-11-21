@@ -1,7 +1,7 @@
 ---
 - hosts: localhost
   vars:
-    #    server_list: quadtestb-07,quadtestb-08   
+    #    server_list: quadtestb-07,quadtestb-08
     deploy_env: test1
     vlans:
       vlan1:
@@ -62,6 +62,7 @@
     nfvbench_mac_addrs_left: "'52:54:00:00:00:aa'"
     nfvbench_mac_addrs_right: "'52:54:00:00:00:bb'"
     nfvbench_vlan_ids: "{{ hostvars.localhost.vlans.vlan1.vid }}, {{ hostvars.localhost.vlans.vlan2.vid }}"
+    nfvbench_vlan_tagging: false
     docker__registries:
       - registry_url: "https://index.docker.io/v1/"
     docker__package_dependencies:
@@ -120,6 +121,6 @@
   roles:
     - { role: "nickjj.docker", tags: ["docker"] }
     - mrlesmithjr.config-interfaces
-    - grub_intel_packet_generator
+    - grub_packet_generator
     - intel_nic
     - nfvbench_intel

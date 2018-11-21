@@ -76,6 +76,8 @@
     nfvbench_service_chain_count: 1
     nfvbench_mac_addrs_left: "'52:54:00:00:00:aa'"
     nfvbench_mac_addrs_right: "'52:54:00:00:00:bb'"
+    nfvbench_vlan_ids: ""
+    nfvbench_vlan_tagging: true
     docker__registries:
       - registry_url: "https://index.docker.io/v1/"
     docker__package_dependencies:
@@ -132,5 +134,5 @@
           - param:
             val: 'bond-master bond0'
   roles:
+    - grub_packet_generator
     - nfvbench
-

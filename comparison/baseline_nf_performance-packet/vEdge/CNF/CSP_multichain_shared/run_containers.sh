@@ -130,7 +130,7 @@ function run_containers () {
         WORKER_CORES=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
     fi
 
-    source sudo ./build_container.sh || {
+    source ./build_container.sh || {
         die "Failed to build container!"
     }
     # Create vpp configuration.
