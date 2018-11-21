@@ -23,18 +23,19 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: [ "/usr/bin/vpp", "-c", "/etc/vpp/startup.conf" ]
+          # args: [ "/usr/bin/vpp", "-c", "/etc/vpp/startup.conf" ]
+          args: [ "bash", "-c", "sleep 10000" ]
+          securityContext:
+            privileged: true
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           volumeMounts:
           - name: config-volume
             mountPath: /etc/vpp/
           - name: hugepages
-            mountPath: /etc/hugepages/
+            mountPath: /dev/hugepages
           - name: vpp-socket
             mountPath: /run/vpp/
-          securityContext:
-            privileged: true
       volumes:
         - name: config-volume
           configMap:
@@ -44,7 +45,7 @@ spec:
               path: startup.conf
         - name: hugepages
           hostPath:
-            path: /dev/hugepages/
+            path: /dev/hugepages
         - name: vpp-socket
           hostPath:
             path: /etc/vpp/sockets/
