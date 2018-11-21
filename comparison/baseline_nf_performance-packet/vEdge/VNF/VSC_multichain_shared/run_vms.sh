@@ -246,7 +246,7 @@ BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
 }
 cd "${BASH_FUNCTION_DIR}" || die
 
-VLANS=( 1076 1078 )
+VLANS=( )
 
 validate_input "${@}" || die
 if [ "${OPERATION}" == "clean" ]; then

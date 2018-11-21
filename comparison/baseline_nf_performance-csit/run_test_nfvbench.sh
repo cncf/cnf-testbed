@@ -72,7 +72,7 @@ BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
 CHAINS="${1:-1}"
 NODENESS="${2:-1}"
 PREFIX="${3:-csp}"
-RATES=( 18500000 ndr )
+RATES=( 18500000pps ndr )
 ITERATIONS=1
 DURATION=30
 
