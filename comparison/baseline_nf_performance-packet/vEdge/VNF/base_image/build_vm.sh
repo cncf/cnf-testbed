@@ -12,11 +12,6 @@ if [ "$input" == "clean" ]; then
   exit 0
 fi
 
-
-if [ -z "$(vagrant plugin list |grep disksize)" ] ; then
-  vagrant plugin install vagrant-disksize
-fi
-
 SUDO=$(which sudo)
 
 if [ -z "$(which virt-sysprep)" ] ; then
@@ -25,7 +20,7 @@ fi
 
 # Build the VM with vagrant
 vagrant up vedge
-vagrant reload 
+vagrant reload
 
 # After it completes, shutdown the vm without destroying the vagrant image
 vagrant halt vedge
