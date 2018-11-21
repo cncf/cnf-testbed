@@ -24,6 +24,18 @@ OptionParser.new do |opts|
     options[:instance_id] = n
   end
 
+  opts.on("--show-project-vlans", "Show all vlans for a project") do |n|
+    options[:show_project_vlans] = true
+  end
+
+  opts.on("-nSERVER", "--show-server-ports=SERVER", "Show all port information (including vlans) for a server") do |n|
+    options[:show_server_ports] = n 
+  end
+
+  opts.on("-nVLAN", "--show-vlan-devices=VLAN", "Show all devices for a project") do |n|
+    options[:show_vlan_devices] = n
+  end
+
   opts.on("-nVLAN", "--create-vlan=VLAN", "VLAN to create") do |n|
     options[:create_vlan] = n
   end
@@ -72,9 +84,13 @@ end.parse!
 pp options  if options[:verbose]
 pp ARGV if options[:verbose]
 
-if options[:bond_port].nil? && options[:delete_vlan].nil? && options[:unassign_vlan].nil? && options[:unassign_vlan_id].nil? &&
-    options[:assign_vlan_id].nil? && options[:assign_vlan].nil? && options[:disbond_port].nil? && options[:create_vlan].nil?
-  puts "You must select delete_vlan, unassign_vlan, assign-vlan, bond-interface, disbond-interface, or create-vlan or -h for help!"
+if options[:show_server_ports].nil? && options[:show_project_vlans].nil? && options[:show_vlan_devices].nil? && options[:bond_port].nil? && options[:delete_vlan].nil? && 
+    options[:unassign_vlan].nil? && options[:unassign_vlan_id].nil? && options[:assign_vlan_id].nil? && options[:assign_vlan].nil? && options[:disbond_port].nil? && options[:create_vlan].nil?
+  puts "You must select show-project-vlans, show-vlan-devices, delete-vlan, unassign-vlan, assign-vlan, bond-interface, disbond-interface, or create-vlan or -h for help!"
+  exit
+end
+if options[:project_name].nil?
+  puts "You must provide a project name"
   exit
 end
 if options[:unassign_vlan] && (options[:unassign_vlan_port].nil? || (options[:server].nil? && options[:instance_id].nil?))
@@ -138,6 +154,38 @@ selected_project = parsed_projects["projects"].find{|x| x["name"]=="#{project_na
 p "Selected Project: #{selected_project}"  if options[:verbose]
 project_id = selected_project["id"] if selected_project
 p "project_id: #{project_id}"  if options[:verbose]
+
+if options[:show_vlan_devices]
+  vlans_response = phttp.api(url_extention: "/projects/#{project_id}/virtual-networks")
+  parsed_vlans = JSON.parse(vlans_response.body) 
+  p "parsed vlans_response: #{parsed_vlans}"  if options[:verbose]
+  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["description"] == "#{options[:show_vlan_devices]}"}
+  p "existing_vlan1: #{vlan1}"  if options[:verbose]
+  puts vlan1.to_json
+end
+
+if options[:show_project_vlans]
+  vlans_response = phttp.api(url_extention: "/projects/#{project_id}/virtual-networks")
+  parsed_vlans = JSON.parse(vlans_response.body) 
+  p "parsed vlans_response: #{parsed_vlans}"  if options[:verbose]
+  puts parsed_vlans["virtual_networks"].to_json if parsed_vlans
+end
+
+if options[:show_server_ports]
+  devices = phttp.api(url_extention: "/projects/#{project_id}/devices?per_page=1000")
+  parsed_devices = JSON.parse(devices.body) 
+
+  if options[:instance_id]
+    selected_1st_device = parsed_devices["devices"].find{|x| x["id"]=="#{options[:instance_id]}"}
+  else
+    selected_1st_device = parsed_devices["devices"].find{|x| x["hostname"]=="#{options[:show_server_ports]}"}
+  end
+  device_response = phttp.api(url_extention: "/devices/#{selected_1st_device["id"]}")
+  parsed_device = JSON.parse(device_response.body) 
+  p "parsed device: #{parsed_device}"  if options[:verbose]
+  puts parsed_device["network_ports"].to_json if parsed_device
+end
+
 # 2. Get facility ID for facility name (use env)
 # 3. Upsert SSH key (done in the terraform setup)
 # 4. Get 1st and 2nd device ids for each server names
