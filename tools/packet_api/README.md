@@ -14,6 +14,42 @@ VLAN IDs are created by Packet and returned to the end user.  A descriptive
 name can be given when creating the VLAN and used to search for the VLAN via
 the API.
 
+*SHOW VLAN DEVICES*
+
+Option(s):
+- --show-vlan-devices <vlan description>
+- --facility <facility short name>
+
+Example:
+
+```
+ruby l2_packet_networking.rb --show-vlan-devices watsonvlan1 --project-name='CNCF CNFs' --packet-url='api.packet.net' --facility='ewr1'
+```
+
+*SHOW PROJECT VLANS*
+
+Option(s):
+- --show-project-vlans <project>
+- --facility <facility short name>
+
+Example:
+
+```
+ruby l2_packet_networking.rb --show-project-vlans --project-name='CNCF CNFs' --packet-url='api.packet.net' --facility='ewr1'
+```
+
+*SHOW SERVER PORTS*
+
+Option(s):
+- --show-server-ports <server name>
+- --facility <facility short name>
+
+Example:
+
+```
+ruby l2_packet_networking.rb --show-server-ports layer2test-01 --project-name='CNCF CNFs' --packet-url='api.packet.net' --facility='ewr1'
+```
+
 *CREATE VLAN*
 
 Option(s):
@@ -62,7 +98,7 @@ Option(s):
 Example:
 
 ```
-ruby l2_packet_networking.rb --server layer2test-01 --unassign-vlan watsonvlan1 --assign-vlan-port eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'
+ruby l2_packet_networking.rb --server layer2test-01 --unassign-vlan watsonvlan1 --unassign-vlan-port eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'
 ```
 
 *UNASSIGN VLAN ID*
@@ -75,7 +111,7 @@ Option(s):
 Example:
 
 ```
-ruby l2_packet_networking.rb --server layer2test-01 --unassign-vlan 1100 --assign-vlan-port eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'
+ruby l2_packet_networking.rb --server layer2test-01 --unassign-vlan 1100 --unassign-vlan-port eth1 --project-name='CNCF CNFs' --packet-url='api.packet.net'
 ```
 
 *DELETE VLAN*
