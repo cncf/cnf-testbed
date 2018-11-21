@@ -1,5 +1,14 @@
 # Deploy k8s
 
+## Build the tools
+
+```
+pushd ../tools
+docker build -t cnfdeploytools:latest .
+popd
+```
+
+
 ## Deployment to Packet reserved instances
 
 Steps to bring up a K8s cluster, Provision L2 Networking & VPP vSwitch
@@ -7,11 +16,12 @@ Steps to bring up a K8s cluster, Provision L2 Networking & VPP vSwitch
 To Deploy the k8s cluster
 1. First find the reserved instance id that you want to use as a k8s worker node on packet.net, this can be done by clicking deploy server in the packet.net gui and there should be a list of reserved servers available and their associated ids
 2. Once found, update the k8s_worker_override.tf file under cnfs/tools with the desired id
-3. Next source the .env file in the cnfs/tools dir, which has packet api token, k8s version, node types ect - and deploy
+3. Create k8s.env with Packet and cluster info.  (See k8s.env.example)
+4. Next source the k8s.env file in the cnfs/tools dir, which has packet api token, k8s version, node types ect - and deploy
 
 ```
-source .env
-./deploy_cluster.sh
+source k8s.env
+../tools/deploy_cluster.sh
 Once deploy_cluster.sh is finished you will find you kubeconfig file under 
 REPO/tools/data/kubeconfig
 ```
@@ -20,7 +30,7 @@ To Provision the L2 Networking & VPP on the worker node, first find the hostname
 
 Next run the ansible tools container and run the ansible script.
 ```
-docker run -e PACKET_API_TOKEN=YOUR_PACKET_API_TOKEN -v ~/.ssh/id_rsa:/root/.ssh/id_rsa -v $(pwd):/ansible --entrypoint /bin/bash -ti cncf
+docker run -e PACKET_API_TOKEN=$PACKET_AUTH_TOKEN -v ~/.ssh/id_rsa:/root/.ssh/id_rsa -v $(pwd)/../ansible:/ansible --entrypoint /bin/bash -ti cnfdeploytools:latest
 
 cd /ansible
 
