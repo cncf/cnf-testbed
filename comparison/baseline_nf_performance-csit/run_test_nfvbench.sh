@@ -42,7 +42,7 @@ function run_bench () {
     set -euo pipefail
 
     pushd "${BASH_FUNCTION_DIR}" || die "Change dir failed!"
-    out_dir="results/vlan/${CHAINS}${PREFIX}/${NODENESS}"
+    out_dir="results/novlan/"
     if [ ! -d "${out_dir}" ]; then
         warn "Creating directory ${out_dir}"
         mkdir -p "${out_dir}" || die "Create output dir failed!"
@@ -57,8 +57,8 @@ function run_bench () {
             nfv_param+="--rate ${rate} "
             nfv_param+="--flow-count 1024 "
             nfv_param+="--duration ${DURATION} "
-            nfv_param+="--json /tmp/nfvbench/${CHAINS}${PREFIX}_${NODENESS}_${rate}-${iter}.log"
-            results="${out_dir}/${PREFIX}-${rate}-${iter}.log"
+            nfv_param+="--json /tmp/nfvbench/${PREFIX}_${CHAINS}c${NODENESS}n_${rate}-${iter}.json"
+            results="${out_dir}/${PREFIX}_${CHAINS}c${NODENESS}n_${rate}-${iter}.log"
             params=(${dcr_param} ${dcr_image} ${nfv_param})
             sudo docker exec "${params[@]}" 2>&1 | tee -a "${results}"
         done
@@ -72,7 +72,7 @@ BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
 CHAINS="${1:-1}"
 NODENESS="${2:-1}"
 PREFIX="${3:-csp}"
-RATES=( 18500000 ndr )
+RATES=( 18500000pps ndr )
 ITERATIONS=1
 DURATION=30
 

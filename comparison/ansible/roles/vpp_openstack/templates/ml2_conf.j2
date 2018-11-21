@@ -12,7 +12,8 @@ network_vlan_ranges = physnet:1000:2000
 flat_networks = physnet
 
 [securitygroup]
-firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+firewall_driver = neutron.agent.not.a.real.FirewallDriver
+#firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 
 [ml2_vpp]
 jwt_signing = False
@@ -21,7 +22,7 @@ l3_hosts = localhost
 gpe_locators =
 gpe_src_cidr =
 enable_vpp_restart = False
-physnets = physnet:{{ hostvars[inventory_hostname].vlan_interface }}
+physnets = physnet:host-{{ hostvars[inventory_hostname].vlan_interface }}
 etcd_pass =
 etcd_user =
 etcd_port = 2379

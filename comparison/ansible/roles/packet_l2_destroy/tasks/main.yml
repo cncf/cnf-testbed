@@ -1,0 +1,33 @@
+- name: Show vlan data before create
+  debug: var=vlans
+ 
+- name: Create or find a Packet VLAN
+  command: ruby /packet_api/l2_packet_networking.rb --create-vlan="{{ deploy_env }}{{ item.key }}" --project-name="{{ project_name }}" --packet-url='api.packet.net' --facility="{{ facility }}"
+  with_dict: "{{ vlans }}"
+  register: vlandata
+  
+- name: store vlan id 
+  set_fact:
+    vlans: "{{ vlans|combine({item.item.key: {'vid': item.stdout, 'desc': deploy_env + item.item.key }}, recursive=True) }}"
+  with_items: "{{ vlandata.results }}"
+
+- name: updated vlan data
+  debug: var=vlans
+
+ ### Tear things down and put it back to the default setup
+
+- name: Unassign vlan from interface
+  command: ruby /packet_api/l2_packet_networking.rb --server={{ item[0] }} --unassign-vlan-id={{ vlans[item[1]].vid }} --unassign-vlan-port={{ vlans[item[1]].interface }} --project-name="{{ project_name }}" --packet-url='api.packet.net'
+  with_nested:
+    - "{{ server_list.split(',') }}"
+    - "{{ vlans }}"
+
+- name: Add interface to bond0, for all specifed nodes
+  command: ruby /packet_api/l2_packet_networking.rb --server={{ item[0] }} --bond-interface={{ vlans[item[1]].interface }} --project-name="{{ project_name }}"  --packet-url='api.packet.net'
+  with_nested:
+    - "{{ server_list.split(',') }}"
+    - "{{ vlans }}"
+
+- name: Delete my vlans
+  command: ruby /packet_api/l2_packet_networking.rb --delete-vlan="{{ deploy_env }}{{ item.key }}" --project-name="{{ project_name }}" --packet-url='api.packet.net' --facility="{{ facility }}"
+  with_dict: "{{ vlans }}"

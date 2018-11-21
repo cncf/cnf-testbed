@@ -109,7 +109,9 @@ function set_memif_ids () {
     # Set memif IDs.
     #
     # Variable read:
+    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
+    # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${MEMID1} - East memifID.
     # - ${MEMID2} - West memifID.
@@ -126,6 +128,7 @@ function set_remote_ips () {
     #
     # Variable read:
     # - ${NODE} - Node ID.
+    # - ${CHAIN} - Chain ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${REMIP1} - East IP.
@@ -134,14 +137,14 @@ function set_remote_ips () {
     set -euo pipefail
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
-        REMIP1=172.16.10.100
-        REMIP2=172.16.20.100
+        REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))
+        REMIP2=172.16.20.10$(( ${CHAIN} - 1 ))
     elif [[ "${NODE}" == "1" ]]; then
-        REMIP1=172.16.10.100
+        REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))
         REMIP2=172.16.31.11
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
         REMIP1=172.16.$(($NODE + 29)).10
-        REMIP2=172.16.20.100
+        REMIP2=172.16.20.10$(( ${CHAIN} - 1 ))
     else
         REMIP1=172.16.$(($NODE + 29)).10
         REMIP2=172.16.$(($NODE + 30)).11
@@ -185,7 +188,9 @@ function set_socket_names () {
     # Set socket names.
     #
     # Variable read:
+    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
+    # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${SOCK1} - East socket.
     # - ${SOCK2} - West socket.
@@ -201,6 +206,7 @@ function set_subnets () {
     # Set subnets.
     #
     # Variable read:
+    # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:

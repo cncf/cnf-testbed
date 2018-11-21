@@ -1,0 +1,52 @@
+# Dev info for working on the CNF project 
+
+### Build the tools
+
+_Build packet api util_
+```
+docker build -t ubuntu:packet_api ../../tools/packet_api/ .
+```
+
+_Build tool container_
+```
+docker build -t cnfdeploytools:latest  ../../tools/deploy/
+```
+
+### Using the ansible playbooks directly from the tool container
+
+Steps to build and use provisioning tools when in comparison/kubecon18-chained_nf_test
+
+_Get a shell in the tool container_
+Prereqs:
+- Packet API token
+- SSH key with access to target servers
+
+Run the tools container and cd into the /ansible directory
+```
+docker run -e PACKET_API_TOKEN=YOUR_API_KEY -v $(pwd)/../ansible:/ansible -v ~/.ssh/id_rsa:/root/.ssh/id_rsa --entrypoint /bin/bash -ti cnfdeploytools:latest
+cd /ansible
+```
+
+Example usage:
+*provision*
+```
+ansible-playbook -i "147.75.39.241," packet_generator.yml -e server_list=quadtestb-09 -e deploy_env=test09 -e quad_intel=true
+```
+
+*delete layer-2 resources*
+```
+ansible-playbook -i "147.75.39.241," packet_generator.yml -e server_list=quadtestb-09 -e deploy_env=test09 -e quad_intel=true -e teardown_layer2=true -e skip_provisioning=true
+```
+
+*Provision with the quad intel packet generator playbook *
+```
+ansible-playbook -i "147.75.39.241," packet_generator_quad_intel.yml -e server_list=quadtestb-03 -e deploy_env=questtesb03 -e quad_intel=true
+```
+
+
+### Playing with Packet
+Looking at device assignment and other goodies from the API:
+
+```
+curl -X GET --header 'Accept: application/json' --header 'X-Auth-Token: YOUR_API_KEY' 'https://api.packet.net/devices/YOUR_SERVER_GUID' | jq '.'
+```

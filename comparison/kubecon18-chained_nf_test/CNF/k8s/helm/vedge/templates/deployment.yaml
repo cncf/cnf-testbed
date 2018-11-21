@@ -1,0 +1,52 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "vedge.fullname" . }}
+  labels:
+    app: {{ include "vedge.name" . }}
+    chart: {{ include "vedge.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "vedge.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "vedge.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # args: [ "/usr/bin/vpp", "-c", "/etc/vpp/startup.conf" ]
+          args: [ "bash", "-c", "sleep 10000" ]
+          securityContext:
+            privileged: true
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+          - name: config-volume
+            mountPath: /etc/vpp/
+          - name: hugepages
+            mountPath: /dev/hugepages
+          - name: vpp-socket
+            mountPath: /run/vpp/
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ template "vedge.fullname" . }}
+            items:
+            - key: startup.conf
+              path: startup.conf
+        - name: hugepages
+          hostPath:
+            path: /dev/hugepages
+        - name: vpp-socket
+          hostPath:
+            path: /etc/vpp/sockets/
+

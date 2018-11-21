@@ -117,24 +117,25 @@ function run_containers () {
 
     set -euo pipefail
 
-    VLANS=(1070 1064)
+    VLANS=( )
 
     # Create CORE lists.
-    if [ ! "${OPERATION}" == "baseline" ]; then
-        baseline=""
+    if [ "${OPERATION}" == "baseline" ]; then
+        baseline="baseline"
         MAIN_CORES=( 0 5 61 8 64 11 67 14 70 )
         WORKER_CORES=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
     else
-        baseline="baseline"
+        baseline=""
         MAIN_CORES=( 0 5 61 8 64 11 67 14 70 )
         WORKER_CORES=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
     fi
 
-    chmod +x ./build_container.sh && ./build_container.sh || {
+    # Build containers.
+    source ./build_container.sh || {
         die "Failed to build container!"
     }
     # Create vpp configuration.
-    chmod +x ./create_vpp_config.sh && ./create_vpp_config.sh "${CHAINS}" "${NODENESS}" ${VLANS[@]} || {
+    source ./create_vpp_config.sh "${CHAINS}" "${NODENESS}" ${VLANS[@]} || {
         die "Failed to create VPP config!"
     }
     update_vpp_config || {

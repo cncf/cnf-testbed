@@ -50,8 +50,8 @@ function validate_input() {
         die "ERROR: Chain must be an integer value between 1-8!"
     fi
 
-    if [[ "${NODE}" -lt "1" ]] || [[ "${NODE}" -gt "8" ]]; then
-        die "ERROR: Node must be an integer value between 1-8!"
+    if [[ "${NODE}" -lt "1" ]] || [[ "${NODE}" -gt "6" ]]; then
+        die "ERROR: Node must be an integer value between 1-6!"
     fi
 }
 
@@ -100,6 +100,7 @@ function set_remote_ips () {
     #
     # Variable read:
     # - ${NODE} - Node ID.
+    # - ${CHAIN} - Chain ID.
     # - ${NODENESS} - Number of NFs in chain.
     # Variable set:
     # - ${REMIP1} - East IP.
@@ -108,14 +109,14 @@ function set_remote_ips () {
     set -euo pipefail
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
-        REMIP1=172.16.10.100
-        REMIP2=172.16.20.100
+        REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))
+        REMIP2=172.16.20.10$(( ${CHAIN} - 1 ))
     elif [[ "${NODE}" == "1" ]]; then
-        REMIP1=172.16.10.100
+        REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))0
         REMIP2=172.16.31.11
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
         REMIP1=172.16.$(($NODE + 29)).10
-        REMIP2=172.16.20.100
+        REMIP2=172.16.20.10$(( ${CHAIN} - 1 ))
     else
         REMIP1=172.16.$(($NODE + 29)).10
         REMIP2=172.16.$(($NODE + 30)).11
@@ -136,8 +137,8 @@ function set_remote_macs () {
 
     set -euo pipefail
 
-    trex_mac1=3c:fd:fe:bd:f8:60
-    trex_mac2=3c:fd:fe:bd:f8:61
+    trex_mac1=e4:43:4b:2e:b1:d1
+    trex_mac2=e4:43:4b:2e:b1:d2
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
         REMMAC1=${trex_mac1}
