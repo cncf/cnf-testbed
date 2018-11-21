@@ -3,9 +3,9 @@
 ## Build the tools
 
 ```
-pushd ../tools
+pushd ../../tools
 docker build -t ubuntu:packet_api -f packet_api/Dockerfile  packet_api/
-docker build -t cnfdeploytools:latest .
+docker build -t cnfdeploytools:latest -f deploy/Dockerfile deploy/
 popd
 ```
 
@@ -22,7 +22,7 @@ To Deploy the k8s cluster
 
 ```
 source k8s.env
-../tools/deploy_cluster.sh
+../../tools/deploy_cluster.sh
 Once deploy_cluster.sh is finished you will find you kubeconfig file under 
 REPO/tools/data/kubeconfig
 ```
