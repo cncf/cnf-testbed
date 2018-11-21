@@ -6,7 +6,7 @@
 - hosts: localhost
   vars:
     #    server_list: quadtestb-07,quadtestb-08   
-    deploy_env: test1
+    deploy_env: k8sworker
     vlans:
       vlan1:
         interface: eth1
@@ -17,48 +17,7 @@
   roles:
     - packet_l2
 
-- hosts: localhost
-  pre_tasks:
-  - name: Apt update
-    apt:
-      update_cache: yes
-  - name: Install Vlan Package
-    apt: 
-      name: vlan
-  - name: Get bond interface slaves
-    setup:
-      filter: "{{ ansible_bond0.slaves }}"
-  - name: Get dns servers
-    setup: 
-      filter: "{{ ansible_dns.nameservers }}"
-  - name: Get Bond0 Public IP
-    setup: 
-      filter: "{{ ansible_bond0.ipv4.address }}"
-  - name: Get bond0 netmask
-    setup: 
-      filter: "{{ ansible_bond0.ipv4.netmask }}"
-  - name: Echo bond0 netmask
-    setup: 
-      filter: "{{ ansible_default_ipv4.gateway }}"
-  - name: Get bond0 internal address
-    setup: 
-      filter: "{{ ansible_bond0_0.ipv4.address }}"
-  - name: Get bond0 internal netmask
-    setup:
-      filter: "{{ ansible_bond0_0.ipv4.netmask }}"
-  - name: Get bond0 internal gw
-    setup:
-      filter: "{{ ansible_bond0_0.ipv4.network }}"
-  - name: Get trex_port_0 pci id
-    setup: 
-      filter: "{{ ansible_enp2s0d1.pciid }}"
-  - name: Get trex_port_1 pci id
-    setup: 
-      filter: "{{ ansible_eno2.pciid }}"
-  post_tasks:
-  - name: Reboot Server
-    reboot:
-    
+- hosts: all
   vars:
     mellanox_4_4: true
     mellanox_4_1: false
@@ -66,6 +25,7 @@
     vnf: false
     baseline: false
     hugepages: 10240
+    corelist_workers: 2,4,6,8,30,32,34,36
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
@@ -123,11 +83,51 @@
         method: 'static'
         address: '172.16.99.31'
         netmask: '255.255.255.0'
+  pre_tasks:
+  - name: Apt update
+    apt:
+      update_cache: yes
+  - name: Install Vlan Package
+    apt: 
+      name: vlan
+  - name: Get bond interface slaves
+    setup:
+      filter: "{{ ansible_bond0.slaves }}"
+  - name: Get dns servers
+    setup: 
+      filter: "{{ ansible_dns.nameservers }}"
+  - name: Get Bond0 Public IP
+    setup: 
+      filter: "{{ ansible_bond0.ipv4.address }}"
+  - name: Get bond0 netmask
+    setup: 
+      filter: "{{ ansible_bond0.ipv4.netmask }}"
+  - name: Echo bond0 netmask
+    setup: 
+      filter: "{{ ansible_default_ipv4.gateway }}"
+  - name: Get bond0 internal address
+    setup: 
+      filter: "{{ ansible_bond0_0.ipv4.address }}"
+  - name: Get bond0 internal netmask
+    setup:
+      filter: "{{ ansible_bond0_0.ipv4.netmask }}"
+  - name: Get bond0 internal gw
+    setup:
+      filter: "{{ ansible_bond0_0.ipv4.network }}"
+  # - name: Get trex_port_0 pci id
+  #   setup: 
+  #     filter: "{{ ansible_enp2s0d1.pciid }}"
+  # - name: Get trex_port_1 pci id
+  #   setup: 
+  #     filter: "{{ ansible_eno2.pciid }}"
+  post_tasks:
+  - name: Reboot Server
+    reboot:
   roles:
     - mrlesmithjr.config-interfaces
-    - grub
-    - mellanox
-    - vpp
-    - vfs
+    - grub_vswitch
+    # - mellanox_vswitch
+    - vpp_vswitch
+    - vfs_vswitch
 
 
