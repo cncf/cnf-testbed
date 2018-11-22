@@ -41,7 +41,7 @@ export PACKET_PROJECT_ID=PROJECT_ID
 
 ```
 source k8s.env
-../../tools/deploy_cluster.sh
+../../tools/deploy_k8s_cluster.sh
 #Once deploy_cluster.sh is finished you will find you kubeconfig file under 
 REPO/tools/packet-data/kubeconfig
 ```
