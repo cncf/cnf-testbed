@@ -25,7 +25,8 @@
     vnf: false
     baseline: false
     hugepages: 10240
-    corelist_workers: 2,4,6,8,30,32,34,36
+    # corelist_workers: 2,4,6,8,30,32,34,36
+    corelist_workers: 2,4,6,8
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
@@ -78,11 +79,6 @@
         parameters:
           - param: 'pre-up'
             val: 'sleep 4'
-      - name: "{{ ansible_bond0.slaves[1] }}.1030"
-        configure: true
-        method: 'static'
-        address: '172.16.99.31'
-        netmask: '255.255.255.0'
   pre_tasks:
   - name: Apt update
     apt:
@@ -124,10 +120,9 @@
   - name: Reboot Server
     reboot:
   roles:
-    - mrlesmithjr.config-interfaces
+    #- mrlesmithjr.config-interfaces
     - grub_vswitch
     # - mellanox_vswitch
+    - vpp_install
     - vpp_vswitch
-    - vfs_vswitch
-
-
+    #- vfs_vswitch
