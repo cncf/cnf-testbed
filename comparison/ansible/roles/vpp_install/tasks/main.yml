@@ -4,6 +4,7 @@
   apt_key:
     url: https://packagecloud.io/fdio/release/gpgkey
     state: present
+  when: ansible_os_family == "Debian"
 
 - name: setup vpp repo for RedHat
   template:
