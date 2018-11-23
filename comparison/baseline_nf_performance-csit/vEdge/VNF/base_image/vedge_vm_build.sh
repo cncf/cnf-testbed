@@ -2,7 +2,7 @@
 set -o xtrace  # print commands during script execution
 
 sudo apt-get update -y
-sudo apt-get install --allow-unauthenticated -y make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates -y
+sudo apt-get install --allow-unauthenticated -y make gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates -y
 pip install jsonschema
 
 sudo apt-get -y install linux-headers-$(uname -r)
@@ -31,3 +31,6 @@ echo 'igb_uio' | sudo tee -a /etc/modules
 sudo depmod
 
 sh /build/inject_vagrant_ssh_key.sh
+
+echo "#!/bin/sh -e" | sudo tee /etc/rc.local
+echo "ssh-keygen -A" | sudo tee -a /etc/rc.local
