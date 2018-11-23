@@ -15,3 +15,5 @@ pushd ./packet_generator/
 popd
 
 ## Collect and summarize results
+
+# ../../tools/destroy_openstack_cluster.sh

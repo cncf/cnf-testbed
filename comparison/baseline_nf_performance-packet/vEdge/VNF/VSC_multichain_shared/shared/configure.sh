@@ -50,8 +50,8 @@ function validate_input() {
         die "ERROR: Chain must be an integer value between 1-8!"
     fi
 
-    if [[ "${NODE}" -lt "1" ]] || [[ "${NODE}" -gt "6" ]]; then
-        die "ERROR: Node must be an integer value between 1-6!"
+    if [[ "${NODE}" -lt "1" ]] || [[ "${NODE}" -gt "8" ]]; then
+        die "ERROR: Node must be an integer value between 1-8!"
     fi
 }
 
@@ -112,7 +112,7 @@ function set_remote_ips () {
         REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))
         REMIP2=172.16.20.10$(( ${CHAIN} - 1 ))
     elif [[ "${NODE}" == "1" ]]; then
-        REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))0
+        REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))
         REMIP2=172.16.31.11
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
         REMIP1=172.16.$(($NODE + 29)).10

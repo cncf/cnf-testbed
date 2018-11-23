@@ -37,9 +37,6 @@
   - name: Configure interfaces
     include_role:
       name: mrlesmithjr.config-interfaces
-  - name: Configure GRUB
-    include_role:
-      name: grub_mellanox_packet_generator
   - name: Do Mellanox setup
     include_role:
       name: mellanox_nic
@@ -76,7 +73,7 @@
     nfvbench_service_chain_count: 1
     nfvbench_mac_addrs_left: "'52:54:00:00:00:aa'"
     nfvbench_mac_addrs_right: "'52:54:00:00:00:bb'"
-    nfvbench_vlan_ids: ""
+    nfvbench_vlan_ids: "{{ hostvars.localhost.vlans.vlan1.vid }}, {{ hostvars.localhost.vlans.vlan2.vid }}"
     nfvbench_vlan_tagging: true
     docker__registries:
       - registry_url: "https://index.docker.io/v1/"

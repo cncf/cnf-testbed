@@ -148,10 +148,12 @@ function update_cpu_pinning () {
     # Arguments:
     # - ${1} - Chain ID.
     # - ${2} - Node ID.
+    # Variable read:
+    # - ${NODENESS} - Number of NFs in chain.
 
     set -euo pipefail
 
-    cpus=( 10 12 40 38 14 42 16 18 46 44 20 48 22 24 52 50 26 54 )
+    cpus=( 10 12 40 38 14 42 16 18 46 44 20 48 22 24 52 50 26 54 4 6 34 32 8 36 )
     core_count=0
     for id in $(virsh list --state-running | grep multichain | awk '{print $1}'); do
         vagrant_id="$(virsh dominfo ${id} | grep 'Name' | awk '{print $2}' | awk -F _ '{print $4}')"
@@ -207,8 +209,8 @@ function validate_input() {
         die "ERROR: Chains must be an integer value between 1-8!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "6" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-6!"
+    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "8" ]]; then
+        die "ERROR: Nodeness must be an integer value between 1-8!"
     fi
 }
 
@@ -272,12 +274,12 @@ else
     fi
 
     warn "Updating & Restarting VPP to prepare for VM interfaces ....."
-    chmod +x ./create_vpp_config.sh && ./create_vpp_config.sh "${CHAINS}" "${NODENESS}" ${VLANS[@]} || {
+    source ./create_vpp_config.sh "${CHAINS}" "${NODENESS}" ${VLANS[@]} || {
         die "Failed to create VPP configuration!"
     }
     update_vpp_config || die
 
-    chmod +x ./create_vagrantfile.sh && ./create_vagrantfile.sh "${CHAINS}" "${NODENESS}" || {
+    source ./create_vagrantfile.sh "${CHAINS}" "${NODENESS}" || {
         die "Failed to create Vagrantfile!"
     }
 

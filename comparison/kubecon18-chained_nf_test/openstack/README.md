@@ -40,7 +40,7 @@ https://github.com/cncf/cnfs/archive/master.zip
 Once you have the repository on the build machine, we can build a Docker container that will allow us to launch our instance:
 
 ```
-cd cnfs/comparison/openstack_chained_nf_test/deploy_openstack
+cd cnfs/comparison/kubecon18-chained_nf_test/openstack
 docker build -t cnfdeploytools:latest  ../../../tools/deploy/
 ```
 
@@ -73,4 +73,38 @@ If L2 tenant networks are going to be used in the packet environment (perhaps wi
 
 We're now at a point where we have our build image, we have our security credentials defined, and we have the network infomration we'll need for the deployment
 
-See [README for deploying from docker](deploy_openstack/README.md)
+**Deploy an OpenStack cluster to Packet**
+
+```
+docker build -t cnfdeploytools:latest  ../../../tools/deploy/
+```
+
+Set the environment variables for the project id (PACKET_PROJECT_ID), API key (PACKET_AUTH_TOKEN)
+
+Optionally, specify the facility (PACKET_FACILITY) and machine type (PACKET_MASTER_DEVICE_PLAN)
+
+Example usage:
+
+```
+git clone https://github.com/cncf/cnfs.git
+cd cnfs/comparison/openstack_chained_nf_test/deploy_openstack
+export PACKET_PROJECT_ID=YOUR_PACKET_PROJECT_ID 
+export PACKET_AUTH_TOKEN=YOUR_PACKET_API_KEY
+export PACKET_FACILITY="sjc1"
+export PACKET_MASTER_DEVICE_PLAN="m2.xlarge.x86"
+```
+
+Then run the setup script.  This process will create a terraform driven deployment and an ansible based inventory that can be used to extend and update the environment.
+```
+./setup_openstack.sh
+```
+
+The terraform state should end up in ../../../tools/ansible-terraform/openstack.tfstate
+The ansible inventory will end up in ../../ansible/inventory
+
+
+Provisioning an existing system (assuming you are in the setup script directory):
+```
+docker run -v $(pwd)/../../ansible:/ansible -v ~/.ssh/id_rsa:/root/.ssh/id_rsa  --entrypoint /usr/bin/ansible -ti cnfdeploytools:latest -i /ansible/inventory /ansible/openstack_chef_install.yml
+```
+

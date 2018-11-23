@@ -87,8 +87,8 @@ function validate_input() {
         die "ERROR: Chains must be an integer value between 1-8!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "6" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-6!"
+    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "8" ]]; then
+        die "ERROR: Nodeness must be an integer value between 1-8!"
     fi
 }
 
@@ -122,12 +122,12 @@ function run_containers () {
     # Create CORE lists.
     if [ "${OPERATION}" == "baseline" ]; then
         baseline="baseline"
-        MAIN_CORES=( 0 10 38 16 44 22 50 )
-        WORKER_CORES=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
+        MAIN_CORES=( 0 10 38 16 44 22 50 4 32 )
+        WORKER_CORES=( 0 12,40 14,42 18,46 20,48 24,52 26,54 6,34 8,36 )
     else
         baseline=""
-        MAIN_CORES=( 0 10 38 16 44 22 50 )
-        WORKER_CORES=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
+        MAIN_CORES=( 0 10 38 16 44 22 50 4 32 )
+        WORKER_CORES=( 0 12,40 14,42 18,46 20,48 24,52 26,54 6,34 8,36 )
     fi
 
     source ./build_container.sh || {
