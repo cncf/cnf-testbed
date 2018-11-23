@@ -34,7 +34,7 @@ docker run \
 echo "[etcd]" >> ${parentdir2}/ansible/inventory
 cat ${parentdir3}/tools/terraform-ansible/openstack.tfstate | awk -F\" '/0.add/ {print $4}' >> ${parentdir2}/ansible/inventory
 
-docker run \
+time docker run \
   -v ${parentdir2}/ansible:/ansible \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
