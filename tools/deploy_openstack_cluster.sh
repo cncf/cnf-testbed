@@ -1,7 +1,6 @@
 #!/bin/bash
 dir=$(pwd)
 parentdir="$(dirname "$dir")"
-# parentdir2="$(dirname "$parentdir")"
 
 NODE_NAME=${NODE_NAME:-openstack}
 NODE_COUNT=${NODE_COUNT:-4}
