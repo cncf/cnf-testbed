@@ -272,12 +272,12 @@ else
     fi
 
     warn "Updating & Restarting VPP to prepare for VM interfaces ....."
-    chmod +x ./create_vpp_config.sh && ./create_vpp_config.sh "${CHAINS}" "${NODENESS}" ${VLANS[@]} || {
+    source ./create_vpp_config.sh "${CHAINS}" "${NODENESS}" ${VLANS[@]} || {
         die "Failed to create VPP configuration!"
     }
     update_vpp_config || die
 
-    chmod +x ./create_vagrantfile.sh && ./create_vagrantfile.sh "${CHAINS}" "${NODENESS}" || {
+    source ./create_vagrantfile.sh "${CHAINS}" "${NODENESS}" || {
         die "Failed to create Vagrantfile!"
     }
 
