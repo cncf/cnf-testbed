@@ -133,7 +133,7 @@ function generate_vpp_config_intel () {
     append_vpp_config ""
     append_vpp_config "set int mtu 9200 ${VPP_INTERFACES[0]}"
     append_vpp_config "set int mtu 9200 ${VPP_INTERFACES[1]}"
-    for veth in $(seq 0 "${sockets}"); do
+    for veth in $(seq 0 "$(( ${sockets} - 1))"); do
         append_vpp_config "set int state VirtualEthernet0/0/${veth} up"
     done
 }
