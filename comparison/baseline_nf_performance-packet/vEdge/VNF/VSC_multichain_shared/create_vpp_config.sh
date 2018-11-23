@@ -186,7 +186,7 @@ function generate_vpp_config_mlx () {
     append_vpp_config "set int l2 bridge ${VPP_INTERFACES[0]}${VLANS[1]/#/.} $((${NODENESS} + 1 ))"
     append_vpp_config ""
     append_vpp_config "set int mtu 9200 ${VPP_INTERFACES[0]}"
-    for veth in $(seq 0 "${sockets}"); do
+    for veth in $(seq 0 "$(( ${sockets} - 1))"); do
         append_vpp_config "set int state VirtualEthernet0/0/${veth} up"
     done
 }
@@ -229,8 +229,8 @@ function validate_input() {
         die "ERROR - DEBUG: Only supports up to 1-8 chains!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "6" ]]; then
-        die "ERROR - DEBUG: Only supports up to 1-6 nodes per chain!"
+    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "8" ]]; then
+        die "ERROR - DEBUG: Only supports up to 1-8 nodes per chain!"
     fi
 }
 
