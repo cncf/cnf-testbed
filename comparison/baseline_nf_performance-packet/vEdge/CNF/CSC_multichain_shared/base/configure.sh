@@ -60,8 +60,8 @@ function validate_input() {
         die "ERROR: Chain must be an integer value between 1-8!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "6" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-6!"
+    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "8" ]]; then
+        die "ERROR: Nodeness must be an integer value between 1-8!"
     fi
 }
 
@@ -247,15 +247,15 @@ function set_startup_vals () {
     if [ "${OPERATION}" == "baseline" ]; then
         QUEUES=1
         # The same list is required in the 'run_container.sh' script
-        main_cores=( 0 10 38 16 44 22 50 )
+        main_cores=( 0 10 38 16 44 22 50 4 32 )
         # The same list is required in the 'run_container.sh' script
-        worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
+        worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 6,34 8,36 )
     else
         QUEUES=2
         # The same list is required in the 'run_container.sh' script
-        main_cores=( 0 10 38 16 44 22 50 )
+        main_cores=( 0 10 38 16 44 22 50 4 32 )
         # The same list is required in the 'run_container.sh' script
-        worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 )
+        worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 6,34 8,36 )
     fi
 
     MAIN_CORE=${main_cores[${NODE}]}

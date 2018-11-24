@@ -182,8 +182,21 @@ if options[:show_server_ports]
   end
   device_response = phttp.api(url_extention: "/devices/#{selected_1st_device["id"]}")
   parsed_device = JSON.parse(device_response.body) 
+  # find all virtual lans and add name
+  parsed_device = parsed_device["network_ports"].reduce([]) do |memo, obj| 
+    vns = obj["virtual_networks"].reduce([]) do |m2, o2| 
+      vlans_response = phttp.api(url_extention: "/projects/#{project_id}/virtual-networks") 
+      parsed_vlans = JSON.parse(vlans_response.body)
+      vlan_name = parsed_vlans["virtual_networks"].find do |x| 
+        x["href"] == o2["href"]
+      end
+      o2["vlan_name"] = vlan_name["description"]
+      m2 << o2
+    end 
+    obj["virtual_networks"] = vns; memo << obj
+  end 
   p "parsed device: #{parsed_device}"  if options[:verbose]
-  puts parsed_device["network_ports"].to_json if parsed_device
+  puts parsed_device.to_json if parsed_device
 end
 
 # 2. Get facility ID for facility name (use env)
