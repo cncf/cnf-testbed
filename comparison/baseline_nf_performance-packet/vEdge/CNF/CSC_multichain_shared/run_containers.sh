@@ -117,19 +117,9 @@ function run_containers () {
 
     set -euo pipefail
 
-    VLANS=()
+    VLANS=( )
 
-    # Create CORE lists.
-    if [ "${OPERATION}" == "baseline" ]; then
-        baseline="baseline"
-        MAIN_CORES=( 0 10 38 16 44 22 50 4 32 )
-        WORKER_CORES=( 0 12,40 14,42 18,46 20,48 24,52 26,54 6,34 8,36 )
-    else
-        baseline=""
-        MAIN_CORES=( 0 10 38 16 44 22 50 4 32 )
-        WORKER_CORES=( 0 12,40 14,42 18,46 20,48 24,52 26,54 6,34 8,36 )
-    fi
-
+    # Build containers.
     source ./build_container.sh || {
         die "Failed to build container!"
     }
@@ -140,21 +130,28 @@ function run_containers () {
     update_vpp_config || {
         die "Failed to update VPP config!"
     }
+    # Create CORE lists.
+    mtcr=2
+    dtcr=1
+    cpu_list=($(source ./cpu_util.sh "${CHAINS}" "${NODENESS}" "${mtcr}" "${dtcr}" ))
     # Run conainer matrix.
+    n=0
     for chain in $(seq 1 "${CHAINS}"); do
         for node in $(seq 1 "${NODENESS}"); do
             dcr_name="c${chain}n${node}Edge"
+            cpuset_cpus="${cpu_list[n]},${cpu_list[n+1]},${cpu_list[n+2]}"
             if [ -z "$(docker inspect -f {{.State.Running}} ${dcr_name})" ]; then
                 sudo docker run --privileged --cpus 3 --tty --detach \
-                    --cpuset-cpus "${MAIN_CORES[${node}]}","${WORKER_CORES[${node}]}" \
+                    --cpuset-cpus "${cpuset_cpus}" \
                     --device=/dev/hugepages/:/dev/hugepages/ \
                     --volume "/etc/vpp/sockets/:/root/sockets/" \
                     --name "${dcr_name}" vedge_csc \
-                    /vEdge/configure.sh "${chain}" "${node}" "${NODENESS}" "${baseline}" || {
+                    /vEdge/configure.sh "${chain}" "${node}" "${NODENESS}" "${cpuset_cpus}" || {
                     die "Failed to start ${dcr_name} container!"
                 }
             fi
-            warn "${dcr_name} container started."
+            n=$(( n+3 ))
+            warn "${dcr_name} container started at ${cpuset_cpus}."
             sleep 5 || die
         done
     done

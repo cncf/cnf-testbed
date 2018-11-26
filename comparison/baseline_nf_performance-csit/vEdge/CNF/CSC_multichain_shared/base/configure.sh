@@ -29,7 +29,7 @@ function validate_input() {
     # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
     # - ${NODENESS} - Number of NFs in chain.
-    # - ${OPERATION} - Operation bit [baseline].
+    # - ${CPUSET} - CPU Set.
 
     set -euo pipefail
 
@@ -37,20 +37,15 @@ function validate_input() {
         die "ERROR - Looks like script is being run outside of container!"
     fi
 
-    if [[ "${#}" -lt "3" ]]; then
-        warn "  Usage: $0 <Chain ID> <Node ID> <Total Chains> [baseline]"
-        die "ERROR - At least 3 input arguments required"
+    if [[ "${#}" -lt "4" ]]; then
+        warn "  Usage: $0 <Chain ID> <Node ID> <Total Chains> <CPU Set>"
+        die "ERROR - At least 4 input arguments required"
     fi
 
     CHAIN="${1}"
     NODE="${2}"
     NODENESS="${3}"
-    OPERATION="${4-}"
-
-    if [ ! -z "${OPERATION}" ] && [ ! "${OPERATION}" == "baseline" ]; then
-        warn "  Usage: $0 <Chain ID> <Node ID> <Total Chains> [baseline]"
-        die "ERROR - Invalid 4th agument provided (${OPERATION})"
-    fi
+    CPUSET="${4}"
 
     if [[ -n ${CHAIN//[0-9]/} ]] || [[ -n ${NODE//[0-9]/} ]] || [[ -n ${NODENESS//[0-9]/} ]]; then
         die "ERROR: Chain, node and nodeness must be an integer values!"
@@ -234,9 +229,6 @@ function set_subnets () {
 function set_startup_vals () {
     # Create core lists and number of queues.
     #
-    # Variable read:
-    # - ${NODE} - Node ID.
-    # - ${OPERATION} - Operation bit [baseline].
     # Variable set:
     # - ${QUEUES} - Number of memif queues.
     # - ${MAIN_CORE} - Main core list.
@@ -244,22 +236,10 @@ function set_startup_vals () {
 
     set -euo pipefail
 
-    if [ "${OPERATION}" == "baseline" ]; then
-        QUEUES=1
-        # The same list is required in the 'run_container.sh' script
-        main_cores=( 0 5 61 8 64 11 67 14 70 )
-        # The same list is required in the 'run_container.sh' script
-        worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
-    else
-        QUEUES=2
-        # The same list is required in the 'run_container.sh' script
-        main_cores=( 0 5 61 8 64 11 67 14 70 )
-        # The same list is required in the 'run_container.sh' script
-        worker_cores=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
-    fi
-
-    MAIN_CORE=${main_cores[${NODE}]}
-    WORKERS=${worker_cores[${NODE}]}
+    QUEUES=1
+    IFS=', ' read -r -a array <<< "${CPUSET}"
+    MAIN_CORE="${array[0]}"
+    WORKERS="${array[1]},${array[2]}"
 }
 
 

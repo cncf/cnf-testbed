@@ -148,18 +148,19 @@ function update_cpu_pinning () {
     # Arguments:
     # - ${1} - Chain ID.
     # - ${2} - Node ID.
-    # Variable read:
-    # - ${NODENESS} - Number of NFs in chain.
 
     set -euo pipefail
 
-    cpus=( 10 12 40 38 14 42 16 18 46 44 20 48 22 24 52 50 26 54 4 6 34 32 8 36 )
+    # Create CORE lists.
+    mtcr=2
+    dtcr=1
+    cpu_list=($(source ./cpu_util.sh "${CHAINS}" "${NODENESS}" "${mtcr}" "${dtcr}" ))
     core_count=0
     for id in $(virsh list --state-running | grep multichain | awk '{print $1}'); do
         vagrant_id="$(virsh dominfo ${id} | grep 'Name' | awk '{print $2}' | awk -F _ '{print $4}')"
         warn "CPU Pinning: Chain ${vagrant_id:1:1}, Node ${vagrant_id:3:1}"
         for core in {0..2}; do
-            sudo virsh vcpupin ${id} ${core} ${cpus[${core_count}]} || {
+            sudo virsh vcpupin ${id} ${core} ${cpu_list[${core_count}]} || {
                 die "Failed to repin VM cores!"
             }
             (( core_count++ ))
