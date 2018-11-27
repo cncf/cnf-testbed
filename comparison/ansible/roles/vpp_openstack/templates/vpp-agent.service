@@ -6,7 +6,7 @@ After=syslog.target network.target neutron.server
 ExecReload = /bin/kill -HUP $MAINPID
 TimeoutStopSec = 300
 KillMode = process
-ExecStart = {{binpath[ansible_os_family]}}/vpp-agent --config-file /etc/neutron/plugins/ml2/ml2_conf.ini --config-file /etc/neutron/neutron.conf --log-file /var/log/vpp/vpp-agent.log
+ExecStart = {{binpath[ansible_os_family]}}/vpp-agent --config-file /etc/neutron/plugin.ini --config-file /etc/neutron/neutron.conf --log-file /var/log/vpp/vpp-agent.log
 User = root
 
 [Install]
