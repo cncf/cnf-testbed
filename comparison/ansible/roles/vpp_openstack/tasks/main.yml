@@ -1,4 +1,8 @@
 ---
+- name: find the controller host address
+  set_fact:
+    host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
+
 - name: install vpp startup with vlan interface pciid
   template:
     src: startup.conf
@@ -8,16 +12,24 @@
   template:
     src: vpp-interface.conf
     dest: /etc/vpp-interface.conf
-
-- name: restart vpp service
-  service:
-    name: vpp
-    state: restarted
+  notify:
+  - Restart vpp
 
 - name: update plugins config for vpp
   template:
     src: ml2_conf.j2
     dest: /etc/neutron/plugin.ini
+    mode: 0644
+
+- name: install bridge utilities package - RedHat
+  yum:
+    name: bridge-utils
+  when: ansible_os_family == 'RedHat'
+
+- name: install bridge utilities package - Debian
+  apt:
+    name: bridge-utils
+  when: ansible_os_family == 'Debian'
 
 - name: enable python pip - RedHat
   yum:
@@ -67,8 +79,52 @@
   - Restart neutron-server
   - Restart vpp-agent
 
+- name: add hugepage support for nova
+  ini_file:
+    path: /etc/nova/nova.conf
+    section: DEFAULT
+    option: reserved_huge_pages
+    value: node:0,size:2048,count:64
+  notify:
+  - Restart openstack-nova-compute
+
+- name: Daemon Reload
+  systemd:
+    daemon_reload: yes
+  notify:
+  - Restart neutron-server
+  - Restart vpp-agent
+
 - name: add create_vlans.sh openstack client script
   template:
     src: create_vlans.sh
     dest: /root/create_vlans.sh
+    mode: 0755
+
+- name: add create_flavor.sh script
+  template:
+    src: create_flavor.sh
+    dest: /root/create_flavor.sh
+    mode: 0755
+
+- name: add flavor
+  command: /root/create_flavor.sh
+  ignore_errors: true
+  when: host_0_address == inventory_hostname
+  
+- name: add create_image.sh script for xenial image
+  template:
+    src: create_xenial.sh
+    dest: /root/create_xenial.sh
+    mode: 0755
+
+- name: add xenial image
+  command: /root/create_xenial.sh
+  ignore_errors: true
+  when: host_0_address == inventory_hostname
+
+- name: add create_instance.sh
+  template:
+    src: create_instance.sh
+    dest: /root/create_instance.sh
     mode: 0755

@@ -1,6 +1,17 @@
+- name: Restart openstack-nova-compute
+  service:
+    name: openstack-nova-compute
+    state: restarted
+
 - name: Restart neutron-server
   service:
     name: neutron-server
+    state: restarted
+
+- name: Restart vpp
+  service:
+    enabled: true
+    name: vpp
     state: restarted
 
 - name: Restart vpp-agent
