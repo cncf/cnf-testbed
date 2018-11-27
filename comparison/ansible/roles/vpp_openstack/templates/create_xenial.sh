@@ -1,6 +1,6 @@
 #! /bin/bash
 
-source ~/open.rc
+source ~/openrc
 if [ ! -f xenial.img ]; then
 curl https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img > xenial.img
 fi
