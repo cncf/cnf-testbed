@@ -60,10 +60,10 @@ data:
             ## Manual pinning of thread(s) to CPU core(s)
 
             ## Set logical CPU core where main thread runs
-            main-core 10
+            main-core {{ .Values.mainCore }}
 
             ## Set logical CPU core(s) where worker threads are running
-            corelist-workers 12,40
+            corelist-workers {{ .Values.corelistWorkers }}
 
             ## Automatic pinning of thread(s) to CPU core(s)
 
@@ -147,7 +147,7 @@ data:
             ## Change hugepages allocation per-socket, needed only if there is need for
             ## larger number of mbufs. Default is 256M on each detected CPU socket
             # socket-mem 1024,1024
-            socket-mem 124,0
+            socket-mem {{ .Values.socketMem }}
 
             ## Disables UDP / TCP TX checksum offload. Typically needed for use
             ## faster vector PMDs (together with no-multi-seg)
