@@ -12,8 +12,9 @@
         interface: eth1
       vlan2:
         interface: eth2
-      vlan3:
-        interface: eth3
+        ## Commented to avoid excessive use of VLANs for now
+        # vlan3:
+        # interface: eth3
   roles:
     - packet_l2
 
@@ -25,12 +26,13 @@
     vnf: false
     baseline: false
     hugepages: 10240
-    # corelist_workers: 2,4,6,8,30,32,34,36
-    corelist_workers: 2,4,6,8
+    corelist_workers: 2,4,30,32
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
     enable_configured_interfaces_after_defining: true
+    nic_port2: "{{ ansible_eno2.pciid }}"
+    nic_port3: "{{ ansible_eno3.pciid }}"
     dns_nameservers:
       - "{{ ansible_dns.nameservers[0] }}"
       - "{{ ansible_dns.nameservers[0] }}"
@@ -73,12 +75,7 @@
         parameters:
           - param:
             val: 'bond-master bond0'
-      - name: "{{ ansible_bond0.slaves[1] }}"
-        configure: true
-        method: 'manual'
-        parameters:
-          - param: 'pre-up'
-            val: 'sleep 4'
+
   pre_tasks:
   - name: Apt update
     apt:
@@ -110,17 +107,17 @@
   - name: Get bond0 internal gw
     setup:
       filter: "{{ ansible_bond0_0.ipv4.network }}"
-  # - name: Get trex_port_0 pci id
-  #   setup: 
-  #     filter: "{{ ansible_enp2s0d1.pciid }}"
-  # - name: Get trex_port_1 pci id
-  #   setup: 
-  #     filter: "{{ ansible_eno2.pciid }}"
+  - name: Get NIC port 2 pci id
+    setup:
+      filter: "{{ ansible_eno2.pciid }}"
+  - name: Get NIC port 3 pci id
+    setup:
+      filter: "{{ ansible_eno3.pciid }}"
   post_tasks:
   - name: Reboot Server
     reboot:
   roles:
-    #- mrlesmithjr.config-interfaces
+    - mrlesmithjr.config-interfaces
     - grub_vswitch
     # - mellanox_vswitch
     - vpp_install
