@@ -7,35 +7,41 @@ function create_cpu_list () {
     # Create the list of CPUs detected by system.
     #
     # Variables set:
-    # ${SKIP} - Numa interleaving skip offset.
-    # ${SIBLING} - Sibling thread offset.
+    # ${STEP} - Numa interleaving step offset.
+    # ${SIBLING_OFFSET} - Sibling thread offset.
     # ${SYSTEM_CPUS} - List of System allocation CPUs.
     # ${SWITCH_CPUS} - List of Vswitch allocation CPUs.
-    # ${NUMA_CPUS} - List of CPUs from single package (socket).
+    # ${CPUS} - List of CPUs from single package without siblings (socket).
 
     set -euo pipefail
 
+    topo="/sys/devices/system/cpu/cpu[0-9]*/topology"
+
+    packages=$(cat ${topo}/physical_package_id | sort | uniq | wc -l) || {
+        die "Failed to read CPU!"
+    }
+    thread_siblings=$(cat ${topo}/thread_siblings | sort | uniq | wc -l) || {
+        die "Failed to read CPU!"
+    }
+    threads_count=$(find ${topo} -name "core_id" | wc -l) || {
+        die "Failed to read CPU!"
+    }
+    ppa=($(find ${topo} -name "physical_package_id" | sort -V | xargs cat)) || {
+        die "failed to read cpu!"
+    }
+    groups=$(printf '%s\n' "${ppa[@]}" | uniq | wc -l)
+    threads_per_cpu=$(( ${threads_count} / ${thread_siblings} ))
+    max_cpus=$(( ${threads_count} / ${packages} / ${threads_per_cpu} ))
+
     # CPU alternative enumerating per
     # https://www.kernel.org/doc/Documentation/x86/topology.txt.
-    if lscpu | grep "Intel(R) Xeon(R) Gold"; then
-        alternative_enumeration=true
+    if [ ${groups} -eq ${threads_count} ]; then
+        STEP=2
     else
-        alternative_enumeration=false
+        STEP=1
     fi
-    packages=2
-    threads_per_core=2
-    threads_count=$(lscpu -p | grep -v "#" | wc -l)
-    max_cpus=$(( "${threads_count}" / "${packages}" / "${threads_per_core}" ))
-
-    if ${alternative_enumeration}; then
-        SKIP=2
-        SIBLING=$(( "${max_cpus}" * 2 ))
-    else
-        SKIP=1
-        SIBLING=$(( "${max_cpus}" * 2 ))
-    fi
-
-    NUMA_CPUS=( $(seq 0 "${SKIP}" $(( ("${max_cpus}" * "${SKIP}") - 1 ))) )
+    SIBLING_OFFSET="${thread_siblings}"
+    CPUS=($(seq 0 "${STEP}" $(( ("${max_cpus}" * "${STEP}") - 1 ))))
     SYSTEM_CPUS=( 0 )
     SWITCH_CPUS=( 1 )
 }
@@ -47,13 +53,13 @@ function create_reserved_cpu_list () {
     # Variables read:
     # ${CHAINS} - Number of chains.
     # ${NODENESS} - Number of nodes per chain.
-    # ${SKIP} - Numa interleaving skip offset.
+    # ${STEP} - Numa interleaving skip offset.
     # ${SYSTEM_CPUS} - List of System allocation CPUs.
     # ${SWITCH_CPUS} - List of Vswitch allocation CPUs.
-    # ${CPUS_NUMA} - List of CPUs from single package (socket).
+    # ${CPUS} - List of CPUs from single package without siblings (socket).
     # Variables set:
-    # ${MT_CPUS} - Cores allocated for main threads.
-    # ${DT_CPUS} - Cores allocated for data plane threads.
+    # ${MT_CPUS} - Cores pre-allocated for main threads.
+    # ${DT_CPUS} - Cores pre-allocated for data plane threads.
 
     set -euo pipefail
 
@@ -62,23 +68,23 @@ function create_reserved_cpu_list () {
     nf_count=$(( "${CHAINS}" * "${NODENESS}" ))
     reserved_cpus=$(( "${#SYSTEM_CPUS[@]}" + "${#SWITCH_CPUS[@]}" ))
 
-    mt_req=$(( "${nf_count}"/"${MTCR}" ))
-    dt_req=$(( "${nf_count}"/"${DTCR}" ))
+    mt_req=$(( "${nf_count}" / "${MTCR}" ))
+    dt_req=$(( "${nf_count}" / "${DTCR}" ))
     available=$(( "${reserved_cpus}" + "${mt_req}" + "${dt_req}" ))
-    if [ "${available}" -gt "${#NUMA_CPUS[@]}" ]; then
+    if [ "${available}" -gt "${#CPUS[@]}" ]; then
         die "Impossible to place VFs to cores!"
     fi
 
-    mt_start=$(( "${reserved_cpus}" * "${SKIP}"))
-    mt_end=$(( ("${reserved_cpus}" + "${mt_req}") * "${SKIP}" - 1 ))
-    MT_CPUS=( $(seq "${mt_start}" "${SKIP}" "${mt_end}") )
+    mt_start=$(( "${reserved_cpus}" * "${STEP}"))
+    mt_end=$(( ("${reserved_cpus}" + "${mt_req}") * "${STEP}" - 1 ))
+    MT_CPUS=( $(seq "${mt_start}" "${STEP}" "${mt_end}") )
 
-    dt_start=$(( ("${reserved_cpus}" + "${#MT_CPUS[@]}") * "${SKIP}" ))
-    dt_end=$(( "${dt_start}" + ("${dt_req}" * "${SKIP}") - 1 ))
-    DT_CPUS=( $(seq "${dt_start}" "${SKIP}" "${dt_end}") )
+    dt_start=$(( ("${reserved_cpus}" + "${#MT_CPUS[@]}") * "${STEP}" ))
+    dt_end=$(( "${dt_start}" + ("${dt_req}" * "${STEP}") - 1 ))
+    DT_CPUS=( $(seq "${dt_start}" "${STEP}" "${dt_end}") )
 
-    warn "MT allocation (MTCR=${MTCR}): ${MT_CPUS[@]}"
-    warn "DT allocation (DTCR=${DTCR}): ${DT_CPUS[@]}"
+    warn "MT pre-allocation (MTCR=${MTCR}): ${MT_CPUS[@]}"
+    warn "DT pre-allocation (DTCR=${DTCR}): ${DT_CPUS[@]}"
 }
 
 
@@ -100,6 +106,14 @@ function die () {
 
 
 function return_allocated_cpu_list () {
+    # Create the list of allocated CPUs for mapping.
+    #
+    # Variables read:
+    # ${CHAINS} - Number of chains.
+    # ${NODENESS} - Number of nodes per chain.
+    # ${SIBLING_OFFSET} - Sibling thread offset.
+    # ${MT_CPUS} - Cores pre-allocated for main threads.
+    # ${DT_CPUS} - Cores pre-allocated for data plane threads.
 
     set -euo pipefail
 
@@ -115,16 +129,16 @@ function return_allocated_cpu_list () {
             mt_chg=$(( "${pre_offset}" / "${#MT_CPUS[@]}" ))
             mt_idx=$(( "${pre_offset}" % "${#MT_CPUS[@]}" ))
             dt_idx=$(( "${pre_offset}" % "${#DT_CPUS[@]}" ))
-
+            partial=()
             if [ $(( "${mt_chg}" % 2 )) -eq 0 ]; then
-                warn "MT: $(( ${MT_CPUS[${mt_idx}]} )), DT: $(( ${DT_CPUS[${dt_idx}]} )),$(( ${DT_CPUS[${dt_idx}]} + ${SIBLING} ))"
-                output+=($(( "${MT_CPUS[${mt_idx}]}" )))
+                partial+=($(( "${MT_CPUS[${mt_idx}]}" )))
             else
-                warn "MT: $(( ${MT_CPUS[${mt_idx}]} + ${SIBLING} )), DT: $(( ${DT_CPUS[${dt_idx}]} )),$(( ${DT_CPUS[${dt_idx}]} + ${SIBLING} ))"
-                output+=($(( "${MT_CPUS[${mt_idx}]}" + "${SIBLING}" )))
+                partial+=($(( "${MT_CPUS[${mt_idx}]}" + "${SIBLING_OFFSET}" )))
             fi
-            output+=($(( "${DT_CPUS[${dt_idx}]}" )))
-            output+=($(( "${DT_CPUS[${dt_idx}]}" + "${SIBLING}" )))
+            partial+=($(( "${DT_CPUS[${dt_idx}]}" )))
+            partial+=($(( "${DT_CPUS[${dt_idx}]}" + "${SIBLING_OFFSET}" )))
+            warn "$((${chain}+1))c$((${node}+1))n: ${partial[@]}"
+            output+=(${partial[@]})
         done
     done
 
