@@ -88,6 +88,15 @@
   notify:
   - Restart openstack-nova-compute
 
+- name: ensure kvm driver
+  ini_file:
+    path: /etc/nova/nova.conf
+    section: libvirt
+    option: virt_type
+    value: kvm
+  notify: 
+  - Restart openstack-nova-compute
+
 - name: Daemon Reload
   systemd:
     daemon_reload: yes

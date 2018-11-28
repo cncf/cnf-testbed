@@ -2,7 +2,7 @@
   service:
     name: openstack-nova-compute
     state: restarted
-  when: host_0_address not == inventory_hostname
+  when: not host_0_address == inventory_hostname
 
 - name: Restart neutron-server
   service:
