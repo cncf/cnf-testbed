@@ -195,3 +195,11 @@ the bi-directional link rate.
     008   4.7   ---   ---   ---   ---   ---
     010   ---   ---   ---   ---   ---   ---
 ```
+
+
+### Pulling results from nvfbench logs
+
+Latest results in comparison/baseline_nf_performance-csit/results/novlan
+
+Gathering a summary of results from the nfvbench logs with:
+```fgrep -R "|    Total    |" * | sort | awk -F '[ ]*[|][ ]*' '{print $1 " " $8 " (" $5 ")"}'```
