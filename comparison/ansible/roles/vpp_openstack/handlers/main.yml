@@ -1,6 +1,18 @@
+- name: Restart openstack-nova-compute
+  service:
+    name: openstack-nova-compute
+    state: restarted
+  when: not host_0_address == inventory_hostname
+
 - name: Restart neutron-server
   service:
     name: neutron-server
+    state: restarted
+
+- name: Restart vpp
+  service:
+    enabled: true
+    name: vpp
     state: restarted
 
 - name: Restart vpp-agent

@@ -151,13 +151,19 @@ function update_cpu_pinning () {
 
     set -euo pipefail
 
-    cpus=( 5 6 62 61 7 63 8 9 65 64 10 66 11 12 68 67 13 69 14 15 71 70 16 72 )
+    # Create CORE lists.
+    mtcr=2
+    dtcr=1
+    COMMON_DIR="$(readlink -e "$(git rev-parse --show-toplevel)")" || {
+        die "Readlink or git rev-parse failed."
+    }
+    cpu_list=($(source "${COMMON_DIR}"/tools/cpu_util.sh "${CHAINS}" "${NODENESS}" "${mtcr}" "${dtcr}" ))
     core_count=0
     for id in $(virsh list --state-running | grep multichain | awk '{print $1}'); do
         vagrant_id="$(virsh dominfo ${id} | grep 'Name' | awk '{print $2}' | awk -F _ '{print $4}')"
         warn "CPU Pinning: Chain ${vagrant_id:1:1}, Node ${vagrant_id:3:1}"
         for core in {0..2}; do
-            sudo virsh vcpupin ${id} ${core} ${cpus[${core_count}]} || {
+            sudo virsh vcpupin ${id} ${core} ${cpu_list[${core_count}]} || {
                 die "Failed to repin VM cores!"
             }
             (( core_count++ ))

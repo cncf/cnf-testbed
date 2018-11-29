@@ -28,13 +28,13 @@ Or run the following:
 bash <(curl -sL https://get.docker.com)
 ```
 
-Once your docker environment is in existance, we will want to clone the CNCF/CNFS git repository, either by using the git client if you have one installed:
+Once your docker environment is in existence, we will want to clone the CNCF/CNFS git repository, either by using the git client if you have one installed:
 
 ```
 git clone https://github.com/cncf/cnfs.git
 ```
 
-Or by downloading and extracing the latest bundle:
+Or by downloading and extracting the latest bundle:
 https://github.com/cncf/cnfs/archive/master.zip
 
 Once you have the repository on the build machine, we can build a Docker container that will allow us to launch our instance:
@@ -51,7 +51,7 @@ It is also necessary to upload the id_rsa.pub key into Packet.net as a public ke
 
 ## Packet.net Project and API Keys
 
-After the ssh key has been uploaded, we need to create a file (or add to our shell enviornment) for two environment variables:
+After the ssh key has been uploaded, we need to create a file (or add to our shell environment) for two environment variables:
 
 ```
 export PACKET_PROJECT_ID=abcdef12-b8a8-435e-b8b7-123445689abc
@@ -61,17 +61,17 @@ The project ID is available in the project settings tab of the Packet.net UI, an
 
 ## Public IP Addressing
 
-In order for external access to be possible in the packet.net enviornment, we'll want to ask Packet for a set of additional IP addresses that we can then associate with our controller.  The initial reqquest is done in the Network section of the Project.  Often, an 8 address block may be adequate for a small test system, and larger blocks can be allocated to the system in the same fashion.
+In order for external access to be possible in the packet.net environment, we'll want to ask Packet for a set of additional IP addresses that we can then associate with our controller.  The initial reqquest is done in the Network section of the Project.  Often, an 8 address block may be adequate for a small test system, and larger blocks can be allocated to the system in the same fashion.
 
 Once the block is requested (and occasionally run through the packet approval process), we can capture the lowest order IP address and the CIDR netmask, and we will use that information later to add the addresses to our controller host.
 
 ## L2 Tenant networks
 
-If L2 tenant networks are going to be used in the packet environment (perhaps with a tool like VPP), it is necessary to capture that inforamtion up front as well, and as we do not currently automate this proces, it is also necessary to crate the networks in the Packet.net UI, and again, mark down the specific VLAN IDs provided for the VLANs created.
+If L2 tenant networks are going to be used in the packet environment (perhaps with a tool like VPP), it is necessary to capture that information up front as well, and as we do not currently automate this proces, it is also necessary to create the networks in the Packet.net UI, and again, mark down the specific VLAN IDs provided for the VLANs created.
 
 ## Host buildout and configuration
 
-We're now at a point where we have our build image, we have our security credentials defined, and we have the network infomration we'll need for the deployment
+We're now at a point where we have our build image, we have our security credentials defined, and we have the network information we'll need for the deployment
 
 **Deploy an OpenStack cluster to Packet**
 

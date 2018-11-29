@@ -119,17 +119,6 @@ function run_containers () {
 
     VLANS=( )
 
-    # Create CORE lists.
-    if [ "${OPERATION}" == "baseline" ]; then
-        baseline="baseline"
-        MAIN_CORES=( 0 5 61 8 64 11 67 14 70 )
-        WORKER_CORES=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
-    else
-        baseline=""
-        MAIN_CORES=( 0 5 61 8 64 11 67 14 70 )
-        WORKER_CORES=( 0 6,62 7,63 9,65 10,66 12,68 13,69 15,71 16,72 )
-    fi
-
     # Build containers.
     source ./build_container.sh || {
         die "Failed to build container!"
@@ -141,21 +130,31 @@ function run_containers () {
     update_vpp_config || {
         die "Failed to update VPP config!"
     }
+    # Create CORE lists.
+    mtcr=2
+    dtcr=1
+    COMMON_DIR="$(readlink -e "$(git rev-parse --show-toplevel)")" || {
+        die "Readlink or git rev-parse failed."
+    }
+    cpu_list=($(source "${COMMON_DIR}"/tools/cpu_util.sh "${CHAINS}" "${NODENESS}" "${mtcr}" "${dtcr}" ))
     # Run conainer matrix.
+    n=0
     for chain in $(seq 1 "${CHAINS}"); do
         for node in $(seq 1 "${NODENESS}"); do
             dcr_name="c${chain}n${node}Edge"
+            cpuset_cpus="${cpu_list[n]},${cpu_list[n+1]},${cpu_list[n+2]}"
             if [ -z "$(docker inspect -f {{.State.Running}} ${dcr_name})" ]; then
                 sudo docker run --privileged --cpus 3 --tty --detach \
-                    --cpuset-cpus "${MAIN_CORES[${node}]}","${WORKER_CORES[${node}]}" \
+                    --cpuset-cpus "${cpuset_cpus}" \
                     --device=/dev/hugepages/:/dev/hugepages/ \
                     --volume "/etc/vpp/sockets/:/root/sockets/" \
                     --name "${dcr_name}" vedge_csc \
-                    /vEdge/configure.sh "${chain}" "${node}" "${NODENESS}" "${baseline}" || {
+                    /vEdge/configure.sh "${chain}" "${node}" "${NODENESS}" "${cpuset_cpus}" || {
                     die "Failed to start ${dcr_name} container!"
                 }
             fi
-            warn "${dcr_name} container started."
+            n=$(( n+3 ))
+            warn "${dcr_name} container started at ${cpuset_cpus}."
             sleep 5 || die
         done
     done

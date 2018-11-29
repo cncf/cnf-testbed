@@ -29,6 +29,7 @@ function validate_input() {
     # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
     # - ${NODENESS} - Number of NFs in chain.
+    # - ${CPUSET} - CPU Set.
 
     set -euo pipefail
 
@@ -36,14 +37,15 @@ function validate_input() {
         die "ERROR - Looks like script is being run outside of container!"
     fi
 
-    if [[ "${#}" -lt "3" ]]; then
-        warn "  Usage: $0 <Chain ID> <Node ID> <Total Chains> [baseline]"
-        die "ERROR - At least 3 input arguments required"
+    if [[ "${#}" -lt "4" ]]; then
+        warn "  Usage: $0 <Chain ID> <Node ID> <Total Chains> <CPU Set>"
+        die "ERROR - At least 4 input arguments required"
     fi
 
     CHAIN="${1}"
     NODE="${2}"
     NODENESS="${3}"
+    CPUSET="${4}"
 
     if [[ -n ${CHAIN//[0-9]/} ]] || [[ -n ${NODE//[0-9]/} ]] || [[ -n ${NODENESS//[0-9]/} ]]; then
         die "ERROR: Chain, node and nodeness must be an integer values!"
@@ -282,13 +284,9 @@ function set_startup_vals () {
     set -euo pipefail
 
     QUEUES=1
-    # The same list is required in the 'run_container.sh' script
-    main_cores=( 0 10 38 16 44 22 50 4 32 )
-    # The same list is required in the 'run_container.sh' script
-    worker_cores=( 0 12,40 14,42 18,46 20,48 24,52 26,54 6,34 8,36 )
-
-    MAIN_CORE=${main_cores[${NODE}]}
-    WORKERS=${worker_cores[${NODE}]}
+    IFS=', ' read -r -a array <<< "${CPUSET}"
+    MAIN_CORE="${array[0]}"
+    WORKERS="${array[1]},${array[2]}"
 }
 
 

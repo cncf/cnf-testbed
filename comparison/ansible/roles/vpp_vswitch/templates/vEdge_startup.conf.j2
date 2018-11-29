@@ -77,7 +77,7 @@ dpdk {
 	dev default {
 		## Number of receive queues, enables RSS
 		## Default is 1
-		num-rx-queues 4
+		num-rx-queues 2
 
 		## Number of transmit queues, Default is equal
 		## to number of worker threads or 1 if no workers treads
@@ -97,7 +97,7 @@ dpdk {
 	## Whitelist specific interface by specifying PCI address
 	# dev 0000:02:00.0
 	#dev 0000:5e:00.4 dev 0000:5e:00.5
-	dev 0000:5e:00.1
+	dev {{ nic_port2 }} dev {{ nic_port3 }}
 
 	## Whitelist specific interface by specifying PCI address and in
 	## addition specify custom parameters for this interface
@@ -134,23 +134,23 @@ dpdk {
 
 	## Disables UDP / TCP TX checksum offload. Typically needed for use
 	## faster vector PMDs (together with no-multi-seg)
-	#no-tx-checksum-offload
+	no-tx-checksum-offload
 }
 
 
-# plugins {
+plugins {
 	## Adjusting the plugin path depending on where the VPP plugins are
 	#	path /home/bms/vpp/build-root/install-vpp-native/vpp/lib64/vpp_plugins
 
 	## Disable all plugins by default and then selectively enable specific plugins
-	# plugin default { disable }
-	# plugin dpdk_plugin.so { enable }
-	# plugin acl_plugin.so { enable }
+	plugin default { disable }
+	plugin dpdk_plugin.so { enable }
+	plugin memif_plugin.so { enable }
 
 	## Enable all plugins by default and then selectively disable specific plugins
 	# plugin dpdk_plugin.so { disable }
 	# plugin acl_plugin.so { disable }
-# }
+}
 
 	## Alternate syntax to choose plugin path
 	# plugin_path /home/bms/vpp/build-root/install-vpp-native/vpp/lib64/vpp_plugins

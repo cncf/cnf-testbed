@@ -1,0 +1,292 @@
+2018-11-28 12:46:20,833 INFO Loading configuration file: /tmp/nfvbench/nfvbench_config.cfg
+2018-11-28 12:46:20,866 INFO EXT chain with OpenStack mode disabled
+2018-11-28 12:46:20,867 INFO -c /tmp/nfvbench/nfvbench_config.cfg --rate ndr --flow-count 1024 --duration 30 --json /tmp/nfvbench/csp_4c2n_ndr-1.json
+2018-11-28 12:46:20,868 INFO Connecting to TRex (127.0.0.1)...
+
+
+2018-11-28 12:46:20 - [local][warning]   - [1mCPU util. is high: 90.7%[22m
+2018-11-28 12:46:21,004 INFO Connected to TRex
+2018-11-28 12:46:21,004 INFO    Port 0: Device 158b speed=25Gbps mac=3c:fd:fe:bd:f8:60 pci=0000:3b:00.0 driver=net_i40e
+2018-11-28 12:46:21,005 INFO    Port 1: Device 158b speed=25Gbps mac=3c:fd:fe:bd:f8:61 pci=0000:3b:00.1 driver=net_i40e
+2018-11-28 12:46:21,005 INFO ChainRunner initialized
+2018-11-28 12:46:21,006 INFO Starting 4xEXT benchmark...
+2018-11-28 12:46:21,116 INFO Polling ARP until successful...
+2018-11-28 12:46:21,327 INFO    ARP: port=0 chain=0 src IP=172.16.10.100 dst IP=172.16.10.10 -> MAC=52:54:00:00:00:aa
+2018-11-28 12:46:21,327 INFO    ARP: port=0 chain=1 src IP=172.16.10.101 dst IP=172.16.10.11 -> MAC=52:54:01:00:00:aa
+2018-11-28 12:46:21,327 INFO    ARP: port=0 chain=2 src IP=172.16.10.102 dst IP=172.16.10.12 -> MAC=52:54:02:00:00:aa
+2018-11-28 12:46:21,327 INFO    ARP: port=0 chain=3 src IP=172.16.10.103 dst IP=172.16.10.13 -> MAC=52:54:03:00:00:aa
+2018-11-28 12:46:21,327 INFO ARP resolved successfully for port 0
+2018-11-28 12:46:21,538 INFO    ARP: port=1 chain=0 src IP=172.16.20.100 dst IP=172.16.20.10 -> MAC=52:54:00:00:00:bb
+2018-11-28 12:46:21,538 INFO    ARP: port=1 chain=1 src IP=172.16.20.101 dst IP=172.16.20.11 -> MAC=52:54:01:00:00:bb
+2018-11-28 12:46:21,538 INFO    ARP: port=1 chain=2 src IP=172.16.20.102 dst IP=172.16.20.12 -> MAC=52:54:02:00:00:bb
+2018-11-28 12:46:21,538 INFO    ARP: port=1 chain=3 src IP=172.16.20.103 dst IP=172.16.20.13 -> MAC=52:54:03:00:00:bb
+2018-11-28 12:46:21,538 INFO ARP resolved successfully for port 1
+2018-11-28 12:46:21,640 INFO Port 0: dst MAC ['52:54:00:00:00:aa', '52:54:01:00:00:aa', '52:54:02:00:00:aa', '52:54:03:00:00:aa']
+2018-11-28 12:46:21,640 INFO Port 1: dst MAC ['52:54:00:00:00:bb', '52:54:01:00:00:bb', '52:54:02:00:00:bb', '52:54:03:00:00:bb']
+2018-11-28 12:46:21,640 INFO Starting traffic generator to ensure end-to-end connectivity
+2018-11-28 12:46:21,664 INFO Created 4 traffic streams for port 0.
+2018-11-28 12:46:21,666 INFO Created 4 traffic streams for port 1.
+2018-11-28 12:46:21,777 INFO Captured unique src mac 0/8, capturing return packets (retry 1/100)...
+2018-11-28 12:46:23,899 INFO Received packet from mac: 52:54:01:00:00:bb (chain=1, port=1)
+2018-11-28 12:46:23,899 INFO Received packet from mac: 52:54:03:00:00:bb (chain=3, port=1)
+2018-11-28 12:46:23,899 INFO Received packet from mac: 52:54:00:00:00:bb (chain=0, port=1)
+2018-11-28 12:46:23,899 INFO Received packet from mac: 52:54:02:00:00:bb (chain=2, port=1)
+2018-11-28 12:46:23,899 INFO Received packet from mac: 52:54:03:00:00:aa (chain=3, port=0)
+2018-11-28 12:46:23,899 INFO Received packet from mac: 52:54:02:00:00:aa (chain=2, port=0)
+2018-11-28 12:46:23,900 INFO Received packet from mac: 52:54:00:00:00:aa (chain=0, port=0)
+2018-11-28 12:46:23,900 INFO Received packet from mac: 52:54:01:00:00:aa (chain=1, port=0)
+2018-11-28 12:46:23,900 INFO End-to-end connectivity established
+2018-11-28 12:46:23,918 INFO Cleared all existing streams
+2018-11-28 12:46:23,956 INFO Created 8 traffic streams for port 0.
+2018-11-28 12:46:23,961 INFO Created 8 traffic streams for port 1.
+2018-11-28 12:46:23,961 INFO *** Searching NDR for 64 (Bidirectional)...
+2018-11-28 12:46:23,961 INFO Range search [0.0 .. 200.0] targets: {'ndr': 0.001}
+2018-11-28 12:46:23,961 INFO Modified traffic stream for port 0, new rate=100.0%.
+2018-11-28 12:46:23,961 INFO Modified traffic stream for port 1, new rate=100.0%.
+2018-11-28 12:46:23,961 INFO Running traffic generator
+
+
+2018-11-28 12:46:30 - [local][warning]   - [1mCPU util. is high: 88.8%[22m
+2018-11-28 12:46:33,988 INFO TX: 397440275; RX: 54873539; Est. Dropped: 342566736; Est. Drop rate: 86.1933%
+2018-11-28 12:46:44,004 INFO TX: 796590669; RX: 109774398; Est. Dropped: 686816271; Est. Drop rate: 86.2195%
+2018-11-28 12:46:54,001 INFO TX: 1194404344; RX: 164511349; Est. Dropped: 1029892995; Est. Drop rate: 86.2265%
+2018-11-28 12:46:56,009 INFO WARNING: There is a significant difference between requested TX rate (74404760) and actual TX rate (39813478). The traffic generator may not have sufficient CPU to achieve the requested TX rate.
+2018-11-28 12:46:56,009 INFO Average drop rate: 86.226494
+2018-11-28 12:46:56,009 INFO Range search [0.0 .. 100.0] targets: {'ndr': 0.001}
+2018-11-28 12:46:56,009 INFO Modified traffic stream for port 0, new rate=50.0%.
+2018-11-28 12:46:56,009 INFO Modified traffic stream for port 1, new rate=50.0%.
+2018-11-28 12:46:56,009 INFO Running traffic generator
+
+
+2018-11-28 12:47:02 - [local][warning]   - [1mCPU util. is high: 86.7%[22m
+2018-11-28 12:47:06,037 INFO TX: 372377231; RX: 55061692; Est. Dropped: 317315539; Est. Drop rate: 85.2135%
+2018-11-28 12:47:16,053 INFO TX: 745012660; RX: 110149366; Est. Dropped: 634863294; Est. Drop rate: 85.2151%
+2018-11-28 12:47:26,050 INFO TX: 1116072000; RX: 165012896; Est. Dropped: 951059104; Est. Drop rate: 85.2149%
+2018-11-28 12:47:28,058 INFO Average drop rate: 85.214852
+2018-11-28 12:47:28,058 INFO Range search [0.0 .. 50.0] targets: {'ndr': 0.001}
+2018-11-28 12:47:28,058 INFO Modified traffic stream for port 0, new rate=25.0%.
+2018-11-28 12:47:28,058 INFO Modified traffic stream for port 1, new rate=25.0%.
+2018-11-28 12:47:28,058 INFO Running traffic generator
+2018-11-28 12:47:38,090 INFO TX: 186189756; RX: 55052862; Est. Dropped: 131136894; Est. Drop rate: 70.4319%
+2018-11-28 12:47:48,106 INFO TX: 372515128; RX: 110142526; Est. Dropped: 262372602; Est. Drop rate: 70.4327%
+2018-11-28 12:47:58,100 INFO TX: 558035712; RX: 164996284; Est. Dropped: 393039428; Est. Drop rate: 70.4327%
+2018-11-28 12:48:00,109 INFO Average drop rate: 70.432666
+2018-11-28 12:48:00,109 INFO Range search [0.0 .. 25.0] targets: {'ndr': 0.001}
+2018-11-28 12:48:00,109 INFO Modified traffic stream for port 0, new rate=12.5%.
+2018-11-28 12:48:00,109 INFO Modified traffic stream for port 1, new rate=12.5%.
+2018-11-28 12:48:00,109 INFO Running traffic generator
+2018-11-28 12:48:10,141 INFO TX: 93095282; RX: 55080042; Est. Dropped: 38015240; Est. Drop rate: 40.8348%
+2018-11-28 12:48:20,157 INFO TX: 186257448; RX: 110198890; Est. Dropped: 76058558; Est. Drop rate: 40.8352%
+2018-11-28 12:48:30,151 INFO TX: 279017896; RX: 165082168; Est. Dropped: 113935728; Est. Drop rate: 40.8346%
+2018-11-28 12:48:32,159 INFO Average drop rate: 40.834559
+2018-11-28 12:48:32,159 INFO Range search [0.0 .. 12.5] targets: {'ndr': 0.001}
+2018-11-28 12:48:32,159 INFO Modified traffic stream for port 0, new rate=6.25%.
+2018-11-28 12:48:32,160 INFO Modified traffic stream for port 1, new rate=6.25%.
+2018-11-28 12:48:32,160 INFO Running traffic generator
+2018-11-28 12:48:42,193 INFO TX: 46551800; RX: 46551568; Est. Dropped: 232; Est. Drop rate: 0.0005%
+2018-11-28 12:48:52,210 INFO TX: 93134240; RX: 93134109; Est. Dropped: 131; Est. Drop rate: 0.0001%
+2018-11-28 12:49:02,203 INFO TX: 139508936; RX: 139508936; Est. Dropped: 0; Est. Drop rate: 0.0000%
+2018-11-28 12:49:04,212 INFO Average drop rate: 0.000000
+2018-11-28 12:49:04,212 INFO Range search [6.25 .. 12.5] targets: {'ndr': 0.001}
+2018-11-28 12:49:04,212 INFO Modified traffic stream for port 0, new rate=9.375%.
+2018-11-28 12:49:04,212 INFO Modified traffic stream for port 1, new rate=9.375%.
+2018-11-28 12:49:04,212 INFO Running traffic generator
+2018-11-28 12:49:14,242 INFO TX: 69819576; RX: 55172602; Est. Dropped: 14646974; Est. Drop rate: 20.9783%
+2018-11-28 12:49:24,259 INFO TX: 139689766; RX: 110375162; Est. Dropped: 29314604; Est. Drop rate: 20.9855%
+2018-11-28 12:49:34,253 INFO TX: 209263408; RX: 165360148; Est. Dropped: 43903260; Est. Drop rate: 20.9799%
+2018-11-28 12:49:36,262 INFO Average drop rate: 20.979903
+2018-11-28 12:49:36,262 INFO Range search [6.25 .. 9.375] targets: {'ndr': 0.001}
+2018-11-28 12:49:36,262 INFO Modified traffic stream for port 0, new rate=7.8125%.
+2018-11-28 12:49:36,262 INFO Modified traffic stream for port 1, new rate=7.8125%.
+2018-11-28 12:49:36,262 INFO Running traffic generator
+2018-11-28 12:49:46,293 INFO TX: 58187928; RX: 55123646; Est. Dropped: 3064282; Est. Drop rate: 5.2662%
+2018-11-28 12:49:56,310 INFO TX: 116417700; RX: 110285758; Est. Dropped: 6131942; Est. Drop rate: 5.2672%
+2018-11-28 12:50:06,303 INFO TX: 174386168; RX: 165220240; Est. Dropped: 9165928; Est. Drop rate: 5.2561%
+2018-11-28 12:50:08,312 INFO Average drop rate: 5.256110
+2018-11-28 12:50:08,312 INFO Range search [6.25 .. 7.8125] targets: {'ndr': 0.001}
+2018-11-28 12:50:08,312 INFO Modified traffic stream for port 0, new rate=7.03125%.
+2018-11-28 12:50:08,312 INFO Modified traffic stream for port 1, new rate=7.03125%.
+2018-11-28 12:50:08,312 INFO Running traffic generator
+2018-11-28 12:50:18,344 INFO TX: 52368952; RX: 52367986; Est. Dropped: 966; Est. Drop rate: 0.0018%
+2018-11-28 12:50:28,361 INFO TX: 104774784; RX: 104774042; Est. Dropped: 742; Est. Drop rate: 0.0007%
+2018-11-28 12:50:38,354 INFO TX: 156947552; RX: 156947552; Est. Dropped: 0; Est. Drop rate: 0.0000%
+2018-11-28 12:50:40,363 INFO Average drop rate: 0.000000
+2018-11-28 12:50:40,363 INFO Range search [7.03125 .. 7.8125] targets: {'ndr': 0.001}
+2018-11-28 12:50:40,364 INFO Modified traffic stream for port 0, new rate=7.421875%.
+2018-11-28 12:50:40,364 INFO Modified traffic stream for port 1, new rate=7.421875%.
+2018-11-28 12:50:40,364 INFO Running traffic generator
+2018-11-28 12:50:50,399 INFO TX: 55278380; RX: 54210884; Est. Dropped: 1067496; Est. Drop rate: 1.9311%
+2018-11-28 12:51:00,407 INFO TX: 110545016; RX: 108393556; Est. Dropped: 2151460; Est. Drop rate: 1.9462%
+2018-11-28 12:51:10,409 INFO TX: 165666872; RX: 162384841; Est. Dropped: 3282031; Est. Drop rate: 1.9811%
+2018-11-28 12:51:12,418 INFO Average drop rate: 1.981103
+2018-11-28 12:51:12,418 INFO Range search [7.03125 .. 7.421875] targets: {'ndr': 0.001}
+2018-11-28 12:51:12,419 INFO Modified traffic stream for port 0, new rate=7.2265625%.
+2018-11-28 12:51:12,419 INFO Modified traffic stream for port 1, new rate=7.2265625%.
+2018-11-28 12:51:12,419 INFO Running traffic generator
+2018-11-28 12:51:22,450 INFO TX: 53822464; RX: 53819268; Est. Dropped: 3196; Est. Drop rate: 0.0059%
+2018-11-28 12:51:32,467 INFO TX: 107689204; RX: 107684237; Est. Dropped: 4967; Est. Drop rate: 0.0046%
+2018-11-28 12:51:42,458 INFO TX: 161307208; RX: 161295587; Est. Dropped: 11621; Est. Drop rate: 0.0072%
+2018-11-28 12:51:44,467 INFO Average drop rate: 0.007204
+2018-11-28 12:51:44,467 INFO Range search [7.03125 .. 7.2265625] targets: {'ndr': 0.001}
+2018-11-28 12:51:44,467 INFO Modified traffic stream for port 0, new rate=7.12890625%.
+2018-11-28 12:51:44,467 INFO Modified traffic stream for port 1, new rate=7.12890625%.
+2018-11-28 12:51:44,468 INFO Running traffic generator
+2018-11-28 12:51:54,499 INFO TX: 53091032; RX: 53090034; Est. Dropped: 998; Est. Drop rate: 0.0019%
+2018-11-28 12:52:04,516 INFO TX: 106225264; RX: 106224170; Est. Dropped: 1094; Est. Drop rate: 0.0010%
+2018-11-28 12:52:14,510 INFO TX: 159127384; RX: 159127384; Est. Dropped: 0; Est. Drop rate: 0.0000%
+2018-11-28 12:52:16,518 INFO Average drop rate: 0.000000
+2018-11-28 12:52:16,518 INFO Range search [7.12890625 .. 7.2265625] targets: {'ndr': 0.001}
+2018-11-28 12:52:16,519 INFO Found ndr (0.001) load: 7.12890625
+2018-11-28 12:52:16,519 INFO NDR load: 14.2578125
+2018-11-28 12:52:16,538 INFO Cleared all existing streams
+2018-11-28 12:52:16,630 INFO Created 16 traffic streams for port 0.
+2018-11-28 12:52:16,639 INFO Created 16 traffic streams for port 1.
+2018-11-28 12:52:16,640 INFO *** Searching NDR for IMIX (Bidirectional)...
+2018-11-28 12:52:16,640 INFO Range search [0.0 .. 200.0] targets: {'ndr': 0.001}
+2018-11-28 12:52:16,640 INFO Modified traffic stream for port 0, new rate=100.0%.
+2018-11-28 12:52:16,640 INFO Modified traffic stream for port 1, new rate=100.0%.
+2018-11-28 12:52:16,640 INFO Running traffic generator
+
+
+2018-11-28 12:52:24 - [local][warning]   - [1mCPU util. is high: 87.2%[22m
+2018-11-28 12:52:26,669 INFO TX: 144382566; RX: 35065434; Est. Dropped: 109317132; Est. Drop rate: 75.7135%
+2018-11-28 12:52:36,685 INFO TX: 288830859; RX: 70147431; Est. Dropped: 218683428; Est. Drop rate: 75.7133%
+2018-11-28 12:52:46,683 INFO TX: 432871667; RX: 104877272; Est. Dropped: 327994395; Est. Drop rate: 75.7717%
+2018-11-28 12:52:48,691 INFO WARNING: There is a significant difference between requested TX rate (16368398) and actual TX rate (14429055). The traffic generator may not have sufficient CPU to achieve the requested TX rate.
+2018-11-28 12:52:48,691 INFO Average drop rate: 75.771740
+2018-11-28 12:52:48,691 INFO Range search [0.0 .. 100.0] targets: {'ndr': 0.001}
+2018-11-28 12:52:48,691 INFO Modified traffic stream for port 0, new rate=50.0%.
+2018-11-28 12:52:48,691 INFO Modified traffic stream for port 1, new rate=50.0%.
+2018-11-28 12:52:48,691 INFO Running traffic generator
+2018-11-28 12:52:58,721 INFO TX: 81896172; RX: 34753537; Est. Dropped: 47142635; Est. Drop rate: 57.5639%
+2018-11-28 12:53:08,737 INFO TX: 163876158; RX: 69527271; Est. Dropped: 94348887; Est. Drop rate: 57.5733%
+2018-11-28 12:53:18,734 INFO TX: 245526496; RX: 104157836; Est. Dropped: 141368660; Est. Drop rate: 57.5778%
+2018-11-28 12:53:20,743 INFO Average drop rate: 57.577761
+2018-11-28 12:53:20,743 INFO Range search [0.0 .. 50.0] targets: {'ndr': 0.001}
+2018-11-28 12:53:20,743 INFO Modified traffic stream for port 0, new rate=25.0%.
+2018-11-28 12:53:20,743 INFO Modified traffic stream for port 1, new rate=25.0%.
+2018-11-28 12:53:20,743 INFO Running traffic generator
+2018-11-28 12:53:30,773 INFO TX: 40949162; RX: 34588993; Est. Dropped: 6360169; Est. Drop rate: 15.5319%
+2018-11-28 12:53:40,791 INFO TX: 81936176; RX: 69206713; Est. Dropped: 12729463; Est. Drop rate: 15.5358%
+2018-11-28 12:53:50,786 INFO TX: 122763528; RX: 103681444; Est. Dropped: 19082084; Est. Drop rate: 15.5438%
+2018-11-28 12:53:52,795 INFO Average drop rate: 15.543773
+2018-11-28 12:53:52,795 INFO Range search [0.0 .. 25.0] targets: {'ndr': 0.001}
+2018-11-28 12:53:52,795 INFO Modified traffic stream for port 0, new rate=12.5%.
+2018-11-28 12:53:52,795 INFO Modified traffic stream for port 1, new rate=12.5%.
+2018-11-28 12:53:52,795 INFO Running traffic generator
+2018-11-28 12:54:02,829 INFO TX: 20482012; RX: 20481989; Est. Dropped: 23; Est. Drop rate: 0.0001%
+2018-11-28 12:54:12,846 INFO TX: 40978404; RX: 40978387; Est. Dropped: 17; Est. Drop rate: 0.0000%
+2018-11-28 12:54:22,839 INFO TX: 61382040; RX: 61382040; Est. Dropped: 0; Est. Drop rate: 0.0000%
+2018-11-28 12:54:24,848 INFO Average drop rate: 0.000000
+2018-11-28 12:54:24,848 INFO Range search [12.5 .. 25.0] targets: {'ndr': 0.001}
+2018-11-28 12:54:24,848 INFO Modified traffic stream for port 0, new rate=18.75%.
+2018-11-28 12:54:24,848 INFO Modified traffic stream for port 1, new rate=18.75%.
+2018-11-28 12:54:24,848 INFO Running traffic generator
+2018-11-28 12:54:34,880 INFO TX: 30722544; RX: 30722439; Est. Dropped: 105; Est. Drop rate: 0.0003%
+2018-11-28 12:54:44,897 INFO TX: 61466815; RX: 61466632; Est. Dropped: 183; Est. Drop rate: 0.0003%
+2018-11-28 12:54:54,887 INFO TX: 92072776; RX: 92072776; Est. Dropped: 0; Est. Drop rate: 0.0000%
+2018-11-28 12:54:56,895 INFO Average drop rate: 0.000000
+2018-11-28 12:54:56,896 INFO Range search [18.75 .. 25.0] targets: {'ndr': 0.001}
+2018-11-28 12:54:56,896 INFO Modified traffic stream for port 0, new rate=21.875%.
+2018-11-28 12:54:56,896 INFO Modified traffic stream for port 1, new rate=21.875%.
+2018-11-28 12:54:56,896 INFO Running traffic generator
+2018-11-28 12:55:06,928 INFO TX: 35841797; RX: 34790543; Est. Dropped: 1051254; Est. Drop rate: 2.9330%
+2018-11-28 12:55:16,946 INFO TX: 71710128; RX: 69623542; Est. Dropped: 2086586; Est. Drop rate: 2.9098%
+2018-11-28 12:55:26,939 INFO TX: 107418144; RX: 104357254; Est. Dropped: 3060890; Est. Drop rate: 2.8495%
+2018-11-28 12:55:28,947 INFO Average drop rate: 2.849509
+2018-11-28 12:55:28,948 INFO Range search [18.75 .. 21.875] targets: {'ndr': 0.001}
+2018-11-28 12:55:28,948 INFO Modified traffic stream for port 0, new rate=20.3125%.
+2018-11-28 12:55:28,948 INFO Modified traffic stream for port 1, new rate=20.3125%.
+2018-11-28 12:55:28,948 INFO Running traffic generator
+2018-11-28 12:55:38,979 INFO TX: 33281820; RX: 33281621; Est. Dropped: 199; Est. Drop rate: 0.0006%
+2018-11-28 12:55:48,993 INFO TX: 66579856; RX: 66579662; Est. Dropped: 194; Est. Drop rate: 0.0003%
+2018-11-28 12:55:58,989 INFO TX: 99745464; RX: 99745464; Est. Dropped: 0; Est. Drop rate: 0.0000%
+2018-11-28 12:56:00,998 INFO Average drop rate: 0.000000
+2018-11-28 12:56:00,998 INFO Range search [20.3125 .. 21.875] targets: {'ndr': 0.001}
+2018-11-28 12:56:00,998 INFO Modified traffic stream for port 0, new rate=21.09375%.
+2018-11-28 12:56:00,998 INFO Modified traffic stream for port 1, new rate=21.09375%.
+2018-11-28 12:56:00,999 INFO Running traffic generator
+2018-11-28 12:56:11,030 INFO TX: 34562572; RX: 34562300; Est. Dropped: 272; Est. Drop rate: 0.0008%
+2018-11-28 12:56:21,047 INFO TX: 69150568; RX: 69150205; Est. Dropped: 363; Est. Drop rate: 0.0005%
+2018-11-28 12:56:31,040 INFO TX: 103581816; RX: 103581816; Est. Dropped: 0; Est. Drop rate: 0.0000%
+2018-11-28 12:56:33,049 INFO Average drop rate: 0.000000
+2018-11-28 12:56:33,049 INFO Range search [21.09375 .. 21.875] targets: {'ndr': 0.001}
+2018-11-28 12:56:33,049 INFO Modified traffic stream for port 0, new rate=21.484375%.
+2018-11-28 12:56:33,049 INFO Modified traffic stream for port 1, new rate=21.484375%.
+2018-11-28 12:56:33,049 INFO Running traffic generator
+2018-11-28 12:56:43,082 INFO TX: 35201305; RX: 35053398; Est. Dropped: 147907; Est. Drop rate: 0.4202%
+2018-11-28 12:56:53,099 INFO TX: 70429136; RX: 70185527; Est. Dropped: 243609; Est. Drop rate: 0.3459%
+2018-11-28 12:57:03,092 INFO TX: 105499968; RX: 105183505; Est. Dropped: 316463; Est. Drop rate: 0.3000%
+2018-11-28 12:57:05,101 INFO Average drop rate: 0.299965
+2018-11-28 12:57:05,101 INFO Range search [21.09375 .. 21.484375] targets: {'ndr': 0.001}
+2018-11-28 12:57:05,101 INFO Modified traffic stream for port 0, new rate=21.2890625%.
+2018-11-28 12:57:05,101 INFO Modified traffic stream for port 1, new rate=21.2890625%.
+2018-11-28 12:57:05,101 INFO Running traffic generator
+2018-11-28 12:57:15,138 INFO TX: 34883161; RX: 34882705; Est. Dropped: 456; Est. Drop rate: 0.0013%
+2018-11-28 12:57:25,156 INFO TX: 69791388; RX: 69791035; Est. Dropped: 353; Est. Drop rate: 0.0005%
+2018-11-28 12:57:35,148 INFO TX: 104540888; RX: 104540888; Est. Dropped: 0; Est. Drop rate: 0.0000%
+2018-11-28 12:57:37,157 INFO Average drop rate: 0.000000
+2018-11-28 12:57:37,157 INFO Range search [21.2890625 .. 21.484375] targets: {'ndr': 0.001}
+2018-11-28 12:57:37,157 INFO Modified traffic stream for port 0, new rate=21.38671875%.
+2018-11-28 12:57:37,157 INFO Modified traffic stream for port 1, new rate=21.38671875%.
+2018-11-28 12:57:37,157 INFO Running traffic generator
+2018-11-28 12:57:47,189 INFO TX: 35038972; RX: 35030787; Est. Dropped: 8185; Est. Drop rate: 0.0234%
+2018-11-28 12:57:57,201 INFO TX: 70094824; RX: 70086844; Est. Dropped: 7980; Est. Drop rate: 0.0114%
+2018-11-28 12:58:07,198 INFO TX: 105020432; RX: 105009313; Est. Dropped: 11119; Est. Drop rate: 0.0106%
+2018-11-28 12:58:09,207 INFO Average drop rate: 0.010587
+2018-11-28 12:58:09,207 INFO Range search [21.2890625 .. 21.38671875] targets: {'ndr': 0.001}
+2018-11-28 12:58:09,207 INFO Found ndr (0.001) load: 21.2890625
+2018-11-28 12:58:09,207 INFO NDR load: 42.578125
+2018-11-28 12:58:09,207 INFO Service chain 'EXT' run completed.
+2018-11-28 12:58:09,207 INFO Clean up skipped.
+2018-11-28 12:58:09,239 INFO Saving results in json file: /tmp/nfvbench/csp_4c2n_ndr-1.json...
+2018-11-28 12:58:09,243 INFO 
+========== NFVBench Summary ==========
+Date: 2018-11-28 12:46:21
+NFVBench version 2.0.5
+Openstack Neutron:
+  vSwitch: 
+  Encapsulation: 
+Benchmarks:
+> Networks:
+  > Components:
+    > Traffic Generator:
+        Profile: trex-local
+        Tool: TRex
+    > Versions:
+      > Traffic_Generator:
+          build_date: Nov 13 2017
+          version: v2.32
+          built_by: hhaim
+          mode: STL
+          build_time: 10:58:17
+  > Measurement Parameters:
+      NDR: 0.001
+  > Service chain:
+    > EXT:
+      > Traffic:
+          Profile: traffic_profile_2sizes
+          Bidirectional: True
+          Flow count: 1024
+          Service chains count: 4
+          Compute nodes: []
+            
+            Run Summary:
+            
+              +-----+-----------------+------------------+------------------+-----------------+----------------------+----------------------+----------------------+
+              |  -  |  L2 Frame Size  |  Rate (fwd+rev)  |  Rate (fwd+rev)  |  Avg Drop Rate  |   Avg Latency (usec) |   Min Latency (usec) |   Max Latency (usec) |
+              +=====+=================+==================+==================+=================+======================+======================+======================+
+              | NDR |       64        |   3.5645 Gbps    |  5,304,244 pps   |     0.0000%     |                  239 |                   20 |                  363 |
+              +-----+-----------------+------------------+------------------+-----------------+----------------------+----------------------+----------------------+
+              | NDR |      IMIX       |   10.6445 Gbps   |  3,484,678 pps   |     0.0000%     |                  162 |                   10 |                  258 |
+              +-----+-----------------+------------------+------------------+-----------------+----------------------+----------------------+----------------------+
+              
+            
+            L2 frame size: 64
+            NDR search duration: 353 seconds
+            
+            
+            L2 frame size: IMIX
+            NDR search duration: 353 seconds
+            
+

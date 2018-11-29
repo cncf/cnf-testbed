@@ -73,3 +73,18 @@
 #     update_cache: yes
 #     name: ["vpp-api-python","vpp-api-lua","vpp-api-java"]
 #   when: ansible_os_family == "Debian"
+
+- name: Enable use of vfio-pci driver
+  replace:
+    path: /lib/systemd/system/vpp.service
+    regexp: 'uio_pci_generic'
+    replace: 'vfio-pci'
+    backup: no
+  when: ansible_os_family == "Debian"
+
+- name: Restart VPP service
+  systemd:
+    name: vpp
+    state: restarted
+    daemon_reload: yes
+  when: ansible_os_family == "Debian"

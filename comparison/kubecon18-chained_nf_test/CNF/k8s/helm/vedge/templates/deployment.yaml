@@ -24,7 +24,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           # args: [ "/usr/bin/vpp", "-c", "/etc/vpp/startup.conf" ]
-          args: [ "bash", "-c", "sleep 10000" ]
+          args: [ "bash", "-c", "sleep 1000" ]
           securityContext:
             privileged: true
           resources:
@@ -32,10 +32,10 @@ spec:
           volumeMounts:
           - name: config-volume
             mountPath: /etc/vpp/
-          - name: hugepages
-            mountPath: /dev/hugepages
           - name: vpp-socket
-            mountPath: /run/vpp/
+            mountPath: /root/sockets/
+          - name: hugepage
+            mountPath: /hugepages
       volumes:
         - name: config-volume
           configMap:
@@ -43,9 +43,11 @@ spec:
             items:
             - key: startup.conf
               path: startup.conf
-        - name: hugepages
-          hostPath:
-            path: /dev/hugepages
+            - key: setup.gate
+              path: setup.gate
+        - name: hugepage
+          emptyDir:
+            medium: HugePages
         - name: vpp-socket
           hostPath:
             path: /etc/vpp/sockets/
