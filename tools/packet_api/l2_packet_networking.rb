@@ -277,7 +277,12 @@ if options[:create_vlan]
     vlan1 = JSON.parse(vlan1_response.body) 
     p "parsed vlan1: #{vlan1}"  if options[:verbose]
   end
-  puts vlan1["vxlan"]
+  if vlan1["errors"] 
+    puts vlan1["errors"]
+    exit 1
+  else
+    puts vlan1["vxlan"]
+  end
 end
 
 if options[:delete_vlan]
@@ -334,6 +339,7 @@ if options[:assign_vlan]
     puts "success"
   else
     puts "failure"
+    exit 1
   end
 end
 
@@ -363,6 +369,7 @@ if options[:assign_vlan_id]
     puts "success"
   else
     puts "failure"
+    exit 1
   end
 end
 
@@ -393,6 +400,7 @@ if options[:unassign_vlan_id]
     puts "success"
   else
     puts "failure"
+    exit 1
   end
 end
 
@@ -419,6 +427,7 @@ if options[:unassign_vlan]
     puts "success"
   else
     puts "failure"
+    exit 1
   end
 end
 # 11. Assign ip address to 2nd and 3rd ports (don't do this, terraform is handling)
