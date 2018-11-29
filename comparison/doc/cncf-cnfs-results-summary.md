@@ -1,13 +1,33 @@
+## Introduction
+
 cncf-cnfs-results-summary.md
 
-# Environments
+This note describes the benchmarking of VNF and CNF based software-based
+network services running on a single compute node. FD.io VPP is used as
+the open-source Network Function (NF). NF(s) are running either within
+the VM(s), referred to as VNF(s), or within the Docker Container(s),
+referred to as CNF(s). Ethernet frames are demultiplexed and multiplexed
+from/to the two physical 10GbE interfaces thru a Linux User-Mode
+Software Switch using FD.io VPP again.
+
+The same version of FD.io VPP application running in VNFs and CNFs are
+configured as a IPv4 routing Network Fuction, routed-forwarding between
+two (virtual)software interfaces, virtio in VNFs and memif in CNFs.
+
+The same version of FD.io VPP application, running Linux User-Mode as a
+(virtual) software Switch, is configured as a Ethernet L2 Bridge with
+in-line dataplane MAC learning, L2 switched-forwarding between multiple
+(virtual) software interfaces, vhostuser for inter-connected VNFs and
+memif for inter-connected CNFs.
+
+## Environments
 
 Benchmarked physical test environments:
 
 1. FD.io CSIT 2n-skx testbed t22  (Xeon Platinum 8180)
 2. packet.net 2n-skx testbed (Xeon Gold 6150)
 
-# NFV Service Topologies
+## NFV Service Topologies
 
 Benchmarked NFV service topologies:
 
@@ -15,11 +35,22 @@ Benchmarked NFV service topologies:
 2. CNF Service Chain (CSC) topology with Snake Forwarding
 3. CNF Service Pipeline (CSP) topology with Pipeline Forwarding
 
-# Cores Allocation
+## Cores Allocation
 
-## Linux User-Mode Switch
+### Linux User-Mode Switch
 
-## VNFs and CNFs
+A single instance of Linux User-Mode Software (SW) Switch is running in a compute
+node. Processor physical core allocation is as follows:
+
+1. SW Switch has a set of Main Threads (control threads) and one or more of Dataplane Thread(s).
+2. Separate thread to core subscription ratios are used for main and dataplane threads.
+3. DTCR value determines the Dataplane Thread to Core Ratio, with target values=(..).
+4. MTCR value determines the Main Thread to Core Ratio, with target values=(..).
+
+Baseline tests are done with DTCR=1, MTCR=1.
+Then with DTCR=..
+
+### VNFs and CNFs
 
 Per VNF or CNF instance processor physical core allocation:
 
@@ -33,7 +64,7 @@ Per VNF or CNF instance processor physical core allocation:
    * #dt - total number of dataplane threads (1 or more per NF).
    * #mt - total number of main thread sets (1 set per NF).
 
-# Service Density Matrix – Network Function View
+## Service Density Matrix – Network Function View
 
 ```
     Row:    1..10  number of network service instances
@@ -51,7 +82,7 @@ Per VNF or CNF instance processor physical core allocation:
     010    10    20    40    60    80   100
 ```
 
-# Service Density Matrix – Core Usage View
+## Service Density Matrix – Core Usage View
 
 ```
     Row:    1..10  number of network service instances
@@ -70,14 +101,14 @@ Per VNF or CNF instance processor physical core allocation:
     010    15    30    60    90   120   150
 ```
 
-# Methodology - MRR Throughput
+## Methodology - MRR Throughput
 
 MRR tests measure the packet forwarding rate under the maximum load
 offered by traffic generator over a set trial duration, regardless of
 packet loss. Maximum load for specified Ethernet frame size is set to
 the bi-directional link rate.
 
-# Service Density Matrix – MRR Throughput Results (L2 size=64B)
+## Service Density Matrix – MRR Throughput Results (L2 size=64B)
 
 * Maximum Receive Rate (MRR) throughput results is measured in [Mpps]
 * [Mpps] mega (millions) packets-per-second
@@ -85,7 +116,7 @@ the bi-directional link rate.
 * IPv4 size: 46 Bytes
 * Ethernet frame size: 64 Bytes
 
-## FD.io CSIT 2n-skx, DTCR=1, MTCR=2
+### FD.io CSIT 2n-skx, DTCR=1, MTCR=2
 
 ```
     Testbed: t22
@@ -125,7 +156,7 @@ the bi-directional link rate.
     010   ???   ---   ---   ---   ---   ---
 ```
 
-## Packet.net 2n-skx, DTCR=1, MTCR=2
+### Packet.net 2n-skx, DTCR=1, MTCR=2
 
 ```
     Testbed: tg-quad01, sut-quad02-sut
