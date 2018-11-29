@@ -16,4 +16,5 @@
 
 - name: Reboot nodes after grub update
   reboot:
+    reboot_timeout: 1800
   when: grub_update.changed
