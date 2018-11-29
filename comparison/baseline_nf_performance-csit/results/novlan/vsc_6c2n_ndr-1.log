@@ -257,13 +257,13 @@
 2018-11-28 15:33:57,044 INFO Service chain 'EXT' run completed.
 2018-11-28 15:33:57,044 INFO Clean up skipped.
 2018-11-28 15:33:57,078 INFO Saving results in json file: /tmp/nfvbench/vsc_6c2n_ndr-1.json...
-2018-11-28 15:33:57,081 INFO 
+2018-11-28 15:33:57,081 INFO
 ========== NFVBench Summary ==========
 Date: 2018-11-28 15:21:34
 NFVBench version 2.0.5
 Openstack Neutron:
-  vSwitch: 
-  Encapsulation: 
+  vSwitch:
+  Encapsulation:
 Benchmarks:
 > Networks:
   > Components:
@@ -287,9 +287,9 @@ Benchmarks:
           Flow count: 1024
           Service chains count: 6
           Compute nodes: []
-            
+
             Run Summary:
-            
+
               +-----+-----------------+------------------+------------------+-----------------+----------------------+----------------------+----------------------+
               |  -  |  L2 Frame Size  |  Rate (fwd+rev)  |  Rate (fwd+rev)  |  Avg Drop Rate  |  Avg Latency (usec)  |   Min Latency (usec) |  Max Latency (usec)  |
               +=====+=================+==================+==================+=================+======================+======================+======================+
@@ -297,15 +297,15 @@ Benchmarks:
               +-----+-----------------+------------------+------------------+-----------------+----------------------+----------------------+----------------------+
               | NDR |      IMIX       |  634.7656 Mbps   |   207,800 pps    |    -1.0341%     |        21,937        |                    2 |       145,060        |
               +-----+-----------------+------------------+------------------+-----------------+----------------------+----------------------+----------------------+
-              
-            
+
+
             L2 frame size: 64
             NDR search duration: 353 seconds
-            
-            
+
+
             L2 frame size: IMIX
             NDR search duration: 353 seconds
-            
+
 
 2018-11-28 15:42:19,875 INFO Loading configuration file: /tmp/nfvbench/nfvbench_config.cfg
 2018-11-28 15:42:19,909 INFO EXT chain with OpenStack mode disabled
@@ -574,3 +574,53 @@ Benchmarks:
 2018-11-28 15:53:43,405 INFO Modified traffic stream for port 0, new rate=1.5625%.
 2018-11-28 15:53:43,405 INFO Modified traffic stream for port 1, new rate=1.5625%.
 2018-11-28 15:53:43,405 INFO Running traffic generator
+
+========== NFVBench Summary ==========
+Date: 2018-11-28 15:42:20
+NFVBench version 2.0.5
+Openstack Neutron:
+  vSwitch:
+  Encapsulation:
+Benchmarks:
+> Networks:
+  > Components:
+    > Traffic Generator:
+        Profile: trex-local
+        Tool: TRex
+    > Versions:
+      > Traffic_Generator:
+          build_date: Nov 13 2017
+          version: v2.32
+          built_by: hhaim
+          mode: STL
+          build_time: 10:58:17
+  > Measurement Parameters:
+      NDR: 0.001
+  > Service chain:
+    > EXT:
+      > Traffic:
+          Profile: traffic_profile_2sizes
+          Bidirectional: True
+          Flow count: 1024
+          Service chains count: 6
+          Compute nodes: []
+
+            Run Summary:
+
+              +-----+-----------------+------------------+------------------+-----------------+----------------------+----------------------+----------------------+
+              |  -  |  L2 Frame Size  |  Rate (fwd+rev)  |  Rate (fwd+rev)  |  Avg Drop Rate  |  Avg Latency (usec)  |   Min Latency (usec) |  Max Latency (usec)  |
+              +=====+=================+==================+==================+=================+======================+======================+======================+
+              | NDR |       64        |  146.4844 Mbps   |   217,982 pps    |    -1.8143%     |        17,170        |                   10 |       120,467        |
+              +-----+-----------------+------------------+------------------+-----------------+----------------------+----------------------+----------------------+
+              | NDR |      IMIX       |  585.9375 Mbps   |   191,816 pps    |    -10.1514%    |        21,544        |                   20 |       197,527        |
+              +-----+-----------------+------------------+------------------+-----------------+----------------------+----------------------+----------------------+
+
+
+            L2 frame size: 64
+            NDR search duration: 353 seconds
+
+
+            L2 frame size: IMIX
+            NDR search duration: 353 seconds
+
+
