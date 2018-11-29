@@ -32,8 +32,8 @@ spec:
           volumeMounts:
           - name: config-volume
             mountPath: /etc/vpp/
-          - name: vpp-socket
-            mountPath: /root/sockets/
+          - name: vpp-sockets
+            mountPath: {{ .Values.volumeMounts.vpp_sockets.mountPath }}
           - name: hugepage
             mountPath: /hugepages
       volumes:
@@ -48,7 +48,7 @@ spec:
         - name: hugepage
           emptyDir:
             medium: HugePages
-        - name: vpp-socket
+        - name: vpp-sockets
           hostPath:
             path: /etc/vpp/sockets/
 
