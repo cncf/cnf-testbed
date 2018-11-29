@@ -9,8 +9,8 @@ metadata:
     release: {{ .Release.Name }}
 data:
   setup.gate: |-
-    bin memif_socket_filename_add_del add id 1 filename /run/vpp/memif1.sock
-    bin memif_socket_filename_add_del add id 2 filename /run/vpp/memif2.sock
+    bin memif_socket_filename_add_del add id 1 filename /root/sockets/memif1.sock
+    bin memif_socket_filename_add_del add id 2 filename /root/sockets/memif2.sock
     create interface memif id 1 socket-id 1 hw-addr 52:54:00:00:00:aa slave rx-queues 2 tx-queues 2
     create interface memif id 2 socket-id 2 hw-addr 52:54:00:00:00:bb slave rx-queues 2 tx-queues 2
     set int ip addr memif1/1 172.16.10.10/24
@@ -60,10 +60,10 @@ data:
             ## Manual pinning of thread(s) to CPU core(s)
 
             ## Set logical CPU core where main thread runs
-            # main-core 10
+            main-core {{ .Values.mainCore }}
 
             ## Set logical CPU core(s) where worker threads are running
-            # corelist-workers 12,40
+            corelist-workers {{ .Values.corelistWorkers }}
 
             ## Automatic pinning of thread(s) to CPU core(s)
 
@@ -147,6 +147,7 @@ data:
             ## Change hugepages allocation per-socket, needed only if there is need for
             ## larger number of mbufs. Default is 256M on each detected CPU socket
             # socket-mem 1024,1024
+            socket-mem {{ .Values.socketMem }}
 
             ## Disables UDP / TCP TX checksum offload. Typically needed for use
             ## faster vector PMDs (together with no-multi-seg)
@@ -154,19 +155,19 @@ data:
           }
 
 
-    # plugins {
+    plugins {
             ## Adjusting the plugin path depending on where the VPP plugins are
             #       path /home/bms/vpp/build-root/install-vpp-native/vpp/lib64/vpp_plugins
 
             ## Disable all plugins by default and then selectively enable specific plugins
-            # plugin default { disable }
-            # plugin dpdk_plugin.so { enable }
-            # plugin acl_plugin.so { enable }
+            plugin default { disable }
+            plugin dpdk_plugin.so { enable }
+            plugin memif_plugin.so { enable }
 
             ## Enable all plugins by default and then selectively disable specific plugins
             # plugin dpdk_plugin.so { disable }
             # plugin acl_plugin.so { disable }
-    # }
+    }
 
             ## Alternate syntax to choose plugin path
             # plugin_path /home/bms/vpp/build-root/install-vpp-native/vpp/lib64/vpp_plugins
