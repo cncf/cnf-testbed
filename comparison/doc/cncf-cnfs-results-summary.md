@@ -1,14 +1,15 @@
+## NFV Service Density Benchmarking
+
 ## Introduction
 
-cncf-cnfs-results-summary.md
-
 This note describes the benchmarking of VNF and CNF based software-based
-network services running on a single compute node. FD.io VPP is used as
-the open-source Network Function (NF). NF(s) are running either within
-the VM(s), referred to as VNF(s), or within the Docker Container(s),
-referred to as CNF(s). Ethernet frames are demultiplexed and multiplexed
-from/to the two physical 10GbE interfaces thru a Linux User-Mode
-Software Switch using FD.io VPP again.
+network services running on a single compute node, referred to as NFV
+service density benchmarking. FD.io VPP is used as the open-source
+Network Function (NF). NF(s) are running either within the VM(s),
+referred to as VNF(s), or within the Docker Container(s), referred to as
+CNF(s). Ethernet frames are demultiplexed and multiplexed from/to the
+two physical 10GbE interfaces thru a Linux User-Mode Software Switch
+using FD.io VPP again.
 
 The same version of FD.io VPP application running in VNFs and CNFs are
 configured as a IPv4 routing Network Fuction, routed-forwarding between
@@ -39,66 +40,97 @@ Benchmarked NFV service topologies:
 
 ### Linux User-Mode Switch
 
-A single instance of Linux User-Mode Software (SW) Switch is running in a compute
-node. Processor physical core allocation is as follows:
+A single instance of Linux User-Mode Software (SW) Switch is running in
+a compute node. Every performance optimized SW Switch application has
+two sets of software threads: i) Main threads, handling Switch
+application management and control planes, and ii) Dataplane threads,
+handling dataplane packet processing and forwarding.
 
-1. SW Switch has a set of Main Threads (control threads) and one or more of Dataplane Thread(s).
-2. Separate thread to core subscription ratios are used for main and dataplane threads.
-3. DTCR value determines the Dataplane Thread to Core Ratio, with target values=(..).
-4. MTCR value determines the Main Thread to Core Ratio, with target values=(..).
+This applies to FD.io VPP used in this benchmarking.
 
-Baseline tests are done with DTCR=1, MTCR=1.
-Then with DTCR=..
+Allocation of processor physical cores to the software switch is as
+follows:
 
-### VNFs and CNFs
+1. Two mapping ratios are defined and used in software switch
+   benchmarking:
+   * PCDR4SW value determines Physical Core to Dataplane Ratio.
+   * PCMR4SW value determines Physical Core to Main Ratio.
+2. Target values to be benchmarked:
+   * PCDR4SW=(1:1, 2:1, 4:1).
+   * PCMR4SW=(1:1, 1:2).
+3. Number of physical cores required for the benchmarked software switch
+   is calculated as follows:
+   *     #pc = pcdr4sw * #dsw + pcmr4sw * #msw
+   * where
+   *     #pc - total number of physical cores required and used.
+   *     #dsw - total number of switch dataplane thread sets (1 set per SW switch).
+   *     #msw - total number of switch main thread sets (1 set per SW switch).
 
-Per VNF or CNF instance processor physical core allocation:
+### CNFs and VNFs
 
-1. Each NF has a set of Main Threads (control threads) and one or more of Dataplane Thread(s).
-2. Separate thread to core subscription ratios are used for main and dataplane threads.
-3. DTCR value determines the Dataplane Thread to Core Ratio, with target values=(1,2,4,8).
-4. MTCR value determines the Main Thread to Core Ratio, with target values=(2,4,8).
-5. Number of physical cores required is calculated as follows:
-   * #cores=(#dt/dtcr)+(#mt/mtcr)            , where
-   * #cores - total number of physical cores required and used.
-   * #dt - total number of dataplane threads (1 or more per NF).
-   * #mt - total number of main thread sets (1 set per NF).
+Multiple instances of NFs (CNFs or VNFs) are running in a compute node.
+Every performance optimized NF has two sets of software threads: i) Main
+threads, handling NF application management and control planes, and ii)
+Dataplane threads, handling NF dataplane packet processing and
+forwarding.
+
+This applies to FD.io VPP used in this benchmarking.
+
+Allocation of processor physical cores per NF instance is as
+follows:
+
+1. Two mapping ratios are defined and used in NF service matrix
+   benchmarking:
+   a. PCDR4NF value determines Physical Core to Dataplane Ratio.
+   b. PCMR4NF value determines Physical Core to Main Ratio.
+2. Target values to be benchmarked:
+   a. PCDR4NF=(1:1, 1:2, 1:4).
+   b. PCMR4NF=(1:2, 1:4, 1:8).
+3. Number of physical cores required for the benchmarked NFs' service
+   matrix is calculated as follows:
+   *     #pc = pcdr4snf * #dnf + pcmr4nf * #mnf
+   * where
+   *     #pc  - total number of physical cores required and used.
+   *     #dnf - total number of NF dataplane thread sets (1 set per NF instance).
+   *     #mnf - total number of NF main thread sets (1 set per per NF instance).
 
 ## Service Density Matrix – Network Function View
 
 ```
-    Row:    1..10  number of network service instances
-    Column: 1..10  number of network functions per service instance
-    Value:  1..100 total number of network functions within node
+  Row:    1..10  number of network service instances
+  Column: 1..10  number of network functions per service instance
+  Value:  1..100 total number of network functions within node
 ```
 
 ```
-    SVC   001   002   004   006   008   010
-    001     1     2     4     6     8    10
-    002     2     4     8    12    16    20
-    004     4     8    16    24    32    40
-    006     6    12    24    36    48    60
-    008     8    16    32    48    64    80
-    010    10    20    40    60    80   100
+  SVC   001   002   004   006   008   010
+  001     1     2     4     6     8    10
+  002     2     4     8    12    16    20
+  004     4     8    16    24    32    40
+  006     6    12    24    36    48    60
+  008     8    16    32    48    64    80
+  010    10    20    40    60    80   100
 ```
 
 ## Service Density Matrix – Core Usage View
 
 ```
-    Row:    1..10  number of network service instances
-    Column: 1..10  number of network functions per service instance
-    Value:  1..NN  number of physical processor cores used
-    Core Ratios: DTCR=1, MTCR=2
+  Row:          1..10  number of network service instances
+  Column:       1..10  number of network functions per service instance
+  Value:        1..NN  number of physical processor cores used
+  Cores Numa0:  pcdr4sw = 1:1, pcmr4sw = 1:1
+                pcdr4nf = 1:1, pcmr4nf = 1:2
+  Cores Numa1:  not used
 ```
 
 ```
-    SVC   001   002   004   006   008   010
-    001     2     3     6     9    12    15
-    002     3     6    12    18    24    30
-    004     6    12    24    36    48    60
-    006     9    18    36    54    72    90
-    008    12    24    48    72    96   120
-    010    15    30    60    90   120   150
+  SVC   001   002   004   006   008   010
+  001     2     3     6     9    12    15
+  002     3     6    12    18    24    30
+  004     6    12    24    36    48    60
+  006     9    18    36    54    72    90
+  008    12    24    48    72    96   120
+  010    15    30    60    90   120   150
 ```
 
 ## Methodology - MRR Throughput
@@ -116,14 +148,16 @@ the bi-directional link rate.
 * IPv4 size: 46 Bytes
 * Ethernet frame size: 64 Bytes
 
-### FD.io CSIT 2n-skx, DTCR=1, MTCR=2
+### FD.io CSIT 2n-skx, pcdr4sw = 1:1
 
 ```
-    Testbed: t22
-    Row:     1..10  number of network service instances
-    Column:  1..10  number of network functions (VNF or CNF) per service instance
-    Value:   x.y    MRR throughput in [Mpps]
-    Core Ratios: DTCR=1, MTCR=2
+  Testbed:      t22
+  Row:          1..10  number of network service instances
+  Column:       1..10  number of network functions (VNF or CNF) per service instance
+  Value:        x.y    MRR throughput in [Mpps]
+  Cores Numa0:  pcdr4sw = 1:1, pcmr4sw = 1:1
+                pcdr4nf = 1:1, pcmr4nf = 1:2
+  Cores Numa1:  not used
 ```
 
 ```
@@ -156,14 +190,16 @@ the bi-directional link rate.
     010   ???   ---   ---   ---   ---   ---
 ```
 
-### Packet.net 2n-skx, DTCR=1, MTCR=2
+### Packet.net 2n-skx, pcdr4sw = 1:1
 
 ```
-    Testbed: tg-quad01, sut-quad02-sut
-    Row:     1..10  number of network service instances
-    Column:  1..10  number of network functions (VNF or CNF) per service instance
-    Value:   x.y    MRR throughput in [Mpps]
-    Core Ratios: DTCR=1, MTCR=2
+  Testbed:      tg-quad01, sut-quad02-sut
+  Row:          1..10  number of network service instances
+  Column:       1..10  number of network functions (VNF or CNF) per service instance
+  Value:        x.y    MRR throughput in [Mpps]
+  Cores Numa0:  pcdr4sw = 1:1, pcmr4sw = 1:1
+                pcdr4nf = 1:1, pcmr4nf = 1:2
+  Cores Numa1:  not used
 ```
 
 ```
@@ -196,8 +232,15 @@ the bi-directional link rate.
     010   ---   ---   ---   ---   ---   ---
 ```
 
+### FD.io CSIT 2n-skx, pcdr4sw = 2:1
 
-### Pulling results from nvfbench logs
+[To be added]
+
+### Packet.net 2n-skx, pcdr4sw = 2:1
+
+[To be added]
+
+## Pulling results from nvfbench logs
 
 Latest results in comparison/baseline_nf_performance-csit/results/novlan
 
