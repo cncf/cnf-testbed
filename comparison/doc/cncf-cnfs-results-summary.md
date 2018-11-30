@@ -25,8 +25,15 @@ memif for inter-connected CNFs.
 
 Benchmarked physical test environments:
 
-1. FD.io CSIT 2n-skx testbed t22  (Xeon Platinum 8180)
+1. FD.io CSIT 2n-skx testbed t22 (Xeon Platinum 8180)
 2. packet.net 2n-skx testbed (Xeon Gold 6150)
+
+ADD outputs of lspci for above
+
+ADD number of usable cores for above
+  system
+  switch
+  NFs
 
 ## NFV Service Topologies
 
@@ -53,11 +60,11 @@ follows:
 
 1. Two mapping ratios are defined and used in software switch
    benchmarking:
-   * PCDR4SW value determines Physical Core to Dataplane Ratio.
-   * PCMR4SW value determines Physical Core to Main Ratio.
+   * `pcdr4sw` value determines Physical Core to Dataplane Ratio for SWitch.
+   * `pcmr4sw` value determines Physical Core to Main Ratio for SWitch.
 2. Target values to be benchmarked:
-   * PCDR4SW=(1:1, 2:1, 4:1).
-   * PCMR4SW=(1:1, 1:2).
+   * pcdr4sw = [(1:1),(2:1),(4:1)].
+   * pcmr4sw = [(1:1),(1:2)].
 3. Number of physical cores required for the benchmarked software switch
    is calculated as follows:
    *     #pc = pcdr4sw * #dsw + pcmr4sw * #msw
@@ -81,14 +88,14 @@ follows:
 
 1. Two mapping ratios are defined and used in NF service matrix
    benchmarking:
-   a. PCDR4NF value determines Physical Core to Dataplane Ratio.
-   b. PCMR4NF value determines Physical Core to Main Ratio.
+   a. `pcdr4nf` value determines Physical Core to Dataplane Ratio for NF.
+   b. `pcmr4nf` value determines Physical Core to Main Ratio for NF.
 2. Target values to be benchmarked:
-   a. PCDR4NF=(1:1, 1:2, 1:4).
-   b. PCMR4NF=(1:2, 1:4, 1:8).
+   a. pcdr4nf = [(1:1),(1:2),(1:4)].
+   b. pcmr4nf = [(1:2),(1:4),(1:8)].
 3. Number of physical cores required for the benchmarked NFs' service
    matrix is calculated as follows:
-   *     #pc = pcdr4snf * #dnf + pcmr4nf * #mnf
+   *     #pc = pcdr4nf * #dnf + pcmr4nf * #mnf
    * where
    *     #pc  - total number of physical cores required and used.
    *     #dnf - total number of NF dataplane thread sets (1 set per NF instance).
@@ -115,11 +122,11 @@ follows:
 ## Service Density Matrix – Core Usage View
 
 ```
-  Row:          1..10  number of network service instances
-  Column:       1..10  number of network functions per service instance
-  Value:        1..NN  number of physical processor cores used
-  Cores Numa0:  pcdr4sw = 1:1, pcmr4sw = 1:1
-                pcdr4nf = 1:1, pcmr4nf = 1:2
+  Row:          1..10 number of network service instances
+  Column:       1..10 number of network functions per service instance
+  Value:        1..NN number of physical processor cores used
+  Cores Numa0:  pcdr4sw = (1:1), pcmr4sw = (1:1)
+                pcdr4nf = (1:1), pcmr4nf = (1:2)
   Cores Numa1:  not used
 ```
 
@@ -148,149 +155,216 @@ the bi-directional link rate.
 * IPv4 size: 46 Bytes
 * Ethernet frame size: 64 Bytes
 
-### FD.io CSIT 2n-skx, pcdr4sw = 1:1
+### FD.io CSIT 2n-skx, pcdr4sw = (1:1)
 
 ```
   Testbed:      t22
-  Row:          1..10  number of network service instances
-  Column:       1..10  number of network functions (VNF or CNF) per service instance
-  Value:        x.y    MRR throughput in [Mpps]
-  Cores Numa0:  pcdr4sw = 1:1, pcmr4sw = 1:1
-                pcdr4nf = 1:1, pcmr4nf = 1:2
+
+  Row:          1..10 number of network service instances
+  Column:       1..10 number of network functions (VNF or CNF) per service instance
+  Value:        x.y MRR throughput in [Mpps]
+                x.y* `*` Indicates many retries due to failing nfvbench warm-up phase used to verify service forwarding path
+                ??? to be measured
+                --- configuration impossible for specific skx processor model, out of physical cores
+
+  Ring sizes:   VNF vring_size = 256 (old qemu), CNF memif_ring_size = 1024
+
+  Cores Numa0:  pcdr4sw = (1:1), pcmr4sw = (1:1)
+                pcdr4nf = (1:1), pcmr4nf = (1:2)
   Cores Numa1:  not used
 ```
 
 ```
-    VSC   001   002   004   006   008   010
-    001   6.1   3.5   2.3   1.5   1.1   ???
-    002   3.9   1.5   0.3   0.1   0.1   ---
-    004   2.4   0.7   0.1   ---   ---   ---
-    006   1.7   0.5   ---   ---   ---   ---
-    008   1.4   ???   ---   ---   ---   ---
-    010   ???   ---   ---   ---   ---   ---
+  VSC   001   002   004   006   008   010
+  001   6.1   3.5   2.3   1.5   1.1   ???
+  002   3.9   1.5   0.3   0.1   0.1   ---
+  004   2.4   0.7   0.1   ---   ---   ---
+  006   1.7   0.5   ---   ---   ---   ---
+  008   1.4   ???   ---   ---   ---   ---
+  010   ???   ---   ---   ---   ---   ---
 ```
 
 ```
-    CSC   001   002   004   006   008   010
-    001   6.4   3.8   2.2   1.6   1.2   ???
-    002   5.8   3.4   1.8   1.2   0.9   ---
-    004   5.6   3.2   1.6   ---   ---   ---
-    006   5.4   3.1   ---   ---   ---   ---
-    008   5.4   3.4   ---   ---   ---   ---
-    010   ???   ---   ---   ---   ---   ---
+  CSC   001   002   004   006   008   010
+  001   6.4   3.8   2.2   1.6   1.2   ???
+  002   5.8   3.4   1.8   1.2   0.9   ---
+  004   5.6   3.2   1.6   ---   ---   ---
+  006   5.4   3.1   ---   ---   ---   ---
+  008   5.4   3.4   ---   ---   ---   ---
+  010   ???   ---   ---   ---   ---   ---
 ```
 
 ```
-    CSP   001   002   004   006   008   010
-    001   6.3   6.3   6.3   6.4   6.5   ???
-    002   5.8   5.6   5.6   5.6   5.5   ---
-    004   5.6   5.5   5.3   ---   ---   ---
-    006   5.4   5.3   ---   ---   ---   ---
-    008   5.4   5.2   ---   ---   ---   ---
-    010   ???   ---   ---   ---   ---   ---
+  CSP   001   002   004   006   008   010
+  001   6.3   6.3   6.3   6.4   6.5   ???
+  002   5.8   5.6   5.6   5.6   5.5   ---
+  004   5.6   5.5   5.3   ---   ---   ---
+  006   5.4   5.3   ---   ---   ---   ---
+  008   5.4   5.2   ---   ---   ---   ---
+  010   ???   ---   ---   ---   ---   ---
 ```
 
-### Packet.net 2n-skx, pcdr4sw = 1:1
+### Packet.net 2n-skx, pcdr4sw = (1:1)
 
 ```
   Testbed:      tg-quad01, sut-quad02-sut
-  Row:          1..10  number of network service instances
-  Column:       1..10  number of network functions (VNF or CNF) per service instance
-  Value:        x.y    MRR throughput in [Mpps]
-  Cores Numa0:  pcdr4sw = 1:1, pcmr4sw = 1:1
-                pcdr4nf = 1:1, pcmr4nf = 1:2
+
+  Row:          1..10 number of network service instances
+  Column:       1..10 number of network functions (VNF or CNF) per service instance
+  Value:        x.y MRR throughput in [Mpps]
+                x.y* `*` Indicates many retries due to failing nfvbench warm-up phase used to verify service forwarding path
+                ??? to be measured
+                --- Configuration impossible for specific skx processor model, out of physical cores
+
+  Ring sizes:   VNF vring_size = 256 (old qemu), CNF memif_ring_size = 1024
+
+  Cores Numa0:  pcdr4sw = (1:1), pcmr4sw = (1:1)
+                pcdr4nf = (1:1), pcmr4nf = (1:2)
   Cores Numa1:  not used
 ```
 
 ```
-    VSC   001   002   004   006   008   010
-    001   5.4   3.1   1.5   1.2   0.9   ---
-    002   3.4   1.3   0.3   ---   ---   ---
-    004   2.1   0.5   ---   ---   ---   ---
-    006   1.5   ---   ---   ---   ---   ---
-    008   1.1   ---   ---   ---   ---   ---
-    010   ---   ---   ---   ---   ---   ---
+  VSC   001   002   004   006   008   010
+  001   5.4   3.1   1.5   1.2   0.9   ---
+  002   3.4   1.3   0.3   ---   ---   ---
+  004   2.1   0.5   ---   ---   ---   ---
+  006   1.5   ---   ---   ---   ---   ---
+  008   1.1   ---   ---   ---   ---   ---
+  010   ---   ---   ---   ---   ---   ---
 ```
 
 ```
-    CSC   001   002   004   006   008   010
-    001   5.6   3.3   1.9   1.3   1.0   ---
-    002   5.1   2.9   1.5   ---   ---   ---
-    004   4.9   2.7   ---   ---   ---   ---
-    006   4.8   ---   ---   ---   ---   ---
-    008   4.7   ---   ---   ---   ---   ---
-    010   ---   ---   ---   ---   ---   ---
+  CSC   001   002   004   006   008   010
+  001   5.6   3.3   1.9   1.3   1.0   ---
+  002   5.1   2.9   1.5   ---   ---   ---
+  004   4.9   2.7   ---   ---   ---   ---
+  006   4.8   ---   ---   ---   ---   ---
+  008   4.7   ---   ---   ---   ---   ---
+  010   ---   ---   ---   ---   ---   ---
 ```
 
 ```
-    CSP   001   002   004   006   008   010
-    001   5.6   5.7   5.6   5.7   5.7   ---
-    002   5.1   4.8   4.9   ---   ---   ---
-    004   4.9   4.8   ---   ---   ---   ---
-    006   4.8   ---   ---   ---   ---   ---
-    008   4.7   ---   ---   ---   ---   ---
-    010   ---   ---   ---   ---   ---   ---
+  CSP   001   002   004   006   008   010
+  001   5.6   5.7   5.6   5.7   5.7   ---
+  002   5.1   4.8   4.9   ---   ---   ---
+  004   4.9   4.8   ---   ---   ---   ---
+  006   4.8   ---   ---   ---   ---   ---
+  008   4.7   ---   ---   ---   ---   ---
+  010   ---   ---   ---   ---   ---   ---
 ```
 
-### FD.io CSIT 2n-skx, pcdr4sw = 2:1
+### FD.io CSIT 2n-skx, pcdr4sw = (2:1)
 
 ```
-    VSC   001   002   004   006   008   010
-    001   ???   ???   ???   ???   ???   ???
-    002   ???   ???   ???   ???   ???   ---
-    004   ???   ???   ???   ---   ---   ---
-    006   ???   ???   ---   ---   ---   ---
-    008   ???   ???   ---   ---   ---   ---
-    010   ???   ---   ---   ---   ---   ---
+  Testbed:      t22
 
-    CSC   001   002   004   006   008   010
-    001   7.0*  6.0   3.7   2.6   2.1   ???
-    002  11.8   6.7   4.0   2.8   2.2   ---
-    004  10.7   6.8   3.9   ---   ---   ---
-    006  10.4   6.6   ---   ---   ---   ---
-    008  10.3   6.4   ---   ---   ---   ---
-    010   ???   ---   ---   ---   ---   ---
+  Row:          1..10 number of network service instances
+  Column:       1..10 number of network functions (VNF or CNF) per service instance
+  Value:        x.y MRR throughput in [Mpps]
+                x.y* `*` indicates many retries due to failing nfvbench warm-up phase used to verify service forwarding path
+                ??? to be measured
+                --- Configuration impossible for specific skx processor model, out of physical cores
 
-    CSP   001   002   004   006   008   010
-    001   ???   ???   ???   ???   ???   ???
-    002   ???   ???   ???   ???   ???   ---
-    004  10.7  10.7   ???   ---   ---   ---
-    006  10.4  10.3   ---   ---   ---   ---
-    008  10.3  10.1   ---   ---   ---   ---
-    010   ???   ---   ---   ---   ---   ---
+  Ring sizes:   VNF vring_size = 256 (old qemu), CNF memif_ring_size = 1024
+
+  Cores Numa0:  pcdr4sw = (2:1), pcmr4sw = (1:1)
+                pcdr4nf = (1:1), pcmr4nf = (1:2)
+  Cores Numa1:  not used
 ```
 
-### Packet.net 2n-skx, pcdr4sw = 2:1
-
 ```
-    VSC   001   002   004   006   008   010
-    001   6.3*  5.0   3.0   2.1   ---   ---
-    002   5.5   2.1   ---   ---   ---   ---
-    004   4.0   ---   ---   ---   ---   ---
-    006   2.8   ---   ---   ---   ---   ---
-    008   ---   ---   ---   ---   ---   ---
-    010   ---   ---   ---   ---   ---   ---
-
-    CSC   001   002   004   006   008   010
-    001   6.0*  5.3   3.2   2.3   ---   ---
-    002  10.4   6.0   ---   ---   ---   ---
-    004   9.5   ---   ---   ---   ---   ---
-    006   9.2   ---   ---   ---   ---   ---
-    008   ---   ---   ---   ---   ---   ---
-    010   ---   ---   ---   ---   ---   ---
-
-    CSP   001   002   004   006   008   010
-    001   6.2*  6.1*  6.1*  6.1*  ---   ---
-    002  10.4  10.3  ---   ---   ---   ---
-    004   9.5   ---   ---   ---   ---   ---
-    006   9.2   ---   ---   ---   ---   ---
-    008   ---   ---   ---   ---   ---   ---
-    010   ---   ---   ---   ---   ---   ---
+  VSC   001   002   004   006   008   010
+  001   ???   ???   ???   ???   ???   ???
+  002   ???   ???   ???   ???   ???   ---
+  004   ???   ???   ???   ---   ---   ---
+  006   ???   ???   ---   ---   ---   ---
+  008   ???   ???   ---   ---   ---   ---
+  010   ???   ---   ---   ---   ---   ---
 ```
 
-## Pulling results from nvfbench logs
+```
+  CSC   001   002   004   006   008   010
+  001   7.0*  6.0   3.7   2.6   2.1   ???
+  002  11.8   6.7   4.0   2.8   2.2   ---
+  004  10.7   6.8   3.9   ---   ---   ---
+  006  10.4   6.6   ---   ---   ---   ---
+  008  10.3   6.4   ---   ---   ---   ---
+  010   ???   ---   ---   ---   ---   ---
+```
 
-Latest results in comparison/baseline_nf_performance-csit/results/novlan
+```
+  CSP   001   002   004   006   008   010
+  001   ???   ???   ???   ???   ???   ???
+  002   ???   ???   ???   ???   ???   ---
+  004  10.7  10.7   ???   ---   ---   ---
+  006  10.4  10.3   ---   ---   ---   ---
+  008  10.3  10.1   ---   ---   ---   ---
+  010   ???   ---   ---   ---   ---   ---
+```
 
-Gathering a summary of results from the nfvbench logs with:
-```fgrep -R "|    Total    |" * | sort | awk -F '[ ]*[|][ ]*' '{print $1 " " $8 " (" $5 ")"}'```
+### Packet.net 2n-skx, pcdr4sw = (2:1)
+
+```
+  Testbed:      tg-quad01, sut-quad02-sut
+  Row:          1..10 number of network service instances
+  Column:       1..10 number of network functions (VNF or CNF) per service instance
+  Value:        x.y MRR throughput in [Mpps]
+                x.y* `*` Indicates many retries due to failing nfvbench warm-up phase used to verify service forwarding path
+                ??? to be measured
+                --- configuration impossible for specific skx processor model, out of physical cores
+
+  Ring sizes:   VNF vring_size = 256 (old qemu), CNF memif_ring_size = 1024
+
+  Cores Numa0:  pcdr4sw = (2:1), pcmr4sw = (1:1)
+                pcdr4nf = (1:1), pcmr4nf = (1:2)
+  Cores Numa1:  not used
+```
+
+```
+  VSC   001   002   004   006   008   010
+  001   6.3*  5.0   3.0   2.1   ---   ---
+  002   5.5   2.1   ---   ---   ---   ---
+  004   4.0   ---   ---   ---   ---   ---
+  006   2.8   ---   ---   ---   ---   ---
+  008   ---   ---   ---   ---   ---   ---
+  010   ---   ---   ---   ---   ---   ---
+```
+
+```
+  CSC   001   002   004   006   008   010
+  001   6.0*  5.3   3.2   2.3   ---   ---
+  002  10.4   6.0   ---   ---   ---   ---
+  004   9.5   ---   ---   ---   ---   ---
+  006   9.2   ---   ---   ---   ---   ---
+  008   ---   ---   ---   ---   ---   ---
+  010   ---   ---   ---   ---   ---   ---
+```
+
+```
+  CSP   001   002   004   006   008   010
+  001   6.2*  6.1*  6.1*  6.1*  ---   ---
+  002  10.4  10.3   ---   ---   ---   ---
+  004   9.5   ---   ---   ---   ---   ---
+  006   9.2   ---   ---   ---   ---   ---
+  008   ---   ---   ---   ---   ---   ---
+  010   ---   ---   ---   ---   ---   ---
+```
+
+## Reading nfvbench logs
+
+Throughput results generated by nfvbench are stored in following directories:
+
+1. pcdr4sw = (1:1)
+  * ```cnfs/comparison/baseline_nf_performance-csit/results/2t1c_novlan```
+2. pcdr4sw = (2:1)
+  * ```cnfs/comparison/baseline_nf_performance-csit/results/4t2c_novlan```
+
+Pretty one-liner printouts per test can be obtained using ```jq``` json
+parser and following commands run within the above results' directories:
+
+```
+jq -r '.benchmarks.network.service_chain.EXT.result.result."64".run_config."direction-total".rx | "64B \(.rate_pps)pps (\(.rate_bps)bps) " + input_filename' *pps*.json
+```
+```
+jq -r '.benchmarks.network.service_chain.EXT.result.result.IMIX.run_config."direction-total".rx | "64B \(.rate_pps)pps (\(.rate_bps)bps) " + input_filename' *pps*.json
+```
