@@ -3,6 +3,7 @@
 ## Deploy k8s
 ## load/set configuration
 #./deploy_k8s_cluster.sh
+../../tools/deploy_k8s_cluster.sh
 #   - cross-cloud (terraform) => run ansible playbook k8s_cluster.yml 
 #   - include playbooks to setup k8s cluster
 # PACKET
@@ -23,13 +24,13 @@
 # ./deploy_pipeline_cnf_topology.sh
 
 ## Deploy traffic generator
-pushd ./packet_generator/
-./deploy_packet_generator.sh
+# pushd ./packet_generator/
+# ./deploy_packet_generator.sh
 
 # Run tests
 # ...
 
-popd
+# popd
 
 ## Collect and summarize results
 # ...
