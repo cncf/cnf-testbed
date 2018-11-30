@@ -50,3 +50,27 @@ Looking at device assignment and other goodies from the API:
 ```
 curl -X GET --header 'Accept: application/json' --header 'X-Auth-Token: YOUR_API_KEY' 'https://api.packet.net/devices/YOUR_SERVER_GUID' | jq '.'
 ```
+
+
+## Tests cases for K8s 
+
+### How to use (1 chain, 2 CNF example):
+
+
+Point towards k8s deployment:
+```export KUBECONFIG=/path/to/kubeconfig/```
+
+Go to CNF /helm/ directory:
+```comparison/kubecon18-chained_nf_test/CNF/k8s/helm```
+
+Generate 1st CNF config:
+```./config_csp.sh 1 1 2 6 8,36```
+
+Deploy 1st CNF:
+```helm install --name cnf1 ./vedge/```
+
+Generate 2nd CNF config:
+```./config_csp.sh 1 2 2 34 10,38```
+
+Deploy 2nd CNF:
+```helm install --name cnf2 ./vedge/```
