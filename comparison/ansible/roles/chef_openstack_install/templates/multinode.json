@@ -224,7 +224,7 @@
             }
           }
         },
-        "tun_network_bridge_interface": "enp0s8",
+        "tun_network_bridge_interface": "{{ vlan_interface }}",
         "conf": {
           "DEFAULT": {
             "service_plugins": "router"
@@ -243,8 +243,8 @@
       "compute": {
         "conf": {
           "libvirt": {
-            "cpu_type": "none",
-            "virt_type": "qemu"
+            "virt_type": "kvm",
+            "cpu_type": "passthrough"
           },
           "transport_url": {
             "rabbit_host": "{{ host_0_address }}"

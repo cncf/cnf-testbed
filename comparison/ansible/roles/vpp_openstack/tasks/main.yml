@@ -45,6 +45,7 @@
   git:
     repo: https://github.com/openstack/networking-vpp
     dest: /root/networking-vpp
+    version: "{{vpp_branch}}"
     update: no
 
 - name: install openstack networking-vpp plugin
@@ -86,15 +87,6 @@
     option: reserved_huge_pages
     value: node:0,size:2048,count:64
   notify:
-  - Restart openstack-nova-compute
-
-- name: ensure kvm driver
-  ini_file:
-    path: /etc/nova/nova.conf
-    section: libvirt
-    option: virt_type
-    value: kvm
-  notify: 
   - Restart openstack-nova-compute
 
 - name: Daemon Reload
