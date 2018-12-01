@@ -26,77 +26,31 @@
       name: vconfig
     when: ansible_os_family == "RedHat"
 
+  - name: Server list
+    debug: var=server_list
+
+
+  tasks:
   - name: Get Bond0 Slave1 interface
     set_fact:
       vlan_interface: "{{ansible_bond0.slaves[1]}}"
+    when: ansible_bond0.slaves[1] is defined
+
   - name: Get Bond0 Slave1 PCIid
     set_fact:
       vlan_pciid: "{{hostvars[inventory_hostname]['ansible_' + vlan_interface]['pciid']}}"
+    when: ansible_bond0.slaves[1] is defined
+
+  - name: updated vlan data
+    debug: var=vlans
+
   - name: Add host and VPP interface to inventory
     delegate_to: localhost
     shell: echo "{{inventory_hostname}} vlan_interface={{vlan_interface}} vlan_pciid={{vlan_pciid}}" >> /ansible/inventory
-      
-
-  vars:
-    nfvbench_service_chain_count: 1
-    nfvbench_mac_addrs_left: "'52:54:00:00:00:aa'"
-    nfvbench_mac_addrs_right: "'52:54:00:00:00:bb'"
-    nfvbench_vlan_ids: 1070, 1064
-   
-    config_network_bonds: true
-    config_network_bridges: false
-    config_network_interfaces: true
-    enable_configured_interfaces_after_defining: true
-    dns_nameservers:
-      - "{{ ansible_dns.nameservers[0] }}"
-      - "{{ ansible_dns.nameservers[0] }}"
-    network_bonds:
-      - name: 'bond0'
-        configure: true
-        method: 'static'
-        address: "{{ ansible_bond0.ipv4.address }}"
-        netmask: "{{ ansible_bond0.ipv4.netmask }}"
-        gateway: "{{ ansible_default_ipv4.gateway }}"
-        parameters:
-          - param: 'bond-downdelay'
-            val: '200'
-          - param: 'bond-miimon'
-            val: '100'
-          - param: 'bond-mode'
-            val: '4'
-          - param: 'bond-updelay'
-            val: '200'
-          - param: 'bond-xmit_hash_policy'
-            val: 'layer3+4'
-          - param: 'bond-lacp-rate'
-            val: '1'
-        slaves:
-          - "{{ ansible_bond0.slaves[0] }}"
-    network_interfaces:
-      - name: "{{ ansible_bond0.slaves[0] }}"
-        configure: true
-        method: 'manual'
-        parameters:
-          - param:
-            val: 'bond-master bond0'
-      - name: "{{ ansible_bond0.slaves[1] }}"
-        configure: true
-        method: 'manual'
-        parameters:
-          - param: 'pre-up'
-            val: 'sleep 4'
-      - name: "{{ ansible_bond0.slaves[1] }}.{{vlan_ids[0]}}"
-        configure: true
-        method: 'static'
-        address: '172.16.99.31'
-        netmask: '255.255.255.0'
-      - name: "{{ ansible_bond0.slaves[1] }}.{{vlan_ids[1]}}"
-        configure: true
-        method: 'static'
-        address: '172.16.100.31'
-        netmask: '255.255.255.0'
+    when: ansible_bond0.slaves[1] is defined
 
   roles:
-    - ntp
-    - packet_vlan_enable
-    - grub_openstack
+    - role: ntp
+    - role: packet_vlan_enable
+      when: ansible_bond0.slaves[1] is defined
+    - role: grub_openstack

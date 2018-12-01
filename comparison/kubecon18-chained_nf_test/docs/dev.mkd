@@ -52,25 +52,29 @@ curl -X GET --header 'Accept: application/json' --header 'X-Auth-Token: YOUR_API
 ```
 
 
-## Tests cases for K8s 
+## Deploy multi-chain pipeline CNFs on K8s
 
-### How to use (1 chain, 2 CNF example):
-
-
-Point towards k8s deployment:
+Point towards k8s deployment 'kubeconfig' file:
 ```export KUBECONFIG=/path/to/kubeconfig/```
 
 Go to CNF /helm/ directory:
 ```comparison/kubecon18-chained_nf_test/CNF/k8s/helm```
 
-Generate 1st CNF config:
-```./config_csp.sh 1 1 2 6 8,36```
+### Automated deployment through script
 
-Deploy 1st CNF:
-```helm install --name cnf1 ./vedge/```
+Start (or clean) CNFs:
+```
+./run_csp.sh <chains> <chain length> [clean]
+     (or to clean: ./run_csp.sh clean
+```
 
-Generate 2nd CNF config:
-```./config_csp.sh 1 2 2 34 10,38```
+### Manual steps for validation purposes
 
-Deploy 2nd CNF:
-```helm install --name cnf2 ./vedge/```
+Generate single CNF:
+```./config_csp.sh 1 1 1 6 8,36```
+
+Deploy CNF:
+```helm install --name cnf_single ./vedge/```
+
+Remove CNF:
+```helm del --purge cnf_single```

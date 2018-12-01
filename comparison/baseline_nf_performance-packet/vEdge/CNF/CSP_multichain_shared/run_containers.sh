@@ -131,7 +131,11 @@ function run_containers () {
         die "Failed to update VPP config!"
     }
     # Create CORE lists.
-    mtcr=2
+    if [ "${CHAINS}" -eq 1 ] && [ "${NODENESS}" -eq 1 ]; then
+        mtcr=1
+    else
+        mtcr=2
+    fi
     dtcr=1
     COMMON_DIR="$(readlink -e "$(git rev-parse --show-toplevel)")" || {
         die "Readlink or git rev-parse failed."

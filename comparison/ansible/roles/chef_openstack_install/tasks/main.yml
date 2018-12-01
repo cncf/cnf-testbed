@@ -30,7 +30,7 @@
   file:
     state: directory
     dest: /etc/chef
-    mode: 0644
+    mode: 0664
 
 - name: Move chef openstack secret to /etc/chef
   copy:
@@ -57,13 +57,13 @@
   file:
     state: directory
     dest: /etc/neutron
-    mode: 0644
+    mode: 0755
 
 - name: create an empty neutron plugin.ini file
   file:
     state: touch
     dest: /etc/neutron/plugin.ini
-    mode: 0644
+    mode: 0755
 
 - name: Update the multinode-controller role
   template:
