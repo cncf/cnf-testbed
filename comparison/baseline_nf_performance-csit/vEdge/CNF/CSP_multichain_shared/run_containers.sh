@@ -137,7 +137,10 @@ function run_containers () {
         mtcr=2
     fi
     dtcr=1
-    cpu_list=($(source ./cpu_util.sh "${CHAINS}" "${NODENESS}" "${mtcr}" "${dtcr}" ))
+    COMMON_DIR="$(readlink -e "$(git rev-parse --show-toplevel)")" || {
+        die "Readlink or git rev-parse failed."
+    }
+    cpu_list=($(source "${COMMON_DIR}"/tools/cpu_util.sh "${CHAINS}" "${NODENESS}" "${mtcr}" "${dtcr}" ))
     # Run conainer matrix.
     n=0
     # Run conainer matrix.
