@@ -1,4 +1,16 @@
 ---
+
+- hosts: localhost
+  vars:
+    deployt_env: intelk8s
+    vlans:
+      vlan1:
+        interface: eth1
+      vlan2:
+        interface: eth1
+  roles:
+    - packet_l2
+
 - hosts: all
   pre_tasks:
   - name: Apt update
