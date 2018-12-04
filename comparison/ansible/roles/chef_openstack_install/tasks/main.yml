@@ -77,10 +77,17 @@
     dest: /root/openstack-chef/roles/multinode-controller.json
   when: not vpp_network
 
-- name: Update the multinode-compute role
+- name: Update the multinode-compute role - VPP
   template:
     src: multinode-compute.json
     dest: /root/openstack-chef/roles/multinode-compute.json
+  when: vpp_network
+
+- name: Update the multinode-compute role - non-VPP
+  template:
+    src: multinode-compute.json
+    dest: /root/openstack-chef/roles/multinode-compute-novpp.json
+  when: not vpp_network
 
 - name: Launch Chef based OpenStack installer on First (controller) node
   command: chef-client -z -E multinode -r 'role[multinode-controller]'
