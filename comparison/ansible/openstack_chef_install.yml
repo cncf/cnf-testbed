@@ -1,5 +1,7 @@
 ---
 - hosts: all
+  vars:
+    vpp_network: false
   pre_tasks:
   - setup:
   roles:
@@ -9,9 +11,9 @@
       connection: local
       vars:
         facility: "{{ lookup('env','PACKET_FACILITY') }}"
-        deploy_env: osnrt
+        deploy_env: os
         server_list: "{{ lookup('env','SERVER_LIST') }}"
-        project_name: "CNCF CNFs"
+        project_name: "CNCF OpenStack CCPE"
         vlans:
           vlan1:
             interface: "eth1"
@@ -20,10 +22,13 @@
     - role: retr0h.etcd
       vars:
         etcd_interface: bond0
+      when: vpp_network
     - chef_openstack_install
     - role: vpp_install 
       vars: 
         vpp_branch: stable.1810 # fd.io repo
+      when: vpp_network
     - role: vpp_openstack
       vars:
         vpp_branch: '1810'
+      when: vpp_network

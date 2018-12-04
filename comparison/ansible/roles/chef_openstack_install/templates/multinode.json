@@ -203,6 +203,7 @@
       },
       "network": {
         "plugins": {
+{% if vpp_network %}
           "ml2_vpp": {
             "conf": {
               "ml2_type_vlan": {
@@ -223,6 +224,15 @@
               }
             }
           }
+{% else %}
+          "ml2_openvswitch": {
+            "conf": {
+              "ml2_type_vlan": {
+                "vlan_ranges": "1000:2000"
+              }
+            }
+          }
+{% endif %}
         },
         "tun_network_bridge_interface": "{{ vlan_interface }}",
         "conf": {

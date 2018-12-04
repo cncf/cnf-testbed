@@ -65,10 +65,17 @@
     dest: /etc/neutron/plugin.ini
     mode: 0755
 
-- name: Update the multinode-controller role
+- name: Update the multinode-controller role - VPP
   template:
     src: multinode-controller.json
     dest: /root/openstack-chef/roles/multinode-controller.json
+  when: vpp_network
+
+- name: Update the multinode-controller role - non-VPP
+  template:
+    src: multinode-controller-novpp.json
+    dest: /root/openstack-chef/roles/multinode-controller.json
+  when: not vpp_network
 
 - name: Update the multinode-compute role
   template:
