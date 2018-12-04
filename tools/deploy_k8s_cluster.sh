@@ -14,6 +14,7 @@ docker run \
   -v $(pwd)/data:/cncf/data \
   -v $(pwd)/k8s_cluster_override.tf:/cncf/packet/override.tf \
   -v $(pwd)/k8s_worker_override.tf:/cncf/packet/modules/worker/override.tf \
+  -v $(pwd)/k8s_dns_override.tf:/cncf/dns-etcd/k8s_dns_override.tf \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v "${project_root}/comparison/ansible:/ansible" \
   -e NAME=$NAME \
@@ -38,5 +39,4 @@ docker run \
   -e TF_VAR_kube_proxy_tag=${K8S_RELEASE} \
   -e TF_VAR_packet_project_id=$PACKET_PROJECT_ID \
   -e PACKET_AUTH_TOKEN=$PACKET_AUTH_TOKEN \
-  --entrypoint /bin/bash \
   -ti registry.cidev.cncf.ci/cncf/cross-cloud/provisioning:master

@@ -14,6 +14,7 @@ docker run \
   -v $(pwd)/data:/cncf/data \
   -v $(pwd)/k8s_cluster_override.tf:/cncf/packet/override.tf \
   -v $(pwd)/k8s_worker_override.tf:/cncf/packet/modules/worker/override.tf \
+  -v $(pwd)/k8s_dns_override.tf:/cncf/dns-etcd/k8s_dns_override.tf \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v "${project_root}/comparison/ansible:/ansible" \
   -e NAME=$NAME \
