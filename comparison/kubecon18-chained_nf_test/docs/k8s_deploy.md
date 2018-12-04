@@ -65,6 +65,7 @@ Deploy a container:
 export KUBECONFIG=../../tools/packet-data/kubeconfig
 pushd ./CNF/k8s/helm
 helm install --name cnf1 ./vedge/
+## (If Tiller isn't installed: helm init --service-account tiller)
 ```
 
 Looking at the CNFs running in K8s:
