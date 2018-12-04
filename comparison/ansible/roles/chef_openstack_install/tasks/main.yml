@@ -85,8 +85,8 @@
 
 - name: Update the multinode-compute role - non-VPP
   template:
-    src: multinode-compute.json
-    dest: /root/openstack-chef/roles/multinode-compute-novpp.json
+    src: multinode-compute-novpp.json
+    dest: /root/openstack-chef/roles/multinode-compute.json
   when: not vpp_network
 
 - name: Launch Chef based OpenStack installer on First (controller) node
