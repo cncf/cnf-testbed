@@ -2,7 +2,7 @@
 - hosts: all
   vars:
     vpp_network: false
-    create_vlans: true
+    create_vlans: false
   pre_tasks:
   - setup:
   roles:
@@ -14,7 +14,7 @@
         facility: "{{ lookup('env','PACKET_FACILITY') }}"
         deploy_env: os
         server_list: "{{ lookup('env','SERVER_LIST') }}"
-        project_name: "CNCF CNFs"
+        project_name: "CNCF OpenStack CCPE"
         vlans:
           vlan1:
             interface: "eth1"

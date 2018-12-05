@@ -65,6 +65,18 @@
     dest: /etc/neutron/plugin.ini
     mode: 0755
 
+- name: Add python update for chef Debian deployments
+  apt:
+    name: ['python','python3','python-pip','python3-pip']
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure pip 18.0 for chef Debian
+  pip:
+    name: pip
+    version: 18.0
+    executable: 'pip3'
+  when: ansible_os_family == 'Debian'
+
 - name: Update the multinode-controller role - VPP
   template:
     src: multinode-controller.json
