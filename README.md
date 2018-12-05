@@ -27,7 +27,7 @@ The ideal outcome of the CNF project is that a third party developer can run the
 - Providing Helm Charts for CNFs
 - Using 100% open source software
 - Supporting automated deployment from bare-metal up
-- Building the software in working composable parts 
+- Building the software in working, composable parts 
 
 
 ## Let’s see some of the test cases
