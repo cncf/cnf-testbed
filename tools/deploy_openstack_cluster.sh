@@ -35,7 +35,6 @@ echo "[etcd]" >> ${parentdir}/comparison/ansible/inventory
 cat ${parentdir}/tools/terraform-ansible/openstack.tfstate | awk -F\" '/0.add/ {print $4}' >> ${parentdir}/comparison/ansible/inventory
 fi
 SERVER_LIST=`for ((n=1;n<$NODE_COUNT;n++)); do echo -n $NODE_NAME$n,;done;echo -n $NODE_NAME$NODE_COUNT`
- 
 time docker run \
   -v ${parentdir}/comparison/ansible:/ansible \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
@@ -44,8 +43,9 @@ time docker run \
   -v ${parentdir}/comparison/ansible/inventory:/etc/ansible/hosts \
   -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
   -e PACKET_FACILITY=${PACKET_FACILITY} \
+  -e PROJECT_NAME="${PROJECT_NAME}" \
   -e SERVER_LIST=${SERVER_LIST} \
-  --entrypoint ansible-playbook -ti cnfdeploytools:latest /ansible/openstack_chef_install.yml
+  --entrypoint ansible-playbook -ti cnfdeploytools:latest ${ANSIBLE_ARGS} /ansible/openstack_chef_install.yml
 if [[ $? != 0 ]]; then
 
 echo -e '=================================================\n Retrying the ansible run'
@@ -57,6 +57,7 @@ time docker run \
   -v ${parentdir}/comparison/ansible/inventory:/etc/ansible/hosts \
   -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
   -e PACKET_FACILITY=${PACKET_FACILITY} \
+  -e PROJECT_NAME="${PROJECT_NAME}" \
   -e SERVER_LIST=${SERVER_LIST} \
-  --entrypoint ansible-playbook -ti cnfdeploytools:latest /ansible/openstack_chef_install.yml
+  --entrypoint ansible-playbook -ti cnfdeploytools:latest ${ANSIBLE_ARGS} /ansible/openstack_chef_install.yml
 fi
