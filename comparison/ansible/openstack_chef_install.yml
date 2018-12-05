@@ -2,6 +2,7 @@
 - hosts: all
   vars:
     vpp_network: false
+    create_vlans: false
   pre_tasks:
   - setup:
   roles:
@@ -19,6 +20,7 @@
             interface: "eth1"
           vlan2:
             interface: "eth1"
+      when: create_vlans
     - role: retr0h.etcd
       vars:
         etcd_interface: bond0
@@ -32,3 +34,4 @@
       vars:
         vpp_branch: '1810'
       when: vpp_network
+    - role: openstack_scripts
