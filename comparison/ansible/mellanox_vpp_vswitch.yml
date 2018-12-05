@@ -59,6 +59,9 @@
     hugepages: 18432
     corelist_workers: 2,4,30,32
     mellanox_data_port: "{{ ansible_enp94s0f1.pciid }}"
+    vlan_ids:
+      - "{{ hostvars.localhost.vlans.vlan1.vid }}"
+      - "{{ hostvars.localhost.vlans.vlan2.vid }}"
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
