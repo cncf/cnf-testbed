@@ -59,3 +59,16 @@ __Pull Requests__
 * Download, compile, and run the code and make sure the tests pass.
   - Also verify that the test cases follow best architectural patterns and include tests.
 
+
+## CNFs At KubeCon + CloudNativeCon North America 2018
+
+Several talks and demos targeting different experience are scheduled for KubeCon North America 2018. Please join us to get more insights about Cloud-native Network Functions (CNFs), the current state of the project and test cases.
+
+**Monday, December 10**
+ - 11:40am - 12:00pm - [CNFs in Switzerland: Reproducible Performance Testing in a Neutral Environment - Taylor Carpenter, Vulk Coop](https://fdiominisummitatkccncnortha2018.sched.com/event/IGg6/cnfs-in-switzerland-reproducible-performance-testing-in-a-neutral-environment)
+
+**Wednesday, December 12** 
+
+ - 10:50am - 11:25am - [Deep Dive: Using CNCF Cross-Cloud CI with CNFs – Denver Williams & Taylor Carpenter, Vulk Coop](https://kccna18.sched.com/event/Greb)
+
+ - 2:35pm - 3:10pm - [Intro: Cloud Native Network Functions BoF - Dan Kohn, Cloud Native Computing Foundation](https://kccna18.sched.com/event/JCLS)
