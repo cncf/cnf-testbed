@@ -70,13 +70,6 @@
     mode: 0755
   when: vpp_network
 
-- name: create a neutron plugin.ini file for non-VPP deployments
-  template:
-    src: plugin.ini
-    dest: /etc/neutron/plugin.ini
-    mode: 0755
-  when: not vpp_network
-
 - name: create a dashboard secrets directory
   file:
     state: directory
