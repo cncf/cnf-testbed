@@ -3,14 +3,24 @@
   set_fact:
     host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
 
-- name: add plugin.ini to controller for OVS
+- name: add plugin.ini to controller for OVS - RedHat
   template:
     src: control-plugin.ini
     dest: /etc/neutron/plugin.ini
     mode: 0640
     owner: neutron
     group: neutron
-  when: host_0_address == inventory_hostname
+  when: host_0_address == inventory_hostname and ansible_os_family == 'RedHat'
+  notify: restart neutron-server
+
+- name: add plugin.ini to controller for OVS - Debian
+  template:
+    src: control-plugin.ini
+    dest: /etc/neutron/plugin.ini
+    mode: 0640
+    owner: neutron
+    group: neutron
+  when: host_0_address == inventory_hostname and ansible_os_family == 'Debian'
   notify: restart neutron-server
 
 - name: increase number of active DHCP agents
