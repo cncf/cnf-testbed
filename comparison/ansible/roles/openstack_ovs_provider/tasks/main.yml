@@ -8,6 +8,8 @@
     src: control-plugin.ini
     dest: /etc/neutron/plugin.ini
     mode: 0640
+    user: neutron
+    group: neutron
   when: host_0_address == inventory_hostname
   notify: restart neutron-server
 
@@ -25,6 +27,8 @@
     src: openvswitch_agent.ini
     dest: /etc/neutron/plugins/ml2/openvswitch_agent.ini
     mode: 0640
+    user: neutron
+    group: neutron
   when: not host_0_address == inventory_hostname
   notify: restart ovs-agent
 
@@ -33,6 +37,8 @@
     src: dhcp_agent.ini
     dest: /etc/neutron/dhcp_agent.ini
     mode: 0640
+    user: neutron
+    group: neutron
   when: not host_0_address == inventory_hostname
   notify: restart dhcp-agent
 
@@ -41,6 +47,8 @@
     src: metadata_agent.ini
     dest: /etc/neutron/metadata_agent.ini
     mode: 0640
+    user: neutron
+    group: neutron
   when: not host_0_address == inventory_hostname
   notify: restart metadata_agent
 
