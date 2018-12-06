@@ -50,7 +50,7 @@
     owner: neutron
     group: neutron
   when: not host_0_address == inventory_hostname
-  notify: restart metadata_agent
+  notify: restart metadata-agent
 
 - name: create ovs provider bridge
   command:  ovs-vsctl --may-exist add-br br-provider
