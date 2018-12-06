@@ -14,7 +14,7 @@
         facility: "{{ lookup('env','PACKET_FACILITY') }}"
         deploy_env: os
         server_list: "{{ lookup('env','SERVER_LIST') }}"
-        project_name: "{{ lookup('env','PACKET_PROJECT_NAME') }}"
+        project_name: "{{ lookup('env','PROJECT_NAME') }}"
         vlans:
           vlan1:
             interface: "eth1"
@@ -30,7 +30,7 @@
       when: vpp_network
     - role: vpp_install 
       vars: 
-        vpp_branch: stable.1810 # fd.io repo
+        vpp_branch: stable.1807 # fd.io repo
       when: vpp_network
     - role: vpp_openstack
       vars:
