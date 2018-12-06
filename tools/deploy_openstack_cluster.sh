@@ -7,7 +7,7 @@ NODE_COUNT=${NODE_COUNT:-4}
 NODE_PLAN=${NODE_PLAN:-m2.xlarge.x86}
 PACKET_OS=${PACKET_OS:-centos_7}
 PACKET_FACILITY=${PACKET_FACILITY:-sjc1}
-
+PACKET_PROJECT_ID=${PACKET_PROJECT_ID:-"CNCF CNFs"}
 
 if [ ! -f ${parentdir}/comparison/ansible/inventory ]; then
 echo "[all:vars]" > ${parentdir}/comparison/ansible/inventory
@@ -45,6 +45,7 @@ time docker run \
   -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
   -e PACKET_FACILITY=${PACKET_FACILITY} \
   -e SERVER_LIST=${SERVER_LIST} \
+  -e PACKET_PROJECT_NAME="${PACKET_PROJECT_NAME}" \
   --entrypoint ansible-playbook -ti cnfdeploytools:latest /ansible/openstack_chef_install.yml
 if [[ $? != 0 ]]; then
 
@@ -58,5 +59,6 @@ time docker run \
   -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
   -e PACKET_FACILITY=${PACKET_FACILITY} \
   -e SERVER_LIST=${SERVER_LIST} \
+  -e PACKET_PROJECT_NAME="${PACKET_PROJECT_NAME}" \
   --entrypoint ansible-playbook -ti cnfdeploytools:latest /ansible/openstack_chef_install.yml
 fi

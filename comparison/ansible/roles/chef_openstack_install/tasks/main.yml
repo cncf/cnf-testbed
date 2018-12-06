@@ -19,13 +19,17 @@
   command: berks install
   args:
     chdir: /root/openstack-chef
+    creates: /root/.berkshelf
 - name: move berks downloaded code to openstack-chef directory
   shell: tar cf - cookbooks/ | (cd /root/openstack-chef; tar xf -)
   args:
     chdir: /root/.berkshelf/
+    creates: /root/openstack-chef/cookbooks
 - name: Install chef client via the omnibus installer
   shell: curl -L https://omnitruck.chef.io/install.sh | bash
-
+  args:
+    creates: /opt/chef
+    
 - name: Make /etc/chef directory
   file:
     state: directory
@@ -64,6 +68,28 @@
     state: touch
     dest: /etc/neutron/plugin.ini
     mode: 0755
+  when: vpp_network
+
+- name: create a neutron plugin.ini file for non-VPP deployments
+  template:
+    src: plugin.ini
+    dest: /etc/neutron/plugin.ini
+    mode: 0755
+  when: not vpp_network
+
+- name: create a dashboard secrets directory
+  file:
+    state: directory
+    dest: /var/lib/openstack-dashboard
+    mode: 0644
+  when: ansible_os_family == 'Debian'
+
+- name: create a dashboard secrets file for Debian
+  file:
+    state: touch
+    dest: /var/lib/openstack-dashboard/secret_key
+    mode: 0600
+  when: ansible_os_family == 'Debian'
 
 - name: Add python update for chef Debian deployments
   apt:

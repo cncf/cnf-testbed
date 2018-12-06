@@ -1,0 +1,58 @@
+---
+- name: find the controller host address
+  set_fact:
+    host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
+
+- name: add plugin.ini to controller for OVS
+  template:
+    src: control-plugin.ini
+    dest: /etc/neutron/plugin.ini
+    mode: 0640
+  when: host_0_address == inventory_hostname
+  notify: restart neutron-server
+
+- name: increase number of active DHCP agents
+  ini_file:
+    path: /etc/neutron/neutron.conf
+    section: DEFAULT
+    option: dhcp_agents_per_network
+    value: '2'
+  when: host_0_address == inventory_hostname
+  notify: restart neutron-server
+
+- name: add openvswitch_agent.ini to compute for OVS
+  template:
+    src: openvswitch_agent.ini
+    dest: /etc/neutron/plugins/ml2/openvswitch_agent.ini
+    mode: 0640
+  when: not host_0_address == inventory_hostname
+  notify: restart ovs-agent
+
+- name: add dhcp_agent.ini to compute for OVS
+  template:
+    src: dhcp_agent.ini
+    dest: /etc/neutron/dhcp_agent.ini
+    mode: 0640
+  when: not host_0_address == inventory_hostname
+  notify: restart dhcp-agent
+
+- name: add metadata_agent.ini to compute for OVS
+  template:
+    src: metadata_agent.ini
+    dest: /etc/neutron/metadata_agent.ini
+    mode: 0640
+  when: not host_0_address == inventory_hostname
+  notify: restart metadata_agent
+
+- name: create ovs provider bridge
+  command:  ovs-vsctl --may-exist add-br br-provider
+
+- name: remove {{vlan_interface}} from br-vlan if it is configured
+  command: ovs-vsctl del-port br-vlan {{vlan_interface}}
+  ignore_errors: true
+
+- name: add {{vlan_interface}} to br-provider
+  command: ovs-vsctl --may-exist add-port br-vlan {{vlan_interface}}
+
+
+
