@@ -5,18 +5,20 @@
 
 - name: Get Mellanox Firmware
   get_url:
-    url: http://content.mellanox.com/ofed/MLNX_OFED-4.4-2.0.7.0/MLNX_OFED_LINUX-4.4-2.0.7.0-ubuntu18.04-x86_64.tgz
+    url: http://content.mellanox.com/ofed/{{mlnx}}/{{mlnx}}-{{arch}}.tgz
     dest: /srv/mlnx.tgz
 
 - name: unarchive Mellanox Firmware
   unarchive:
     remote_src: true
     src: /srv/mlnx.tgz
-    dest: /srv/mlnx/
-    creates: /srv/mlnx/
+    dest: /srv/
+    creates: /srv/{{mlnx}}-{{arch}}
 
 - name: run Mlnx OFED install
   command: ./mlnxofedinstall --dpdk --upstream-libs --force
+  args:
+    chdir: /srv/{{mlnx}}-{{arch}}
 
 - name: restart openibd service
   service:
