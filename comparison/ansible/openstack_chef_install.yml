@@ -1,7 +1,7 @@
 ---
 - hosts: all
   vars:
-    vpp_network: false
+    vpp_network: true
     create_vlans: false
   pre_tasks:
   - setup:
@@ -27,7 +27,7 @@
     - role: openstack_scripts
     - role: openstack_vnc_fix
     - role: vpp_src_install
-      when: vpp_network and ansible_os_host == 'Debian'
+      when: vpp_network and ansible_os_family == 'Debian'
     - role: retr0h.etcd
       vars:
         etcd_interface: bond0
