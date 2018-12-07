@@ -1,0 +1,110 @@
+2018-12-07 14:18:18,782 INFO Loading configuration file: /tmp/nfvbench/nfvbench_config.cfg
+2018-12-07 14:18:18,818 INFO EXT chain with OpenStack mode disabled
+2018-12-07 14:18:18,819 INFO -c /tmp/nfvbench/nfvbench_config.cfg --rate 18500000pps --flow-count 1024 --duration 30 --json /tmp/nfvbench/csp_1c8n_18500000pps-1.json
+2018-12-07 14:18:18,820 INFO Connecting to TRex (127.0.0.1)...
+2018-12-07 14:18:18,960 INFO Connected to TRex
+2018-12-07 14:18:18,960 INFO    Port 0: Ethernet Controller X710 for 10GbE SFP+ speed=10Gbps mac=e4:43:4b:2e:b1:d1 pci=0000:1a:00.1 driver=net_i40e
+2018-12-07 14:18:18,960 INFO    Port 1: Ethernet Controller X710 for 10GbE SFP+ speed=10Gbps mac=e4:43:4b:2e:b1:d2 pci=0000:1a:00.2 driver=net_i40e
+2018-12-07 14:18:18,961 INFO ChainRunner initialized
+2018-12-07 14:18:18,962 INFO Starting 1xEXT benchmark...
+2018-12-07 14:18:19,066 INFO Polling ARP until successful...
+2018-12-07 14:18:19,177 INFO    ARP: port=0 chain=0 src IP=172.16.10.100 dst IP=172.16.10.10 -> MAC=52:54:00:00:00:aa
+2018-12-07 14:18:19,177 INFO ARP resolved successfully for port 0
+2018-12-07 14:18:19,287 INFO    ARP: port=1 chain=0 src IP=172.16.20.100 dst IP=172.16.20.10 -> MAC=52:54:00:00:00:bb
+2018-12-07 14:18:19,287 INFO ARP resolved successfully for port 1
+2018-12-07 14:18:19,389 INFO Port 0: dst MAC ['52:54:00:00:00:aa']
+2018-12-07 14:18:19,389 INFO Port 1: dst MAC ['52:54:00:00:00:bb']
+2018-12-07 14:18:19,389 INFO Starting traffic generator to ensure end-to-end connectivity
+2018-12-07 14:18:19,395 INFO Created 1 traffic streams for port 0.
+2018-12-07 14:18:19,397 INFO Created 1 traffic streams for port 1.
+2018-12-07 14:18:19,507 INFO Captured unique src mac 0/2, capturing return packets (retry 1/100)...
+2018-12-07 14:18:21,628 INFO Received packet from mac: 52:54:00:00:00:bb (chain=0, port=1)
+2018-12-07 14:18:21,628 INFO Received packet from mac: 52:54:00:00:00:aa (chain=0, port=0)
+2018-12-07 14:18:21,628 INFO End-to-end connectivity established
+2018-12-07 14:18:21,646 INFO Cleared all existing streams
+2018-12-07 14:18:21,669 INFO Created 4 traffic streams for port 0.
+2018-12-07 14:18:21,672 INFO Created 4 traffic streams for port 1.
+2018-12-07 14:18:21,676 INFO Starting to generate traffic...
+2018-12-07 14:18:21,676 INFO Running traffic generator
+
+
+2018-12-07 14:18:29 - [local][warning]   - [1mCPU util. is high: 86.1%[22m
+2018-12-07 14:18:31,697 INFO TX: 65541217; RX: 29699768; Est. Dropped: 35841449; Est. Drop rate: 54.6854%
+2018-12-07 14:18:41,711 INFO TX: 131107225; RX: 59492271; Est. Dropped: 71614954; Est. Drop rate: 54.6232%
+2018-12-07 14:18:51,710 INFO TX: 196506987; RX: 89125876; Est. Dropped: 107381111; Est. Drop rate: 54.6449%
+2018-12-07 14:18:51,710 INFO ...traffic generating ended.
+2018-12-07 14:18:51,714 INFO WARNING: There is a significant difference between requested TX rate (18500000.0) and actual TX rate (6550232). The traffic generator may not have sufficient CPU to achieve the requested TX rate.
+2018-12-07 14:18:51,714 INFO Service chain 'EXT' run completed.
+2018-12-07 14:18:51,714 INFO Clean up skipped.
+2018-12-07 14:18:51,741 INFO Saving results in json file: /tmp/nfvbench/csp_1c8n_18500000pps-1.json...
+2018-12-07 14:18:51,748 INFO
+========== NFVBench Summary ==========
+Date: 2018-12-07 14:18:18
+NFVBench version 2.0.4
+Openstack Neutron:
+  vSwitch:
+  Encapsulation:
+Benchmarks:
+> Networks:
+  > Components:
+    > Traffic Generator:
+        Profile: trex-local
+        Tool: TRex
+    > Versions:
+      > Traffic_Generator:
+          build_date: Nov 13 2017
+          version: v2.32
+          built_by: hhaim
+          mode: STL
+          build_time: 10:58:17
+  > Service chain:
+    > EXT:
+      > Traffic:
+          Profile: traffic_profile_IMIX
+          Bidirectional: True
+          Flow count: 1024
+          Service chains count: 1
+          Compute nodes: []
+
+            Run Summary:
+
+              +-----------------+-------------+----------------------+----------------------+----------------------+
+              |  L2 Frame Size  |  Drop Rate  |  Avg Latency (usec)  |   Min Latency (usec) |  Max Latency (usec)  |
+              +=================+=============+======================+======================+======================+
+              |      IMIX       |  54.6449%   |        1,839         |                   40 |        2,171         |
+              +-----------------+-------------+----------------------+----------------------+----------------------+
+
+
+            L2 frame size: IMIX
+
+            Run Config:
+
+              +-------------+---------------------------+------------------------+-----------------+---------------------------+------------------------+-----------------+
+              |  Direction  |  Requested TX Rate (bps)  |  Actual TX Rate (bps)  |  RX Rate (bps)  |  Requested TX Rate (pps)  |  Actual TX Rate (pps)  |  RX Rate (pps)  |
+              +=============+===========================+========================+=================+===========================+========================+=================+
+              |   Forward   |       28.2557 Gbps        |      10.0044 Gbps      |   4.5375 Gbps   |       9,250,000 pps       |     3,275,113 pps      |  1,485,429 pps  |
+              +-------------+---------------------------+------------------------+-----------------+---------------------------+------------------------+-----------------+
+              |   Reverse   |       28.2557 Gbps        |      10.0044 Gbps      |   4.5375 Gbps   |       9,250,000 pps       |     3,275,119 pps      |  1,485,433 pps  |
+              +-------------+---------------------------+------------------------+-----------------+---------------------------+------------------------+-----------------+
+              |    Total    |       56.5113 Gbps        |      20.0088 Gbps      |   9.0750 Gbps   |      18,500,000 pps       |     6,550,232 pps      |  2,970,862 pps  |
+              +-------------+---------------------------+------------------------+-----------------+---------------------------+------------------------+-----------------+
+
+              WARNING: There is a significant difference between requested TX rate (18500000.0) and actual TX rate (6550232). The traffic generator may not have sufficient CPU to achieve the requested TX rate.
+
+            Forward Chain Packet Counters and Latency:
+
+              +---------+--------------+-------------------------+------------+------------+------------+
+              |   Chain |  TRex.TX.p0  |       TRex.RX.p1        |  Avg lat.  |  Min lat.  |  Max lat.  |
+              +=========+==============+=========================+============+============+============+
+              |       0 |  98,253,396  | -53,690,511 (-54.6449%) | 2,103 usec |  40 usec   | 2,171 usec |
+              +---------+--------------+-------------------------+------------+------------+------------+
+
+            Reverse Chain Packet Counters and Latency:
+
+              +---------+--------------+--------------------------------+------------+------------+------------+
+              |   Chain |  TRex.TX.p1  |           TRex.RX.p0           |  Avg lat.  |  Min lat.  |  Max lat.  |
+              +=========+==============+================================+============+============+============+
+              |       0 |  98,253,591  | +60,032,836,684 (+61099.8907%) | 1,576 usec |  70 usec   | 1,642 usec |
+              +---------+--------------+--------------------------------+------------+------------+------------+
+
+
