@@ -1,6 +1,9 @@
 ---
 - hosts: all
   pre_tasks:
+  - name: re-run setup to discover local variables
+    setup:
+
   - name: Apt update
     apt:
       update_cache: yes
@@ -10,6 +13,7 @@
     yum:
       name: epel-release
     when: ansible_os_family == "RedHat"
+
   - name: Yum update
     yum:
       name: '*'
@@ -21,14 +25,59 @@
     apt:
       name: vlan
     when: ansible_os_family == "Debian"
+
   - name: Install Vlan Package
     yum:
       name: vconfig
     when: ansible_os_family == "RedHat"
 
-  - name: Server list
-    debug: var=server_list
-
+  vars:
+    config_network_bonds: true
+    config_network_bridges: false
+    config_network_interfaces: true
+    enable_configured_interfaces_after_defining: true
+    dns_nameservers:
+      - "{{ ansible_dns.nameservers[0] }}"
+      - "{{ ansible_dns.nameservers[0] }}"
+    network_bonds:
+      - name: 'bond0'
+        configure: true
+        method: 'static'
+        address: "{{ ansible_bond0.ipv4.address }}"
+        netmask: "{{ ansible_bond0.ipv4.netmask }}"
+        gateway: "{{ ansible_default_ipv4.gateway }}"
+        parameters:
+          - param: 'bond-downdelay'
+            val: '200'
+          - param: 'bond-miimon'
+            val: '100'
+          - param: 'bond-mode'
+            val: '4'
+          - param: 'bond-updelay'
+            val: '200'
+          - param: 'bond-xmit_hash_policy'
+            val: 'layer3+4'
+          - param: 'bond-lacp-rate'
+            val: '1'
+        slaves:
+          - "{{ ansible_bond0.slaves[0] }}"
+      - name: 'bond0:0'
+        configure: true
+        method: 'static'
+        address: "{{ ansible_bond0_0.ipv4.address }}"
+        netmask: "{{ ansible_bond0_0.ipv4.netmask }}"
+        parameters:
+          - param: 'post-up'
+            val: "route add -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
+          - param: 'post-down'
+            val: "route del -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
+    network_interfaces:
+      - name: "{{ ansible_bond0.slaves[0] }}"
+        configure: true
+        method: 'manual'
+        parameters:
+          - param:
+            val: 'bond-master bond0'
 
   tasks:
   - name: Get Bond0 Slave1 interface
@@ -41,9 +90,6 @@
       vlan_pciid: "{{hostvars[inventory_hostname]['ansible_' + vlan_interface]['pciid']}}"
     when: ansible_bond0.slaves[1] is defined
 
-  - name: updated vlan data
-    debug: var=vlans
-
   - name: Add host and VPP interface to inventory
     delegate_to: localhost
     shell: echo "{{inventory_hostname}} vlan_interface={{vlan_interface}} vlan_pciid={{vlan_pciid}}" >> /ansible/inventory
@@ -51,6 +97,8 @@
 
   roles:
     - role: ntp
+    - role: mrlesmithjr.config-interfaces
+      when: ansible_os_family == 'Debian'
     - role: packet_vlan_enable
       when: ansible_bond0.slaves[1] is defined
     - role: grub_openstack

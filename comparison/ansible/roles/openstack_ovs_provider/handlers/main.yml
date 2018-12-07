@@ -1,4 +1,9 @@
 ---
+- name: restart nova-compute
+  service:
+    name: nova-compute
+    state: restarted
+
 - name: restart neutron-server
   service:
     name: neutron-server
