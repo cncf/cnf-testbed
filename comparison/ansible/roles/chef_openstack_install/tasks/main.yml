@@ -76,12 +76,12 @@
     mode: 0644
   when: ansible_os_family == 'Debian'
 
-#- name: create a dashboard secrets file for Debian
-#  copy:
-#    content: 'aaWN2w6bcIHFUMZZ7aT5uBSPxnDZpOujHjHHx0HzNbnOopD2wrmYqbWlQsTUO66D'
-#    dest: /var/lib/openstack-dashboard/secret_key
-#    mode: 0600
-#  when: ansible_os_family == 'Debian'
+- name: create a dashboard secrets file for Debian
+  copy:
+    content: 'aaWN2w6bcIHFUMZZ7aT5uBSPxnDZpOujHjHHx0HzNbnOopD2wrmYqbWlQsTUO66D'
+    dest: /var/lib/openstack-dashboard/secret_key
+    mode: 0600
+  when: ansible_os_family == 'Debian'
 
 - name: Add python update for chef Debian deployments
   apt:

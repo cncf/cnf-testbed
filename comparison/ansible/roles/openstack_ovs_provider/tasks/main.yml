@@ -3,6 +3,16 @@
   set_fact:
     host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
 
+- name: add hugepage support for nova
+  ini_file:
+    path: /etc/nova/nova.conf
+    section: DEFAULT
+    option: reserved_huge_pages
+    value: node:0,size:2048,count:64
+  when: not host_0_address == inventory_hostname
+  notify:
+  - restart nova-compute
+
 - name: add plugin.ini to controller for OVS - RedHat
   template:
     src: control-plugin.ini
@@ -13,10 +23,10 @@
   when: host_0_address == inventory_hostname and ansible_os_family == 'RedHat'
   notify: restart neutron-server
 
-- name: add plugin.ini to controller for OVS - Debian
+- name: add ml2_conf.ini to controller for OVS - Debian
   template:
     src: control-plugin.ini
-    dest: /etc/neutron/plugin.ini
+    dest: /etc/neutron/plugins/ml2/ml2_conf.ini
     mode: 0640
     owner: neutron
     group: neutron
@@ -64,10 +74,6 @@
 
 - name: create ovs provider bridge
   command:  ovs-vsctl --may-exist add-br br-provider
-
-- name: remove {{vlan_interface}} from br-vlan if it is configured
-  command: ovs-vsctl del-port br-vlan {{vlan_interface}}
-  ignore_errors: true
 
 - name: add {{vlan_interface}} to br-provider
   command: ovs-vsctl --may-exist add-port br-provider {{vlan_interface}}

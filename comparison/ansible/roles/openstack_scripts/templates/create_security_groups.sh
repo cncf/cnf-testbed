@@ -1,6 +1,7 @@
 #!/bin/bash
 
-openstack security group rule create --proto icmp default
-openstack security group rule create --proto tcp --dst-port 22 default
-openstack security group rule create --proto tcp --dst-port 80 default
-openstack security group rule create --proto tcp --dst-port 443 default
+admin_default=$(openstack project list | awk '/admin/ {print $2}')
+openstack security group rule create --proto icmp ${admin_default}
+openstack security group rule create --proto tcp --dst-port 22 ${admin_default}
+openstack security group rule create --proto tcp --dst-port 80 ${admin_default}
+openstack security group rule create --proto tcp --dst-port 443 ${admin_default}
