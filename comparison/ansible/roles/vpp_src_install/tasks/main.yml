@@ -38,9 +38,15 @@
     name: openibd
     state: restarted
 
-- name: Install git
+- name: Install git and python - Redhat
   apt:
-    name: git
+    name: ['git','python-devel','python-pip']
+  when: ansible_os_family == 'RedHat'
+
+- name: Install git and python - Debian
+  apt:
+    name: ['git','python-dev','python-pip']
+  when: ansible_os_family == 'Debian'
 
 - name: Install requied python modules
   pip:
