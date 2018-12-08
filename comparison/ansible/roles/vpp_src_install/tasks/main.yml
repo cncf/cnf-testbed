@@ -5,20 +5,33 @@
 
 - name: Get Mellanox Firmware
   get_url:
-    url: http://content.mellanox.com/ofed/{{mlnx}}/{{mlnx}}-{{arch}}.tgz
-    dest: /srv/mlnx.tgz
+    url: http://content.mellanox.com/ofed/MLNX_OFED-{{mlnx_ver}}/MLNX_OFED_LINUX-{{mlnx_ver}}-{{arch}}.tgz
+    dest: /srv/MLNX_OFED_LINUX-{{mlnx_ver}}-{{arch}}.tgz
 
 - name: unarchive Mellanox Firmware
   unarchive:
     remote_src: true
-    src: /srv/mlnx.tgz
+    src: /srv/MLNX_OFED_LINUX-{{mlnx_ver}}-{{arch}}.tgz
     dest: /srv/
-    creates: /srv/{{mlnx}}-{{arch}}
+    creates: /srv/MLNX_OFED_LINUX-{{mlnx_ver}}-{{arch}}
+
+- name: install main Debian prereqs
+  apt:
+    name: ['ethtool','tcl','libelf1','libnl-route-3-200','swig','libnuma1','quilt','python-libxml2','libltdl-dev','dkms','tk','gfortran','chrpath','pciutils','dpatch','pkg-config']
+  when: ansible_os_family == 'Debian'
+
+- name: install debhelper for Debian
+  apt:
+    name: 'debhelper'
+  when: ansible_os_family == 'Debian'
 
 - name: run Mlnx OFED install
   command: ./mlnxofedinstall --dpdk --upstream-libs --force
   args:
-    chdir: /srv/{{mlnx}}-{{arch}}
+    chdir: /srv/MLNX_OFED_LINUX-{{mlnx_ver}}-{{arch}}
+
+- name: remove ib_srpt
+  command: modprobe -rv ib_srpt
 
 - name: restart openibd service
   service:
@@ -40,10 +53,11 @@
     version: origin/stable/1807
     update: no
 
-- name: Set VPP Users
-  command: sed -i '/vpp_uses_dpdk_mlx5_pmd/s/^# //g' build-data/platforms/vpp.mk 
-  args:
-    chdir: /srv/vpp
+- name: Set VPP DPDK mlx5 PMD use
+  lineinfile:
+    dest: /srv/vpp/build-data/platforms/vpp.mk
+    regexp: '^.*vpp_uses_dpdk_mlx5_pmd.*'
+    line: 'vpp_uses_dpdk_mlx5_pmd = yes'
 
 - name: Build Install Deb
   expect: 
@@ -68,6 +82,7 @@
   command: make pkg-deb vpp_uses_dpdk_mlx5_pmd=yes
   args:
     chdir: /srv/vpp
+  when: ansible_os_family == 'Debian'
 
 - name: find vpp debs to install
   find:
@@ -76,19 +91,26 @@
     patterns: "vpp_18*deb"
   register: vpp
 
-- name: find vpp debs to install
+- name: find vpp-lib debs to install
   find:
     paths: /srv/vpp
     recurse: yes
     patterns: "vpp-lib_18*.deb"
   register: vpp_lib
 
-- name: find vpp debs to install
+- name: find vpp-plugins debs to install
   find:
     paths: /srv/vpp
     recurse: yes
     patterns: "vpp-plugins_18*.deb"
   register: vpp_plugin
+
+- name: find vpp-api-python debs to install
+  find:
+    paths: /srv/vpp
+    recurse: yes
+    patterns: "vpp-api-python_18*.deb"
+  register: vpp_api_python
 
 - name: Install vpp library packages
   command: dpkg -i {{item.path}}
@@ -102,17 +124,11 @@
   command: dpkg -i {{item.path}}
   with_items: "{{vpp_plugin['files']}}"
 
-#- name: Install vpp-lib
-#  command: dpkg -i build-root/vpp-lib_18.07.1-11~*-dirty_amd64.deb
-#  args: 
-#    chdir: /srv/vpp
-#
-#- name: Install vpp_18
-#  command: dpkg -i build-root/vpp_18.07.1-11~*-dirty_amd64.deb
-#  args:
-#    chdir: /srv/vpp
-#
-#- name: Intall vpp plugins
-#  command: dpkg -i build-root/vpp-plugins_18.07.*-dirty_amd64.deb
-#  args:
-#    chdir: /srv/vpp
+- name: Install vpp api python packages
+  command: dpkg -i {{item.path}}
+  with_items: "{{vpp_api_python['files']}}"
+
+- name: restart vpp service
+  service:
+    name: vpp
+    state: restarted

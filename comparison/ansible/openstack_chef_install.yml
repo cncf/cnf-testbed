@@ -21,13 +21,13 @@
           vlan2:
             interface: "eth1"
       when: create_vlans
+    - role: vpp_src_install
+      when: vpp_network and ansible_os_family == 'Debian'
     - role: chef_openstack_install
     - role: openstack_ovs_provider
       when: not vpp_network
     - role: openstack_scripts
     - role: openstack_vnc_fix
-    - role: vpp_src_install
-      when: vpp_network and ansible_os_family == 'Debian'
     - role: retr0h.etcd
       vars:
         etcd_interface: bond0
