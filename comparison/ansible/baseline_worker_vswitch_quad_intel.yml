@@ -1,0 +1,119 @@
+---
+# ./ PACKET create vlan and save vlan ids
+# ./ PACKET disbond interfaces
+# ./ PACKET assign vlan
+
+- hosts: localhost
+  vars:
+    #    server_list: quadtestb-02,quadtestb-04
+    deploy_env: test2
+    vlans:
+      vlan1:
+        interface: eth1
+      vlan2:
+        interface: eth2
+      vlan3:
+        interface: eth3
+  roles:
+    - packet_l2
+
+- hosts: all
+  vars:
+    cnf: true
+    vnf: false
+    baseline: false
+    hugepages: 60000
+    corelist_workers: 2,4,30,32
+    config_network_bonds: true
+    config_network_bridges: false
+    config_network_interfaces: true
+    enable_configured_interfaces_after_defining: true
+    nic_port2: "{{ ansible_eno2.pciid }}"
+    nic_port3: "{{ ansible_eno3.pciid }}"
+    dns_nameservers:
+      - "{{ ansible_dns.nameservers[0] }}"
+      - "{{ ansible_dns.nameservers[0] }}"
+    network_bonds:
+      - name: 'bond0'
+        configure: true
+        method: 'static'
+        address: "{{ ansible_bond0.ipv4.address }}"
+        netmask: "{{ ansible_bond0.ipv4.netmask }}"
+        gateway: "{{ ansible_default_ipv4.gateway }}"
+        parameters:
+          - param: 'bond-downdelay'
+            val: '200'
+          - param: 'bond-miimon'
+            val: '100'
+          - param: 'bond-mode'
+            val: '4'
+          - param: 'bond-updelay'
+            val: '200'
+          - param: 'bond-xmit_hash_policy'
+            val: 'layer3+4'
+          - param: 'bond-lacp-rate'
+            val: '1'
+        slaves:
+          - "{{ ansible_bond0.slaves[0] }}"
+      - name: 'bond0:0'
+        configure: true
+        method: 'static'
+        address: "{{ ansible_bond0_0.ipv4.address }}"
+        netmask: "{{ ansible_bond0_0.ipv4.netmask }}"
+        parameters:
+          - param: 'post-up'
+            val: "route add -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
+          - param: 'post-down'
+            val: "route del -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
+    network_interfaces:
+      - name: "{{ ansible_bond0.slaves[0] }}"
+        configure: true
+        method: 'manual'
+        parameters:
+          - param:
+            val: 'bond-master bond0'
+  pre_tasks:
+  - name: Apt update
+    apt:
+      update_cache: yes
+  - name: Install Vlan Package
+    apt:
+      name: vlan
+  - name: Get bond interface slaves
+    setup:
+      filter: "{{ ansible_bond0.slaves }}"
+  - name: Get dns servers
+    setup:
+      filter: "{{ ansible_dns.nameservers }}"
+  - name: Get Bond0 Public IP
+    setup:
+      filter: "{{ ansible_bond0.ipv4.address }}"
+  - name: Get bond0 netmask
+    setup:
+      filter: "{{ ansible_bond0.ipv4.netmask }}"
+  - name: Echo bond0 netmask
+    setup:
+      filter: "{{ ansible_default_ipv4.gateway }}"
+  - name: Get bond0 internal address
+    setup:
+      filter: "{{ ansible_bond0_0.ipv4.address }}"
+  - name: Get bond0 internal netmask
+    setup:
+      filter: "{{ ansible_bond0_0.ipv4.netmask }}"
+  - name: Get bond0 internal gw
+    setup:
+      filter: "{{ ansible_bond0_0.ipv4.network }}"
+  - name: Get NIC port 2 pci id
+    setup:
+      filter: "{{ ansible_eno2.pciid }}"
+  - name: Get NIC port 3 pci id
+    setup:
+      filter: "{{ ansible_eno3.pciid }}"
+  post_tasks:
+  - name: Reboot Server
+    reboot:
+  roles:
+    - mrlesmithjr.config-interfaces
+    - grub_vswitch
+    - vpp_install
+    - vpp_vswitch

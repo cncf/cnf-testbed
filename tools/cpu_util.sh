@@ -43,7 +43,7 @@ function create_cpu_list () {
     SIBLING_OFFSET="${thread_siblings}"
     CPUS=($(seq 0 "${STEP}" $(( ("${max_cpus}" * "${STEP}") - 1 ))))
     SYSTEM_CPUS=( 0 )
-    SWITCH_CPUS=( 1 )
+    SWITCH_CPUS=( 2 4 )
 }
 
 
