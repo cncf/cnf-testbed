@@ -51,12 +51,12 @@ function validate_input() {
         die "ERROR: Chain, node and nodeness must be an integer values!"
     fi
 
-    if [[ "${CHAIN}" -lt "1" ]] || [[ "${CHAIN}" -gt "8" ]]; then
-        die "ERROR: Chain must be an integer value between 1-8!"
+    if [[ "${CHAIN}" -lt "1" ]] || [[ "${CHAIN}" -gt "10" ]]; then
+        die "ERROR: Chain must be an integer value between 1-10!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "8" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-8!"
+    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "10" ]]; then
+        die "ERROR: Nodeness must be an integer value between 1-10"
     fi
 }
 

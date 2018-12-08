@@ -225,12 +225,12 @@ function validate_input() {
     NODENESS="${2}"
     VLANS=( ${3-} ${4-} )
 
-    if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "8" ]]; then
-        die "ERROR - DEBUG: Only supports up to 1-8 chains!"
+    if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "10" ]]; then
+        die "ERROR - DEBUG: Only supports up to 1-10 chains!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "8" ]]; then
-        die "ERROR - DEBUG: Only supports up to 1-8 nodes per chain!"
+    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "10" ]]; then
+        die "ERROR - DEBUG: Only supports up to 1-10 nodes per chain!"
     fi
 }
 
