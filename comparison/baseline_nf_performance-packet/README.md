@@ -52,26 +52,26 @@ After cloning this repo
 After cloning this repo
 
 - `cd cnfs/comparison/baseline_nf_performance-packet/vEdge/VNF/VSC_multichain_shared`
-- Run: [./run_vms.sh <chains> <nodeness> [clean]](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/vEdge/VNF/VSC_multichain_shared/run_vms.sh)
+- Run: [./run_vms.sh chains nodeness [clean]](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/vEdge/VNF/VSC_multichain_shared/run_vms.sh)
 
 **Run CSC**
 
 After cloning this repo
 
 - `cd cnfs/comparison/baseline_nf_performance-packet/vEdge/CNF/CSC_multichain_shared`
-- Run: [./run_containers.sh <chains> <nodeness> [clean]](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/vEdge/CNF/CSC_multichain_shared/run_containers.sh)
+- Run: [./run_containers.sh chains nodeness [clean]](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/vEdge/CNF/CSC_multichain_shared/run_containers.sh)
 
-**Run CSC**
+**Run CSP**
 
 After cloning this repo
 
 - `cd cnfs/comparison/baseline_nf_performance-packet/vEdge/CNF/CSP_multichain_shared`
-- Run: [./run_containers.sh <chains> <nodeness> [clean]](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/vEdge/CNF/CSP_multichain_shared/run_containers.sh)
+- Run: [./run_containers.sh chains nodeness [clean]](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/vEdge/CNF/CSP_multichain_shared/run_containers.sh)
 
 **Traffic run**
 
 After cloning this repo
 
 - `cd cnfs/comparison/baseline_nf_performance-packet`
-- Run: [./run_test_nfvbench.sh <chains> <nodeness> <test>(https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/run_test_nfvbench.sh)
+- Run: [./run_test_nfvbench.sh chains nodeness test](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/run_test_nfvbench.sh)
 
