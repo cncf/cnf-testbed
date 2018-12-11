@@ -172,9 +172,6 @@ function update_cpu_pinning () {
             }
             (( core_count++ ))
         done
-        if [[ "${vagrant_id:3:1}" == "${NODENESS}" ]]; then
-            core_count=0
-        fi
     done
 }
 
