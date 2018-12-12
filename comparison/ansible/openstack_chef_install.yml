@@ -1,8 +1,10 @@
 ---
 - hosts: all
   vars:
+    vlan_interface: enp94s0f1
+    vlan_pci_id: 0000:5e:00.1
     vpp_network: true
-    create_vlans: false
+    create_vlans: true
   pre_tasks:
   - setup:
   roles:
@@ -12,7 +14,7 @@
       connection: local
       vars:
         facility: "{{ lookup('env','PACKET_FACILITY') }}"
-        deploy_env: os
+        deploy_env: mlxtest 
         server_list: "{{ lookup('env','SERVER_LIST') }}"
         project_name: "{{ lookup('env','PROJECT_NAME') }}"
         vlans:
@@ -21,17 +23,19 @@
           vlan2:
             interface: "eth1"
       when: create_vlans
+
+    - role: retr0h.etcd
+      vars:
+        etcd_interface: bond0
+      when: vpp_network
+
     - role: chef_openstack_install
     - role: openstack_ovs_provider
       when: not vpp_network
     - role: openstack_scripts
     - role: openstack_vnc_fix
-    - role: retr0h.etcd
-      vars:
-        etcd_interface: bond0
+
+    - role: vpp_src_install
       when: vpp_network
-#    - role: vpp_src_install
     - role: vpp_openstack
-      vars:
-        vpp_branch: '1807'
       when: vpp_network

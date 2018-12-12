@@ -1,13 +1,22 @@
+- name: Restart etcd
+  service:
+    enabled: true
+    name: etcd
+    state: restarted
+
 - name: Restart openstack-nova-compute
   service:
+    enabled: true
     name: nova-compute
     state: restarted
   when: not host_0_address == inventory_hostname
 
 - name: Restart neutron-server
   service:
+    enabled: true
     name: neutron-server
     state: restarted
+  when: host_0_address == inventory_hostname
 
 - name: Restart vpp
   service:

@@ -1,0 +1,40 @@
+---
+- name: Apt update
+  apt: 
+    update_cache: yes
+
+- name: Get Mellanox Firmware
+  get_url:
+    url: http://content.mellanox.com/ofed/MLNX_OFED-{{mlnx_ver}}/MLNX_OFED_LINUX-{{mlnx_ver}}-{{arch}}.tgz
+    dest: /srv/MLNX_OFED_LINUX-{{mlnx_ver}}-{{arch}}.tgz
+
+- name: unarchive Mellanox Firmware
+  unarchive:
+    remote_src: true
+    src: /srv/MLNX_OFED_LINUX-{{mlnx_ver}}-{{arch}}.tgz
+    dest: /srv/
+    creates: /srv/MLNX_OFED_LINUX-{{mlnx_ver}}-{{arch}}
+
+#- name: install main Debian prereqs
+#  apt:
+#    name: ['ethtool','tcl','libelf1','libnl-route-3-200','swig','libnuma1','quilt','python-libxml2','libltdl-dev','dkms','tk','gfortran','chrpath','pciutils','dpatch','pkg-config']
+#  when: ansible_os_family == 'Debian'
+#
+#- name: install debhelper for Debian
+#  apt:
+#    name: 'debhelper'
+#  when: ansible_os_family == 'Debian'
+
+- name: run Mlnx OFED install
+  command: ./mlnxofedinstall --dpdk --upstream-libs --force
+  args:
+    chdir: /srv/MLNX_OFED_LINUX-{{mlnx_ver}}-{{arch}}
+
+- name: remove ib_srpt
+  command: modprobe -rv ib_srpt
+
+- name: restart openibd service
+  service:
+    name: openibd
+    state: restarted
+

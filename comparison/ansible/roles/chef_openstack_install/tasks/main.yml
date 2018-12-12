@@ -3,10 +3,12 @@
   yum:
     name: https://packages.chef.io/files/stable/chefdk/3.4.38/el/7/chefdk-3.4.38-1.el7.x86_64.rpm
   when: ansible_os_family == 'RedHat'
+
 - name: get chef package
   apt:
     deb: https://packages.chef.io/files/stable/chefdk/3.2.30/ubuntu/18.04/chefdk_3.2.30-1_amd64.deb
   when: ansible_os_family == 'Debian'
+
 - name: get openstack-chef code 
   git: 
     repo: https://git.openstack.org/openstack/openstack-chef
@@ -20,15 +22,16 @@
   args:
     chdir: /root/openstack-chef
     creates: /root/.berkshelf
+
 - name: move berks downloaded code to openstack-chef directory
   shell: tar cf - cookbooks/ | (cd /root/openstack-chef; tar xf -)
   args:
     chdir: /root/.berkshelf/
-    creates: /root/openstack-chef/cookbooks
+
 - name: Install chef client via the omnibus installer
   shell: curl -L https://omnitruck.chef.io/install.sh | bash
   args:
-    creates: /opt/chef
+    creates: /usr/bin/chef-client
     
 - name: Make /etc/chef directory
   file:
@@ -51,6 +54,7 @@
   command: knife cookbook upload -a -z --include-dependencies --cookbook-path cookbooks/
   args:
     chdir: /root/openstack-chef/
+    creates: /root/openstack-chef/cookbooks/openstack-common
 
 - name: install updated environment file
   template:
@@ -94,6 +98,10 @@
     version: 18.0
     executable: 'pip3'
   when: ansible_os_family == 'Debian'
+
+- name: Install python api pre-requisites
+  pip:
+    name: ['pycparser','cffi']
 
 - name: Update the multinode-controller role - VPP
   template:
