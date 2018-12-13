@@ -1,0 +1,121 @@
+2018-12-13 18:55:00,674 INFO Loading configuration file: /tmp/nfvbench/nfvbench_config.cfg
+2018-12-13 18:55:00,712 INFO EXT chain with OpenStack mode disabled
+2018-12-13 18:55:00,712 INFO -c /tmp/nfvbench/nfvbench_config.cfg --rate 10Gbps --flow-count 1024 --duration 60 --json /tmp/nfvbench/vnf_mlx_2c3n_10Gbps-1.json
+2018-12-13 18:55:00,714 INFO Connecting to TRex (127.0.0.1)...
+2018-12-13 18:55:00,763 INFO Connected to TRex
+2018-12-13 18:55:00,763 INFO    Port 0: MT27710 Family [ConnectX-4 Lx Virtual Function] speed=10Gbps mac=ee:00:51:d3:06:e8 pci=0000:5e:00.4 driver=net_mlx5
+2018-12-13 18:55:00,763 INFO    Port 1: MT27710 Family [ConnectX-4 Lx Virtual Function] speed=10Gbps mac=ba:a7:6c:aa:67:7b pci=0000:5e:00.5 driver=net_mlx5
+2018-12-13 18:55:00,764 INFO Port 0: VLANs (1044, 1044)
+2018-12-13 18:55:00,764 INFO Port 1: VLANs (1072, 1072)
+2018-12-13 18:55:00,764 INFO ChainRunner initialized
+2018-12-13 18:55:00,765 INFO Starting 2xEXT benchmark...
+2018-12-13 18:55:00,853 INFO Polling ARP until successful...
+2018-12-13 18:55:01,014 INFO    ARP: port=0 chain=0 src IP=172.16.10.100 dst IP=172.16.10.10 -> MAC=52:54:00:00:00:aa
+2018-12-13 18:55:01,014 INFO    ARP: port=0 chain=1 src IP=172.16.10.101 dst IP=172.16.10.11 -> MAC=52:54:01:00:00:aa
+2018-12-13 18:55:01,014 INFO ARP resolved successfully for port 0
+2018-12-13 18:55:01,274 INFO    ARP: port=1 chain=0 src IP=172.16.20.100 dst IP=172.16.20.10 -> MAC=52:54:00:00:00:bb
+2018-12-13 18:55:01,274 INFO    ARP: port=1 chain=1 src IP=172.16.20.101 dst IP=172.16.20.11 -> MAC=52:54:01:00:00:bb
+2018-12-13 18:55:01,274 INFO ARP resolved successfully for port 1
+2018-12-13 18:55:01,350 INFO Port 0: dst MAC ['52:54:00:00:00:aa', '52:54:01:00:00:aa']
+2018-12-13 18:55:01,350 INFO Port 1: dst MAC ['52:54:00:00:00:bb', '52:54:01:00:00:bb']
+2018-12-13 18:55:01,350 INFO Starting traffic generator to ensure end-to-end connectivity
+2018-12-13 18:55:01,367 INFO Created 2 traffic streams for port 0.
+2018-12-13 18:55:01,369 INFO Created 2 traffic streams for port 1.
+2018-12-13 18:55:01,461 INFO Captured unique src mac 0/4, capturing return packets (retry 1/100)...
+2018-12-13 18:55:03,615 INFO Received packet from mac: 52:54:01:00:00:bb (chain=1, port=1)
+2018-12-13 18:55:03,615 INFO Received packet from mac: 52:54:00:00:00:bb (chain=0, port=1)
+2018-12-13 18:55:03,616 INFO Received packet from mac: 52:54:01:00:00:aa (chain=1, port=0)
+2018-12-13 18:55:03,616 INFO Received packet from mac: 52:54:00:00:00:aa (chain=0, port=0)
+2018-12-13 18:55:03,616 INFO End-to-end connectivity established
+2018-12-13 18:55:03,639 INFO Cleared all existing streams
+2018-12-13 18:55:03,671 INFO Created 4 traffic streams for port 0.
+2018-12-13 18:55:03,674 INFO Created 4 traffic streams for port 1.
+2018-12-13 18:55:03,674 INFO Starting to generate traffic...
+2018-12-13 18:55:03,674 INFO Running traffic generator
+2018-12-13 18:55:13,708 INFO TX: 148969203; RX: 25826997; Est. Dropped: 123142206; Est. Drop rate: 82.6629%
+2018-12-13 18:55:23,727 INFO TX: 298058202; RX: 51609837; Est. Dropped: 246448365; Est. Drop rate: 82.6846%
+2018-12-13 18:55:33,744 INFO TX: 447114377; RX: 77382505; Est. Dropped: 369731872; Est. Drop rate: 82.6929%
+2018-12-13 18:55:43,761 INFO TX: 596174140; RX: 103143864; Est. Dropped: 493030276; Est. Drop rate: 82.6990%
+2018-12-13 18:55:53,778 INFO TX: 745230222; RX: 128912150; Est. Dropped: 616318072; Est. Drop rate: 82.7017%
+2018-12-13 18:56:03,715 INFO TX: 892852552; RX: 154422653; Est. Dropped: 738429899; Est. Drop rate: 82.7046%
+2018-12-13 18:56:03,715 INFO ...traffic generating ended.
+2018-12-13 18:56:03,725 INFO Service chain 'EXT' run completed.
+2018-12-13 18:56:03,725 INFO Clean up skipped.
+2018-12-13 18:56:03,758 INFO Saving results in json file: /tmp/nfvbench/vnf_mlx_2c3n_10Gbps-1.json...
+2018-12-13 18:56:03,766 INFO 
+========== NFVBench Summary ==========
+Date: 2018-12-13 18:55:00
+NFVBench version 2.0.5
+Openstack Neutron:
+  vSwitch: 
+  Encapsulation: 
+Benchmarks:
+> Networks:
+  > Components:
+    > Traffic Generator:
+        Profile: trex-local
+        Tool: TRex
+    > Versions:
+      > Traffic_Generator:
+          build_date: Nov 13 2017
+          version: v2.32
+          built_by: hhaim
+          mode: STL
+          build_time: 10:58:17
+  > Service chain:
+    > EXT:
+      > Traffic:
+          Profile: traffic_profile_64B
+          Bidirectional: True
+          Flow count: 1024
+          Service chains count: 2
+          Compute nodes: []
+            
+            Run Summary:
+            
+              +-----------------+-------------+----------------------+----------------------+----------------------+
+              |   L2 Frame Size |  Drop Rate  |  Avg Latency (usec)  |   Min Latency (usec) |  Max Latency (usec)  |
+              +=================+=============+======================+======================+======================+
+              |              64 |  82.7046%   |        3,011         |                   40 |        6,004         |
+              +-----------------+-------------+----------------------+----------------------+----------------------+
+              
+            
+            L2 frame size: 64
+            
+            Run Config:
+            
+              +-------------+---------------------------+------------------------+-----------------+---------------------------+------------------------+-----------------+
+              |  Direction  |  Requested TX Rate (bps)  |  Actual TX Rate (bps)  |  RX Rate (bps)  |  Requested TX Rate (pps)  |  Actual TX Rate (pps)  |  RX Rate (pps)  |
+              +=============+===========================+========================+=================+===========================+========================+=================+
+              |   Forward   |        5.0000 Gbps        |      5.0000 Gbps       |  810.8863 Mbps  |       7,440,476 pps       |     7,440,437 pps      |  1,206,676 pps  |
+              +-------------+---------------------------+------------------------+-----------------+---------------------------+------------------------+-----------------+
+              |   Reverse   |        5.0000 Gbps        |      5.0000 Gbps       |  918.6474 Mbps  |       7,440,476 pps       |     7,440,437 pps      |  1,367,034 pps  |
+              +-------------+---------------------------+------------------------+-----------------+---------------------------+------------------------+-----------------+
+              |    Total    |       10.0000 Gbps        |      9.9999 Gbps       |   1.7295 Gbps   |      14,880,952 pps       |     14,880,874 pps     |  2,573,710 pps  |
+              +-------------+---------------------------+------------------------+-----------------+---------------------------+------------------------+-----------------+
+              
+            Forward Chain Packet Counters and Latency:
+            
+              +---------+--------------+--------------------------+------------+------------+------------+
+              |  Chain  |  TRex.TX.p0  |        TRex.RX.p1        |  Avg lat.  |  Min lat.  |  Max lat.  |
+              +=========+==============+==========================+============+============+============+
+              |    0    | 223,213,137  | -205,995,659 (-92.2865%) | 3,289 usec |  90 usec   | 5,810 usec |
+              +---------+--------------+--------------------------+------------+------------+------------+
+              |    1    | 223,213,137  | -168,032,870 (-75.2791%) | 3,390 usec |  40 usec   | 6,004 usec |
+              +---------+--------------+--------------------------+------------+------------+------------+
+              |  total  | 446,426,274  | -374,028,529 (-83.7828%) | 3,340 usec |  40 usec   | 6,004 usec |
+              +---------+--------------+--------------------------+------------+------------+------------+
+              
+            Reverse Chain Packet Counters and Latency:
+            
+              +---------+--------------+--------------------------+------------+------------+------------+
+              |  Chain  |  TRex.TX.p1  |        TRex.RX.p0        |  Avg lat.  |  Min lat.  |  Max lat.  |
+              +=========+==============+==========================+============+============+============+
+              |    0    | 223,213,137  | -181,735,977 (-81.4181%) | 2,629 usec | 1,000 usec | 4,092 usec |
+              +---------+--------------+--------------------------+------------+------------+------------+
+              |    1    | 223,213,137  | -182,668,213 (-81.8358%) | 2,653 usec |  100 usec  | 3,925 usec |
+              +---------+--------------+--------------------------+------------+------------+------------+
+              |  total  | 446,426,274  | -364,404,190 (-81.6270%) | 2,641 usec |  100 usec  | 4,092 usec |
+              +---------+--------------+--------------------------+------------+------------+------------+
+              
+
