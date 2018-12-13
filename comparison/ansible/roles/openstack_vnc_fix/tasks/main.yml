@@ -14,8 +14,8 @@
     - { option: "xvpvncproxy_host", value: "{{ ansible_default_ipv4.address }}" }
     - { option: "novncproxy_host", value: "{{ ansible_default_ipv4.address }}" }
     - { option: "server_listen", value: "{{ ansible_default_ipv4.address }}" }
-    - { option: "novncproxy_base_url", value: "http://{{ ansible_default_ipv4.address }}:6080/vnc_auto.html" }
-    - { option: "xvpvncproxy_base_url", value: "http://{{ ansible_default_ipv4.address }}:6081/console" }
+    - { option: "novncproxy_base_url", value: "http://{{ host_0_address }}:6080/vnc_auto.html" }
+    - { option: "xvpvncproxy_base_url", value: "http://{{ host_0_address }}:6081/console" }
   register: nova_update
 
 - name: restart nova-compute

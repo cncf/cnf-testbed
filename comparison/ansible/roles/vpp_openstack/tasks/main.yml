@@ -18,6 +18,20 @@
     mode: 0644
   when: ansible_os_family == 'Debian'
 
+- name: add missing params to nova.conf
+  ini_file:
+    dest: /etc/nova/nova.conf
+    section: Default
+    option: "{{item.option}}"
+    value: "{{item.value}}"
+  with_items:
+    - {option: 'vif_plugging_timeout', value: '300' }
+    - {option: 'vif_plugging_is_fatal', value: 'True' }
+    - {option: 'use_neutron', value: 'True' }
+    - {option: 'firewall_driver', value: 'nova.virt.firewall.NoopFirewallDriver' }
+  notify:
+  - Restart openstack-nova-compute
+    
 - name: install bridge utilities package - RedHat
   yum:
     name: bridge-utils
@@ -57,9 +71,9 @@
   command: neutron-db-manage --subproject networking-vpp --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head
   when: ansible_os_family == 'Debian'
 
-#- name: bring ex-slave interface down
-#  command: ifdown {{vlan_interface}}
-#  ignore_errors: true
+- name: bring ex-slave interface down
+  command: ip l s dev {{vlan_interface}} down
+  ignore_errors: true
 
 - name: add vpp-agent script
   template:
@@ -101,6 +115,12 @@
   - Restart neutron-server
   - Restart vpp-agent
 
+- name: ensure linuxbridge rootwrap neutron filters exist
+  template:
+    src: linuxbridge.filters
+    dest: /etc/neutron/rootwrap.d/linuxbridge.filters
+    mode: 0755
+
 - name: add hugepage support for nova
   ini_file:
     path: /etc/nova/nova.conf
@@ -110,6 +130,16 @@
   notify:
   - Restart openstack-nova-compute
 
+- name: ensure Hugepages are properly sized (2K 2K pages)
+  template:
+    src: 80-vpp.conf
+    dest: /etc/sysctl.d/80-vpp.conf
+  register: hugepages
+
+- name: reload vpp hugepage support
+  command: sysctl -p /etc/sysctl.d/80-vpp.conf
+  when: hugepages.changed
+
 - name: ensure Neutron plugin is defined - Debian
   lineinfile:
     path: /etc/default/neutron-server
@@ -118,6 +148,11 @@
   when: ansible_os_family == 'Debian' and inventory_hostname == host_0_address
   notify:
   - Restart neutron-server
+
+- name: Ensure current python eventlet is installed
+  pip:
+    name: eventlet
+    state: latest
 
 - name: Daemon Reload
   systemd:
