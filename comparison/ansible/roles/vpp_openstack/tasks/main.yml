@@ -21,7 +21,7 @@
 - name: add missing params to nova.conf
   ini_file:
     dest: /etc/nova/nova.conf
-    section: Default
+    section: DEFAULT
     option: "{{item.option}}"
     value: "{{item.value}}"
   with_items:
@@ -30,7 +30,7 @@
     - {option: 'use_neutron', value: 'True' }
     - {option: 'firewall_driver', value: 'nova.virt.firewall.NoopFirewallDriver' }
   notify:
-  - Restart openstack-nova-compute
+  - Restart nova-compute
     
 - name: install bridge utilities package - RedHat
   yum:
@@ -120,6 +120,8 @@
     src: linuxbridge.filters
     dest: /etc/neutron/rootwrap.d/linuxbridge.filters
     mode: 0755
+  notify:
+  - Restart neutron-server
 
 - name: add hugepage support for nova
   ini_file:
@@ -128,7 +130,7 @@
     option: reserved_huge_pages
     value: node:0,size:2048,count:64
   notify:
-  - Restart openstack-nova-compute
+  - Restart nova-compute
 
 - name: ensure Hugepages are properly sized (2K 2K pages)
   template:
@@ -139,6 +141,10 @@
 - name: reload vpp hugepage support
   command: sysctl -p /etc/sysctl.d/80-vpp.conf
   when: hugepages.changed
+  notify:
+  - Restart apache
+  - Restart nova-compute
+  - Restart vpp
 
 - name: ensure Neutron plugin is defined - Debian
   lineinfile:
@@ -152,7 +158,15 @@
 - name: Ensure current python eventlet is installed
   pip:
     name: eventlet
-    state: latest
+    version: 0.22
+  notify:
+  - Restart etcd
+  - Restart neutron-server
+  - Restart vpp-agent
+  - Restart nova-compute
+  - Restart apache
+
+  
 
 - name: Daemon Reload
   systemd:

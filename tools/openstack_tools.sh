@@ -13,6 +13,7 @@ docker run \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
   -v ${parentdir}/tools/terraform-ansible/:/terraform \
+  -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
   -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
   -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
   -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \

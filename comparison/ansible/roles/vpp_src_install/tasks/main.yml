@@ -1,13 +1,13 @@
 ---
 - name: Install requied python modules
   pip:
-    name: pexpect
+    name: ['pexpect','eventlet==0.22']
 
 - name: Clone Repo
   git:
     repo: 'https://gerrit.fd.io/r/vpp'
     dest: /srv/vpp
-    version: origin/stable/1807
+    version: origin/stable/{{vpp_ver}}
     update: no
 
 - name: Set VPP DPDK mlx5 PMD use
