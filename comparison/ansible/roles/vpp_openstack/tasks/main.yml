@@ -155,6 +155,12 @@
   notify:
   - Restart neutron-server
 
+- name: verify that openstack dashboard is accessible to apache
+  file:
+    path: /var/lib/openstack-dashboard
+    state: directory
+    mode: 0777
+
 - name: Ensure current python eventlet is installed
   pip:
     name: eventlet
@@ -165,8 +171,6 @@
   - Restart vpp-agent
   - Restart nova-compute
   - Restart apache
-
-  
 
 - name: Daemon Reload
   systemd:
