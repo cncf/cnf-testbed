@@ -42,20 +42,23 @@
   args:
     chdir: /srv/vpp
 
-- name: Install vpp-lib
-  command: dpkg -i build-root/vpp-lib_18.07.1-11~g31aa6f26-dirty_amd64.deb
-  args: 
-    chdir: /srv/vpp
+- shell: ls /srv/vpp/build-root/ | grep 'vpp-lib.*deb'
+  register: deb_lib
 
-- name: Install vpp_18
-  command: dpkg -i build-root/vpp_18.07.1-11~g31aa6f26-dirty_amd64.deb
-  args:
-    chdir: /srv/vpp
+- shell: ls /srv/vpp/build-root/ | grep 'vpp_.*deb'
+  register: deb_main
 
-- name: Intall vpp plugins
-  command: dpkg -i build-root/vpp-plugins_18.07.1-11~g31aa6f26-dirty_amd64.deb
+- shell: ls /srv/vpp/build-root/ | grep 'vpp-plugins.*deb'
+  register: deb_plugins
+
+- name: Install VPP libs
+  command: dpkg -i {{ item }}
+  with_items:
+    - "{{ deb_lib.stdout }}"
+    - "{{ deb_main.stdout }}"
+    - "{{ deb_plugins.stdout }}"
   args:
-    chdir: /srv/vpp
+    chdir: /srv/vpp/build-root
 
 - name: Create vpp sockets directory
   file: path=/etc/vpp/sockets state=directory
