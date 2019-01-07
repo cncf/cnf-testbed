@@ -7,16 +7,15 @@
   apt:
     name: git
 
+- name: Install Libmnl-dev for VPP
+  apt:
+    name: libmnl-dev
+
 - name: Clone Repo
   git:
     repo: 'https://gerrit.fd.io/r/vpp'
     dest: /srv/vpp
-    version: origin/stable/1807
-
-- name: Set VPP Users
-  command: sed -i '/vpp_uses_dpdk_mlx5_pmd/s/^# //g' build-data/platforms/vpp.mk 
-  args:
-    chdir: /srv/vpp
+    version: v18.10
 
 - name: Build Install Deb
   expect: 
