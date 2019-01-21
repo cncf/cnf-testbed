@@ -193,18 +193,17 @@ function set_remote_macs () {
 
     set -euo pipefail
 
-    trex_mac1=e4:43:4b:2e:b1:d1
-    trex_mac2=e4:43:4b:2e:b1:d2
+    trex_macs=( e4:43:4b:2e:b1:d1 e4:43:4b:2e:b1:d2 )
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
-        REMMAC1=${trex_mac1}
-        REMMAC2=${trex_mac2}
+        REMMAC1=${trex_macs[0]}
+        REMMAC2=${trex_macs[1]}
     elif [[ "${NODE}" == "1" ]]; then
-        REMMAC1=${trex_mac1}
+        REMMAC1=${trex_macs[0]}
         REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:02:aa
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
         REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
-        REMMAC2=${trex_mac2}
+        REMMAC2=${trex_macs[1]}
     else
         REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
         REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE + 1)):aa
