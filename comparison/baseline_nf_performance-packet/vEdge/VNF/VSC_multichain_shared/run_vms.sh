@@ -284,6 +284,13 @@ else
     }
     update_vpp_config || die
 
+    if [ -z "$(vagrant box list | grep vedge)" ]; then
+        echo "Base image not found - Building"
+        pushd ../base_image
+        ./build_vm.sh
+        popd
+    fi
+
     source ./create_vagrantfile.sh "${CHAINS}" "${NODENESS}" || {
         die "Failed to create Vagrantfile!"
     }

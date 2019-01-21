@@ -1,0 +1,81 @@
+---
+- name: Apt update
+  apt: 
+    update_cache: yes
+
+- name: Install git
+  apt:
+    name: git
+
+- name: Check if CNCF CNF has been cloned
+  stat:
+    path: /srv/cnfs
+  register: cnfs_p
+
+- debug:
+    msg: "CNCF CNF already exists"
+  when: cnfs_p.stat.isdir is defined and cnfs_p.stat.isdir
+
+- name: Clone CNCF CNF
+  git:
+    repo: 'https://github.com/cncf/cnfs.git'
+    dest: /srv/cnfs
+  when: cnfs_p.stat.isdir is not defined
+
+- name: Check is NF symlink exists
+  stat:
+    path: /root/Network_Functions
+  register: nf_p
+
+- name: Create NF symlink
+  file:
+    src: /srv/cnfs/comparison/baseline_nf_performance-packet/vEdge
+    dest: /root/Network_Functions
+    state: link
+  when: nf_p.stat.islnk is not defined
+
+- name: Update VLANs in configuration
+  lineinfile:
+    path: /root/Network_Functions/CNF/CSP_multichain_shared/run_containers.sh
+    regexp: '    VLANS='
+    line: '    VLANS=( {{ vlan_ids[0] }} {{ vlan_ids[1] }} )'
+    backup: yes
+- lineinfile:
+    path: /root/Network_Functions/CNF/CSC_multichain_shared/run_containers.sh
+    regexp: '    VLANS='
+    line: '    VLANS=( {{ vlan_ids[0] }} {{ vlan_ids[1] }} )'
+    backup: yes
+- lineinfile:
+    path: /root/Network_Functions/VNF/VSC_multichain_shared/run_vms.sh
+    regexp: '^VLANS='
+    line: 'VLANS=( {{ vlan_ids[0] }} {{ vlan_ids[1] }} )'
+    backup: yes
+- lineinfile:
+    path: /root/Network_Functions/VNF_openstack/multichain/run_vms.sh
+    regexp: '^VLANs='
+    line: 'VLANs="{{ vlan_ids[0] }} {{ vlan_ids[1] }}"'
+    backup: yes
+
+- name: Update TRex MACs in configuration
+  lineinfile:
+    path: /root/Network_Functions/CNF/CSP_multichain_shared/base/configure.sh
+    regexp: '    trex_macs='
+    line: '    trex_macs=( {{ tg_mac1 }} {{ tg_mac2 }} )'
+    backup: yes
+- lineinfile:
+    path: /root/Network_Functions/CNF/CSC_multichain_shared/base/configure.sh
+    regexp: '    trex_macs='
+    line: '    trex_macs=( {{ tg_mac1 }} {{ tg_mac2 }} )'
+    backup: yes
+- lineinfile:
+    path: /root/Network_Functions/VNF/VSC_multichain_shared/shared/configure.sh
+    regexp: '    trex_macs='
+    line: '    trex_macs=( {{ tg_mac1 }} {{ tg_mac2 }} )'
+    backup: yes
+- lineinfile:
+    path: /root/Network_Functions/VNF_openstack/multichain/shared/configure.sh
+    regexp: 'trex_macs='
+    line: 'trex_macs=( {{ tg_mac1 }} {{ tg_mac2 }} )'
+    backup: yes
+
+
