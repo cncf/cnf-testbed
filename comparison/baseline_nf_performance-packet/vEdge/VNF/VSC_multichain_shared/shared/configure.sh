@@ -80,17 +80,37 @@ function set_subnets () {
     set -euo pipefail
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
+      if $ipv6; then
+        SUBNET1=fde5::3:0:10$(( ${CHAIN} - 1 ))/96
+        SUBNET2=fde5::4:0:10$(( ${CHAIN} - 1 ))/96
+      else
         SUBNET1=172.16.10.1$(( ${CHAIN} - 1 ))/24
         SUBNET2=172.16.20.1$(( ${CHAIN} - 1 ))/24
+      fi
     elif [[ "${NODE}" == "1" ]]; then
+      if $ipv6; then
+        SUBNET1=fde5::3:0:10$(( ${CHAIN} - 1 ))/96
+        SUBNET2=fde5::31:0:10/96
+      else
         SUBNET1=172.16.10.1$(( ${CHAIN} - 1 ))/24
         SUBNET2=172.16.31.10/24
+      fi
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
+      if $ipv6; then
+        SUBNET1=fde5::$(($NODE + 29)):0:11/96
+        SUBNET2=fde5::4:0:10$(( ${CHAIN} - 1 ))/96
+      else
         SUBNET1=172.16.$(($NODE + 29)).11/24
         SUBNET2=172.16.20.1$(( ${CHAIN} - 1 ))/24
+      fi
     else
+      if $ipv6; then
+        SUBNET1=fde5::$(($NODE + 29)):0:11/96
+        SUBNET2=fde5::$(($NODE + 30)):0:10/96
+      else
         SUBNET1=172.16.$(($NODE + 29)).11/24
         SUBNET2=172.16.$(($NODE + 30)).10/24
+      fi
     fi
 }
 
@@ -109,17 +129,37 @@ function set_remote_ips () {
     set -euo pipefail
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
+      if $ipv6; then
+        REMIP1=fde5::3:0:100$(( ${CHAIN} - 1 ))
+        REMIP2=fde5::4:0:100$(( ${CHAIN} - 1 ))
+      else
         REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))
         REMIP2=172.16.20.10$(( ${CHAIN} - 1 ))
+      fi
     elif [[ "${NODE}" == "1" ]]; then
+      if $ipv6; then
+        REMIP1=fde5::3:0:100$(( ${CHAIN} - 1 ))
+        REMIP2=fde5::31:0:11
+      else
         REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))
         REMIP2=172.16.31.11
+      fi
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
+      if $ipv6; then
+        REMIP1=fde5::$(($NODE + 29)):0:10
+        REMIP2=fde5::4:0:100$(( ${CHAIN} - 1 ))
+      else
         REMIP1=172.16.$(($NODE + 29)).10
         REMIP2=172.16.20.10$(( ${CHAIN} - 1 ))
+      fi
     else
+      if $ipv6; then
+        REMIP1=fde5::$(($NODE + 29)):0:10
+        REMIP2=fde5::$(($NODE + 30)):0:11
+      else
         REMIP1=172.16.$(($NODE + 29)).10
         REMIP2=172.16.$(($NODE + 30)).11
+      fi
     fi
 }
 
@@ -154,6 +194,8 @@ function set_remote_macs () {
     fi
 }
 
+ipv6=false
+
 validate_input "${@}" || die
 set_subnets || die
 set_remote_ips || die
@@ -167,6 +209,24 @@ if [ ! "${#intfs[@]}" == "2" ]; then
 fi
 
 # Create interface configuration for VPP
+if $ipv6; then
+sudo bash -c "cat > /etc/vpp/setup.gate" <<EOF
+set int state ${intfs[0]} up
+set interface ip address ${intfs[0]} ${SUBNET1}
+
+set int state ${intfs[1]} up
+set interface ip address ${intfs[1]} ${SUBNET2}
+
+enable ip6 interface ${intfs[0]}
+enable ip6 interface ${intfs[1]}
+
+set ip6 neighbor ${intfs[0]} ${REMIP1} ${REMMAC1} static
+set ip6 neighbor ${intfs[1]} ${REMIP2} ${REMMAC2} static
+
+ip route add fde5::1:0:0/96 via ${REMIP1}
+ip route add fde5::2:0:0/96 via ${REMIP2}
+EOF
+else
 sudo bash -c "cat > /etc/vpp/setup.gate" <<EOF
 set int state ${intfs[0]} up
 set interface ip address ${intfs[0]} ${SUBNET1}
@@ -180,6 +240,7 @@ set ip arp static ${intfs[1]} ${REMIP2} ${REMMAC2}
 ip route add 172.16.64.0/18 via ${REMIP1}
 ip route add 172.16.192.0/18 via ${REMIP2}
 EOF
+fi
 
 sudo service vpp restart || die "Failed to restart VPP!"
 

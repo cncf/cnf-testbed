@@ -78,4 +78,23 @@
     line: 'trex_macs=( {{ tg_mac1 }} {{ tg_mac2 }} )'
     backup: yes
 
+- name: Update IP flag in configuration
+  lineinfile:
+    path: /root/Network_Functions/CNF/CSP_multichain_shared/base/configure.sh
+    regexp: '^ipv6='
+    line: "{{ 'ipv6=true' if ipv6 else 'ipv6=false' }}"
+    backup: yes
+- lineinfile:
+    path: /root/Network_Functions/CNF/CSC_multichain_shared/base/configure.sh
+    regexp: '^ipv6='
+    line: "{{ 'ipv6=true' if ipv6 else 'ipv6=false' }}"
+    backup: yes
+- lineinfile:
+    path: /root/Network_Functions/VNF/VSC_multichain_shared/shared/configure.sh
+    regexp: '^ipv6='
+    line: "{{ 'ipv6=true' if ipv6 else 'ipv6=false' }}"
+    backup: yes
+
+- debug:
+    msg: "VNF_Openstack currently doesn't support IPv6 (outdated scripts)"
 

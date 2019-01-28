@@ -31,8 +31,8 @@
       when: sut_nic == "mellanox"
     - name: get TG MACs (Intel)
       set_fact:
-        tg_mac1: "{{ ansible_eno2.macaddress }}"
-        tg_mac2: "{{ ansible_eno3.macaddress }}"
+        tg_mac1: "{{ ansible_eno3.macaddress }}"
+        tg_mac2: "{{ ansible_eno4.macaddress }}"
       when: sut_nic == "intel"
     - debug:
         msg: "MACs: {{ tg_mac1 }}, {{ tg_mac2 }}"
@@ -69,6 +69,7 @@
       update_cache: yes
   - name: Check if Docker is installed
     shell: command -v docker
+    ignore_errors: yes
     register: docker_path
   - debug:
       msg: "Docker is already installed"
@@ -79,6 +80,7 @@
     when: docker_path.stdout == ""
   - name: Check if Vagrant is installed
     shell: command -v vagrant
+    ignore_errors: yes
     register: vagrant_path
   - debug:
       msg: "Vagrant is already installed"
@@ -92,11 +94,12 @@
       name: nf_install
 
   vars:
+    ipv6: false
     tg_mac1: "{{ hostvars[groups['tg'][0]].tg_mac1 }}"
     tg_mac2: "{{ hostvars[groups['tg'][0]].tg_mac2 }}"
     vlan_ids:
-      - "{{ hostvars.localhost.vlans.vlan1.vid }}"
-      - "{{ hostvars.localhost.vlans.vlan2.vid }}"
+      - "{{ 'hostvars.localhost.vlans.vlan1.vid' if sut_nic == 'mellanox' else '' }}"
+      - "{{ 'hostvars.localhost.vlans.vlan2.vid' if sut_nic == 'mellanox' else '' }}"
     docker__registries:
       - registry_url: "https://index.docker.io/v1/"
     docker__package_dependencies:
