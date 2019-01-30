@@ -1,0 +1,97 @@
+---
+- name: Install git
+  apt:
+    name: git
+
+- name: Install zlib1g-dev
+  apt:
+    name: zlib1g-dev
+
+- name: Install kernel headers
+  shell: "apt-get -y install linux-headers-$(uname -r)"
+
+- name: Check if TRex has been cloned
+  stat:
+    path: /ansible/trex-core
+  register: trex_p
+
+- name: Clone CNCF CNF
+  git:
+    repo: 'https://github.com/cisco-system-traffic-generator/trex-core.git'
+    dest: /ansible/trex-core
+    version: v2.50
+  when: trex_p.stat.isdir is not defined
+
+- name: Configure TRex
+  command: ./b configure
+  args:
+    chdir: /ansible/trex-core/linux_dpdk
+
+- name: Build TRex
+  command: ./b build
+  args:
+    chdir: /ansible/trex-core/linux_dpdk
+
+## Below section depends on docker_container_facts
+## Currently only available in devel (new in 2.8)
+
+#- name: Get nfvbench container info
+#  docker_container_facts:
+#    name: nfvbench
+#  register: nfvbench
+
+#- name: Start container if not running
+#  shell: docker start nfvbench
+#  when: (nfvbench.exists) and (nfvbench.docker_container['State']['Running'] != true)
+
+#- docker_container_facts:
+#    name: nfvbench
+#  register: nfvbench
+
+#- fail:
+#    msg: "NFVbench container is not running"
+#  when: not nfvbench.exists
+
+- name: Add workaround for i40e (TRex)
+  lineinfile:
+    path: /ansible/trex-core/scripts/dpdk_setup_ports.py
+    regexp: '        self\.check_i40e_binds'
+    line: '        #self.check_i40e_binds(if_list)'
+    backup: yes
+
+- name: Replace TRex in container (1/3)
+  shell: "docker exec nfvbench mv /opt/trex/v2.32 /opt/backup_v2.32"
+
+- name: Replace TRex in container (2/3)
+  shell: "docker exec nfvbench ln -s /tmp/nfvbench/trex-core/scripts /opt/trex/v2.32"
+
+- name: Replace TRex in container (3/3)
+  shell: "docker exec nfvbench cp -r /opt/backup_v2.32/external_libs/pyzmq-14.5.0 /opt/trex/v2.32/external_libs/"
+
+- name: Make NFVbench folder accessible from host (1/2)
+  shell: "docker exec nfvbench mv nfvbench /tmp/nfvbench/nfvbench"
+
+- name: Make NFVbench folder accessible from host (2/2)
+  shell: "docker exec nfvbench ln -s /tmp/nfvbench/nfvbench /nfvbench"
+
+- name: Replace traffic_client.py
+  template:
+    src: traffic_client.py
+    dest: /ansible/nfvbench/nfvbench/traffic_client.py
+    backup: yes
+
+- name: Replace trex.py
+  template:
+    src: trex.py
+    dest: /ansible/nfvbench/nfvbench/traffic_gen/trex.py
+    backup: yes
+
+- name: Replace nfvbench_config.cfg
+  template:
+    src: nfvbench_config.j2
+    dest: /ansible/nfvbench_config.cfg
+    backup: yes
+
+- name: Restart nfvbench container
+  shell: docker restart nfvbench
+
