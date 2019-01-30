@@ -1,26 +1,26 @@
 # CNFs - Cloud-native Network Functions
 
-The CNCF CNF project provides reference code and test comparisons of Cloud-native Network Functions. 
+The CNCF CNF Lab provides reference code and test comparisons of Cloud-native Network Functions. 
 
 
-## What is the CNCF CNF project?
+## What is the CNCF CNF Lab?
 
-The CNF project will help facilitate the transition in the NFV world from virtualized hardware running network functions to lightweight, network functions following cloud-native methodologies running on Kubernetes in public, private, or hybrid clouds. 
+The CNF Lab will help facilitate the transition in the NFV world from virtualized hardware running network functions to lightweight, network functions following cloud-native methodologies running on Kubernetes in public, private, or hybrid clouds. 
 
-The reference code and comparisons from the CNF project support the claim that CNFs orchestrated by Kubernetes will provide 3 major benefits to service providers: 
+The reference code and comparisons from the CNF Lab support the claim that CNFs orchestrated by Kubernetes will provide 3 major benefits to service providers: 
 
 1. Cost savings (capex/opex)
 1. Improved resiliency
 1. Higher development velocity
 
-Note that the CNF project is still in the prototype stage. Additional reference code and benchmarking tests will be added incrementally.
+Note that the CNF Lab is still in the prototype stage. Additional reference code and benchmarking tests will be added incrementally.
 
-The ideal outcome of the CNF project is that a third party developer can run the provided CNF reference code/benchmarking tests with an API key and a couple of CLI commands. Furthermore, a developer can re-use some or all of the software in their own environment with minimal, or at least isolated modifications.
+The ideal outcome of the CNF Lab is that a third party developer can run the provided CNF reference code/benchmarking tests with an API key and a couple of CLI commands. Furthermore, a developer can re-use some or all of the software in their own environment with minimal, or at least isolated modifications.
 
 
-## CNF project goals
+## CNF Lab goals
 
-**The CNF project includes the following high-level goals:**
+**The CNF Lab includes the following high-level goals:**
 
 - Comparing Virtual Network Functions (VNFs) vs. Cloud-native Network Functions (CNFs)
 - Providing easily reproducible test cases and use cases
@@ -62,7 +62,10 @@ __Pull Requests__
 
 ## CNFs At KubeCon + CloudNativeCon North America 2018
 
-Several talks and demos targeting different experience are scheduled for KubeCon North America 2018. Please join us to get more insights about Cloud-native Network Functions (CNFs), the current state of the project and test cases.
+Several talks and demos targeting different experience are scheduled for KubeCon North America 2018. Please join us to get more insights about Cloud-native Network Functions (CNFs), the current state of the 
+
+
+and test cases.
 
 **Monday, December 10**
  - 11:40am - 12:00pm - [CNFs in Switzerland: Reproducible Performance Testing in a Neutral Environment - Taylor Carpenter, Vulk Coop](https://fdiominisummitatkccncnortha2018.sched.com/event/IGg6/cnfs-in-switzerland-reproducible-performance-testing-in-a-neutral-environment)
