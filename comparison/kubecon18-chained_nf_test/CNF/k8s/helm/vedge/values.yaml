@@ -12,11 +12,38 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
-resources: 
+resources:
   limits:
-   cpu: "3"
-   hugepages-2Mi: 200Mi
+    cpu: "3"
+    hugepages-2Mi: 200Mi
 
-mainCore: 10
-corelistWorkers: 12,40
+volumeMounts:
+  vpp_sockets:
+    mountPath: /var/run/cnfs/
+
+mainCore: 40
+corelistWorkers: 16,44
 socketMem: 124,0
+
+queues: 2
+
+sock1: int21
+sock2: memif4
+
+memid1: 10
+memid2: 4
+
+mac1: 52:54:01:00:02:aa
+mac2: 52:54:01:00:00:bb
+
+owner1: slave
+owner2: slave
+
+subnet1: 172.16.31.11/24
+subnet2: 172.16.20.11/24
+
+remip1: 172.16.31.10
+remip2: 172.16.20.101
+
+remmac1: 52:54:01:00:01:bb
+remmac2: e4:43:4b:2e:b1:d2

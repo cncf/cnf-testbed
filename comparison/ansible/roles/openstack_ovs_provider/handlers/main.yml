@@ -1,0 +1,25 @@
+---
+- name: restart nova-compute
+  service:
+    name: nova-compute
+    state: restarted
+
+- name: restart neutron-server
+  service:
+    name: neutron-server
+    state: restarted
+
+- name: restart ovs-agent
+  service:
+    name: neutron-openvswitch-agent
+    state: restarted
+
+- name: restart dhcp-agent
+  service:
+    name: neutron-dhcp-agent
+    state: restarted
+
+- name: restart metadata-agent
+  service:
+    name: neutron-metadata-agent
+    state: restarted

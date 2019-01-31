@@ -203,6 +203,7 @@
       },
       "network": {
         "plugins": {
+{% if vpp_network %}
           "ml2_vpp": {
             "conf": {
               "ml2_type_vlan": {
@@ -223,8 +224,18 @@
               }
             }
           }
+{% else %}
+          "ml2_openvswitch": {
+            "conf": {
+              "ml2_type_vlan": {
+                "vlan_ranges": "1000:2000"
+              }
+            }
+          }
+{% endif %}
         },
-        "tun_network_bridge_interface": "enp0s8",
+        "vlan_network_bridge_interface": "{{ vlan_interface }}",
+        "tun_network_bridge_interface": "bond0",
         "conf": {
           "DEFAULT": {
             "service_plugins": "router"
@@ -243,8 +254,8 @@
       "compute": {
         "conf": {
           "libvirt": {
-            "cpu_type": "none",
-            "virt_type": "qemu"
+            "virt_type": "kvm",
+            "cpu_type": "passthrough"
           },
           "transport_url": {
             "rabbit_host": "{{ host_0_address }}"

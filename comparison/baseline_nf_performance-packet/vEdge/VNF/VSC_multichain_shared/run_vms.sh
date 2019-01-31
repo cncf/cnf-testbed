@@ -53,7 +53,7 @@ function create_interface_list() {
         mac1=52:54:0"$((${1} - 1))":00:00:aa
         mac2=52:54:0"$((${1} - 1))":00:01:bb
     elif [[ "${2}" == "${NODENESS}" ]]; then
-        mac1=52:54:0"$((${1} - 1))":00:0"${1}":aa
+        mac1=52:54:0"$((${1} - 1))":00:0"${2}":aa
         mac2=52:54:0"$((${1} - 1))":00:00:bb
     else
         mac1=52:54:0"$((${1} - 1))":00:0"${2}":aa
@@ -152,7 +152,11 @@ function update_cpu_pinning () {
     set -euo pipefail
 
     # Create CORE lists.
-    mtcr=2
+    if [ "${CHAINS}" -eq 1 ] && [ "${NODENESS}" -eq 1 ]; then
+        mtcr=1
+    else
+        mtcr=2
+    fi
     dtcr=1
     COMMON_DIR="$(readlink -e "$(git rev-parse --show-toplevel)")" || {
         die "Readlink or git rev-parse failed."
@@ -168,9 +172,6 @@ function update_cpu_pinning () {
             }
             (( core_count++ ))
         done
-        if [[ "${vagrant_id:3:1}" == "${NODENESS}" ]]; then
-            core_count=0
-        fi
     done
 }
 
@@ -282,6 +283,13 @@ else
         die "Failed to create VPP configuration!"
     }
     update_vpp_config || die
+
+    if [ -z "$(vagrant box list | grep vedge)" ]; then
+        echo "Base image not found - Building"
+        pushd ../base_image
+        ./build_vm.sh
+        popd
+    fi
 
     source ./create_vagrantfile.sh "${CHAINS}" "${NODENESS}" || {
         die "Failed to create Vagrantfile!"

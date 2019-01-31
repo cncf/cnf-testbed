@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+  vars:
+    deploy_env: test1
+    vlans:
+      vlan1:
+        interface: eth2
+      vlan2:
+        interface: eth3
+
+  roles:
+    - packet_l2
+
+- hosts: all
+  pre_tasks:
+  - name: Apt update
+    apt:
+      update_cache: yes
+
+  vars:
+    vlans:
+      - "{{ hostvars.localhost.vlans.vlan1.vid }}"
+      - "{{ hostvars.localhost.vlans.vlan2.vid }}"
+  
+  roles:
+    - nfvbench_ipv6_intel

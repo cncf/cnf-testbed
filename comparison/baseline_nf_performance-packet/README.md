@@ -1,9 +1,6 @@
 # CNF/VNF - Edge Network Max Throughput Comparison
 
-
-
 ## Quick start with deployment code:
-
 
 Steps to Deploy.
 
@@ -12,7 +9,6 @@ Steps to Deploy.
 3. Run Docker container with API/Token vars set ```docker run -v $(pwd):/packet -e TF_VAR_packet_api_key=PACKET-API-KEY -e TF_VAR_packet_project_id=PACKET-PROJECT-ID --entrypoint=/bin/bash -ti hashicorp/terraform:full```
 4. cd to packet dir ```cd /packet```
 5. Terraform provision ``` terraform init && terraform apply```
-
 
 ## Long version: Provisioning, installs, configuration and testing
 
@@ -32,27 +28,50 @@ Steps to Deploy.
 
 Next [setup Layer-2 networking](README-layer2-network.md)
 
-
-**Enable IOMMU and SR-IOV on the machines**
-
-Reference: [NSM Notes for configuring VPP with Mellanox Connectx-4 (PFs and VFs)](https://github.com/ligato/networkservicemesh/issues/270#issue-355769450)
-
-1. SSH into the server
-2. `sed -i.bak 's/\(GRUB_CMDLINE_LINUX=\"\)/\1iommu=pt intel_iommu=on hugepagesz=2M hugepages=10240 isolcpus=2,4,6 nohz_full=2,4,6 rcu_nocbs=2,4,6 /' /etc/default/grub`
-3. `update-grub2`
-4. `reboot`
-
-
 **Install and configure common host software for the NFs**
 
 See [README-NF-common.md](README-NF-common.md)
 
 
-**Install Docker**
+**Install Docker Prerequisities**
 
 After cloning this repo
 
-- `cd cnfs/comparison/cnf_edge_throughput`
-- Run: [./install_docker_prereqs.sh](https://github.com/cncf/cnfs/tree/master/comparison/cnf_edge_throughput/install_docker_prereqs.sh)
+- `cd cnfs/comparison/baseline_nf_performance-packet`
+- Run: [./install_docker_prereqs.sh](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/install_docker_prereqs.sh)
 
+**Install Vagrant Prerequisities**
+
+After cloning this repo
+
+- `cd cnfs/comparison/baseline_nf_performance-packet`
+- Run: [./install_vagrant_prereqs.sh](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/install_docker_prereqs.sh)
+
+**Run VSC**
+
+After cloning this repo
+
+- `cd cnfs/comparison/baseline_nf_performance-packet/vEdge/VNF/VSC_multichain_shared`
+- Run: [./run_vms.sh chains nodeness [clean]](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/vEdge/VNF/VSC_multichain_shared/run_vms.sh)
+
+**Run CSC**
+
+After cloning this repo
+
+- `cd cnfs/comparison/baseline_nf_performance-packet/vEdge/CNF/CSC_multichain_shared`
+- Run: [./run_containers.sh chains nodeness [clean]](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/vEdge/CNF/CSC_multichain_shared/run_containers.sh)
+
+**Run CSP**
+
+After cloning this repo
+
+- `cd cnfs/comparison/baseline_nf_performance-packet/vEdge/CNF/CSP_multichain_shared`
+- Run: [./run_containers.sh chains nodeness [clean]](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/vEdge/CNF/CSP_multichain_shared/run_containers.sh)
+
+**Traffic run**
+
+After cloning this repo
+
+- `cd cnfs/comparison/baseline_nf_performance-packet`
+- Run: [./run_test_nfvbench.sh chains nodeness test](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet/run_test_nfvbench.sh)
 

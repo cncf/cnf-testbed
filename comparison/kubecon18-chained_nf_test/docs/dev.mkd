@@ -1,4 +1,4 @@
-# Dev info for working on the CNF project 
+# Dev info for working on the CNF testbed 
 
 ### Build the tools
 
@@ -50,3 +50,31 @@ Looking at device assignment and other goodies from the API:
 ```
 curl -X GET --header 'Accept: application/json' --header 'X-Auth-Token: YOUR_API_KEY' 'https://api.packet.net/devices/YOUR_SERVER_GUID' | jq '.'
 ```
+
+
+## Deploy multi-chain pipeline CNFs on K8s
+
+Point towards k8s deployment 'kubeconfig' file:
+```export KUBECONFIG=/path/to/kubeconfig/```
+
+Go to CNF /helm/ directory:
+```comparison/kubecon18-chained_nf_test/CNF/k8s/helm```
+
+### Automated deployment through script
+
+Start (or clean) CNFs:
+```
+./run_csp.sh <chains> <chain length> [clean]
+     (or to clean: ./run_csp.sh clean
+```
+
+### Manual steps for validation purposes
+
+Generate single CNF:
+```./config_csp.sh 1 1 1 6 8,36```
+
+Deploy CNF:
+```helm install --name cnf_single ./vedge/```
+
+Remove CNF:
+```helm del --purge cnf_single```

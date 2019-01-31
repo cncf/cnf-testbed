@@ -1,0 +1,44 @@
+---
+- name: find the controller host address
+  set_fact:
+    host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
+
+- name: add create_vlans.sh openstack client script
+  template:
+    src: create_vlans.sh
+    dest: /root/create_vlans.sh
+    mode: 0755
+
+- name: add create_security_groups.sh openstack client script
+  template:
+    src: create_security_groups.sh
+    dest: /root/create_security_groups.sh
+    mode: 0755
+
+- name: add create_flavor.sh script
+  template:
+    src: create_flavor.sh
+    dest: /root/create_flavor.sh
+    mode: 0755
+
+- name: add flavor
+  command: /root/create_flavor.sh
+  ignore_errors: true
+  when: host_0_address == inventory_hostname
+  
+- name: add create_image.sh script for xenial image
+  template:
+    src: create_xenial.sh
+    dest: /root/create_xenial.sh
+    mode: 0755
+
+- name: add xenial image
+  command: /root/create_xenial.sh
+  ignore_errors: true
+  when: host_0_address == inventory_hostname
+
+- name: add create_instance.sh
+  template:
+    src: create_instance.sh
+    dest: /root/create_instance.sh
+    mode: 0755

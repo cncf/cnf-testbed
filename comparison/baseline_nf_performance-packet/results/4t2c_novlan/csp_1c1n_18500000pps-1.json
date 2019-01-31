@@ -1,0 +1,545 @@
+{
+    "benchmarks": {
+        "network": {
+            "service_chain": {
+                "EXT": {
+                    "result": {
+                        "bidirectional": true,
+                        "compute_nodes": {},
+                        "flow_count": 1024,
+                        "profile": "traffic_profile_2sizes",
+                        "result": {
+                            "64": {
+                                "packet_path_stats": {
+                                    "Forward": {
+                                        "chains": {
+                                            "0": {
+                                                "lat_avg_usec": 861,
+                                                "lat_max_usec": 970,
+                                                "lat_min_usec": 80,
+                                                "packets": [
+                                                    277497606,
+                                                    92612420
+                                                ]
+                                            }
+                                        },
+                                        "interfaces": [
+                                            "TRex.TX.p0",
+                                            "TRex.RX.p1"
+                                        ]
+                                    },
+                                    "Reverse": {
+                                        "chains": {
+                                            "0": {
+                                                "lat_avg_usec": 575,
+                                                "lat_max_usec": 633,
+                                                "lat_min_usec": 60,
+                                                "packets": [
+                                                    277497606,
+                                                    60132339597
+                                                ]
+                                            }
+                                        },
+                                        "interfaces": [
+                                            "TRex.TX.p1",
+                                            "TRex.RX.p0"
+                                        ]
+                                    }
+                                },
+                                "run_config": {
+                                    "direction-forward": {
+                                        "orig": {
+                                            "initial_rate_type": "rate_pps",
+                                            "rate_bps": 6216000000,
+                                            "rate_percent": 62.160000000000004,
+                                            "rate_pps": 9250000
+                                        },
+                                        "rx": {
+                                            "initial_rate_type": "rate_pps",
+                                            "rate_bps": 2074518208,
+                                            "rate_percent": 20.74518208,
+                                            "rate_pps": 3087080
+                                        },
+                                        "tx": {
+                                            "initial_rate_type": "rate_pps",
+                                            "rate_bps": 6215946374,
+                                            "rate_percent": 62.159463744,
+                                            "rate_pps": 9249920
+                                        }
+                                    },
+                                    "direction-reverse": {
+                                        "orig": {
+                                            "initial_rate_type": "rate_pps",
+                                            "rate_bps": 6216000000,
+                                            "rate_percent": 62.160000000000004,
+                                            "rate_pps": 9250000
+                                        },
+                                        "rx": {
+                                            "initial_rate_type": "rate_pps",
+                                            "rate_bps": 2058759270,
+                                            "rate_percent": 20.587592704000002,
+                                            "rate_pps": 3063629
+                                        },
+                                        "tx": {
+                                            "initial_rate_type": "rate_pps",
+                                            "rate_bps": 6215946374,
+                                            "rate_percent": 62.159463744,
+                                            "rate_pps": 9249920
+                                        }
+                                    },
+                                    "direction-total": {
+                                        "orig": {
+                                            "rate_bps": 12432000000.0,
+                                            "rate_percent": 124.32000000000001,
+                                            "rate_pps": 18500000.0
+                                        },
+                                        "rx": {
+                                            "rate_bps": 4133277478.0,
+                                            "rate_percent": 41.332774784,
+                                            "rate_pps": 6150709.0
+                                        },
+                                        "tx": {
+                                            "rate_bps": 12431892748.0,
+                                            "rate_percent": 124.318927488,
+                                            "rate_pps": 18499840.0
+                                        }
+                                    }
+                                },
+                                "stats": {
+                                    "0": {
+                                        "drop_rate_percent": 66.87939138473145,
+                                        "rx": {
+                                            "avg_delay_usec": 860,
+                                            "dropped_pkts": 185588710,
+                                            "max_delay_usec": 970,
+                                            "min_delay_usec": 80,
+                                            "pkt_bit_rate": 1564560000,
+                                            "pkt_rate": 3055781,
+                                            "total_pkt_bytes": 5882169344,
+                                            "total_pkts": 91908896
+                                        },
+                                        "tx": {
+                                            "pkt_bit_rate": 4724601856,
+                                            "pkt_rate": 9227740,
+                                            "total_pkt_bytes": 17759846784,
+                                            "total_pkts": 277497606
+                                        }
+                                    },
+                                    "1": {
+                                        "drop_rate_percent": 66.62586703540786,
+                                        "rx": {
+                                            "avg_delay_usec": 574,
+                                            "dropped_pkts": 184885186,
+                                            "max_delay_usec": 633,
+                                            "min_delay_usec": 60,
+                                            "pkt_bit_rate": 1575782656,
+                                            "pkt_rate": 3077708,
+                                            "total_pkt_bytes": 5927194880,
+                                            "total_pkts": 92612420
+                                        },
+                                        "tx": {
+                                            "pkt_bit_rate": 4724941824,
+                                            "pkt_rate": 9228407,
+                                            "total_pkt_bytes": 17759846784,
+                                            "total_pkts": 277497606
+                                        }
+                                    },
+                                    "overall": {
+                                        "drop_rate_percent": 66.75262921006966,
+                                        "rx": {
+                                            "avg_delay_usec": 716,
+                                            "dropped_pkts": 370473896,
+                                            "max_delay_usec": 970,
+                                            "min_delay_usec": 60,
+                                            "pkt_bit_rate": 1570171328.0,
+                                            "pkt_rate": 3066744.5,
+                                            "total_pkt_bytes": 11809364224,
+                                            "total_pkts": 184521316
+                                        },
+                                        "tx": {
+                                            "pkt_bit_rate": 4724771840.0,
+                                            "pkt_rate": 9228073.5,
+                                            "total_pkt_bytes": 35519693568,
+                                            "total_pkts": 554995212
+                                        }
+                                    },
+                                    "total_tx_rate": 18499840
+                                }
+                            },
+                            "IMIX": {
+                                "packet_path_stats": {
+                                    "Forward": {
+                                        "chains": {
+                                            "0": {
+                                                "lat_avg_usec": 592,
+                                                "lat_max_usec": 800,
+                                                "lat_min_usec": 90,
+                                                "packets": [
+                                                    98248767,
+                                                    76921791
+                                                ]
+                                            }
+                                        },
+                                        "interfaces": [
+                                            "TRex.TX.p0",
+                                            "TRex.RX.p1"
+                                        ]
+                                    },
+                                    "Reverse": {
+                                        "chains": {
+                                            "0": {
+                                                "lat_avg_usec": 475,
+                                                "lat_max_usec": 560,
+                                                "lat_min_usec": 50,
+                                                "packets": [
+                                                    98256470,
+                                                    64427043112
+                                                ]
+                                            }
+                                        },
+                                        "interfaces": [
+                                            "TRex.TX.p1",
+                                            "TRex.RX.p0"
+                                        ]
+                                    }
+                                },
+                                "run_config": {
+                                    "direction-forward": {
+                                        "orig": {
+                                            "initial_rate_type": "rate_pps",
+                                            "rate_bps": 28255666666,
+                                            "rate_percent": 282.5566666666667,
+                                            "rate_pps": 9250000
+                                        },
+                                        "rx": {
+                                            "initial_rate_type": "rate_pps",
+                                            "rate_bps": 7832347696,
+                                            "rate_percent": 78.32347696933334,
+                                            "rate_pps": 2564059
+                                        },
+                                        "tx": {
+                                            "initial_rate_type": "rate_pps",
+                                            "rate_bps": 10003907786,
+                                            "rate_percent": 100.03907786533333,
+                                            "rate_pps": 3274958
+                                        }
+                                    },
+                                    "direction-reverse": {
+                                        "orig": {
+                                            "initial_rate_type": "rate_pps",
+                                            "rate_bps": 28255666666,
+                                            "rate_percent": 282.5566666666667,
+                                            "rate_pps": 9250000
+                                        },
+                                        "rx": {
+                                            "initial_rate_type": "rate_pps",
+                                            "rate_bps": 7823446805,
+                                            "rate_percent": 78.23446805555555,
+                                            "rate_pps": 2561145
+                                        },
+                                        "tx": {
+                                            "initial_rate_type": "rate_pps",
+                                            "rate_bps": 10004692123,
+                                            "rate_percent": 100.0469212311111,
+                                            "rate_pps": 3275215
+                                        }
+                                    },
+                                    "direction-total": {
+                                        "orig": {
+                                            "rate_bps": 56511333332.0,
+                                            "rate_percent": 565.1133333333333,
+                                            "rate_pps": 18500000.0
+                                        },
+                                        "rx": {
+                                            "rate_bps": 15655794501.0,
+                                            "rate_percent": 156.5579450248889,
+                                            "rate_pps": 5125204.0
+                                        },
+                                        "tx": {
+                                            "rate_bps": 20008599909.0,
+                                            "rate_percent": 200.08599909644443,
+                                            "rate_pps": 6550173.0
+                                        }
+                                    },
+                                    "warning": "WARNING: There is a significant difference between requested TX rate (18500000.0) and actual TX rate (6550174). The traffic generator may not have sufficient CPU to achieve the requested TX rate."
+                                },
+                                "stats": {
+                                    "0": {
+                                        "drop_rate_percent": 21.803932664111702,
+                                        "rx": {
+                                            "avg_delay_usec": 591,
+                                            "dropped_pkts": 21422095,
+                                            "max_delay_usec": 800,
+                                            "min_delay_usec": 90,
+                                            "pkt_bit_rate": 7408668160,
+                                            "pkt_rate": 2557542,
+                                            "total_pkt_bytes": 27824228296,
+                                            "total_pkts": 76834375
+                                        },
+                                        "tx": {
+                                            "pkt_bit_rate": 9475067904,
+                                            "pkt_rate": 3273267,
+                                            "total_pkt_bytes": 35549859582,
+                                            "total_pkts": 98248767
+                                        }
+                                    },
+                                    "1": {
+                                        "drop_rate_percent": 21.705416447385094,
+                                        "rx": {
+                                            "avg_delay_usec": 474,
+                                            "dropped_pkts": 21326976,
+                                            "max_delay_usec": 560,
+                                            "min_delay_usec": 50,
+                                            "pkt_bit_rate": 7405274624,
+                                            "pkt_rate": 2559852,
+                                            "total_pkt_bytes": 27818483633,
+                                            "total_pkts": 76921791
+                                        },
+                                        "tx": {
+                                            "pkt_bit_rate": 9475063808,
+                                            "pkt_rate": 3273265,
+                                            "total_pkt_bytes": 35552646849,
+                                            "total_pkts": 98256470
+                                        }
+                                    },
+                                    "overall": {
+                                        "drop_rate_percent": 21.754672624831876,
+                                        "rx": {
+                                            "avg_delay_usec": 532,
+                                            "dropped_pkts": 42749071,
+                                            "max_delay_usec": 800,
+                                            "min_delay_usec": 50,
+                                            "pkt_bit_rate": 7406971392.0,
+                                            "pkt_rate": 2558697.0,
+                                            "total_pkt_bytes": 55642711929,
+                                            "total_pkts": 153756166
+                                        },
+                                        "tx": {
+                                            "pkt_bit_rate": 9475065856.0,
+                                            "pkt_rate": 3273266.0,
+                                            "total_pkt_bytes": 71102506431,
+                                            "total_pkts": 196505237
+                                        }
+                                    },
+                                    "total_tx_rate": 6550174
+                                }
+                            }
+                        },
+                        "service_chain_count": 1
+                    }
+                }
+            },
+            "versions": {
+                "Traffic_Generator": {
+                    "build_date": "Nov 13 2017",
+                    "build_time": "10:58:17",
+                    "built_by": "hhaim",
+                    "mode": "STL",
+                    "version": "v2.32"
+                }
+            }
+        }
+    },
+    "config": {
+        "actual_frame_sizes": [
+            "64",
+            "IMIX"
+        ],
+        "availability_zone": null,
+        "check_traffic_time_sec": 200,
+        "compute_nodes": null,
+        "config": "/tmp/nfvbench/nfvbench_config.cfg",
+        "debug": false,
+        "duration_sec": 30.0,
+        "external_networks": {
+            "left": "nfvbench-net0",
+            "right": "nfvbench-net1"
+        },
+        "factory_class": "BasicFactory",
+        "factory_module": "nfvbench.factory",
+        "flavor": {
+            "disk": 0,
+            "extra_specs": {
+                "hw:cpu_policy": "dedicated",
+                "hw:mem_page_size": "large"
+            },
+            "ram": 4096,
+            "vcpus": 2
+        },
+        "flavor_type": "nfvbench.medium",
+        "flow_count": 1024,
+        "fluentd": [
+            {
+                "ip": "127.0.0.1",
+                "logging_tag": null,
+                "port": 24224,
+                "result_tag": null
+            }
+        ],
+        "frame_sizes": [
+            "64",
+            "IMIX"
+        ],
+        "generator_profile": "trex-local",
+        "generic_poll_sec": 2,
+        "generic_retry_count": 100,
+        "host": "0.0.0.0",
+        "internal_networks": {
+            "left": {
+                "cidr": "172.16.10.0/24",
+                "name": "nfvbench-net0",
+                "network_type": "vlan",
+                "physical_network": null,
+                "segmentation_id": null,
+                "subnet": "nfvbench-subnet0"
+            },
+            "middle": {
+                "cidr": "192.168.3.0/24",
+                "name": "nfvbench-net2",
+                "network_type": "vlan",
+                "physical_network": null,
+                "segmentation_id": null,
+                "subnet": "nfvbench-subnet2"
+            },
+            "right": {
+                "cidr": "172.16.20.0/24",
+                "name": "nfvbench-net1",
+                "network_type": "vlan",
+                "physical_network": null,
+                "segmentation_id": null,
+                "subnet": "nfvbench-subnet1"
+            }
+        },
+        "interval_sec": 10.0,
+        "json": "/tmp/nfvbench/csp_1c1n_18500000pps-1.json",
+        "json_file": "/tmp/nfvbench/csp_1c1n_18500000pps-1.json",
+        "l2_loopback": false,
+        "log_file": null,
+        "loop_vm_name": "nfvbench-loop-vm",
+        "measurement": {
+            "NDR": 0.001,
+            "PDR": 0.1,
+            "load_epsilon": 0.1
+        },
+        "name": "nfvbench_config.cfg",
+        "ndr_run": false,
+        "no_arp": false,
+        "no_cleanup": true,
+        "no_traffic": false,
+        "no_vswitch_access": false,
+        "openrc_file": null,
+        "pause_sec": 2.0,
+        "pdr_run": false,
+        "port": 7555,
+        "rate": "18500000pps",
+        "service_chain": "EXT",
+        "service_chain_count": 1,
+        "service_chain_shared_net": true,
+        "single_run": true,
+        "sriov": false,
+        "std_json": null,
+        "std_json_path": null,
+        "tg-name": "trex-local",
+        "tg-tool": "TRex",
+        "traffic": {
+            "bidirectional": true,
+            "profile": "traffic_profile_2sizes"
+        },
+        "traffic_generator": {
+            "default_profile": "trex-local",
+            "gateway_ip_addrs": [
+                "172.16.10.10",
+                "172.16.20.10"
+            ],
+            "gateway_ip_addrs_step": "0.0.0.1",
+            "generator_profile": [
+                {
+                    "cores": 7,
+                    "interfaces": [
+                        {
+                            "pci": "1a:00.1",
+                            "port": 0,
+                            "switch_port": null
+                        },
+                        {
+                            "pci": "1a:00.2",
+                            "port": 1,
+                            "switch_port": null
+                        }
+                    ],
+                    "intf_speed": "10Gbps",
+                    "ip": "127.0.0.1",
+                    "name": "trex-local",
+                    "software_mode": false,
+                    "tool": "TRex"
+                }
+            ],
+            "host_name": "nfvbench_tg",
+            "ip_addrs": [
+                "172.16.64.0/18",
+                "172.16.192.0/18"
+            ],
+            "ip_addrs_step": "0.0.0.1",
+            "mac_addrs_left": [
+                "52:54:00:00:00:aa"
+            ],
+            "mac_addrs_right": [
+                "52:54:00:00:00:bb"
+            ],
+            "tg_gateway_ip_addrs": [
+                "172.16.10.100",
+                "172.16.20.100"
+            ],
+            "tg_gateway_ip_addrs_step": "0.0.0.1",
+            "udp_dst_port": 34101,
+            "udp_src_port": 34100
+        },
+        "traffic_profile": [
+            {
+                "l2frame_size": [
+                    "64"
+                ],
+                "name": "traffic_profile_64B"
+            },
+            {
+                "l2frame_size": [
+                    "IMIX"
+                ],
+                "name": "traffic_profile_IMIX"
+            },
+            {
+                "l2frame_size": [
+                    "1518"
+                ],
+                "name": "traffic_profile_1518B"
+            },
+            {
+                "l2frame_size": [
+                    "64",
+                    "IMIX"
+                ],
+                "name": "traffic_profile_2sizes"
+            },
+            {
+                "l2frame_size": [
+                    "68",
+                    "IMIX",
+                    "1518"
+                ],
+                "name": "traffic_profile_3sizes"
+            }
+        ],
+        "unidir_reverse_traffic_pps": 1,
+        "use_sriov_middle_net": false,
+        "user_label": null,
+        "vlan_tagging": false,
+        "vlans": [
+            1070,
+            1064
+        ],
+        "vm_forwarder": "vpp",
+        "vm_image_file": null
+    },
+    "date": "2018-11-30 10:59:10",
+    "nfvbench_version": "2.0.4"
+}

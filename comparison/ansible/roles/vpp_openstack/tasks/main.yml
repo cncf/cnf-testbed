@@ -3,24 +3,35 @@
   set_fact:
     host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
 
-- name: install vpp startup with vlan interface pciid
-  template:
-    src: startup.conf
-    dest: /etc/vpp/startup.conf
-
-- name: install vpp interface setup
-  template:
-    src: vpp-interface.conf
-    dest: /etc/vpp-interface.conf
-  notify:
-  - Restart vpp
 
 - name: update plugins config for vpp
   template:
     src: ml2_conf.j2
     dest: /etc/neutron/plugin.ini
     mode: 0644
+  when: ansible_os_family == 'RedHat'
 
+- name: update plugins config for vpp
+  template:
+    src: ml2_conf.j2
+    dest: /etc/neutron/plugins/ml2/ml2_conf.ini
+    mode: 0644
+  when: ansible_os_family == 'Debian'
+
+- name: add missing params to nova.conf
+  ini_file:
+    dest: /etc/nova/nova.conf
+    section: DEFAULT
+    option: "{{item.option}}"
+    value: "{{item.value}}"
+  with_items:
+    - {option: 'vif_plugging_timeout', value: '300' }
+    - {option: 'vif_plugging_is_fatal', value: 'True' }
+    - {option: 'use_neutron', value: 'True' }
+    - {option: 'firewall_driver', value: 'nova.virt.firewall.NoopFirewallDriver' }
+  notify:
+  - Restart nova-compute
+    
 - name: install bridge utilities package - RedHat
   yum:
     name: bridge-utils
@@ -45,6 +56,7 @@
   git:
     repo: https://github.com/openstack/networking-vpp
     dest: /root/networking-vpp
+    version: "{{vpp_branch}}"
     update: no
 
 - name: install openstack networking-vpp plugin
@@ -53,9 +65,14 @@
 
 - name: migrate neutron vpp database
   command: neutron-db-manage --subproject networking-vpp --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini upgrade head
+  when: ansible_os_family == 'RedHat'
+
+- name: migrate neutron vpp database
+  command: neutron-db-manage --subproject networking-vpp --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head
+  when: ansible_os_family == 'Debian'
 
 - name: bring ex-slave interface down
-  command: ifdown {{vlan_interface}}
+  command: ip l s dev {{vlan_interface}} down
   ignore_errors: true
 
 - name: add vpp-agent script
@@ -64,20 +81,47 @@
     dest: /usr/local/bin/vpp-agent
     mode: 0755
 
-- name: add vpp-agent systemd service
+- name: add vpp-agent systemd service - RedHat
   template:
-    src: vpp-agent.service
+    src: vpp-agent-redhat.service
     dest: /usr/lib/systemd/system/vpp-agent.service
     mode: 0644
+  when: ansible_os_family == 'RedHat'
 
-- name: add vpp-agent multi-user.wants link
+- name: add vpp-agent systemd service - Debian
+  template:
+    src: vpp-agent-debian.service
+    dest: /lib/systemd/system/vpp-agent.service
+    mode: 0644
+  when: ansible_os_family == 'Debian'
+
+- name: add vpp-agent multi-user.wants link - RedHat
   file:
     state: link
     src: /usr/lib/systemd/system/vpp-agent.service
     dest: /etc/systemd/system/multi-user.target.wants/vpp-agent.service
+  when: ansible_os_family == 'RedHat' and inventory_hostname == host_0_address
   notify:
   - Restart neutron-server
   - Restart vpp-agent
+
+- name: add vpp-agent multi-user.wants link - Debian
+  file:
+    state: link
+    src: /lib/systemd/system/vpp-agent.service
+    dest: /etc/systemd/system/multi-user.target.wants/vpp-agent.service
+  when: ansible_os_family == 'Debian'
+  notify:
+  - Restart neutron-server
+  - Restart vpp-agent
+
+- name: ensure linuxbridge rootwrap neutron filters exist
+  template:
+    src: linuxbridge.filters
+    dest: /etc/neutron/rootwrap.d/linuxbridge.filters
+    mode: 0755
+  notify:
+  - Restart neutron-server
 
 - name: add hugepage support for nova
   ini_file:
@@ -86,16 +130,47 @@
     option: reserved_huge_pages
     value: node:0,size:2048,count:64
   notify:
-  - Restart openstack-nova-compute
+  - Restart nova-compute
 
-- name: ensure kvm driver
-  ini_file:
-    path: /etc/nova/nova.conf
-    section: libvirt
-    option: virt_type
-    value: kvm
-  notify: 
-  - Restart openstack-nova-compute
+- name: ensure Hugepages are properly sized (2K 2K pages)
+  template:
+    src: 80-vpp.conf
+    dest: /etc/sysctl.d/80-vpp.conf
+  register: hugepages
+
+- name: reload vpp hugepage support
+  command: sysctl -p /etc/sysctl.d/80-vpp.conf
+  when: hugepages.changed
+  notify:
+  - Restart apache
+  - Restart nova-compute
+  - Restart vpp
+
+- name: ensure Neutron plugin is defined - Debian
+  lineinfile:
+    path: /etc/default/neutron-server
+    regexp: 'NEUTRON_PLUGIN_CONFIG=.*'
+    line: 'NEUTRON_PLUGIN_CONFIG=/etc/neutron/plugins/ml2/ml2_conf.ini'
+  when: ansible_os_family == 'Debian' and inventory_hostname == host_0_address
+  notify:
+  - Restart neutron-server
+
+- name: verify that openstack dashboard is accessible to apache
+  file:
+    path: /var/lib/openstack-dashboard
+    state: directory
+    mode: 0777
+
+- name: Ensure current python eventlet is installed
+  pip:
+    name: eventlet
+    version: 0.22
+  notify:
+  - Restart etcd
+  - Restart neutron-server
+  - Restart vpp-agent
+  - Restart nova-compute
+  - Restart apache
 
 - name: Daemon Reload
   systemd:
@@ -103,37 +178,3 @@
   notify:
   - Restart neutron-server
   - Restart vpp-agent
-
-- name: add create_vlans.sh openstack client script
-  template:
-    src: create_vlans.sh
-    dest: /root/create_vlans.sh
-    mode: 0755
-
-- name: add create_flavor.sh script
-  template:
-    src: create_flavor.sh
-    dest: /root/create_flavor.sh
-    mode: 0755
-
-- name: add flavor
-  command: /root/create_flavor.sh
-  ignore_errors: true
-  when: host_0_address == inventory_hostname
-  
-- name: add create_image.sh script for xenial image
-  template:
-    src: create_xenial.sh
-    dest: /root/create_xenial.sh
-    mode: 0755
-
-- name: add xenial image
-  command: /root/create_xenial.sh
-  ignore_errors: true
-  when: host_0_address == inventory_hostname
-
-- name: add create_instance.sh
-  template:
-    src: create_instance.sh
-    dest: /root/create_instance.sh
-    mode: 0755

@@ -1,0 +1,16 @@
+{
+  "name": "multinode-compute",
+  "description": "This will deploy a compute node for a scenarios with just compute and controller nodes",
+  "run_list": [
+    "recipe[build-essential]",
+    "recipe[openstack-common]",
+    "recipe[openstack-compute::compute]",
+    "recipe[openstack-compute::identity_registration]",
+    "recipe[openstack-network::ml2_core_plugin]",
+    "recipe[openstack-network::ml2_openvswitch]",
+    "recipe[openstack-network]",
+    "recipe[openstack-network::openvswitch]",
+    "recipe[openstack-network::plugin_config]",
+    "recipe[openstack-network::openvswitch_agent]"
+  ]
+}

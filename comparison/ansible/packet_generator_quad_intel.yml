@@ -5,11 +5,11 @@
     deploy_env: test1
     vlans:
       vlan1:
-        interface: eth1
-      vlan2:
         interface: eth2
-      vlan3:
+      vlan2:
         interface: eth3
+    # vlan3:
+        # interface: eth3
   roles:
     - packet_l2
 
@@ -21,6 +21,8 @@
   - name: Install Vlan Package
     apt:
       name: vlan
+  - name: Install kernel headers
+    shell: "apt-get -y install linux-headers-$(uname -r)"
   - name: Get bond interface slaves
     setup:
       filter: "{{ ansible_bond0.slaves }}"
@@ -47,17 +49,17 @@
       filter: "{{ ansible_bond0_0.ipv4.network }}"
   - name: Get trex_port_0 pci id
     setup:
-      filter: "{{ ansible_eno2.pciid }}"
+      filter: "{{ ansible_eno3.pciid }}"
   - name: Get trex_port_1 pci id
     setup:
-      filter: "{{ ansible_eno3.pciid }}"
+      filter: "{{ ansible_eno4.pciid }}"
   post_tasks:
   # - name: Reboot Server
   #   reboot:
 
   vars:
-    trex_port_0_pci: "{{ ansible_eno2.pciid }}"
-    trex_port_1_pci: "{{ ansible_eno3.pciid }}"
+    trex_port_0_pci: "{{ ansible_eno3.pciid }}"
+    trex_port_1_pci: "{{ ansible_eno4.pciid }}"
     nfvbench_service_chain_count: 1
     nfvbench_mac_addrs_left: "'52:54:00:00:00:aa'"
     nfvbench_mac_addrs_right: "'52:54:00:00:00:bb'"

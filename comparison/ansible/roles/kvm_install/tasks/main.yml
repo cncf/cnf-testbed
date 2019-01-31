@@ -1,0 +1,37 @@
+---
+- name: get Vagrant install script
+  get_url:
+    url: https://releases.hashicorp.com/vagrant/2.1.2/vagrant_2.1.2_x86_64.deb
+    dest: /root/vagrant.deb
+    mode: 0755
+  register: kvm_deb
+
+- name: run Vagrant install
+  command: dpkg -i /root/vagrant.deb
+  when: ansible_os_family == "Debian"
+
+- name: install Vagrant dependencies Ubuntu
+  apt:
+    update_cache: yes
+    name: ["qemu", "libvirt-bin", "ebtables", "dnsmasq", "libxslt-dev", "libxml2-dev", "libvirt-dev", "zlib1g-dev", "ruby-dev"]
+  when: ansible_os_family == "Debian"
+
+- name: run Vagrant install libvirt
+  command: vagrant plugin install vagrant-libvirt --plugin-version 0.0.43
+
+- name: run Vagrant install disksize
+  command: vagrant plugin install vagrant-disksize --plugin-version 0.1.2
+
+## Workaround to allow access to host sockets
+## Disables use of security driver for libvirt (QEMU) and sets user and group to root
+- name: disable libvirt security driver
+  command: sed -i 's/#security_driver = "selinux"/security_driver = "none"/g' /etc/libvirt/qemu.conf
+
+- name: disable libvirt security all
+  command: sed -i 's/#user = "root"/user = "root"/g' /etc/libvirt/qemu.conf
+
+- name: disable libvirt security group
+  command: sed -i 's/#group = "root"/group = "root"/g' /etc/libvirt/qemu.conf
+
+- name: restart libvirt daemon
+  command: service libvirtd restart

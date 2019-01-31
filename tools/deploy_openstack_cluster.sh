@@ -7,7 +7,7 @@ NODE_COUNT=${NODE_COUNT:-4}
 NODE_PLAN=${NODE_PLAN:-m2.xlarge.x86}
 PACKET_OS=${PACKET_OS:-centos_7}
 PACKET_FACILITY=${PACKET_FACILITY:-sjc1}
-
+PACKET_PROJECT_NAME=${PACKET_PROJECT_NAME:-"CNCF CNFs"}
 
 if [ ! -f ${parentdir}/comparison/ansible/inventory ]; then
 echo "[all:vars]" > ${parentdir}/comparison/ansible/inventory
@@ -19,6 +19,7 @@ docker run \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
   -v ${parentdir}/tools/terraform-ansible/:/terraform \
+  -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
   -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
   -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \
   -e TF_VAR_packet_node_count=${NODE_COUNT} \
@@ -32,17 +33,19 @@ docker run \
 
 echo "[etcd]" >> ${parentdir}/comparison/ansible/inventory
 cat ${parentdir}/tools/terraform-ansible/openstack.tfstate | awk -F\" '/0.add/ {print $4}' >> ${parentdir}/comparison/ansible/inventory
-
 fi
-
+SERVER_LIST=`for ((n=1;n<$NODE_COUNT;n++)); do echo -n $NODE_NAME$n,;done;echo -n $NODE_NAME$NODE_COUNT`
 time docker run \
   -v ${parentdir}/comparison/ansible:/ansible \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
   -v ${parentdir}/tools/terraform-ansible/:/terraform \
   -v ${parentdir}/comparison/ansible/inventory:/etc/ansible/hosts \
-  --entrypoint ansible-playbook -ti cnfdeploytools:latest /ansible/openstack_chef_install.yml
-
+  -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
+  -e PACKET_FACILITY=${PACKET_FACILITY} \
+  -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
+  -e SERVER_LIST=${SERVER_LIST} \
+  --entrypoint ansible-playbook -ti cnfdeploytools:latest ${ANSIBLE_ARGS} /ansible/openstack_chef_install.yml
 if [[ $? != 0 ]]; then
 
 echo -e '=================================================\n Retrying the ansible run'
@@ -52,6 +55,9 @@ time docker run \
   -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
   -v ${parentdir}/tools/terraform-ansible/:/terraform \
   -v ${parentdir}/comparison/ansible/inventory:/etc/ansible/hosts \
-  --entrypoint ansible-playbook -ti cnfdeploytools:latest /ansible/openstack_chef_install.yml
-
+  -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
+  -e PACKET_FACILITY=${PACKET_FACILITY} \
+  -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
+  -e SERVER_LIST=${SERVER_LIST} \
+  --entrypoint ansible-playbook -ti cnfdeploytools:latest ${ANSIBLE_ARGS} /ansible/openstack_chef_install.yml
 fi

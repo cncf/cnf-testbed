@@ -83,12 +83,12 @@ function validate_input() {
         die "ERROR: Chains and nodeness must be an integer values!"
     fi
 
-    if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "8" ]]; then
-        die "ERROR: Chains must be an integer value between 1-8!"
+    if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "10" ]]; then
+        die "ERROR: Chains must be an integer value between 1-10!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "8" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-8!"
+    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "10" ]]; then
+        die "ERROR: Nodeness must be an integer value between 1-10!"
     fi
 }
 
@@ -131,9 +131,16 @@ function run_containers () {
         die "Failed to update VPP config!"
     }
     # Create CORE lists.
-    mtcr=2
+    if [ "${CHAINS}" -eq 1 ] && [ "${NODENESS}" -eq 1 ]; then
+        mtcr=1
+    else
+        mtcr=2
+    fi
     dtcr=1
-    cpu_list=($(source ./cpu_util.sh "${CHAINS}" "${NODENESS}" "${mtcr}" "${dtcr}" ))
+    COMMON_DIR="$(readlink -e "$(git rev-parse --show-toplevel)")" || {
+        die "Readlink or git rev-parse failed."
+    }
+    cpu_list=($(source "${COMMON_DIR}"/tools/cpu_util.sh "${CHAINS}" "${NODENESS}" "${mtcr}" "${dtcr}" ))
     # Run conainer matrix.
     n=0
     # Run conainer matrix.

@@ -165,17 +165,37 @@ function set_remote_ips () {
     set -euo pipefail
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
+      if $ipv6; then
+        REMIP1=fde5::3:0:100$(( ${CHAIN} - 1 ))
+        REMIP2=fde5::4:0:100$(( ${CHAIN} - 1 ))
+      else
         REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))
         REMIP2=172.16.20.10$(( ${CHAIN} - 1 ))
+      fi
     elif [[ "${NODE}" == "1" ]]; then
+      if $ipv6; then
+        REMIP1=fde5::3:0:100$(( ${CHAIN} - 1 ))
+        REMIP2=fde5::31:0:11
+      else
         REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))
         REMIP2=172.16.31.11
+      fi
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
+      if $ipv6; then
+        REMIP1=fde5::$(($NODE + 29)):0:10
+        REMIP2=fde5::4:0:100$(( ${CHAIN} - 1 ))
+      else
         REMIP1=172.16.$(($NODE + 29)).10
         REMIP2=172.16.20.10$(( ${CHAIN} - 1 ))
+      fi
     else
+      if $ipv6; then
+        REMIP1=fde5::$(($NODE + 29)):0:10
+        REMIP2=fde5::$(($NODE + 30)):0:11
+      else
         REMIP1=172.16.$(($NODE + 29)).10
         REMIP2=172.16.$(($NODE + 30)).11
+      fi
     fi
 }
 
@@ -193,18 +213,17 @@ function set_remote_macs () {
 
     set -euo pipefail
 
-    trex_mac1=e4:43:4b:2e:b1:d1
-    trex_mac2=e4:43:4b:2e:b1:d2
+    trex_macs=( e4:43:4b:2e:b1:d1 e4:43:4b:2e:b1:d2 )
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
-        REMMAC1=${trex_mac1}
-        REMMAC2=${trex_mac2}
+        REMMAC1=${trex_macs[0]}
+        REMMAC2=${trex_macs[1]}
     elif [[ "${NODE}" == "1" ]]; then
-        REMMAC1=${trex_mac1}
+        REMMAC1=${trex_macs[0]}
         REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:02:aa
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
         REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
-        REMMAC2=${trex_mac2}
+        REMMAC2=${trex_macs[1]}
     else
         REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
         REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE + 1)):aa
@@ -255,17 +274,37 @@ function set_subnets () {
     set -euo pipefail
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
+      if $ipv6; then
+        SUBNET1=fde5::3:0:10$(( ${CHAIN} - 1 ))/96
+        SUBNET2=fde5::4:0:10$(( ${CHAIN} - 1 ))/96
+      else
         SUBNET1=172.16.10.1$(( ${CHAIN} - 1 ))/24
         SUBNET2=172.16.20.1$(( ${CHAIN} - 1 ))/24
+      fi
     elif [[ "${NODE}" == "1" ]]; then
+      if $ipv6; then
+        SUBNET1=fde5::3:0:10$(( ${CHAIN} - 1 ))/96
+        SUBNET2=fde5::31:0:10/96
+      else
         SUBNET1=172.16.10.1$(( ${CHAIN} - 1 ))/24
         SUBNET2=172.16.31.10/24
+      fi
     elif [[ "${NODE}" == "${NODENESS}" ]]; then
+      if $ipv6; then
+        SUBNET1=fde5::$(($NODE + 29)):0:11/96
+        SUBNET2=fde5::4:0:10$(( ${CHAIN} - 1 ))/96
+      else
         SUBNET1=172.16.$(($NODE + 29)).11/24
         SUBNET2=172.16.20.1$(( ${CHAIN} - 1 ))/24
+      fi
     else
+      if $ipv6; then
+        SUBNET1=fde5::$(($NODE + 29)):0:11/96
+        SUBNET2=fde5::$(($NODE + 30)):0:10/96
+      else
         SUBNET1=172.16.$(($NODE + 29)).11/24
         SUBNET2=172.16.$(($NODE + 30)).10/24
+      fi
     fi
 }
 
@@ -289,6 +328,7 @@ function set_startup_vals () {
     WORKERS="${array[1]},${array[2]}"
 }
 
+ipv6=false
 
 validate_input "${@}" || die
 set_startup_vals || die
@@ -344,6 +384,27 @@ plugins {
 }
 EOF
 
+if $ipv6; then
+bash -c "cat > /etc/vpp/setup.gate" <<EOF
+bin memif_socket_filename_add_del add id 1 filename /root/sockets/${SOCK1}.sock
+bin memif_socket_filename_add_del add id 2 filename /root/sockets/${SOCK2}.sock
+create interface memif id ${MEMID1} socket-id 1 hw-addr ${MAC1} ${OWNER1} rx-queues ${QUEUES} tx-queues ${QUEUES}
+create interface memif id ${MEMID2} socket-id 2 hw-addr ${MAC2} ${OWNER2} rx-queues ${QUEUES} tx-queues ${QUEUES}
+set int ip addr memif1/${MEMID1} ${SUBNET1}
+set int ip addr memif2/${MEMID2} ${SUBNET2}
+enable ip6 interface memif1/${MEMID1}
+enable ip6 interface memif2/${MEMID2}
+
+set ip6 neighbor memif1/${MEMID1} ${REMIP1} ${REMMAC1} static
+set ip6 neighbor memif2/${MEMID2} ${REMIP2} ${REMMAC2} static
+
+ip route add fde5::1:0:0/96 via ${REMIP1}
+ip route add fde5::2:0:0/96 via ${REMIP2}
+
+set int state memif1/${MEMID1} up
+set int state memif2/${MEMID2} up
+EOF
+else
 bash -c "cat > /etc/vpp/setup.gate" <<EOF
 bin memif_socket_filename_add_del add id 1 filename /root/sockets/${SOCK1}.sock
 bin memif_socket_filename_add_del add id 2 filename /root/sockets/${SOCK2}.sock
@@ -360,5 +421,19 @@ set ip arp static memif2/${MEMID2} ${REMIP2} ${REMMAC2}
 ip route add 172.16.64.0/18 via ${REMIP1}
 ip route add 172.16.192.0/18 via ${REMIP2}
 EOF
+fi
 
-/usr/bin/vpp -c /etc/vpp/startup.conf
+if $ipv6; then
+  /usr/bin/vpp -c /etc/vpp/startup.conf &
+
+  sleep 5
+
+  vppctl set int state memif1/${MEMID1} up
+  vppctl set int state memif2/${MEMID2} up
+
+  while true; do
+      sleep 60
+  done
+else
+  /usr/bin/vpp -c /etc/vpp/startup.conf
+fi

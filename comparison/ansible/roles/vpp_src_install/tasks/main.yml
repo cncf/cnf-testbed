@@ -1,22 +1,20 @@
 ---
-- name: Apt update
-  apt: 
-    update_cache: yes
-
-- name: Install git
-  apt:
-    name: git
+- name: Install requied python modules
+  pip:
+    name: ['pexpect','eventlet==0.22']
 
 - name: Clone Repo
   git:
     repo: 'https://gerrit.fd.io/r/vpp'
     dest: /srv/vpp
-    version: origin/stable/1807
+    version: origin/stable/{{vpp_ver}}
+    update: no
 
-- name: Set VPP Users
-  command: sed -i '/vpp_uses_dpdk_mlx5_pmd/s/^# //g' build-data/platforms/vpp.mk 
-  args:
-    chdir: /srv/vpp
+- name: Set VPP DPDK mlx5 PMD use
+  lineinfile:
+    dest: /srv/vpp/build-data/platforms/vpp.mk
+    regexp: '^.*vpp_uses_dpdk_mlx5_pmd.*'
+    line: 'vpp_uses_dpdk_mlx5_pmd = yes'
 
 - name: Build Install Deb
   expect: 
@@ -41,18 +39,59 @@
   command: make pkg-deb vpp_uses_dpdk_mlx5_pmd=yes
   args:
     chdir: /srv/vpp
+  when: ansible_os_family == 'Debian'
 
-- name: Install vpp-lib
-  command: dpkg -i build-root/vpp-lib_18.07.1-11~g31aa6f26-dirty_amd64.deb
-  args: 
-    chdir: /srv/vpp
+- name: find vpp debs to install
+  find:
+    paths: /srv/vpp
+    recurse: yes
+    patterns: "vpp_18*deb"
+  register: vpp
 
-- name: Install vpp_18
-  command: dpkg -i build-root/vpp_18.07.1-11~g31aa6f26-dirty_amd64.deb
-  args:
-    chdir: /srv/vpp
+- name: find vpp-lib debs to install
+  find:
+    paths: /srv/vpp
+    recurse: yes
+    patterns: "vpp-lib_18*.deb"
+  register: vpp_lib
 
-- name: Intall vpp plugins
-  command: dpkg -i build-root/vpp-plugins_18.07.1-11~g31aa6f26-dirty_amd64.deb
-  args:
-    chdir: /srv/vpp
+- name: find vpp-plugins debs to install
+  find:
+    paths: /srv/vpp
+    recurse: yes
+    patterns: "vpp-plugins_18*.deb"
+  register: vpp_plugin
+
+- name: find vpp-api-python debs to install
+  find:
+    paths: /srv/vpp
+    recurse: yes
+    patterns: "vpp-api-python_18*.deb"
+  register: vpp_api_python
+
+- name: Install vpp library packages
+  command: dpkg -i {{item.path}}
+  with_items: "{{vpp_lib['files']}}"
+
+- name: Install vpp packages
+  command: apt install {{item.path}}
+  with_items: "{{vpp['files']}}"
+
+- name: Install vpp plugins packages
+  command: apt install {{item.path}}
+  with_items: "{{vpp_plugin['files']}}"
+
+- name: Install vpp api python packages
+  command: apt install {{item.path}}
+  with_items: "{{vpp_api_python['files']}}"
+
+- name: Update vpp startup.conf for hugepage support
+  template:
+    src: startup.conf
+    dest: /etc/vpp/startup.conf
+
+
+- name: restart vpp service
+  service:
+    name: vpp
+    state: restarted

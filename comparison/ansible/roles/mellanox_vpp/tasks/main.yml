@@ -7,16 +7,15 @@
   apt:
     name: git
 
+- name: Install Libmnl-dev for VPP
+  apt:
+    name: libmnl-dev
+
 - name: Clone Repo
   git:
     repo: 'https://gerrit.fd.io/r/vpp'
     dest: /srv/vpp
-    version: origin/stable/1807
-
-- name: Set VPP Users
-  command: sed -i '/vpp_uses_dpdk_mlx5_pmd/s/^# //g' build-data/platforms/vpp.mk 
-  args:
-    chdir: /srv/vpp
+    version: v18.10
 
 - name: Build Install Deb
   expect: 
@@ -42,23 +41,29 @@
   args:
     chdir: /srv/vpp
 
-- name: Install vpp-lib
-  command: dpkg -i build-root/vpp-lib_18.07.1-11~g31aa6f26-dirty_amd64.deb
-  args: 
-    chdir: /srv/vpp
+- shell: ls /srv/vpp/build-root/ | grep 'vpp-lib.*deb'
+  register: deb_lib
 
-- name: Install vpp_18
-  command: dpkg -i build-root/vpp_18.07.1-11~g31aa6f26-dirty_amd64.deb
+- shell: ls /srv/vpp/build-root/ | grep 'vpp_.*deb'
+  register: deb_main
+
+- shell: ls /srv/vpp/build-root/ | grep 'vpp-plugins.*deb'
+  register: deb_plugins
+
+- name: Install VPP libs
+  command: dpkg -i {{ item }}
+  with_items:
+    - "{{ deb_lib.stdout }}"
+    - "{{ deb_main.stdout }}"
+    - "{{ deb_plugins.stdout }}"
   args:
-    chdir: /srv/vpp
+    chdir: /srv/vpp/build-root
 
-- name: Intall vpp plugins
-  command: dpkg -i build-root/vpp-plugins_18.07.1-11~g31aa6f26-dirty_amd64.deb
-  args:
-    chdir: /srv/vpp
-
-- name: Create vpp directory
+- name: Create vpp sockets directory
   file: path=/etc/vpp/sockets state=directory
+
+- name: Create vpp templates directory
+  file: path=/etc/vpp/templates state=directory
 
 - name: Write vpp baseline startup config file
   template: src=vEdge_baseline_startup.conf.j2 dest=/etc/vpp/startup.conf
@@ -70,6 +75,18 @@
 
 - name: Update CNF VPP configuration
   template: src=vEdge_cnf.conf.j2 dest=/etc/vpp/setup.gate
+  when: cnf
+
+- name: Add 1 chain VPP template
+  template: src=cnf_startup/1chain_cnf.j2 dest=/etc/vpp/templates/1chain_cnf.j2
+  when: cnf  
+  
+- name: Add 2 chain VPP template
+  template: src=cnf_startup/2chain_cnf.j2 dest=/etc/vpp/templates/2chain_cnf.j2
+  when: cnf
+  
+- name: Add 3 chain VPP template
+  template: src=cnf_startup/3chain_cnf.j2 dest=/etc/vpp/templates/3chain_cnf.j2
   when: cnf
 
 - name: Update VNF VPP configuration

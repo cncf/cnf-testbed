@@ -1,0 +1,111 @@
+---
+- hosts: localhost
+  tasks:
+    - debug:
+        msg: "sut_nic: {{ sut_nic }}" 
+    - name: Check that sut_nic has been specified
+      fail:
+        msg: "Variable 'sut_nic' must be set to either 'intel' or 'mellanox'"
+      when: (sut_nic != "intel") and (sut_nic != "mellanox")
+    - name: Check for tg and sut parameters
+      fail:
+        msg: "Variables 'tg' and 'sut' must be specified"
+      when: (tg is not defined) or (sut is not defined)
+    - add_host:
+        name: "{{ tg }}"
+        groups: tg
+        changed_when: false
+    - add_host:
+        name: "{{ sut }}"
+        group: sut
+        changed_when: false
+
+- hosts: tg
+  tasks:
+    - debug:
+        msg: "Traffic Generator: {{ ansible_hostname }}"
+    - name: get TG MACs (MLX)
+      set_fact:
+        tg_mac1: "{{ ansible_enp94s0f4.macaddress }}"
+        tg_mac2: "{{ ansible_enp94s0f5.macaddress }}"
+      when: sut_nic == "mellanox"
+    - name: get TG MACs (Intel)
+      set_fact:
+        tg_mac1: "{{ ansible_eno3.macaddress }}"
+        tg_mac2: "{{ ansible_eno4.macaddress }}"
+      when: sut_nic == "intel"
+    - debug:
+        msg: "MACs: {{ tg_mac1 }}, {{ tg_mac2 }}"
+
+- hosts: sut
+  tasks:
+    - debug:
+        msg: "On host sut - {{ ansible_hostname }}"
+    - name: Set hostname
+      set_fact:
+        sut_hostname: "{{ ansible_hostname }}"
+
+- hosts: localhost
+  tasks:
+  - name: Set server_list
+    set_fact:
+      server_list: "{{ hostvars[groups['sut'][0]].sut_hostname }}"
+  - name: Configure packet_l2
+    include_role:
+      name: packet_l2
+
+  vars:
+    deploy_env: mlxtest
+    vlans:
+      vlan1:
+        interface: eth1
+      vlan2:
+        interface: "{{ 'eth1' if sut_nic == 'mellanox' else 'eth2' }}"
+
+- hosts: sut
+  tasks:
+  - name: Apt update
+    apt:
+      update_cache: yes
+  - name: Check if Docker is installed
+    shell: command -v docker
+    ignore_errors: yes
+    register: docker_path
+  - debug:
+      msg: "Docker is already installed"
+    when: docker_path.stdout != ""
+  - name: Install Docker
+    include_role:
+      name: { role: "nickjj.docker", tags: ["docker"] }
+    when: docker_path.stdout == ""
+  - name: Check if Vagrant is installed
+    shell: command -v vagrant
+    ignore_errors: yes
+    register: vagrant_path
+  - debug:
+      msg: "Vagrant is already installed"
+    when: vagrant_path.stdout != ""
+  - name: Install Vagrant
+    include_role:
+      name: kvm_install
+    when: vagrant_path.stdout == ""
+  - name: Install Network Functions
+    include_role:
+      name: nf_install
+
+  vars:
+    ipv6: false
+    tg_mac1: "{{ hostvars[groups['tg'][0]].tg_mac1 }}"
+    tg_mac2: "{{ hostvars[groups['tg'][0]].tg_mac2 }}"
+    vlan_ids:
+      - "{{ 'hostvars.localhost.vlans.vlan1.vid' if sut_nic == 'mellanox' else '' }}"
+      - "{{ 'hostvars.localhost.vlans.vlan2.vid' if sut_nic == 'mellanox' else '' }}"
+    docker__registries:
+      - registry_url: "https://index.docker.io/v1/"
+    docker__package_dependencies:
+      - "apt-transport-https"
+      - "ca-certificates"
+      - "software-properties-common"
+      - "gnupg2"
+      - "cron"
+      - "python-pip"

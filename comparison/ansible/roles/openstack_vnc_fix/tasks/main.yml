@@ -1,0 +1,33 @@
+---
+- name: find the controller host address
+  set_fact:
+    host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
+
+- name: set vnc values
+  ini_file:
+    path: /etc/nova/nova.conf
+    section: vnc
+    option: "{{item.option}}"
+    value: "{{item.value}}"
+  with_items:
+    - { option: "server_proxyclient_address", value: "{{ ansible_default_ipv4.address }}" }
+    - { option: "xvpvncproxy_host", value: "{{ ansible_default_ipv4.address }}" }
+    - { option: "novncproxy_host", value: "{{ ansible_default_ipv4.address }}" }
+    - { option: "server_listen", value: "{{ ansible_default_ipv4.address }}" }
+    - { option: "novncproxy_base_url", value: "http://{{ host_0_address }}:6080/vnc_auto.html" }
+    - { option: "xvpvncproxy_base_url", value: "http://{{ host_0_address }}:6081/console" }
+  register: nova_update
+
+- name: restart nova-compute
+  service:
+    name: nova-compute
+    state: restarted
+  when: nova_update.changed and not inventory_hostname == host_0_address
+
+- name: restart nova-novncproxy
+  service:
+    name: nova-novncproxy
+    state: restarted
+  when: nova_update.changed and inventory_hostname == host_0_address
+
+

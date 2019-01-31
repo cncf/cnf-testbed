@@ -1,19 +1,34 @@
-- name: Restart openstack-nova-compute
+- name: Restart etcd
   service:
-    name: openstack-nova-compute
+    enabled: true
+    name: etcd
     state: restarted
-  when: not host_0_address == inventory_hostname
+
+- name: Restart nova-compute
+  service:
+    enabled: true
+    name: nova-compute
+    state: restarted
+  when: not host_0_address == inventory_hostname and ansible_os_family == 'Debian'
 
 - name: Restart neutron-server
   service:
+    enabled: true
     name: neutron-server
     state: restarted
+  when: host_0_address == inventory_hostname
 
 - name: Restart vpp
   service:
     enabled: true
     name: vpp
     state: restarted
+
+- name: Restart apache
+  service:
+    name: apache2
+    state: restarted
+  when: ansible_os_family == 'Debian'
 
 - name: Restart vpp-agent
   service:

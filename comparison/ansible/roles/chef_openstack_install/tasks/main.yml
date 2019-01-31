@@ -3,10 +3,12 @@
   yum:
     name: https://packages.chef.io/files/stable/chefdk/3.4.38/el/7/chefdk-3.4.38-1.el7.x86_64.rpm
   when: ansible_os_family == 'RedHat'
+
 - name: get chef package
   apt:
     deb: https://packages.chef.io/files/stable/chefdk/3.2.30/ubuntu/18.04/chefdk_3.2.30-1_amd64.deb
   when: ansible_os_family == 'Debian'
+
 - name: get openstack-chef code 
   git: 
     repo: https://git.openstack.org/openstack/openstack-chef
@@ -19,18 +21,23 @@
   command: berks install
   args:
     chdir: /root/openstack-chef
+    creates: /root/.berkshelf
+
 - name: move berks downloaded code to openstack-chef directory
   shell: tar cf - cookbooks/ | (cd /root/openstack-chef; tar xf -)
   args:
     chdir: /root/.berkshelf/
+
 - name: Install chef client via the omnibus installer
   shell: curl -L https://omnitruck.chef.io/install.sh | bash
-
+  args:
+    creates: /usr/bin/chef-client
+    
 - name: Make /etc/chef directory
   file:
     state: directory
     dest: /etc/chef
-    mode: 0644
+    mode: 0664
 
 - name: Move chef openstack secret to /etc/chef
   copy:
@@ -47,6 +54,7 @@
   command: knife cookbook upload -a -z --include-dependencies --cookbook-path cookbooks/
   args:
     chdir: /root/openstack-chef/
+    creates: /root/openstack-chef/cookbooks/openstack-common
 
 - name: install updated environment file
   template:
@@ -57,23 +65,67 @@
   file:
     state: directory
     dest: /etc/neutron
-    mode: 0644
+    mode: 0755
 
 - name: create an empty neutron plugin.ini file
   file:
     state: touch
     dest: /etc/neutron/plugin.ini
-    mode: 0644
+    mode: 0755
 
-- name: Update the multinode-controller role
+- name: create a dashboard secrets directory
+  file:
+    state: directory
+    dest: /var/lib/openstack-dashboard
+    mode: 0644
+  when: ansible_os_family == 'Debian'
+
+- name: create a dashboard secrets file for Debian
+  copy:
+    content: 'aaWN2w6bcIHFUMZZ7aT5uBSPxnDZpOujHjHHx0HzNbnOopD2wrmYqbWlQsTUO66D'
+    dest: /var/lib/openstack-dashboard/secret_key
+    mode: 0600
+  when: ansible_os_family == 'Debian'
+
+- name: Add python update for chef Debian deployments
+  apt:
+    name: ['python','python3','python-pip','python3-pip']
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure pip 18.0 for chef Debian
+  pip:
+    name: pip
+    version: 18.0
+    executable: 'pip3'
+  when: ansible_os_family == 'Debian'
+
+- name: Install python api pre-requisites
+  pip:
+    name: ['pycparser','cffi']
+
+- name: Update the multinode-controller role - VPP
   template:
     src: multinode-controller.json
     dest: /root/openstack-chef/roles/multinode-controller.json
+  when: vpp_network
 
-- name: Update the multinode-compute role
+- name: Update the multinode-controller role - non-VPP
+  template:
+    src: multinode-controller-novpp.json
+    dest: /root/openstack-chef/roles/multinode-controller.json
+  when: not vpp_network
+
+- name: Update the multinode-compute role - VPP
   template:
     src: multinode-compute.json
     dest: /root/openstack-chef/roles/multinode-compute.json
+  when: vpp_network
+
+- name: Update the multinode-compute role - non-VPP
+  template:
+    src: multinode-compute-novpp.json
+    dest: /root/openstack-chef/roles/multinode-compute.json
+  when: not vpp_network
 
 - name: Launch Chef based OpenStack installer on First (controller) node
   command: chef-client -z -E multinode -r 'role[multinode-controller]'

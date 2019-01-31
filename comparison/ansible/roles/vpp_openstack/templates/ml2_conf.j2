@@ -1,19 +1,20 @@
 [DEFAULT]
+interface_driver = linuxbridge
+
 [ml2]
-tenant_network_types = vlan
+tenant_network_types = 
 extension_drivers = port_security
 type_drivers = vlan,flat
 mechanism_drivers = vpp
 
 [ml2_type_vlan]
-network_vlan_ranges = physnet:1000:2000
+network_vlan_ranges = provider:1000:2000
 
 [ml2_type_flat]
-flat_networks = physnet
+flat_networks = provider
 
 [securitygroup]
 firewall_driver = neutron.agent.not.a.real.FirewallDriver
-#firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 
 [ml2_vpp]
 jwt_signing = False
@@ -22,7 +23,7 @@ l3_hosts = localhost
 gpe_locators =
 gpe_src_cidr =
 enable_vpp_restart = False
-physnets = physnet:host-{{ hostvars[inventory_hostname].vlan_interface }}
+physnets = provider:TenGigabitEthernet5e/0/1
 etcd_pass =
 etcd_user =
 etcd_port = 2379

@@ -1,0 +1,82 @@
+---
+- name: find the controller host address
+  set_fact:
+    host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
+
+- name: add hugepage support for nova
+  ini_file:
+    path: /etc/nova/nova.conf
+    section: DEFAULT
+    option: reserved_huge_pages
+    value: node:0,size:2048,count:64
+  when: not host_0_address == inventory_hostname
+  notify:
+  - restart nova-compute
+
+- name: add plugin.ini to controller for OVS - RedHat
+  template:
+    src: control-plugin.ini
+    dest: /etc/neutron/plugin.ini
+    mode: 0640
+    owner: neutron
+    group: neutron
+  when: host_0_address == inventory_hostname and ansible_os_family == 'RedHat'
+  notify: restart neutron-server
+
+- name: add ml2_conf.ini to controller for OVS - Debian
+  template:
+    src: control-plugin.ini
+    dest: /etc/neutron/plugins/ml2/ml2_conf.ini
+    mode: 0640
+    owner: neutron
+    group: neutron
+  when: host_0_address == inventory_hostname and ansible_os_family == 'Debian'
+  notify: restart neutron-server
+
+- name: increase number of active DHCP agents
+  ini_file:
+    path: /etc/neutron/neutron.conf
+    section: DEFAULT
+    option: dhcp_agents_per_network
+    value: '2'
+  when: host_0_address == inventory_hostname
+  notify: restart neutron-server
+
+- name: add openvswitch_agent.ini to compute for OVS
+  template:
+    src: openvswitch_agent.ini
+    dest: /etc/neutron/plugins/ml2/openvswitch_agent.ini
+    mode: 0640
+    owner: neutron
+    group: neutron
+  when: not host_0_address == inventory_hostname
+  notify: restart ovs-agent
+
+- name: add dhcp_agent.ini to compute for OVS
+  template:
+    src: dhcp_agent.ini
+    dest: /etc/neutron/dhcp_agent.ini
+    mode: 0640
+    owner: neutron
+    group: neutron
+  when: not host_0_address == inventory_hostname
+  notify: restart dhcp-agent
+
+- name: add metadata_agent.ini to compute for OVS
+  template:
+    src: metadata_agent.ini
+    dest: /etc/neutron/metadata_agent.ini
+    mode: 0640
+    owner: neutron
+    group: neutron
+  when: not host_0_address == inventory_hostname
+  notify: restart metadata-agent
+
+- name: create ovs provider bridge
+  command:  ovs-vsctl --may-exist add-br br-provider
+
+- name: add {{vlan_interface}} to br-provider
+  command: ovs-vsctl --may-exist add-port br-provider {{vlan_interface}}
+
+
+

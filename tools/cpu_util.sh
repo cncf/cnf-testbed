@@ -43,7 +43,7 @@ function create_cpu_list () {
     SIBLING_OFFSET="${thread_siblings}"
     CPUS=($(seq 0 "${STEP}" $(( ("${max_cpus}" * "${STEP}") - 1 ))))
     SYSTEM_CPUS=( 0 )
-    SWITCH_CPUS=( 1 )
+    SWITCH_CPUS=( 2 4 )
 }
 
 
@@ -68,8 +68,8 @@ function create_reserved_cpu_list () {
     nf_count=$(( "${CHAINS}" * "${NODENESS}" ))
     reserved_cpus=$(( "${#SYSTEM_CPUS[@]}" + "${#SWITCH_CPUS[@]}" ))
 
-    mt_req=$(( "${nf_count}" / "${MTCR}" ))
-    dt_req=$(( "${nf_count}" / "${DTCR}" ))
+    mt_req=$(( ( "${nf_count}" + "${MTCR}" - 1 ) / "${MTCR}" ))
+    dt_req=$(( ( "${nf_count}" + "${DTCR}" - 1 ) / "${DTCR}" ))
     available=$(( "${reserved_cpus}" + "${mt_req}" + "${dt_req}" ))
     if [ "${available}" -gt "${#CPUS[@]}" ]; then
         die "Impossible to place VFs to cores!"

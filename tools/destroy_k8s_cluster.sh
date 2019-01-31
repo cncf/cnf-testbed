@@ -16,7 +16,7 @@ docker run \
   -v $(pwd)/k8s_worker_override.tf:/cncf/packet/modules/worker/override.tf \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v "${project_root}/comparison/ansible:/ansible" \
-  -e NAME=packet \
+  -e NAME=$NAME \
   -e CLOUD=packet \
   -e COMMAND=destroy \
   -e BACKEND=file \

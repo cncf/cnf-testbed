@@ -12,16 +12,13 @@
         interface: eth1
       vlan2:
         interface: eth2
-        ## Commented to avoid excessive use of VLANs for now
-        # vlan3:
-        # interface: eth3
+      vlan3:
+        interface: eth3
   roles:
     - packet_l2
 
 - hosts: all
   vars:
-    mellanox_4_4: true
-    mellanox_4_1: false
     cnf: true
     vnf: false
     baseline: false
@@ -75,7 +72,6 @@
         parameters:
           - param:
             val: 'bond-master bond0'
-
   pre_tasks:
   - name: Apt update
     apt:
@@ -119,7 +115,5 @@
   roles:
     - mrlesmithjr.config-interfaces
     - grub_vswitch
-    # - mellanox_vswitch
     - vpp_install
     - vpp_vswitch
-    #- vfs_vswitch
