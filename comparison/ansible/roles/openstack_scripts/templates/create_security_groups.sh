@@ -1,4 +1,5 @@
 #!/bin/bash
+source ~/openrc
 
 admin_project=$(openstack project list | awk '/admin/ {print $2}')
 admin_default=$(openstack security group list | grep $admin_project | awk '{print $2}')

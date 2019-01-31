@@ -28,7 +28,7 @@
   service:
     name: apache2
     state: restarted
-  when: ansible_os_family == 'Debian'
+  when: ansible_os_family == 'Debian' and host_0_address == inventory_hostname
 
 - name: Restart vpp-agent
   service:

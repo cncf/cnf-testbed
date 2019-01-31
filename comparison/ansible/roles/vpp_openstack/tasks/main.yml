@@ -18,7 +18,7 @@
     mode: 0644
   when: ansible_os_family == 'Debian'
 
-- name: add missing params to nova.conf
+- name: add missing network params to nova.conf
   ini_file:
     dest: /etc/nova/nova.conf
     section: DEFAULT
@@ -29,6 +29,20 @@
     - {option: 'vif_plugging_is_fatal', value: 'True' }
     - {option: 'use_neutron', value: 'True' }
     - {option: 'firewall_driver', value: 'nova.virt.firewall.NoopFirewallDriver' }
+  notify:
+  - Restart nova-compute
+    
+- name: add missing scheduler params to nova.conf
+  ini_file:
+    dest: /etc/nova/nova.conf
+    section: scheduler
+    option: "{{item.option}}"
+    value: "{{item.value}}"
+  with_items:
+    - {option: 'scheduler_driver_task_period', value: '60' }
+    - {option: 'scheduler_driver', value: 'nova.scheduler.filter_scheduler.FilterScheduler' }
+    - {option: 'schedulr_available_filters', value: 'nova.scheduler.filters.all_filters' }
+    - {option: 'scheduler_default_filters', value: 'RetryFilter, AvailabilityZoneFilter, RamFilter, DiskFilter, ComputeFilter, ComputeCapabilitiesFilter, ImagePropertiesFilter, ServerGroupAntiAffinityFilter, ServerGroupAffinityFilter, NUMATopologyFilter' }
   notify:
   - Restart nova-compute
     
@@ -139,7 +153,7 @@
   register: hugepages
 
 - name: reload vpp hugepage support
-  command: sysctl -p /etc/sysctl.d/80-vpp.conf
+  command: sysctl --system
   when: hugepages.changed
   notify:
   - Restart apache
