@@ -1,7 +1,5 @@
 #!/bin/bash
 
-VEDGE_STATE=$(cat /opt/config/vedge_state.txt)
-
 set -o xtrace  # print commands during script execution
 
 if [ "$VEDGE_STATE" == "build" ];
