@@ -13,6 +13,20 @@ docker build -t cnfdeploytools:latest -f deploy/Dockerfile deploy/
 popd
 ```
 
+## SSH access to build machines
+
+In order to provision the hosts, it is necessary to have an SSH key pair including a private and public key on the same host as in the previous step, where the docker container is built and will be run.  A new key pair can be created on the same host, e.g.:
+
+```
+ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
+```
+
+The public key from the newly generated key pair will need to be captured and included in the ssh keys registered with Packet.net so that it becomes possible to log into the deployed Packet.net nodes.
+
+```
+cat ~/.ssh/id_rsa.pub
+```
+
 ## Deployment to Packet reserved instances
 
 Steps to bring up an OpenStack cluster, Provision L2 Networking & VPP vSwitch
