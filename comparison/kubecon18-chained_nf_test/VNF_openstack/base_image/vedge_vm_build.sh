@@ -29,8 +29,3 @@ sudo update-grub2
 cp /build/igb_uio.ko /lib/modules/$(uname -r)/kernel/drivers/
 echo 'igb_uio' | sudo tee -a /etc/modules
 sudo depmod
-
-sh /build/inject_vagrant_ssh_key.sh
-
-echo "#!/bin/sh -e" | sudo tee /etc/rc.local
-echo "ssh-keygen -A" | sudo tee -a /etc/rc.local
