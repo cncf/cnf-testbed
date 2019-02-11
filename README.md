@@ -1,7 +1,8 @@
-# CNFs - Cloud-native Network Functions
+# Cloud native Network Function (CNF) Testbed
 
-The CNCF CNF Testbed provides reference code and test comparisons of Cloud-native Network Functions. 
+The CNCF CNF Testbed provides reference code and test comparisons for running the same networking code packaged as containers (Cloud native Network Functions or CNFs) on Kubernetes and as virtual machines (Virtual Network Functions or VNFs) on OpenStack.
 
+Status: The CNF Testbed is *not* a CNCF-hosted [project](https://www.cncf.io/projects/). Instead, it is an initiative to create a repeatable, apples-to-apples testbed that telcos and telecoms vendors can use to evaluate how CNF architectures compare to more traditional VNF ones.
 
 ## What is the CNCF CNF Testbed?
 
@@ -16,7 +17,6 @@ The reference code and comparisons from the CNF Testbed support the claim that C
 Note that the CNF Testbed is still in the prototype stage. Additional reference code and benchmarking tests will be added incrementally.
 
 The ideal outcome of the CNF Testbed is that a third party developer can run the provided CNF reference code/benchmarking tests with an API key and a couple of CLI commands. Furthermore, a developer can re-use some or all of the software in their own environment with minimal, or at least isolated modifications.
-
 
 ## CNF Testbed goals
 
@@ -45,9 +45,7 @@ So far the project has been focused on provisioning the infrastructure to suppor
 ## Getting Involved and Contributing
 
 Are you interested in contributing to CNFs? We, the maintainers and community,
-would love your suggestions, contributions, and help! The
-maintainers can be contacted at any time to learn more about how to get
-involved.
+would love your suggestions, contributions, and help! Please email info@cncf.io or open an issue or pull request if you have questions or suggestions.
 
 **What this means:**
 
@@ -62,16 +60,8 @@ __Pull Requests__
 
 ## CNFs At KubeCon + CloudNativeCon North America 2018
 
-Several talks and demos targeting different experience are scheduled for KubeCon North America 2018. Please join us to get more insights about Cloud-native Network Functions (CNFs), the current state of the 
+Two Birds-of-a-Feather (BoF) sessions covered aspects of the CNF Testbed.
 
+[Deep Dive: Using CNCF Cross-Cloud CI with CNFs – Denver Williams & Taylor Carpenter, Vulk Coop](https://kccna18.sched.com/event/Greb)
 
-and test cases.
-
-**Monday, December 10**
- - 11:40am - 12:00pm - [CNFs in Switzerland: Reproducible Performance Testing in a Neutral Environment - Taylor Carpenter, Vulk Coop](https://fdiominisummitatkccncnortha2018.sched.com/event/IGg6/cnfs-in-switzerland-reproducible-performance-testing-in-a-neutral-environment)
-
-**Wednesday, December 12** 
-
- - 10:50am - 11:25am - [Deep Dive: Using CNCF Cross-Cloud CI with CNFs – Denver Williams & Taylor Carpenter, Vulk Coop](https://kccna18.sched.com/event/Greb)
-
- - 2:35pm - 3:10pm - [Intro: Cloud Native Network Functions BoF - Dan Kohn, Cloud Native Computing Foundation](https://kccna18.sched.com/event/JCLS)
+[Intro: Cloud Native Network Functions BoF - Dan Kohn, Cloud Native Computing Foundation](https://kccna18.sched.com/event/JCLS)

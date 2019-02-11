@@ -22,10 +22,6 @@ sudo sysctl -p /etc/sysctl.conf
 sudo sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="isolcpus=1,2 nohz_full=1,2 rcu_nocbs=1,2"/g' /etc/default/grub
 sudo update-grub2
 
-cp /build/igb_uio.ko /lib/modules/$(uname -r)/kernel/drivers/
-echo 'igb_uio' | sudo tee -a /etc/modules
-sudo depmod
-
 sh /build/inject_vagrant_ssh_key.sh
 
 # Stop the VPP service before changing the configuration
