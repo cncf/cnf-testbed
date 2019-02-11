@@ -45,6 +45,7 @@ time docker run \
   -e PACKET_FACILITY=${PACKET_FACILITY} \
   -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
   -e SERVER_LIST=${SERVER_LIST} \
+  -e DEPLOY_ENV=${DEPLOY_ENV} \
   --entrypoint ansible-playbook -ti cnfdeploytools:latest ${ANSIBLE_ARGS} /ansible/openstack_chef_install.yml
 if [[ $? != 0 ]]; then
 
@@ -59,5 +60,6 @@ time docker run \
   -e PACKET_FACILITY=${PACKET_FACILITY} \
   -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
   -e SERVER_LIST=${SERVER_LIST} \
+  -e DEPLOY_ENV=${DEPLOY_ENV} \
   --entrypoint ansible-playbook -ti cnfdeploytools:latest ${ANSIBLE_ARGS} /ansible/openstack_chef_install.yml
 fi
