@@ -20,6 +20,8 @@ chmod +x vedge_vm_build.sh
 
 # Download the dpdk-devbind script
 curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/$BRANCH/comparison/kubecon18-chained_nf_test/VNF_openstack/shared/dpdk-devbind.py" -o /opt/dpdk-devbind.py
+cd /opt
+chmod +x dpdk-devbind.py
 
 # Download and run vm install script
 curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/$BRANCH/comparison/kubecon18-chained_nf_test/VNF_openstack/shared/vEdge_vm_install.sh" -o /opt/vEdge_vm_install.sh
