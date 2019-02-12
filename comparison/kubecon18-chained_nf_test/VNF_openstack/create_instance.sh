@@ -12,6 +12,9 @@ cat >/etc/resolv.conf <<EOL
 nameserver 8.8.8.8
 EOL
 
+# Download igb_uio.ko kernal module
+curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/$BRANCH/comparison/kubecon18-chained_nf_test/VNF_openstack/base_image/shared/igb_uio.ko" -o /opt/igb_uio.ko
+
 # Download and run vm build script
 curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/$BRANCH/comparison/kubecon18-chained_nf_test/VNF_openstack/base_image/vedge_vm_build.sh" -o /opt/vedge_vm_build.sh
 cd /opt
@@ -27,7 +30,7 @@ chmod +x dpdk-devbind.py
 curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/$BRANCH/comparison/kubecon18-chained_nf_test/VNF_openstack/shared/vEdge_vm_install.sh" -o /opt/vEdge_vm_install.sh
 cd /opt
 chmod +x vEdge_vm_install.sh
-./vEdge_vm_install.sh
+# ./vEdge_vm_install.sh
 
 
 
