@@ -30,7 +30,7 @@ chmod +x dpdk-devbind.py
 curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/$BRANCH/comparison/kubecon18-chained_nf_test/VNF_openstack/shared/vEdge_vm_install.sh" -o /opt/vEdge_vm_install.sh
 cd /opt
 chmod +x vEdge_vm_install.sh
-# ./vEdge_vm_install.sh
+./vEdge_vm_install.sh
 
 
 

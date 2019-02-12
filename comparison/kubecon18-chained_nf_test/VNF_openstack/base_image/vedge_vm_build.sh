@@ -29,3 +29,4 @@ sudo update-grub2
 cp /opt/igb_uio.ko /lib/modules/$(uname -r)/kernel/drivers/
 echo 'igb_uio' | sudo tee -a /etc/modules
 sudo depmod
+sudo modprobe igb_uio
