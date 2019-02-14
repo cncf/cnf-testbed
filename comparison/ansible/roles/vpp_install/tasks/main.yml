@@ -2,7 +2,7 @@
 # curl -L https://packagecloud.io/fdio/release/gpgkey |sudo apt-key add -
 - name: Add packagecloud gpg key
   apt_key:
-    url: https://packagecloud.io/fdio/release/gpgkey
+    url: https://packagecloud.io/fdio/{{vpp_ver}}/gpgkey
     state: present
   when: ansible_os_family == "Debian"
 
@@ -47,7 +47,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: install dpdk on Debian
-  yum:
+  apt:
     update_cache: yes
     name: ['libibverbs-dev','dpdk']
   when: ansible_os_family == "Debian"
@@ -68,11 +68,11 @@
     name: ["vpp-api-python","vpp-api-lua","vpp-api-java"]
   when: ansible_os_family == "RedHat"
 
-# - name: install vpp api packages(s) Ubuntu
-#   apt:
-#     update_cache: yes
-#     name: ["vpp-api-python","vpp-api-lua","vpp-api-java"]
-#   when: ansible_os_family == "Debian"
+- name: install vpp api packages(s) Ubuntu
+  apt:
+    update_cache: yes
+    name: ["vpp-api-python","vpp-api-lua","vpp-api-java"]
+  when: ansible_os_family == "Debian"
 
 - name: Enable use of vfio-pci driver
   replace:
