@@ -2,7 +2,7 @@
 # source ~/openrc
 #Set vEdge Script Branch
 export BRANCH="master"
-cat > /tmp/test${1}.cfg <<EOF
+cat > /tmp/${3}.cfg <<EOF
 #!/bin/bash
 passwd ubuntu <<EOL
 ubuntu
@@ -36,9 +36,36 @@ chmod +x vEdge_vm_install.sh
 
 EOF
 
-FLAVOR=${3:-c0.small}
+FLAVOR=${FLAVOR:-c0.small}
+KEYPAIR=${KEYPAIR:-oskey}
 
-network=`openstack network list | awk '/vlan/ {print $4}'`
-openstack  server create test${1} --flavor ${FLAVOR} --key-name oskey --image xenial --nic net-id=${network} --config-drive True --user-data /tmp/test${1}.cfg
-# openstack  server create test${1} --flavor ${FLAVOR} --key-name oskey --image xenial --nic net-id=7fef025c-8d0e-4fd7-82f0-45f6d3cbb9dd --nic net-id=a3fadec9-a4c8-4ee2-a3a0-b88c6576af77  --config-drive True --user-data /tmp/test${1}.cfg
+if [[ $# == '0' ]]; then
+    echo "usage: $0 {network-ids} {mac-addresses} {server-name}"
+    exit 1
+fi
 
+
+IFS=',' read -r -a network <<< "$1"
+IFS=',' read -r -a mac <<< "$2"
+
+# get length of array
+arraylength=${#network[@]}
+
+# Create first port automotically with the vm
+for element in ${network[0]}
+do
+    openstack port create ${3} --network ${element} --mac-address ${mac[0]}
+    openstack server create ${3} --flavor ${FLAVOR} --key-name ${KEYPAIR} --image xenial --port ${3} --config-drive True --user-data /tmp/${3}.cfg
+done
+
+# Loop until server is running
+until [ "$SERVER_STATUS" == "ACTIVE" ]; do
+    SERVER_STATUS=$(openstack server show ${3} | awk '/status/ {print $4}')
+done
+
+# Add attach remaining ports to the vm
+for (( i=2; i<${arraylength}+1; i++ ));
+do
+  openstack port create ${3}${i} --network ${network[$i-1]} --mac-address ${mac[$i-1]}
+  openstack server add port ${3} ${3}${i}
+done
