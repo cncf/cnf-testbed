@@ -48,7 +48,7 @@ fi
 IFS=',' read -r -a network <<< "$1"
 IFS=',' read -r -a mac <<< "$2"
 
-# get length of an array, excluding first element
+# get length of array
 arraylength=${#network[@]}
 
 # Create first port automotically with the vm
@@ -63,7 +63,7 @@ until [ "$SERVER_STATUS" == "ACTIVE" ]; do
     SERVER_STATUS=$(openstack server show ${3} | awk '/status/ {print $4}')
 done
 
-# Add attatch remaining ports to the vm
+# Add attach remaining ports to the vm
 for (( i=2; i<${arraylength}+1; i++ ));
 do
   openstack port create ${3}${i} --network ${network[$i-1]} --mac-address ${mac[$i-1]}
