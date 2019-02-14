@@ -37,6 +37,7 @@ chmod +x vEdge_vm_install.sh
 EOF
 
 FLAVOR=${FLAVOR:-c0.small}
+KEYPAIR=${KEYPAIR:-oskey}
 
 if [[ $# == '0' ]]; then
     echo "usage: $0 {network-ids} {mac-addresses} {server-name}"
@@ -54,7 +55,7 @@ arraylength=${#network[@]}
 for element in ${network[0]}
 do
     openstack port create ${3} --network ${element} --mac-address ${mac[0]}
-    openstack server create ${3} --flavor ${FLAVOR} --key-name oskey2 --image xenial --port ${3} --config-drive True --user-data /tmp/${3}.cfg
+    openstack server create ${3} --flavor ${FLAVOR} --key-name ${KEYPAIR} --image xenial --port ${3} --config-drive True --user-data /tmp/${3}.cfg
 done
 
 # Loop until server is running
