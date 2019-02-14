@@ -4,6 +4,7 @@
     vlan_interface: enp94s0f1
     vlan_pci_id: 0000:5e:00.1
     vpp_network: true
+    vpp_src: true
     create_vlans: true
   pre_tasks:
   - setup:
@@ -18,9 +19,9 @@
         server_list: "{{ lookup('env','SERVER_LIST') }}"
         project_name: "{{ lookup('env','PROJECT_NAME') }}"
         vlans:
-          vlan1:
+          mlxtestvlan1:
             interface: "eth1"
-          vlan2:
+          mlxtestvlan2:
             interface: "eth1"
       when: create_vlans
 
@@ -36,6 +37,8 @@
     - role: openstack_vnc_fix
 
     - role: vpp_src_install
-      when: vpp_network
+      when: vpp_network and vpp_src
+    - role: vpp_install
+      when: vpp_network and not vpp_src
     - role: vpp_openstack
       when: vpp_network
