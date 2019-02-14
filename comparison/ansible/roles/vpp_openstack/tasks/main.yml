@@ -75,9 +75,9 @@
 
 - name: see if l3 unicode bug is in vpp code
   replace:
-    path: /root/networking-vpp/networking_vpp/service/l3_router/l3_vpp.py
-    regexp: "ip_network(subnet['cidr'])"
-    replace: "ip_network(unicode(subnet['cidr']))"
+    path: /root/networking-vpp/networking_vpp/services/l3_router/l3_vpp.py
+    regexp: "ip_network.*subnet.*cidr.*"
+    replace: ip_network(unicode(subnet['cidr']))
 
 - name: install openstack networking-vpp plugin
   pip:
