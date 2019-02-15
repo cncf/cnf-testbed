@@ -25,8 +25,13 @@
       "Do you want to continue.*": "Y"
     timeout: 300
 
+- name: get NASM code from launchpad
+  get_url:
+    url: https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/nasm/2.13.03-2/nasm_2.13.03.orig.tar.xz
+    dest: /srv/vpp/dpdk/nasm_2.13.03.orig.tar.xz
+
 - name: Build dpdk
-  command: make dpdk-install-dev DPDK_MLX5_PMD=y
+  command: make dpdk-install-dev DPDK_MLX5_PMD=y DPDK_DOWNLOAD_DIR=/srv/vpp/dpdk NASM_VER=2.13.03 NASM_TARBALL=nasm_2.13.03.orig.tar.xz
   args:
     chdir: /srv/vpp
 
