@@ -29,7 +29,7 @@ function clean_vagrantfile () {
 
     VAGRANTFILE="Vagrantfile"
     if [ -f "${VAGRANTFILE}" ]; then
-        rm "${VAGRANTFILE}" || die
+        sudo rm "${VAGRANTFILE}" || die
         touch "${VAGRANTFILE}" || die
     fi
 }
@@ -42,7 +42,7 @@ function generate_vagrantfile () {
     # - ${VAGRANTFILE} - Vagrant configuration file.
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${VAGRANTFILE} - Vagrant configuration file.
 
     set -euo pipefail
@@ -59,7 +59,7 @@ Vagrant.configure('2') do |config|
 EOF
 
     for chain in $(seq 1 ${CHAINS}); do
-        for node in $(seq 1 ${NODENESS}); do
+        for node in $(seq 1 ${NODES}); do
             bash -c "cat >> ${VAGRANTFILE}" <<EOF
   config.vm.define vm_name = 'c${chain}n${node}Edge' do |c${chain}n${node}Edge|
     c${chain}n${node}Edge.vm.hostname = vm_name
@@ -87,7 +87,7 @@ function validate_input() {
     # - ${@} - The text of the message.
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [cleanup|baseline].
 
     set -euo pipefail
@@ -104,13 +104,13 @@ function validate_input() {
     done
 
     CHAINS="${1}"
-    NODENESS="${2}"
+    NODES="${2}"
 
     if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "10" ]]; then
         die "ERROR - DEBUG: Only supports up to 1-10 chains!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "10" ]]; then
+    if [[ "${NODES}" -lt "1" ]] || [[ "${NODES}" -gt "10" ]]; then
         die "ERROR - DEBUG: Only supports up to 1-10 nodes per chain!"
     fi
 }

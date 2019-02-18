@@ -8,12 +8,12 @@ function clean_containers () {
     #
     # Variable reads:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
 
     set -euo pipefail
 
     for chain in $(seq 1 "${CHAINS}"); do
-        for node in $(seq 1 "${NODENESS}"); do
+        for node in $(seq 1 "${NODES}"); do
             sudo docker rm --force "c${chain}n${node}Edge" || true
         done
     done
@@ -70,16 +70,16 @@ function validate_input() {
     # - ${@} - Script parameters.
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [cleanup|baseline].
 
     set -euo pipefail
 
     CHAINS="${1}"
-    NODENESS="${2}"
+    NODES="${2}"
     OPERATION="${3-}"
 
-    if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODENESS//[0-9]/} ]]; then
+    if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODES//[0-9]/} ]]; then
         die "ERROR: Chains and nodeness must be an integer values!"
     fi
 
@@ -87,7 +87,7 @@ function validate_input() {
         die "ERROR: Chains must be an integer value between 1-10!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "10" ]]; then
+    if [[ "${NODES}" -lt "1" ]] || [[ "${NODES}" -gt "10" ]]; then
         die "ERROR: Nodeness must be an integer value between 1-10!"
     fi
 }
@@ -108,7 +108,7 @@ function run_containers () {
     #
     # Variable read:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [cleanup|baseline].
     # Variable read:
     # - ${VLANS} - Base VLANS.
@@ -124,14 +124,14 @@ function run_containers () {
         die "Failed to build container!"
     }
     # Create vpp configuration.
-    source ./create_vpp_config.sh "${CHAINS}" "${NODENESS}" ${VLANS[@]} || {
+    source ./create_vpp_config.sh "${CHAINS}" "${NODES}" ${VLANS[@]} || {
         die "Failed to create VPP config!"
     }
     update_vpp_config || {
         die "Failed to update VPP config!"
     }
     # Create CORE lists.
-    if [ "${CHAINS}" -eq 1 ] && [ "${NODENESS}" -eq 1 ]; then
+    if [ "${CHAINS}" -eq 1 ] && [ "${NODES}" -eq 1 ]; then
         mtcr=1
     else
         mtcr=2
@@ -140,12 +140,12 @@ function run_containers () {
     COMMON_DIR="$(readlink -e "$(git rev-parse --show-toplevel)")" || {
         die "Readlink or git rev-parse failed."
     }
-    cpu_list=($(source "${COMMON_DIR}"/tools/cpu_util.sh "${CHAINS}" "${NODENESS}" "${mtcr}" "${dtcr}" ))
+    cpu_list=($(source "${COMMON_DIR}"/tools/cpu_util.sh "${CHAINS}" "${NODES}" "${mtcr}" "${dtcr}" ))
     # Run conainer matrix.
     n=0
     # Run conainer matrix.
     for chain in $(seq 1 "${CHAINS}"); do
-        for node in $(seq 1 "${NODENESS}"); do
+        for node in $(seq 1 "${NODES}"); do
             dcr_name="c${chain}n${node}Edge"
             cpuset_cpus="${cpu_list[n]},${cpu_list[n+1]},${cpu_list[n+2]}"
             if [ -z "$(docker inspect -f {{.State.Running}} ${dcr_name})" ]; then
@@ -154,7 +154,7 @@ function run_containers () {
                     --device=/dev/hugepages/:/dev/hugepages/ \
                     --volume "/etc/vpp/sockets/:/root/sockets/" \
                     --name "${dcr_name}" vedge_chain \
-                    /vEdge/configure.sh "${chain}" "${node}" "${NODENESS}" "${cpuset_cpus}" || {
+                    /vEdge/configure.sh "${chain}" "${node}" "${NODES}" "${cpuset_cpus}" || {
                     die "Failed to start ${dcr_name} container!"
                 }
             fi
