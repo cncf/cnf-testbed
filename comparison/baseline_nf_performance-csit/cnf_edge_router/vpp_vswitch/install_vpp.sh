@@ -130,13 +130,13 @@ function install_vpp () {
 
     set -euo pipefail
 
-    VPP_VERSION="18.10-release"
+    vpp_version="18.10-release"
     artifacts=()
     vpp=(vpp vpp-dbg vpp-dev vpp-lib vpp-plugins)
-    if [ -z "${VPP_VERSION-}" ]; then
+    if [ -z "${vpp_version-}" ]; then
         artifacts+=(${vpp[@]})
     else
-        artifacts+=(${vpp[@]/%/=${VPP_VERSION-}})
+        artifacts+=(${vpp[@]/%/=${vpp_version-}})
     fi
     curl -s https://packagecloud.io/install/repositories/fdio/release/script.deb.sh | sudo bash
     sudo apt-get install -y "${artifacts[@]}" || die "VPP installation failed!"

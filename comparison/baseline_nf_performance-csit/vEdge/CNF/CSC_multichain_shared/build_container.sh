@@ -18,6 +18,26 @@ function die () {
     exit "${2:-1}"
 }
 
+
+function docker_build_image () {
+    # Build docker image.
+    if [ -z "$(docker image list | grep cnf_vedge_csc)" ]; then
+        docker build -t cnf_vedge_csc . || die "Building docker image failed!"
+        warn "Container image built."
+    else
+        warn "Skipping as container already exists. Remove first."
+    fi
+}
+
+
+function docker_remove_image () {
+    # Remove docker image.
+    docker image rm --force cnf_vedge_csc || die "Removing docker image failed!"
+    warn "Image removed."
+    exit 0
+}
+
+
 function warn () {
     # Print the message to standard error.
     #
@@ -27,20 +47,13 @@ function warn () {
     echo "$@" >&2
 }
 
+
 BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
     die "Some error during localizing this source directory!"
 }
 cd "${BASH_FUNCTION_DIR}" || die
 
 if [ "${1-}" == "clean" ]; then
-    docker image rm vedge_csc || die "Removing docker image failed!"
-    warn "Removed image."
-    exit 0
+    docker_remove_image || die
 fi
-
-if [ -z "$(docker image list | grep vedge_csc)" ]; then
-    docker build -t vedge_csc . || die "Building docker image failed!"
-    warn "Container image built."
-else
-    warn "Skipping build of container as it already exists. Remove and rerun to build again."
-fi
+docker_build_image || die
