@@ -80,7 +80,7 @@ function validate_input() {
     OPERATION="${3-}"
 
     if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODES//[0-9]/} ]]; then
-        die "ERROR: Chains and nodeness must be an integer values!"
+        die "ERROR: Chains and nodes must be an integer values!"
     fi
 
     if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "10" ]]; then
@@ -88,7 +88,7 @@ function validate_input() {
     fi
 
     if [[ "${NODES}" -lt "1" ]] || [[ "${NODES}" -gt "10" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-10!"
+        die "ERROR: Nodes must be an integer value between 1-10!"
     fi
 }
 
@@ -153,7 +153,7 @@ function run_containers () {
                     --cpuset-cpus "${cpuset_cpus}" \
                     --device=/dev/hugepages/:/dev/hugepages/ \
                     --volume "/etc/vpp/sockets/:/root/sockets/" \
-                    --name "${dcr_name}" vedge_chain \
+                    --name "${dcr_name}" cnf_vedge_csc \
                     /vEdge/configure.sh "${chain}" "${node}" "${NODES}" "${cpuset_cpus}" || {
                     die "Failed to start ${dcr_name} container!"
                 }

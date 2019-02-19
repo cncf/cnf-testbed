@@ -80,7 +80,7 @@ function validate_input() {
     OPERATION="${3-}"
 
     if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODES//[0-9]/} ]]; then
-        die "ERROR: Chains and nodeness must be an integer values!"
+        die "ERROR: Chains and nodes must be an integer values!"
     fi
 
     if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "10" ]]; then
@@ -88,7 +88,7 @@ function validate_input() {
     fi
 
     if [[ "${NODES}" -lt "1" ]] || [[ "${NODES}" -gt "10" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-10!"
+        die "ERROR: Nodes must be an integer value between 1-10!"
     fi
 }
 

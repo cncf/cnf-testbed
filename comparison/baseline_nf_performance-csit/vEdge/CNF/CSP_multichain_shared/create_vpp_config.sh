@@ -84,7 +84,7 @@ function generate_vpp_config_intel () {
     #
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${VLANS} - Base VLANs.
     # - ${VPP_INTERFACES} - Network interfaces in VPP.
 
@@ -135,7 +135,7 @@ function generate_vpp_config_mlx () {
     #
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${VLANS} - Base VLANs.
     # - ${VPP_INTERFACES} - Network interfaces in VPP.
 
@@ -183,18 +183,18 @@ function validate_input() {
     # - ${@} - The text of the message.
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [cleanup|baseline].
 
     set -euo pipefail
 
     if detect_mellanox && [[ "${#}" -lt "4" ]]; then
-        warn "Usage: ${0} <Chains> <Nodeness> <VLAN#1> <VLAN#2>"
+        warn "Usage: ${0} <Chains> <Node> <VLAN#1> <VLAN#2>"
         die "ERROR - At least four input arguments required"
     fi
 
     if ! detect_mellanox && [[ "${#}" -lt "2" ]]; then
-        warn "Usage: ${0} <Chains> <Nodeness> [<VLAN#1> <VLAN#2>]"
+        warn "Usage: ${0} <Chains> <Node> [<VLAN#1> <VLAN#2>]"
         die "ERROR - At least two input arguments required"
     fi
 
@@ -205,14 +205,14 @@ function validate_input() {
     done
 
     CHAINS="${1}"
-    NODENESS="${2}"
+    NODES="${2}"
     VLANS=( ${3-} ${4-} )
 
     if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "10" ]]; then
         die "ERROR - DEBUG: Only supports up to 1-10 chains!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "10" ]]; then
+    if [[ "${NODES}" -lt "1" ]] || [[ "${NODES}" -gt "10" ]]; then
         die "ERROR - DEBUG: Only supports up to 1-10 nodes per chain!"
     fi
 }

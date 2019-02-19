@@ -23,12 +23,12 @@ function clean_vms () {
     #
     # Variable reads:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
 
     set -euo pipefail
 
     for chain in $(seq 1 "${CHAINS}"); do
-        for node in $(seq 1 "${NODENESS}"); do
+        for node in $(seq 1 "${NODES}"); do
             sudo vagrant destroy c${chain}n${node}Edge -f || true
         done
     done
@@ -42,36 +42,36 @@ function create_interface_list() {
     # - ${1} - Chain ID.
     # - ${2} - Node ID.
     # Variable reads:
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
 
     set -euo pipefail
 
-    if [[ "${2}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
+    if [[ "${2}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
         mac1=52:54:0"$((${1} - 1))":00:00:aa
         mac2=52:54:0"$((${1} - 1))":00:00:bb
     elif [[ "${2}" == "1" ]]; then
         mac1=52:54:0"$((${1} - 1))":00:00:aa
         mac2=52:54:0"$((${1} - 1))":00:01:bb
-    elif [[ "${2}" == "${NODENESS}" ]]; then
+    elif [[ "${2}" == "${NODES}" ]]; then
         mac1=52:54:0"$((${1} - 1))":00:0"${2}":aa
         mac2=52:54:0"$((${1} - 1))":00:00:bb
     else
         mac1=52:54:0"$((${1} - 1))":00:0"${2}":aa
         mac2=52:54:0"$((${1} - 1))":00:0"${2}":bb
     fi
-    offset=$(((${1} - 1) * ${NODENESS} * 2))
+    offset=$(((${1} - 1) * ${NODES} * 2))
     bash -c "cat > vEdge_Interfaces.tmp" <<EOF
     <interface type='vhostuser'>
       <mac address='${mac1}'/>
       <source type='unix' path='/var/run/vpp/sock$((${offset} + (${2} * 2 - 1))).sock' mode='client'/>
       <model type='virtio'/>
-      <driver queues='1'/>
+      <driver queues='1' rx_queue_size='1024' tx_queue_size='1024'/>
     </interface>
     <interface type='vhostuser'>
       <mac address='${mac2}'/>
       <source type='unix' path='/var/run/vpp/sock$((${offset} + (${2} * 2))).sock' mode='client'/>
       <model type='virtio'/>
-      <driver queues='1'/>
+      <driver queues='1' rx_queue_size='1024' tx_queue_size='1024'/>
     </interface>
 EOF
 }
@@ -98,7 +98,7 @@ function get_running_vms () {
     #
     # Variable read:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # Variable set:
     # - ${RUNNING_VMS} - List of running VMs.
 
@@ -107,7 +107,7 @@ function get_running_vms () {
     RUNNING_VMS=()
     warn "Checking for existing VMs ....."
     for chain in $(seq 1 ${CHAINS}); do
-        for node in $(seq 1 ${NODENESS}); do
+        for node in $(seq 1 ${NODES}); do
             state=$(sudo vagrant status | grep c${chain}n${node}Edge | awk '{print $2}') || true
             if [ "${state}" == "running" ]; then
                 RUNNING_VMS+="c${chain}n${node}Edge "
@@ -152,7 +152,7 @@ function update_cpu_pinning () {
     set -euo pipefail
 
     # Create CORE lists.
-    if [ "${CHAINS}" -eq 1 ] && [ "${NODENESS}" -eq 1 ]; then
+    if [ "${CHAINS}" -eq 1 ] && [ "${NODES}" -eq 1 ]; then
         mtcr=1
     else
         mtcr=2
@@ -161,7 +161,7 @@ function update_cpu_pinning () {
     COMMON_DIR="$(readlink -e "$(git rev-parse --show-toplevel)")" || {
         die "Readlink or git rev-parse failed."
     }
-    cpu_list=($(source "${COMMON_DIR}"/tools/cpu_util.sh "${CHAINS}" "${NODENESS}" "${mtcr}" "${dtcr}" ))
+    cpu_list=($(source "${COMMON_DIR}"/tools/cpu_util.sh "${CHAINS}" "${NODES}" "${mtcr}" "${dtcr}" ))
     core_count=0
     for id in $(virsh list --state-running | grep multichain | awk '{print $1}'); do
         vagrant_id="$(virsh dominfo ${id} | grep 'Name' | awk '{print $2}' | awk -F _ '{print $4}')"
@@ -197,25 +197,25 @@ function validate_input() {
     # - ${@} - Script parameters.
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [cleanup|repin].
 
     set -euo pipefail
 
     CHAINS="${1}"
-    NODENESS="${2}"
+    NODES="${2}"
     OPERATION="${3-}"
 
-    if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODENESS//[0-9]/} ]]; then
-        die "ERROR: Chains and nodeness must be an integer values!"
+    if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODES//[0-9]/} ]]; then
+        die "ERROR: Chains and nodes must be an integer values!"
     fi
 
     if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "8" ]]; then
         die "ERROR: Chains must be an integer value between 1-8!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "8" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-8!"
+    if [[ "${NODES}" -lt "1" ]] || [[ "${NODES}" -gt "8" ]]; then
+        die "ERROR: Nodes must be an integer value between 1-8!"
     fi
 }
 
@@ -231,22 +231,38 @@ function warn () {
 
 
 function update_rxq_pinning () {
-    warn "Updating VPP configuration (rx-placement)."
-    sudo vppctl set interface rx-placement TwentyFiveGigabitEthernet3b/0/1 queue 0 worker 0
-    sudo vppctl set interface rx-placement TwentyFiveGigabitEthernet3b/0/1 queue 1 worker 1
-    sudo vppctl set interface rx-placement TwentyFiveGigabitEthernet3b/0/1 queue 2 worker 2
-    sudo vppctl set interface rx-placement TwentyFiveGigabitEthernet3b/0/1 queue 3 worker 3
+    # Repin RXQ for Vhosts.
 
-    worker=4
-    for vEth in $(seq 0 $((${NODENESS} * 2 - 1))); do
-        vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}
-        warn "vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}"
-        vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 1 worker $(($worker + 1))
-        warn "vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 1 worker $(($worker + 1))"
-        worker=$(($worker + 2))
-        if [[ "${worker}" == "8" ]]; then worker=0; fi
+    # Variable read:
+    # - ${CHAINS} - Number of parallel chains.
+    # - ${NODES} - Number of NFs in chain.
+
+    set -euo pipefail
+
+    warn "Updating VPP configuration (rx-placement)."
+    worker=0
+    for vEth in $(seq 0 $((${CHAINS} * ${NODES} * 2 - 1))); do
+        set -x
+        sudo vppctl set interface rx-placement VirtualEthernet0/0/${vEth} queue 0 worker ${worker}
+        set +x
+        worker=$((($worker + 1) % 2))
     done
 }
+
+
+function repin_vms () {
+    # Repin VM resources CPU,RXQ.
+
+    set -euo pipefail
+
+    warn "Reloading vEdge VNFs and updating pinning ....."
+    sudo taskset 0xF vagrant reload || die "Failed to reload Vagrant!"
+    sleep 5 || die
+    update_rxq_pinning || die
+    update_cpu_pinning || die
+    warn "Done updating pinning."
+}
+
 
 BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
     die "Some error during localizing this source directory!"
@@ -258,28 +274,20 @@ VLANS=( )
 validate_input "${@}" || die
 if [ "${OPERATION}" == "clean" ]; then
     clean_vms || die
+elif [ "${OPERATION}" == "repin" ] && [ ${#RUNNING_VMS[@]} -gt 0 ]; then
+    repin_vms || die
+elif [ "${OPERATION}" == "repin" ] && [ ${#RUNNING_VMS[@]} -eq 0 ]; then
+    die "ERROR: vEdge VNFs not running. Unable to update pinning!"
 else
     get_running_vms || die
 
-    if [ "${OPERATION}" == "repin" ] && [ ${#RUNNING_VMS[@]} -gt 0 ]; then
-        warn "Reloading vEdge VNFs and updating pinning ....."
-        sudo taskset 0xF vagrant reload || die "Failed to reload Vagrant!"
-        sleep 5 || die
-        #update_rxq_pinning || die
-        update_cpu_pinning || die
-        warn "Done updating pinning."
-        exit 0
-    elif [ "${OPERATION}" == "repin" ] && [ ${#RUNNING_VMS[@]} -eq 0 ]; then
-        die "ERROR: vEdge VNFs not running. Unable to update pinning!"
-    fi
-
     if [ ${#RUNNING_VMS[@]} -gt 0 ]; then
-        warn "Usage: ${0} <Chains> <Nodeness> [clean|repin]"
+        warn "Usage: ${0} <Chains> <Nodes> [clean|repin]"
         die "One or more VMs are running, please remove before running script: ${RUNNING_VMS[@]}!"
     fi
 
     warn "Updating & Restarting VPP to prepare for VM interfaces ....."
-    source ./create_vpp_config.sh "${CHAINS}" "${NODENESS}" ${VLANS[@]} || {
+    source ./create_vpp_config.sh "${CHAINS}" "${NODES}" ${VLANS[@]} || {
         die "Failed to create VPP configuration!"
     }
     update_vpp_config || die
@@ -291,7 +299,7 @@ else
         popd
     fi
 
-    source ./create_vagrantfile.sh "${CHAINS}" "${NODENESS}" || {
+    source ./create_vagrantfile.sh "${CHAINS}" "${NODES}" || {
         die "Failed to create Vagrantfile!"
     }
 
@@ -300,7 +308,6 @@ else
     }
 
     clean_tmp_files || die
-
     for id in $(virsh list --state-running | grep multichain | awk '{print $1}'); do
         warn "Virsh ID: ${id}"
         sudo virsh dumpxml --inactive --security-info ${id} > vEdge.xml || {
@@ -317,17 +324,13 @@ else
         sleep 1
         sudo virsh define vEdge.xml || die
     done
-    sudo taskset 0xF vagrant reload || die "Failed to reload Vagrant!"
-    update_cpu_pinning || die
-
+    repin_vms || die
     for chain in $(seq 1 ${CHAINS}); do
-        for node in $(seq 1 ${NODENESS}); do
-            cmd="cp /vagrant/* . && chmod +x vnf_vedge_install.sh && ./vnf_vedge_install.sh ${chain} ${node} ${NODENESS}"
+        for node in $(seq 1 ${NODES}); do
+            cmd="cp /vagrant/* . && chmod +x vnf_vedge_install.sh && ./vnf_vedge_install.sh ${chain} ${node} ${NODES}"
             sudo vagrant ssh c${chain}n${node}Edge -c "$cmd"
             set_hostname ${chain} ${node} || die
         done
     done
-    sleep 5
-    #update_rxq_pinning || die
     warn "vEdge Chain Started."
 fi

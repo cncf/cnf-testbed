@@ -93,7 +93,7 @@ function validate_input() {
     set -euo pipefail
 
     if [[ "${#}" -lt "2" ]]; then
-        warn "Usage: ${0} <Chains> <Nodeness>"
+        warn "Usage: ${0} <Chains> <Nodes>"
         die "ERROR - At least three input arguments required"
     fi
 

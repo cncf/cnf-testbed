@@ -28,7 +28,7 @@ function validate_input() {
     # Variable set:
     # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [baseline].
 
     set -euo pipefail
@@ -40,9 +40,9 @@ function validate_input() {
 
     CHAIN="${1}"
     NODE="${2}"
-    NODENESS="${3}"
+    NODES="${3}"
 
-    if [[ -n ${CHAIN//[0-9]/} ]] || [[ -n ${NODE//[0-9]/} ]] || [[ -n ${NODENESS//[0-9]/} ]]; then
+    if [[ -n ${CHAIN//[0-9]/} ]] || [[ -n ${NODE//[0-9]/} ]] || [[ -n ${NODES//[0-9]/} ]]; then
         die "ERROR: Chain, node and nodeness must be an integer values!"
     fi
 
@@ -72,14 +72,14 @@ function set_subnets () {
     # Variable read:
     # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # Variable set:
     # - ${SUBNET1} - East subnet.
     # - ${SUBNET2} - West subnet.
 
     set -euo pipefail
 
-    if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
+    if [[ "${NODE}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
       if $ipv6; then
         SUBNET1=fde5::3:0:10$(( ${CHAIN} - 1 ))/96
         SUBNET2=fde5::4:0:10$(( ${CHAIN} - 1 ))/96
@@ -95,7 +95,7 @@ function set_subnets () {
         SUBNET1=172.16.10.1$(( ${CHAIN} - 1 ))/24
         SUBNET2=172.16.31.10/24
       fi
-    elif [[ "${NODE}" == "${NODENESS}" ]]; then
+    elif [[ "${NODE}" == "${NODES}" ]]; then
       if $ipv6; then
         SUBNET1=fde5::$(($NODE + 29)):0:11/96
         SUBNET2=fde5::4:0:10$(( ${CHAIN} - 1 ))/96
@@ -121,14 +121,14 @@ function set_remote_ips () {
     # Variable read:
     # - ${NODE} - Node ID.
     # - ${CHAIN} - Chain ID.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # Variable set:
     # - ${REMIP1} - East IP.
     # - ${REMIP2} - West IP.
 
     set -euo pipefail
 
-    if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
+    if [[ "${NODE}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
       if $ipv6; then
         REMIP1=fde5::3:0:100$(( ${CHAIN} - 1 ))
         REMIP2=fde5::4:0:100$(( ${CHAIN} - 1 ))
@@ -144,7 +144,7 @@ function set_remote_ips () {
         REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))
         REMIP2=172.16.31.11
       fi
-    elif [[ "${NODE}" == "${NODENESS}" ]]; then
+    elif [[ "${NODE}" == "${NODES}" ]]; then
       if $ipv6; then
         REMIP1=fde5::$(($NODE + 29)):0:10
         REMIP2=fde5::4:0:100$(( ${CHAIN} - 1 ))
@@ -170,7 +170,7 @@ function set_remote_macs () {
     # Variable read:
     # - ${CHAIN} - Chain ID.
     # - ${NODE} - Node ID.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # Variable set:
     # - ${REMMAC1} - East MAC.
     # - ${REMMAC2} - West MAC.
@@ -179,13 +179,13 @@ function set_remote_macs () {
 
     trex_macs=( e4:43:4b:2e:b1:d1 e4:43:4b:2e:b1:d2 )
 
-    if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
+    if [[ "${NODE}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
         REMMAC1=${trex_macs[0]}
         REMMAC2=${trex_macs[1]}
     elif [[ "${NODE}" == "1" ]]; then
         REMMAC1=${trex_macs[0]}
         REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:02:aa
-    elif [[ "${NODE}" == "${NODENESS}" ]]; then
+    elif [[ "${NODE}" == "${NODES}" ]]; then
         REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
         REMMAC2=${trex_macs[1]}
     else

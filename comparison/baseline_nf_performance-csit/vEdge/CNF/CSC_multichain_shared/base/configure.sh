@@ -38,7 +38,7 @@ function validate_input() {
     fi
 
     if [[ "${#}" -lt "4" ]]; then
-        warn "  Usage: $0 <Chain ID> <Node ID> <Total Chains> <CPU Set>"
+        warn "  Usage: $0 <Chain ID> <Node ID> <Number NFs in chain> <CPU Set>"
         die "ERROR - At least 4 input arguments required"
     fi
 
@@ -48,7 +48,7 @@ function validate_input() {
     CPUSET="${4}"
 
     if [[ -n ${CHAIN//[0-9]/} ]] || [[ -n ${NODE//[0-9]/} ]] || [[ -n ${NODES//[0-9]/} ]]; then
-        die "ERROR: Chain, node and nodeness must be an integer values!"
+        die "ERROR: Chain, node and nodes must be an integer values!"
     fi
 
     if [[ "${CHAIN}" -lt "1" ]] || [[ "${CHAIN}" -gt "10" ]]; then
@@ -56,7 +56,7 @@ function validate_input() {
     fi
 
     if [[ "${NODES}" -lt "1" ]] || [[ "${NODES}" -gt "10" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-10"
+        die "ERROR: Nodes must be an integer value between 1-10"
     fi
 }
 

@@ -27,19 +27,19 @@ function validate_input() {
     # - ${@} - Script parameters.
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
 
     set -euo pipefail
 
     CHAINS="${1}"
-    NODENESS="${2}"
+    NODES="${2}"
 
-    if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODENESS//[0-9]/} ]]; then
-        die "ERROR: Chains and nodeness must be an integer values!"
+    if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODES//[0-9]/} ]]; then
+        die "ERROR: Chains and nodes must be an integer values!"
     fi
 
-    if [ -z "${CHAINS}" ] || [ -z "${NODENESS}" ]; then
-        warn "Usage: ${0} <chains> <nodeness>"
+    if [ -z "${CHAINS}" ] || [ -z "${NODES}" ]; then
+        warn "Usage: ${0} <chains> <nodes>"
         die "ERROR: Expecting number of chains and nodes (integer) as input!"
     fi
 }
@@ -58,7 +58,7 @@ function warn () {
 validate_input "${@}" || die
 
 for chain in $(seq 1 "${CHAINS}"); do
-    for node in $(seq 1 "${NODENESS}"); do
+    for node in $(seq 1 "${NODES}"); do
         warn "###### c${chain}n${node}Edge ######"
         docker exec --interactive --tty c${chain}n${node}Edge vppctl show int
     done

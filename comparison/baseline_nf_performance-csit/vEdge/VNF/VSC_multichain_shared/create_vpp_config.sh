@@ -206,12 +206,12 @@ function validate_input() {
     set -euo pipefail
 
     if detect_mellanox && [[ "${#}" -lt "4" ]]; then
-        warn "Usage: ${0} <Chains> <Nodeness> <VLAN#1> <VLAN#2>"
+        warn "Usage: ${0} <Chains> <Node> <VLAN#1> <VLAN#2>"
         die "ERROR - At least four input arguments required"
     fi
 
     if ! detect_mellanox && [[ "${#}" -lt "2" ]]; then
-        warn "Usage: ${0} <Chains> <Nodeness> [<VLAN#1> <VLAN#2>]"
+        warn "Usage: ${0} <Chains> <Node> [<VLAN#1> <VLAN#2>]"
         die "ERROR - At least two input arguments required"
     fi
 
