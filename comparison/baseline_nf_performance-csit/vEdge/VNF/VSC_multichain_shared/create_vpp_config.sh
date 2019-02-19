@@ -84,18 +84,18 @@ function generate_vpp_config_intel () {
     #
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${VLANS} - Base VLANs.
     # - ${VPP_INTERFACES} - Network interfaces in VPP.
 
     set -euo pipefail
 
-    domains=$(( "${NODENESS}" + 1  ))
+    domains=$(( "${NODES}" + 1  ))
     for domain in $(seq 1 ${domains}); do
         append_vpp_config "create bridge-domain ${domain}"
     done
     append_vpp_config ""
-    sockets=$(( "${CHAINS}" * ("${NODENESS}" * 2) ))
+    sockets=$(( "${CHAINS}" * ("${NODES}" * 2) ))
     for socket in $(seq 1 "${sockets}"); do
         append_vpp_config "create vhost-user socket /var/run/vpp/sock${socket}.sock server"
     done
@@ -115,9 +115,9 @@ function generate_vpp_config_intel () {
     set +u
     append_vpp_config "set int l2 bridge ${VPP_INTERFACES[0]}${VLANS[0]/#/.} 1"
     for chain in $(seq 0 $(( "${CHAINS}" - 1 ))); do
-        offset=$(("${NODENESS}" + 1 ))
+        offset=$(("${NODES}" + 1 ))
 
-        vEth=$(( "${chain}" * ("${NODENESS}" * 2) ))
+        vEth=$(( "${chain}" * ("${NODES}" * 2) ))
         append_vpp_config "set int l2 bridge VirtualEthernet0/0/${vEth} 1"
         ((++vEth))
         for bridge in $(seq 2 $(( "${domains}" - 1 ))); do
@@ -126,10 +126,10 @@ function generate_vpp_config_intel () {
             append_vpp_config "set int l2 bridge VirtualEthernet0/0/${vEth} ${bridge}"
             ((++vEth))
         done
-        append_vpp_config "set int l2 bridge VirtualEthernet0/0/${vEth} $((${NODENESS} + 1 ))"
+        append_vpp_config "set int l2 bridge VirtualEthernet0/0/${vEth} $((${NODES} + 1 ))"
     done
     set +u
-    append_vpp_config "set int l2 bridge ${VPP_INTERFACES[1]}${VLANS[1]/#/.} $((${NODENESS} + 1 ))"
+    append_vpp_config "set int l2 bridge ${VPP_INTERFACES[1]}${VLANS[1]/#/.} $((${NODES} + 1 ))"
     append_vpp_config ""
     append_vpp_config "set int mtu 9200 ${VPP_INTERFACES[0]}"
     append_vpp_config "set int mtu 9200 ${VPP_INTERFACES[1]}"
@@ -144,18 +144,18 @@ function generate_vpp_config_mlx () {
     #
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${VLANS} - Base VLANs.
     # - ${VPP_INTERFACES} - Network interfaces in VPP.
 
     set -euo pipefail
 
-    domains=$(( "${NODENESS}" + 1  ))
+    domains=$(( "${NODES}" + 1  ))
     for domain in $(seq 1 ${domains}); do
         append_vpp_config "create bridge-domain ${domain}"
     done
     append_vpp_config ""
-    sockets=$(( "${CHAINS}" * ("${NODENESS}" * 2) ))
+    sockets=$(( "${CHAINS}" * ("${NODES}" * 2) ))
     for socket in $(seq 1 "${sockets}"); do
         append_vpp_config "create vhost-user socket /var/run/vpp/sock${socket}.sock server"
     done
@@ -169,9 +169,9 @@ function generate_vpp_config_mlx () {
     append_vpp_config "set interface l2 tag-rewrite ${VPP_INTERFACES[0]}${VLANS[1]/#/.} pop 1"
     append_vpp_config "set int l2 bridge ${VPP_INTERFACES[0]}${VLANS[0]/#/.} 1"
     for chain in $(seq 0 $(( "${CHAINS}" - 1 ))); do
-        offset=$(("${NODENESS}" + 1 ))
+        offset=$(("${NODES}" + 1 ))
 
-        vEth=$(( "${chain}" * ("${NODENESS}" * 2) ))
+        vEth=$(( "${chain}" * ("${NODES}" * 2) ))
         append_vpp_config "set int l2 bridge VirtualEthernet0/0/${vEth} 1"
         ((++vEth))
         for bridge in $(seq 2 $(( "${domains}" - 1 ))); do
@@ -180,10 +180,10 @@ function generate_vpp_config_mlx () {
             append_vpp_config "set int l2 bridge VirtualEthernet0/0/${vEth} ${bridge}"
             ((++vEth))
         done
-        append_vpp_config "set int l2 bridge VirtualEthernet0/0/${vEth} $((${NODENESS} + 1 ))"
+        append_vpp_config "set int l2 bridge VirtualEthernet0/0/${vEth} $((${NODES} + 1 ))"
     done
     set +u
-    append_vpp_config "set int l2 bridge ${VPP_INTERFACES[0]}${VLANS[1]/#/.} $((${NODENESS} + 1 ))"
+    append_vpp_config "set int l2 bridge ${VPP_INTERFACES[0]}${VLANS[1]/#/.} $((${NODES} + 1 ))"
     append_vpp_config ""
     append_vpp_config "set int mtu 9200 ${VPP_INTERFACES[0]}"
     for veth in $(seq 0 "${sockets}"); do
@@ -199,7 +199,7 @@ function validate_input() {
     # - ${@} - The text of the message.
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [cleanup|baseline].
     # - ${VLANS} - Base VLANs.
 
@@ -222,14 +222,14 @@ function validate_input() {
     done
 
     CHAINS="${1}"
-    NODENESS="${2}"
+    NODES="${2}"
     VLANS=( ${3-} ${4-} )
 
     if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "10" ]]; then
         die "ERROR - DEBUG: Only supports up to 1-10 chains!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "10" ]]; then
+    if [[ "${NODES}" -lt "1" ]] || [[ "${NODES}" -gt "10" ]]; then
         die "ERROR - DEBUG: Only supports up to 1-10 nodes per chain!"
     fi
 }
@@ -253,8 +253,8 @@ if detect_mellanox; then
 else
     if detect_xxv710; then
         # This is most probably CSIT env
-        VPP_INTERFACES=( "TwentyFiveGigabitEthernet3b/0/0"
-                         "TwentyFiveGigabitEthernet3b/0/1" )
+        VPP_INTERFACES=( "TenGigabitEthernet18/0/0"
+                         "TenGigabitEthernet18/0/1" )
     else
         # This is most probably Packet quad intel env
         VPP_INTERFACES=( "TenGigabitEthernet1a/0/1"

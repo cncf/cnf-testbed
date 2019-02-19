@@ -4,7 +4,7 @@ set -euo pipefail
 
 chain=${1}
 node=${2}
-nodeness=${3}
+nodes=${3}
 
 sudo service vpp stop
 
@@ -30,127 +30,21 @@ unix {
   startup-config /etc/vpp/setup.gate
   cli-prompt c${chain}v${node}Edge:
 }
-
 api-trace {
-## This stanza controls binary API tracing. Unless there is a very strong reason,
-## please leave this feature enabled.
   on
-## Additional parameters:
-##
-## To set the number of binary API trace records in the circular buffer, configure nitems
-##
-## nitems <nnn>
-##
-## To save the api message table decode tables, configure a filename. Results in /tmp/<filename>
-## Very handy for understanding api message changes between versions, identifying missing
-## plugins, and so forth.
-##
-## save-api-table <filename>
 }
-
 api-segment {
   gid vpp
 }
-
 cpu {
-        ## In the VPP there is one main thread and optionally the user can create worker(s)
-        ## The main thread and worker thread(s) can be pinned to CPU core(s) manually or automatically
-
-        ## Manual pinning of thread(s) to CPU core(s)
-
-        ## Set logical CPU core where main thread runs
-        main-core 0
-
-        ## Set logical CPU core(s) where worker threads are running
-        corelist-workers 1-2
-
-        ## Automatic pinning of thread(s) to CPU core(s)
-
-        ## Sets number of CPU core(s) to be skipped (1 ... N-1)
-        ## Skipped CPU core(s) are not used for pinning main thread and working thread(s).
-        ## The main thread is automatically pinned to the first available CPU core and worker(s)
-        ## are pinned to next free CPU core(s) after core assigned to main thread
-        # skip-cores 4
-
-        ## Specify a number of workers to be created
-        ## Workers are pinned to N consecutive CPU cores while skipping "skip-cores" CPU core(s)
-        ## and main thread's CPU core
-        # workers 2
-
-        ## Set scheduling policy and priority of main and worker threads
-
-        ## Scheduling policy options are: other (SCHED_OTHER), batch (SCHED_BATCH)
-        ## idle (SCHED_IDLE), fifo (SCHED_FIFO), rr (SCHED_RR)
-        # scheduler-policy fifo
-
-        ## Scheduling priority is used only for "real-time policies (fifo and rr),
-        ## and has to be in the range of priorities supported for a particular policy
-        # scheduler-priority 50
+  main-core 0
+  corelist-workers 1-2
 }
-
 dpdk {
-        ## Change default settings for all intefaces
-        #dev default {
-                ## Number of receive queues, enables RSS
-                ## Default is 1
-                #num-rx-queues 2
-
-                ## Number of transmit queues, Default is equal
-                ## to number of worker threads or 1 if no workers treads
-                # num-tx-queues 3
-
-                ## Number of descriptors in transmit and receive rings
-                ## increasing or reducing number can impact performance
-                ## Default is 1024 for both rx and tx
-                #num-rx-desc 512
-                #num-tx-desc 512
-
-                ## VLAN strip offload mode for interface
-                ## Default is off
-                # vlan-strip-offload on
-        #}
-
-        ## Whitelist specific interface by specifying PCI address
-        ${pci_devs[@]/#/dev 0000:}
-
-        ## Whitelist specific interface by specifying PCI address and in
-        ## addition specify custom parameters for this interface
-        # dev 0000:02:00.1 {
-        #       num-rx-queues 2
-        # }
-
-        ## Specify bonded interface and its slaves via PCI addresses
-        ##
-        ## Bonded interface in XOR load balance mode (mode 2) with L3 and L4 headers
-        # vdev eth_bond0,mode=2,slave=0000:02:00.0,slave=0000:03:00.0,xmit_policy=l34
-        # vdev eth_bond1,mode=2,slave=0000:02:00.1,slave=0000:03:00.1,xmit_policy=l34
-        ##
-        ## Bonded interface in Active-Back up mode (mode 1)
-        # vdev eth_bond0,mode=1,slave=0000:02:00.0,slave=0000:03:00.0
-        # vdev eth_bond1,mode=1,slave=0000:02:00.1,slave=0000:03:00.1
-
-        ## Change UIO driver used by VPP, Options are: igb_uio, vfio-pci,
-        ## uio_pci_generic or auto (default)
-        # uio-driver vfio-pci
-
-        ## Disable mutli-segment buffers, improves performance but
-        ## disables Jumbo MTU support
-        no-multi-seg
-
-        ## Increase number of buffers allocated, needed only in scenarios with
-        ## large number of interfaces and worker threads. Value is per CPU socket.
-        ## Default is 16384
-        #num-mbufs 128000
-
-        ## Change hugepages allocation per-socket, needed only if there is need for
-        ## larger number of mbufs. Default is 256M on each detected CPU socket
-        # socket-mem 2048,2048
-
-        ## Disables UDP / TCP TX checksum offload. Typically needed for use
-        ## faster vector PMDs (together with no-multi-seg)
-        no-tx-checksum-offload
+  ${pci_devs[@]/#/dev 0000:}
+  no-multi-seg
+  no-tx-checksum-offload
 }
-
 plugins {
   plugin default { disable }
   plugin dpdk_plugin.so { enable }
@@ -160,5 +54,5 @@ EOF
 sudo service vpp start
 sleep 5
 
-chmod +x ./configure.sh && sudo ./configure.sh ${chain} ${node} ${nodeness}
+chmod +x ./configure.sh && sudo ./configure.sh ${chain} ${node} ${nodes}
 chmod +x ./update_hostname.sh && sudo ./update_hostname.sh ${chain} ${node}

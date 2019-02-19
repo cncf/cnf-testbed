@@ -207,7 +207,7 @@ function validate_input() {
     OPERATION="${3-}"
 
     if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODES//[0-9]/} ]]; then
-        die "ERROR: Chains and nodeness must be an integer values!"
+        die "ERROR: Chains and nodes must be an integer values!"
     fi
 
     if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "10" ]]; then
@@ -215,7 +215,7 @@ function validate_input() {
     fi
 
     if [[ "${NODES}" -lt "1" ]] || [[ "${NODES}" -gt "10" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-10!"
+        die "ERROR: nodes must be an integer value between 1-10!"
     fi
 }
 
@@ -231,6 +231,13 @@ function warn () {
 
 
 function update_rxq_pinning () {
+    # Repin RXQ for Vhosts.
+
+    # Variable read:
+    # - ${CHAINS} - Number of parallel chains.
+    # - ${NODES} - Number of NFs in chain.
+
+    set -euo pipefail
 
     warn "Updating VPP configuration (rx-placement)."
     worker=0
@@ -240,6 +247,20 @@ function update_rxq_pinning () {
         set +x
         worker=$((($worker + 1) % 2))
     done
+}
+
+
+function repin_vms () {
+    # Repin VM resources CPU,RXQ.
+
+    set -euo pipefail
+
+    warn "Reloading vEdge VNFs and updating pinning ....."
+    sudo taskset 0xF vagrant reload || die "Failed to reload Vagrant!"
+    sleep 5 || die
+    update_rxq_pinning || die
+    update_cpu_pinning || die
+    warn "Done updating pinning."
 }
 
 BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
@@ -253,19 +274,14 @@ validate_input "${@}" || die
 if [ "${OPERATION}" == "clean" ]; then
     clean_vms || die
 elif [ "${OPERATION}" == "repin" ] && [ ${#RUNNING_VMS[@]} -gt 0 ]; then
-    warn "Reloading vEdge VNFs and updating pinning ....."
-    sudo taskset 0xF vagrant reload || die "Failed to reload Vagrant!"
-    sleep 5 || die
-    update_rxq_pinning || die
-    update_cpu_pinning || die
-    warn "Done updating pinning."
+    repin_vms || die
 elif [ "${OPERATION}" == "repin" ] && [ ${#RUNNING_VMS[@]} -eq 0 ]; then
     die "ERROR: vEdge VNFs not running. Unable to update pinning!"
 else
     get_running_vms || die
 
     if [ ${#RUNNING_VMS[@]} -gt 0 ]; then
-        warn "Usage: ${0} <Chains> <Nodeness> [clean|repin]"
+        warn "Usage: ${0} <Chains> <Nodes> [clean|repin]"
         die "One or more VMs are running, please remove: ${RUNNING_VMS[@]}!"
     fi
 
@@ -284,7 +300,6 @@ else
     }
 
     clean_tmp_files || die
-
     for id in $(virsh list --state-running | grep multichain | awk '{print $1}'); do
         warn "Virsh ID: ${id}"
         sudo virsh dumpxml --inactive --security-info ${id} > vEdge.xml || {
@@ -301,9 +316,7 @@ else
         sleep 1
         sudo virsh define vEdge.xml || die
     done
-    sudo taskset 0xF vagrant reload || die "Failed to reload Vagrant!"
-    update_cpu_pinning || die
-
+    repin_vms || die
     for chain in $(seq 1 ${CHAINS}); do
         for node in $(seq 1 ${NODES}); do
             cmd="cp /vagrant/* . && chmod +x vnf_vedge_install.sh && ./vnf_vedge_install.sh ${chain} ${node} ${NODES}"
@@ -311,7 +324,5 @@ else
             set_hostname ${chain} ${node} || die
         done
     done
-    sleep 5
-    update_rxq_pinning || die
     warn "vEdge Chain Started."
 fi
