@@ -9,6 +9,7 @@ PACKET_OS=${PACKET_OS:-centos_7}
 PACKET_FACILITY=${PACKET_FACILITY:-sjc1}
 PACKET_PROJECT_NAME=${PACKET_PROJECT_NAME:-"CNCF CNFs"}
 
+SECONDS=0
 if [ ! -f ${parentdir}/comparison/ansible/inventory ]; then
 echo "[all:vars]" > ${parentdir}/comparison/ansible/inventory
 echo "ansible_ssh_extra_args='-o StrictHostKeyChecking=no'" >> ${parentdir}/comparison/ansible/inventory
@@ -30,7 +31,9 @@ docker run \
   -e TF_VAR_packet_operating_system=${PACKET_OS} \
   -ti cnfdeploytools:latest apply -auto-approve \
   -state=/terraform/openstack.tfstate
+PACKET_SERVER_DEPLOY=$SECONDS
 
+SECONDS=0
 echo "[etcd]" >> ${parentdir}/comparison/ansible/inventory
 cat ${parentdir}/tools/terraform-ansible/openstack.tfstate | awk -F\" '/0.add/ {print $4}' >> ${parentdir}/comparison/ansible/inventory
 fi
@@ -47,6 +50,7 @@ time docker run \
   -e SERVER_LIST=${SERVER_LIST} \
   -e DEPLOY_ENV=${DEPLOY_ENV} \
   --entrypoint ansible-playbook -ti cnfdeploytools:latest ${ANSIBLE_ARGS} /ansible/openstack_chef_install.yml
+OPENSTACK_DEPLOY_TIME=$SECONDS
 if [[ $? != 0 ]]; then
 
 echo -e '=================================================\n Retrying the ansible run'
@@ -63,3 +67,6 @@ time docker run \
   -e DEPLOY_ENV=${DEPLOY_ENV} \
   --entrypoint ansible-playbook -ti cnfdeploytools:latest ${ANSIBLE_ARGS} /ansible/openstack_chef_install.yml
 fi
+
+echo "$(($PACKET_SERVER_DEPLOY / 60)) minutes and $(($PACKET_SERVER_DEPLOY % 60)) seconds elapsed - Packet.net Infra Setup."
+echo "$(($OPENSTACK_DEPLOY_TIME / 60)) minutes and $(($OPENSTACK_DEPLOY_TIME % 60)) seconds elapsed - Openstack Deploy."
