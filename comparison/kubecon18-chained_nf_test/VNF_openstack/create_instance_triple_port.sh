@@ -56,8 +56,8 @@ if [ $# -lt 4 ]; then
     exit
 fi
 
-p1=$(openstack port create s${1}p1 --network vlan${2} | awk '/ id / {print $4}')
-p2=$(openstack port create s${1}p2 --network vlan${3} | awk '/ id / {print $4}')
+p1=$(openstack port create s${1}p1 --network vlan${2} --no-security-group --disable-port-security | awk '/ id / {print $4}')
+p2=$(openstack port create s${1}p2 --network vlan${3} --no-security-group --disable-port-security | awk '/ id / {print $4}')
 p3=$(openstack port create s${1}p3 --network ext${4} | awk '/ id / {print $4}')
 openstack server create ${1} --flavor vnf.3c --key-name ${KEYPAIR} --image xenial --nic port-id=${p1} --nic port-id=${p2} --nic port-id=${p3} --config-drive True --user-data /tmp/${1}.cfg
 
