@@ -1,13 +1,64 @@
 #!/bin/bash
 
-CHAIN="1"
-NODE="1"
-NODES="1"
+# Network names
+left="vlan1087"
+middle1="middle1"
+middle2="middle2"
+right="vlan1088"
+external="ext1129"
 
-# source ~/openrc
-#Set vEdge Script Branch
+trex_macs=( ee:00:51:d3:06:e8 ba:a7:6c:aa:67:7b )
+
+if [ $# -lt 2 ]; then
+  echo "ERROR: this script requires 2 parameters"
+  echo "USAGE: $0 <Chains> <Nodes>"
+  exit 1
+fi
+
+CHAINS="${1}"
+NODES="${2}"
+
+for CHAIN in $(seq 1 ${CHAINS}); do
+  for NODE in $(seq 1 ${NODES}); do
+    if [[ "${NODE}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
+      openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${left} --no-security-group --disable-port-security
+      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${right} --no-security-group --disable-port-security
+    elif [[ "${NODE}" == "1" ]]; then
+      openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${left} --no-security-group --disable-port-security
+      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${middle1} --no-security-group --disable-port-security
+    elif [[ "${NODE}" == "${NODES}" ]]; then
+      if [[ "${NODES}" == "2" ]]; then
+        openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle1} --no-security-group --disable-port-security
+      else
+        openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle2} --no-security-group --disable-port-security
+      fi
+      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${right} --no-security-group --disable-port-security
+    else
+      openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle1} --no-security-group --disable-port-security
+      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${middle2} --no-security-group --disable-port-security
+    fi
+    openstack port create ${CHAIN}_${NODE}_${NODES}_e --network ${external}
+  done
+done
+
+for CHAIN in $(seq 1 ${CHAINS}); do
+  for NODE in $(seq 1 ${NODES}); do
+    if [[ "${NODE}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
+      REMMAC1="${trex_macs[0]}"
+      REMMAC2="${trex_macs[1]}"
+    elif [[ "${NODE}" == "1" ]]; then
+      REMMAC1="${trex_macs[0]}"
+      REMMAC2=$(openstack port show ${CHAIN}_$((NODE + 1))_${NODES}_l | awk '/ mac_address / {print $4}')
+    elif [[ "${NODE}" == "${NODES}" ]]; then
+      REMMAC1=$(openstack port show ${CHAIN}_$((NODE - 1))_${NODES}_r | awk '/ mac_address / {print $4}')
+      REMMAC2="${trex_macs[1]}"
+    else
+      REMMAC1=$(openstack port show ${CHAIN}_$((NODE - 1))_${NODES}_r | awk '/ mac_address / {print $4}')
+      REMMAC2=$(openstack port show ${CHAIN}_$((NODE + 1))_${NODES}_l | awk '/ mac_address / {print $4}')
+    fi
+
 export BRANCH="master"
-cat > /tmp/${1}.cfg <<EOF
+cat > /tmp/vnfconf.cfg <<EOF
 #!/bin/bash
 passwd ubuntu <<EOL
 ubuntu
@@ -37,7 +88,7 @@ ifdown ens3 ens4
 curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/$BRANCH/comparison/kubecon18-chained_nf_test/VNF_openstack/shared/vEdge_vm_install.sh" -o /opt/vEdge_vm_install.sh
 cd /opt
 chmod +x vEdge_vm_install.sh
-./vEdge_vm_install.sh $CHAIN $NODE $NODES
+./vEdge_vm_install.sh $CHAIN $NODE $NODES $REMMAC1 $REMMAC2
 
 sed -i -e '/auto ens3/,+6d' /etc/network/interfaces.d/50-cloud-init.cfg
 sed -i -e '/auto ens4/,+6d' /etc/network/interfaces.d/50-cloud-init.cfg
@@ -46,19 +97,10 @@ reboot
 
 EOF
 
-FLAVOR=${FLAVOR:-c0.small}
 KEYPAIR=${KEYPAIR:-oskey}
 
-if [ $# -lt 4 ]; then
-    echo "ERROR: this script requires 3 parameters"
-    echo "USAGE: $0 <server_name> <vlan_1_id> <vlan_2_id> <EXT_vlan_3_id>"
-    echo "NOTE: The script assumes networks are named vlan<vlan_id>"
-    exit
-fi
+openstack server create ${CHAIN}_${NODE}_${NODES} --flavor vnf.3c --key-name ${KEYPAIR} --image xenial --nic port-id=${CHAIN}_${NODE}_${NODES}_l --nic port-id=${CHAIN}_${NODE}_${NODES}_r --nic port-id=${CHAIN}_${NODE}_${NODES}_e --config-drive True --user-data /tmp/vnfconf.cfg
 
-p1=$(openstack port create s${1}p1 --network vlan${2} --no-security-group --disable-port-security | awk '/ id / {print $4}')
-p2=$(openstack port create s${1}p2 --network vlan${3} --no-security-group --disable-port-security | awk '/ id / {print $4}')
-p3=$(openstack port create s${1}p3 --network ext${4} | awk '/ id / {print $4}')
-openstack server create ${1} --flavor vnf.3c --key-name ${KEYPAIR} --image xenial --nic port-id=${p1} --nic port-id=${p2} --nic port-id=${p3} --config-drive True --user-data /tmp/${1}.cfg
-
-rm /tmp/${1}.cfg
+rm /tmp/vnfconf.cfg
+done
+done
