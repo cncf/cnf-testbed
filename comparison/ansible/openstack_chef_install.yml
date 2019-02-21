@@ -25,12 +25,13 @@
             interface: "eth1"
       when: create_vlans
 
-#    - role: retr0h.etcd
-    - role: etcd3
+    - role: retr0h.etcd
+#    - role: etcd3
       vars:
         etcd_interface: bond0
-        members: "{{ groups['etcd'] }}"
-        etcd_version: "3.3.8"
+        # members: "{{ groups['etcd'] }}"
+        etcd_checksum: dc5d82df095dae0a2970e4d870b6929590689dd707ae3d33e7b86da0f7f211b6.
+        etcd_version: v3.3.12
       when: vpp_network
 
     - role: chef_openstack_install

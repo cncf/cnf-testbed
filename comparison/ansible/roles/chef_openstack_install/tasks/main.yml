@@ -12,7 +12,7 @@
 - name: get openstack-chef code 
   git: 
     repo: https://git.openstack.org/openstack/openstack-chef
-    version: stable/queens
+    version: "{{ openstack_chef_version }}"
     dest: /root/openstack-chef
     update: false
   ignore_errors: True
