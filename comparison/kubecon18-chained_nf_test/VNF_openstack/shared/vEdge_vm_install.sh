@@ -33,14 +33,11 @@ function validate_input() {
 
     set -euo pipefail
 
-    if [[ "${#}" -lt "3" ]]; then
-        warn "  Usage: ${0} <Chain ID> <Node ID> <Nodes per Chain>"
-        die "ERROR - Exactly 3 input arguments required!"
-    fi
-
     CHAIN="${1}"
     NODE="${2}"
     NODES="${3}"
+    REMMAC1="${4}"
+    REMMAC2="${5}"
 
     if [[ -n ${CHAIN//[0-9]/} ]] || [[ -n ${NODE//[0-9]/} ]] || [[ -n ${NODES//[0-9]/} ]]; then
         die "ERROR: Chain, node and nodeness must be an integer values!"
@@ -163,43 +160,11 @@ function set_remote_ips () {
     fi
 }
 
-
-function set_remote_macs () {
-    # Set ARP MACs.
-    #
-    # Variable read:
-    # - ${CHAIN} - Chain ID.
-    # - ${NODE} - Node ID.
-    # - ${NODES} - Number of NFs in chain.
-    # Variable set:
-    # - ${REMMAC1} - East MAC.
-    # - ${REMMAC2} - West MAC.
-
-    set -euo pipefail
-
-    trex_macs=( ee:00:51:d3:06:e8 ba:a7:6c:aa:67:7b )
-
-    if [[ "${NODE}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
-        REMMAC1=${trex_macs[0]}
-        REMMAC2=${trex_macs[1]}
-    elif [[ "${NODE}" == "1" ]]; then
-        REMMAC1=${trex_macs[0]}
-        REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:02:aa
-    elif [[ "${NODE}" == "${NODES}" ]]; then
-        REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
-        REMMAC2=${trex_macs[1]}
-    else
-        REMMAC1=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE - 1)):bb
-        REMMAC2=52:54:0$(( ${CHAIN} - 1 )):00:0$(($NODE + 1)):aa
-    fi
-}
-
 ipv6=false
 
 validate_input "${@}" || die
 set_subnets || die
 set_remote_ips || die
-set_remote_macs || die
 
 sudo service vpp stop
 
