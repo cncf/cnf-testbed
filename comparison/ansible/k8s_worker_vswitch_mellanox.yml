@@ -1,35 +1,33 @@
 ---
-# ./ PACKET create vlan and save vlan ids
-# ./ PACKET disbond interfaces
-# ./ PACKET assign vlan
-
 - hosts: localhost
   vars:
-    #    server_list: quadtestb-07,quadtestb-08   
+    #    server_list: quadtestb-07,quadtestb-08
     deploy_env: k8sworker
     vlans:
       vlan1:
         interface: eth1
       vlan2:
-        interface: eth2
-      vlan3:
-        interface: eth3
+        interface: eth1
   roles:
     - packet_l2
 
 - hosts: all
   vars:
+    mellanox_4_4: true
+    mellanox_4_1: false
     cnf: true
     vnf: false
-    baseline: false
-    hugepages: 10240
+    baseline: false # Currently no difference in VPP config
+    hugepages: 18432
     corelist_workers: 2,4,30,32
+    mellanox_data_port: "{{ ansible_enp94s0f1.pciid }}"
+    vlan_ids:
+      - "{{ hostvars.localhost.vlans.vlan1.vid }}"
+      - "{{ hostvars.localhost.vlans.vlan2.vid }}"
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
     enable_configured_interfaces_after_defining: true
-    nic_port2: "{{ ansible_eno2.pciid }}"
-    nic_port3: "{{ ansible_eno3.pciid }}"
     dns_nameservers:
       - "{{ ansible_dns.nameservers[0] }}"
       - "{{ ansible_dns.nameservers[0] }}"
@@ -103,18 +101,15 @@
   - name: Get bond0 internal gw
     setup:
       filter: "{{ ansible_bond0_0.ipv4.network }}"
-  - name: Get NIC port 2 pci id
-    setup:
-      filter: "{{ ansible_eno2.pciid }}"
-  - name: Get NIC port 3 pci id
-    setup:
-      filter: "{{ ansible_eno3.pciid }}"
+  - name: Get Mellanox data port pci id
+    setup: 
+      filter: "{{ ansible_enp94s0f1.pciid }}"
   post_tasks:
-  - name: Reboot Server
-    reboot:
+   - name: Reboot Server
+     reboot:
   roles:
     - mrlesmithjr.config-interfaces
     - grub_vswitch
-    - vpp_install #Vpp Install
-    - vpp_vswitch #Vpp vswitch configure,
-    #Has unique config for quad intel cards
+    - mellanox_vswitch #Driver install only
+    - mellanox_vpp #Vpp build, install, configure
+      #Has unique templating for mellanox
