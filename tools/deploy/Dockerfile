@@ -22,6 +22,7 @@ RUN apt update && \
     unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin && \
     rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \ 
     ansible-galaxy install nickjj.docker && \ 
+    ansible-galaxy install avinetworks.docker && \
     ansible-galaxy install mrlesmithjr.config-interfaces 
    
 # Copy Terraform Ansible Plugin

@@ -11,7 +11,7 @@ mechanism_drivers = vpp
 network_vlan_ranges = provider:1000:2000
 
 [ml2_type_flat]
-flat_networks = provider
+flat_networks = provider,flat
 
 [securitygroup]
 firewall_driver = neutron.agent.not.a.real.FirewallDriver
@@ -19,11 +19,11 @@ firewall_driver = neutron.agent.not.a.real.FirewallDriver
 [ml2_vpp]
 jwt_signing = False
 etcd_insecure_explicit_disable_https = True
-l3_hosts = localhost
+l3_hosts = {{ ansible_hostname }}
 gpe_locators =
 gpe_src_cidr =
 enable_vpp_restart = False
-physnets = provider:TenGigabitEthernet5e/0/1
+physnets = provider:TenGigabitEthernet5e/0/1,flat:tapcli-0
 etcd_pass =
 etcd_user =
 etcd_port = 2379

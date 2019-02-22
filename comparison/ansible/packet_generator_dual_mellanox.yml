@@ -2,7 +2,10 @@
 
 - hosts: localhost
   vars:
-    deploy_env: intelk8s
+    facility: "{{ lookup('env','PACKET_FACILITY') }}"
+    deploy_env: "{{ lookup('env','DEPLOY_ENV') }}"
+    server_list: "{{ lookup('env','SERVER_LIST') }}"
+    project_name: "{{ lookup('env','PROJECT_NAME') }}"
     vlans:
       vlan1:
         interface: eth1
@@ -19,6 +22,12 @@
   - name: Install Vlan Package
     apt:
       name: vlan
+  - name: Install pip
+    apt:
+      name: python-pip
+  - name: Install docker-py
+    pip:
+      name: docker-py
   - name: Get bond interface slaves
     setup:
       filter: "{{ ansible_bond0.slaves }}"
@@ -45,7 +54,7 @@
       filter: "{{ ansible_bond0_0.ipv4.network }}"
   - name: Install Docker
     include_role:
-      name: { role: "nickjj.docker", tags: ["docker"] }
+      name: avinetworks.docker
   - name: Configure interfaces
     include_role:
       name: mrlesmithjr.config-interfaces
@@ -87,15 +96,6 @@
     nfvbench_mac_addrs_right: "'52:54:00:00:00:bb'"
     nfvbench_vlan_ids: "{{ hostvars.localhost.vlans.vlan1.vid }}, {{ hostvars.localhost.vlans.vlan2.vid }}"
     nfvbench_vlan_tagging: true
-    docker__registries:
-      - registry_url: "https://index.docker.io/v1/"
-    docker__package_dependencies:
-      - "apt-transport-https"
-      - "ca-certificates"
-      - "software-properties-common"
-      - "gnupg2"
-      - "cron"
-      - "python-pip"
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
