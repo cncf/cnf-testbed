@@ -115,6 +115,7 @@
     dest: /usr/local/bin/vpp-agent
     mode: 0755
   notify:
+  - Restart etcd
   - Restart vpp-agent
 
 - name: add vpp-agent systemd service - RedHat
@@ -125,6 +126,7 @@
   when: ansible_os_family == 'RedHat'
   notify:
   - Daemon Reload
+  - Restart etcd
   - Restart vpp-agent
 
 - name: add vpp-agent systemd service - Debian
@@ -135,6 +137,7 @@
   when: ansible_os_family == 'Debian'
   notify:
   - Daemon Reload
+  - Restart etcd
   - Restart vpp-agent
 
 - name: add vpp-agent multi-user.wants link - RedHat
@@ -145,6 +148,7 @@
   when: ansible_os_family == 'RedHat' and inventory_hostname == host_0_address
   notify:
   - Daemon Reload
+  - Restart etcd
   - Restart neutron-server
   - Restart vpp-agent
 
@@ -156,6 +160,7 @@
   when: ansible_os_family == 'Debian'
   notify:
   - Daemon Reload
+  - Restart etcd
   - Restart neutron-server
   - Restart vpp-agent
 

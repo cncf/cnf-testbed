@@ -35,6 +35,12 @@
     state: restarted
   when: ansible_os_family == 'Debian' and host_0_address == inventory_hostname
 
+- name: Restart etcd
+  service:
+    enabled: true
+    name: etcd
+    state: restarted
+
 - name: Restart vpp-agent
   service:
     enabled: true
