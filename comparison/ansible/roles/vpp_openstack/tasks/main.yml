@@ -198,3 +198,12 @@
   notify:
   - Restart neutron-server
   - Restart vpp-agent
+
+- name: update mysql thread pool to 1451
+  lineinfile:
+    dest: /etc/mysql/conf.d/openstack.cnf
+    regexp: '^.*max_connections =.*$'
+    line: 'max_connections = 1451'
+  notify:
+  - Restart mysql
+

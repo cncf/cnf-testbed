@@ -21,10 +21,21 @@
     dest: /root/create_security_groups.sh
     mode: 0755
 
+- name: add security_groups
+  command: /root/create_security_groups.sh
+  ignore_errors: true
+  when: host_0_address == inventory_hostname
+
 - name: add create_flavor.sh script
   template:
     src: create_flavor.sh
     dest: /root/create_flavor.sh
+    mode: 0755
+
+- name: add set_quotas.sh script
+  template:
+    src: set_quotas.sh
+    dest: /root/set_quotas.sh
     mode: 0755
 
 - name: add flavor
@@ -48,3 +59,16 @@
     src: create_instance.sh
     dest: /root/create_instance.sh
     mode: 0755
+
+- name: add create_dual_mac.sh
+  template:
+    src: create_dual_mac.sh
+    dest: /root/create_dual_mac.sh
+    mode: 0755
+
+- name: add delete_dual.sh
+  template:
+    src: delete_dual.sh
+    dest: /root/delete_dual.sh
+    mode: 0755
+
