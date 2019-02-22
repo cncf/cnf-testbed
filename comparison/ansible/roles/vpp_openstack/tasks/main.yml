@@ -174,7 +174,7 @@
     option: reserved_huge_pages
     value: node:0,size:2048,count:64
   notify:
-  - Restart apache2
+  - Restart apache
   - Restart nova-compute
 
 - name: ensure Hugepages are properly sized (2K 2K pages)
@@ -210,7 +210,7 @@
     name: eventlet
     version: 0.22
   notify:
-  - Restart apache2
+  - Restart apache
   - Restart vpp-agent
   - Restart neutron-server
 
