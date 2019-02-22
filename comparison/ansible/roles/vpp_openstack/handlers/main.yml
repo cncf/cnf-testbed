@@ -4,6 +4,12 @@
     name: etcd
     state: restarted
 
+- name: Restart mysql
+  service:
+    enabled: true
+    name: myslq
+    state: restarted
+
 - name: Restart nova-compute
   service:
     enabled: true
