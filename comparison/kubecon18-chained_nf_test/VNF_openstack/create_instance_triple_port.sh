@@ -26,32 +26,22 @@ for CHAIN in $(seq 1 ${CHAINS}); do
   for NODE in $(seq 1 ${NODES}); do
     if [[ "${NODE}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
       openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${left} --no-security-group --disable-port-security
-      sleep 5
       openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${right} --no-security-group --disable-port-security
-      sleep 5
     elif [[ "${NODE}" == "1" ]]; then
       openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${left} --no-security-group --disable-port-security
-      sleep 5
       openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${middle1} --no-security-group --disable-port-security
-      sleep 5
     elif [[ "${NODE}" == "${NODES}" ]]; then
       if [[ "${NODES}" == "2" ]]; then
         openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle1} --no-security-group --disable-port-security
-        sleep 5
       else
         openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle2} --no-security-group --disable-port-security
-        sleep 5
       fi
       openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${right} --no-security-group --disable-port-security
-      sleep 5
     else
       openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle1} --no-security-group --disable-port-security
-      sleep 5
       openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${middle2} --no-security-group --disable-port-security
-      sleep 5
     fi
     openstack port create ${CHAIN}_${NODE}_${NODES}_e --network ${external}
-    sleep 5
   done
 done
 fi
@@ -66,16 +56,12 @@ for CHAIN in $(seq 1 ${CHAINS}); do
       elif [[ "${NODE}" == "1" ]]; then
         REMMAC1="${trex_macs[0]}"
         REMMAC2=$(openstack port show ${CHAIN}_$((NODE + 1))_${NODES}_l | awk '/ mac_address / {print $4}')
-        sleep 5
       elif [[ "${NODE}" == "${NODES}" ]]; then
         REMMAC1=$(openstack port show ${CHAIN}_$((NODE - 1))_${NODES}_r | awk '/ mac_address / {print $4}')
-        sleep 5
         REMMAC2="${trex_macs[1]}"
       else
         REMMAC1=$(openstack port show ${CHAIN}_$((NODE - 1))_${NODES}_r | awk '/ mac_address / {print $4}')
-        sleep 5
         REMMAC2=$(openstack port show ${CHAIN}_$((NODE + 1))_${NODES}_l | awk '/ mac_address / {print $4}')
-        sleep 5
       fi
 
 export BRANCH="master"
@@ -123,12 +109,10 @@ KEYPAIR=${KEYPAIR:-oskey}
 openstack server create ${CHAIN}_${NODE}_${NODES} --flavor vnf.3c --key-name ${KEYPAIR} --image xenial --nic port-id=${CHAIN}_${NODE}_${NODES}_l --nic port-id=${CHAIN}_${NODE}_${NODES}_r --nic port-id=${CHAIN}_${NODE}_${NODES}_e --config-drive True --user-data /tmp/vnfconf.cfg
 
 rm /tmp/vnfconf.cfg
-sleep 5
 else
   echo ""
   echo "Server ${CHAIN}_${NODE}_${NODES} already exists"
   echo ""
-  sleep 5
 fi
 done
 done
