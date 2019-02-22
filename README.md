@@ -57,6 +57,14 @@ __Pull Requests__
 * Download, compile, and run the code and make sure the tests pass.
   - Also verify that the test cases follow best architectural patterns and include tests.
 
+## Meeting Time
+
+The CNF Testbed BoF meets on the first and third Mondays of the month at 8AM PT (USA Pacific Time)
+
+- Next meeting: Monday, March 4th, 2019 at 8AM PT
+
+- Note: No zoom meeting on Monday, April 1st. An in-person BoF will be scheduled during [Open Networking Summit in San Jose, CA](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/) (Date/Location TBD).
+
 
 ## CNFs At KubeCon + CloudNativeCon North America 2018
 

@@ -5,10 +5,9 @@ left="vlan1087"
 middle1="middle1"
 middle2="middle2"
 right="vlan1088"
-external="ext1129"
 
-CREATE_PORTS=true
-CREATE_VMS=false
+CREATE_PORTS=false
+CREATE_VMS=true
 
 trex_macs=( ee:00:51:d3:06:e8 ba:a7:6c:aa:67:7b )
 
@@ -50,8 +49,6 @@ for CHAIN in $(seq 1 ${CHAINS}); do
       openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${middle2} --no-security-group --disable-port-security
       sleep 5
     fi
-    openstack port create ${CHAIN}_${NODE}_${NODES}_e --network ${external}
-    sleep 5
   done
 done
 fi
@@ -120,7 +117,7 @@ EOF
 
 KEYPAIR=${KEYPAIR:-oskey}
 
-openstack server create ${CHAIN}_${NODE}_${NODES} --flavor vnf.3c --key-name ${KEYPAIR} --image xenial --nic port-id=${CHAIN}_${NODE}_${NODES}_l --nic port-id=${CHAIN}_${NODE}_${NODES}_r --nic port-id=${CHAIN}_${NODE}_${NODES}_e --config-drive True --user-data /tmp/vnfconf.cfg
+openstack server create ${CHAIN}_${NODE}_${NODES} --flavor vnf.3c --key-name ${KEYPAIR} --image xenial --nic port-id=${CHAIN}_${NODE}_${NODES}_l --nic port-id=${CHAIN}_${NODE}_${NODES}_r --config-drive True --user-data /tmp/vnfconf.cfg
 
 rm /tmp/vnfconf.cfg
 sleep 5
