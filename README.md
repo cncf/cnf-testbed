@@ -61,9 +61,21 @@ __Pull Requests__
 
 The CNF Testbed BoF meets on the first and third Mondays of the month at 8AM PT (USA and Canada)
 
-- Next meeting: Monday, March 4th, 2019 at 8AM PT
+Join Zoom Meeting:  https://zoom.us/j/297749799
 
-- Note: No zoom meeting on Monday, April 1st. An in-person BoF will be scheduled during [Open Networking Summit in San Jose, CA](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/) (Date/Location TBD).
+Dial by your location
+        +1 669 900 6833 US (San Jose)
+        +1 646 558 8656 US (New York)
+        +1 877 369 0926 US Toll-free
+        +1 855 880 1246 US Toll-free
+
+Meeting ID: 297 749 799
+
+Find your local number: https://zoom.us/u/acX94Wyyaj
+
+- **Next meeting: Monday, March 4th, 2019 at 8AM PT**
+
+- **Note:** No zoom meeting on Monday, April 1st. An in-person BoF will be scheduled during [Open Networking Summit in San Jose, CA](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/) (Date/Location TBD).
 
 ## Slack
 [slack.cncf.io](slack.cncf.io) - #cnf
