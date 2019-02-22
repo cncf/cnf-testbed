@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $# -lt 1 ]; then
+if [ $# -lt 4 ]; then
   echo "you need to pass three parameters:"
   echo " subnet start address (e.g. network address)"
   echo " subnet cidr (e.g. 24)"
@@ -15,7 +15,7 @@ cidr=$2
 gateway=$3
 vlan=$4
 
-if [ !  $( openstack network list | awk '/netext/ {print $4}' ) == 'netext' ] ;then
+if [ !  "$( openstack network list | awk '/netext/ {print $4}' )" == "netext" ] ;then
 openstack network create --external --provider-network-type flat --provider-physical-network flat netext
 openstack subnet create --network netext --subnet-range $subnet/$cidr --no-dhcp --gateway $gateway subnetext
 

@@ -1,14 +1,13 @@
-- name: Restart etcd
-  service:
-    enabled: true
-    name: etcd
-    state: restarted
+- name: Daemon Reload
+  systemd:
+    daemon_reload: yes
 
 - name: Restart mysql
   service:
     enabled: true
-    name: myslq
+    name: mysql
     state: restarted
+  when: host_0_address == inventory_hostname
 
 - name: Restart nova-compute
   service:
