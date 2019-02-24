@@ -29,6 +29,7 @@
     section: DEFAULT
     option: service_plugins
     value: vpp-router
+  when: host_0_address == inventory_hostname
   notify:
   - Restart neutron-server
 
@@ -103,7 +104,7 @@
 
 - name: migrate neutron vpp database
   command: neutron-db-manage --subproject networking-vpp --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head
-  when: ansible_os_family == 'Debian'
+  when: ansible_os_family == 'Debian' and host_0_address == inventory_hostname
 
 - name: bring ex-slave interface down
   command: ip l s dev {{vlan_interface}} down
@@ -115,7 +116,6 @@
     dest: /usr/local/bin/vpp-agent
     mode: 0755
   notify:
-  - Restart etcd
   - Restart vpp-agent
 
 - name: add vpp-agent systemd service - RedHat
@@ -126,7 +126,6 @@
   when: ansible_os_family == 'RedHat'
   notify:
   - Daemon Reload
-  - Restart etcd
   - Restart vpp-agent
 
 - name: add vpp-agent systemd service - Debian
@@ -137,7 +136,6 @@
   when: ansible_os_family == 'Debian'
   notify:
   - Daemon Reload
-  - Restart etcd
   - Restart vpp-agent
 
 - name: add vpp-agent multi-user.wants link - RedHat
@@ -148,7 +146,6 @@
   when: ansible_os_family == 'RedHat' and inventory_hostname == host_0_address
   notify:
   - Daemon Reload
-  - Restart etcd
   - Restart neutron-server
   - Restart vpp-agent
 
@@ -160,7 +157,6 @@
   when: ansible_os_family == 'Debian'
   notify:
   - Daemon Reload
-  - Restart etcd
   - Restart neutron-server
   - Restart vpp-agent
 
@@ -224,6 +220,6 @@
     dest: /etc/mysql/conf.d/openstack.cnf
     regexp: '^.*max_connections =.*$'
     line: 'max_connections = 1451'
+  when: host_0_address == inventory_hostname
   notify:
   - Restart mysql
-  when: host_0_address == inventory_hostname
