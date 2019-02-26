@@ -20,7 +20,7 @@ The ideal outcome of the CNF Testbed is that a third party developer can run the
 
 ## Background info
 
-Please review this slide [deck[(https://docs.google.com/presentation/u/1/d/1nsPINvxQwZZR_7E4mAzr-50eFCBhbCHsmik6DI_yFA0/).
+Please review this slide [deck](https://docs.google.com/presentation/u/1/d/1nsPINvxQwZZR_7E4mAzr-50eFCBhbCHsmik6DI_yFA0/).
 
 ## CNF Testbed goals
 
