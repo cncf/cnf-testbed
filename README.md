@@ -18,6 +18,10 @@ Note that the CNF Testbed is still in the prototype stage. Additional reference 
 
 The ideal outcome of the CNF Testbed is that a third party developer can run the provided CNF reference code/benchmarking tests with an API key and a couple of CLI commands. Furthermore, a developer can re-use some or all of the software in their own environment with minimal, or at least isolated modifications.
 
+## Background info
+
+Please review this slide [deck[(https://docs.google.com/presentation/u/1/d/1nsPINvxQwZZR_7E4mAzr-50eFCBhbCHsmik6DI_yFA0/).
+
 ## CNF Testbed goals
 
 **The CNF Testbed includes the following high-level goals:**
