@@ -8,7 +8,7 @@ function clean_containers () {
     #
     # Variable reads:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     set -euo pipefail
     cnf_list=$(helm ls --all --short | grep cnf)
     if [[ ! -z "${cnf_list}" ]]; then
@@ -41,7 +41,7 @@ function validate_input() {
     # - ${@} - Script parameters.
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [clean].
 
     set -euo pipefail
@@ -53,7 +53,7 @@ function validate_input() {
     fi
 
     CHAINS="${1-}"
-    NODENESS="${2-}"
+    NODES="${2-}"
     OPERATION="${3-}"
     KUBECONFIG="${KUBECONFIG:-}"
 
@@ -67,19 +67,19 @@ function validate_input() {
       return 0
     fi
 
-    if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODENESS//[0-9]/} ]]; then
-        die "ERROR: Chains and nodeness must be an integer values!"
+    if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODES//[0-9]/} ]]; then
+        die "ERROR: Chains and nodes must be an integer values!"
     fi
 
     if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "7" ]]; then
         die "ERROR: Chains must be an integer value between 1-7!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "7" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-7!"
+    if [[ "${NODES}" -lt "1" ]] || [[ "${NODES}" -gt "7" ]]; then
+        die "ERROR: Nodes must be an integer value between 1-7!"
     fi
 
-    if [[ "$((NODENESS * CHAINS))" -gt "7" ]]; then
+    if [[ "$((NODES * CHAINS))" -gt "7" ]]; then
         die "ERROR: Total number of CNFs can not exceed 7"
     fi
 
@@ -104,7 +104,7 @@ function run_containers () {
     #
     # Variable read:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [cleanup|baseline].
     # Variable read:
     # - ${MAIN_CORES} - List of main cores.
@@ -118,9 +118,9 @@ function run_containers () {
     # Run conainer matrix.
     idx=0
     for chain in $(seq 1 "${CHAINS}"); do
-      for node in $(seq 1 "${NODENESS}"); do
+      for node in $(seq 1 "${NODES}"); do
         echo "Starting Chain ${chain}, Node ${node}"
-        ./config_csp.sh $chain $node $NODENESS ${MAIN_CORES[$idx]} ${WORKER_CORES[$idx]}
+        ./config_csp.sh $chain $node $NODES ${MAIN_CORES[$idx]} ${WORKER_CORES[$idx]}
         sleep 1
         helm install --name cnf${chain}-${node} ./vedge/
         ((idx++))
