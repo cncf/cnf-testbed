@@ -77,7 +77,7 @@ Meeting ID: 297 749 799
 
 Find your local number: https://zoom.us/u/acX94Wyyaj
 
-- **Next meeting: Monday, March 4th, 2019 at 8AM PT**
+- **Next meeting: Monday, March 18th, 2019 at 8AM PT**
 
 - **Note:** No zoom meeting on Monday, April 1st. An in-person BoF will be scheduled during [Open Networking Summit in San Jose, CA](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/) (Date/Location TBD).
 
