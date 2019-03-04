@@ -81,6 +81,10 @@ Find your local number: https://zoom.us/u/acX94Wyyaj
 
 - **Note:** No zoom meeting on Monday, April 1st. An in-person BoF will be scheduled during [Open Networking Summit in San Jose, CA](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/) (Date/Location TBD).
 
+## Meeting Minutes
+
+Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/cncf-cnf-testbed-bof).
+
 ## Slack
 [slack.cncf.io](slack.cncf.io) - #cnf
 
