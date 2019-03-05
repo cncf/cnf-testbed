@@ -7,7 +7,7 @@ Status: The CNF Testbed is *not* a CNCF-hosted [project](https://www.cncf.io/pro
 Note: _The CNF Testbed is still in the prototype stage. Additional reference code and benchmarking tests will be added incrementally._
 
 
-## What is the purpose and ideal outcome?
+## CNF Testbed purpose and ideal outcome?
 
 The CNF Testbed will help facilitate the transition in the NFV world from virtualized hardware running network functions to lightweight, network functions following cloud-native methodologies running on Kubernetes in public, private, or hybrid clouds. 
 
