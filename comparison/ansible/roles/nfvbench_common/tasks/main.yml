@@ -1,0 +1,52 @@
+---
+- name: Get Kernal Version
+  setup: 
+    filter: "{{ ansible_kernel }}"
+
+- name: Docker start opnfv/nfvbench (Intel)
+  docker_container:
+    name: nfvbench
+    image: opnfv/nfvbench:2.0.5
+    state: started
+    network_mode: host
+    privileged: true
+    volumes:
+      - /root:/tmp/nfvbench
+      - /dev:/dev
+      - /lib/modules/{{ ansible_kernel }}:/lib/modules/{{ ansible_kernel }}
+      - /usr/src:/usr/src
+  when: intel 
+
+- name: Docker start opnfv/nfvbench (Mellanox)
+  docker_container:
+    name: nfvbench
+    image: opnfv/nfvbench:2.0.5
+    state: started
+    network_mode: host
+    privileged: true
+    volumes: 
+      - /root:/tmp/nfvbench
+      - /dev:/dev
+      - /lib/modules/{{ ansible_kernel }}:/lib/modules/{{ ansible_kernel }}
+      - /usr/src:/usr/src
+      - /usr/bin/ofed_info:/usr/bin/ofed_info
+      - /etc/libibverbs.d:/etc/libibverbs.d
+      - /usr/lib:/tmp/lib
+      - /dev/mst:/dev/mst
+      - /usr/lib:/usr/lib
+      - /lib:/lib
+  when: not intel
+
+- name: Update the number of hugepages available for TRex
+  command: docker exec -i nfvbench sed -i -e "s/512 /2048 /" -e "s/512\"/2048\"/" /opt/trex/v2.32/trex-cfg
+
+- name: Change the mbuf factor to further reduce the memory usage
+  command: docker exec -i nfvbench sed -i -e "s/--cfg {} \&>/--cfg {} --mbuf-factor 0.2 \&>/g" /nfvbench/nfvbench/traffic_server.py
+
+- name: Add alias for running nfvbench
+  lineinfile: 
+    path: /root/.bashrc
+    line: 'alias nfvbench="sudo docker exec -it nfvbench nfvbench -c /tmp/nfvbench/nfvbench_config.cfg"'
+
+- name: Write nfvbench config file
+  template: src=nfvbench_config.j2 dest=/root/nfvbench_config.cfg
