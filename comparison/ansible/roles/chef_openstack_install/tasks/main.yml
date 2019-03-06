@@ -40,18 +40,34 @@
     chdir: /root/.berkshelf/
     creates: /root/openstack-chef/cookbooks/
 
+- name: find openstack-common python.rb
+  find:
+    paths: /root/openstack-chef/cookbooks/
+    recurse: yes
+    patterns: "python.rb"
+  register: common_python_rb 
+
 - name: Update python to v3.6 for Ubuntu 18.04
   replace:
-    dest: /root/openstack-chef/cookbooks/openstack-common/recipes/python.rb
+    dest: "{{item.path}}"
     regexp: "^.*python_runtime .* do.*$"
     replace: "  python_runtime '3.6' do"
+  with_items: "{{common_python_rb['files']}}"
   when: ansible_distribution_release == 'bionic'
+
+- name: find openstack-ops-database mariadb-client.rb
+  find:
+    paths: /root/openstack-chef/cookbooks/
+    recurse: yes
+    patterns: "mariadb-client.rb"
+  register: mariadb_client_rb 
 
 - name: Update mysql ruby gem to 0.5.2 on Ubuntu 18.04
   replace:
-    dest: /root/openstack-chef/cookbooks/openstack-ops-database/recipes/mariadb-client.rb
+    dest: "{{item.path}}"
     regexp: "^.*gem_version .*$"
     replace: "  gem_version '0.5.2'"
+  with_items: "{{mariadb_client_rb['files']}}"
   when: ansible_distribution_release == 'bionic'
 
 - name: ensure iSCSCI target directory exists on Ubuntu 18.04
