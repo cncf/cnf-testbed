@@ -8,7 +8,7 @@ right="vlan1088"
 external="ext1129"
 
 CREATE_PORTS=true
-CREATE_VMS=false
+CREATE_VMS=true
 
 trex_macs=( ee:00:51:d3:06:e8 ba:a7:6c:aa:67:7b )
 

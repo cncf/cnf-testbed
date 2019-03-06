@@ -120,7 +120,7 @@ function run_containers () {
     for chain in $(seq 1 "${CHAINS}"); do
       for node in $(seq 1 "${NODES}"); do
         echo "Starting Chain ${chain}, Node ${node}"
-        ./config_csp.sh $chain $node $NODES ${MAIN_CORES[$idx]} ${WORKER_CORES[$idx]}
+        ./config_csc.sh $chain $node $NODES ${MAIN_CORES[$idx]} ${WORKER_CORES[$idx]}
         sleep 1
         helm install --name cnf${chain}-${node} ./vedge/
         ((idx++))

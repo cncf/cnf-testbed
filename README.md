@@ -4,7 +4,10 @@ The CNCF CNF Testbed provides reference code and test comparisons for running th
 
 Status: The CNF Testbed is *not* a CNCF-hosted [project](https://www.cncf.io/projects/). Instead, it is an initiative to create a repeatable, apples-to-apples testbed that telcos and telecoms vendors can use to evaluate how CNF architectures compare to more traditional VNF ones.
 
-## What is the CNCF CNF Testbed?
+Note: _The CNF Testbed is still in the prototype stage. Additional reference code and benchmarking tests will be added incrementally._
+
+
+## CNF Testbed purpose and ideal outcome?
 
 The CNF Testbed will help facilitate the transition in the NFV world from virtualized hardware running network functions to lightweight, network functions following cloud-native methodologies running on Kubernetes in public, private, or hybrid clouds. 
 
@@ -14,11 +17,9 @@ The reference code and comparisons from the CNF Testbed support the claim that C
 1. Improved resiliency
 1. Higher development velocity
 
-Note that the CNF Testbed is still in the prototype stage. Additional reference code and benchmarking tests will be added incrementally.
-
 The ideal outcome of the CNF Testbed is that a third party developer can run the provided CNF reference code/benchmarking tests with an API key and a couple of CLI commands. Furthermore, a developer can re-use some or all of the software in their own environment with minimal, or at least isolated modifications.
 
-## Background info
+### Background info
 
 Please review this slide [deck](https://docs.google.com/presentation/u/1/d/1nsPINvxQwZZR_7E4mAzr-50eFCBhbCHsmik6DI_yFA0/).
 
@@ -38,12 +39,15 @@ Please review this slide [deck](https://docs.google.com/presentation/u/1/d/1nsPI
 
 So far the project has been focused on provisioning the infrastructure to support data plane CNF test cases that would be of interest to a service provider. This includes building up from minimal, single NFs running on KVM and Docker to OpenStack and K8s.
 
-**Current Test Cases:** 
+**Events and recurring testing:** 
 
-- [CNF chained nf test code](https://github.com/cncf/cnfs/blob/master/comparison/kubecon18-chained_nf_test/README.md)
+- _(recurring)_ [Baseline NF Performance on Packet](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet)
+- _(recurring)_ [Baseline NF Performance on CSIT](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-csit)
+- Mellanox Chained IP Routers: OpenStack & K8s
+- [Kubecon NA 2019 Chained IP Routers](https://github.com/cncf/cnfs/blob/master/comparison/kubecon18-chained_nf_test/README.md)
 - [Box-by-box KVM and Docker](https://github.com/cncf/cnfs/tree/master/comparison/box-by-box-kvm-docker)
-- [Baseline NF Performance on Packet](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-packet)
-- [Baseline NF Performance on CSIT](https://github.com/cncf/cnfs/tree/master/comparison/baseline_nf_performance-csit)
+
+
 
 
 ## Getting Involved and Contributing
@@ -77,9 +81,13 @@ Meeting ID: 297 749 799
 
 Find your local number: https://zoom.us/u/acX94Wyyaj
 
-- **Next meeting: Monday, March 4th, 2019 at 8AM PT**
+- **Next meeting: Monday, March 18th, 2019 at 8AM PT**
 
 - **Note:** No zoom meeting on Monday, April 1st. An in-person BoF will be scheduled during [Open Networking Summit in San Jose, CA](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/) (Date/Location TBD).
+
+## Meeting Minutes
+
+Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/cncf-cnf-testbed-bof).
 
 ## Slack
 [slack.cncf.io](slack.cncf.io) - #cnf
