@@ -13,11 +13,29 @@
     }
   },
   "override_attributes": {
+    "mariadb": {
+      "install": {
+         "version": "10.1"
+      },
+      "use_default_repository":false,
+      "apt_repository": {
+         "base_url": "nyc2.mirrors.digitalocean.com/mariadb/repo/"
+      }
+    },
     "openstack": {
+{%- if ansible_os_family == 'Debian' and not ansible_distribution_release == 'xenial' -%}
+      "block-storage": {
+         "platform": {
+            "cinder_iscsitarget_packages": [ "targetcli-fb" ]
+         }
+      },
+{%- endif -%}
+      "is_release": true,
       "network_lbaas": {
         "enabled": false
       },
       "apt": {
+        "live_updates_enabled": false,
         "unattended_upgrades": {
           "enable": false
         },

@@ -1,12 +1,24 @@
+---
 # Get chef and chef OpenStack cookbooks
+#- name: update apt
+#  apt:
+#    update_cache: yes
+#  when: ansible_os_family == 'Debian'
+
 - name: get chef package
   yum:
     name: https://packages.chef.io/files/stable/chefdk/3.4.38/el/7/chefdk-3.4.38-1.el7.x86_64.rpm
   when: ansible_os_family == 'RedHat'
 
+- name: download chef package Debian
+  get_url:
+    url: https://packages.chef.io/files/stable/chefdk/3.2.30/ubuntu/18.04/chefdk_3.2.30-1_amd64.deb
+    dest: /root/chefdk_3.2.30-1_amd64.deb
+  when: ansible_os_family == 'Debian'
+
 - name: get chef package
   apt:
-    deb: https://packages.chef.io/files/stable/chefdk/3.2.30/ubuntu/18.04/chefdk_3.2.30-1_amd64.deb
+    deb: /root/chefdk_3.2.30-1_amd64.deb
   when: ansible_os_family == 'Debian'
 
 - name: get openstack-chef code 
@@ -14,19 +26,39 @@
     repo: https://git.openstack.org/openstack/openstack-chef
     version: "{{ openstack_chef_version }}"
     dest: /root/openstack-chef
-    update: false
-  ignore_errors: True
+    update: no
     
 - name: run the berks command in the openstack-chef repo
   command: berks install
   args:
     chdir: /root/openstack-chef
-    creates: /root/.berkshelf
+    creates: /root/openstack-chef/cookbooks/
 
 - name: move berks downloaded code to openstack-chef directory
-  shell: tar cf - cookbooks/ | (cd /root/openstack-chef; tar xf -)
+  shell: mv cookbooks/ /root/openstack-chef
   args:
     chdir: /root/.berkshelf/
+    creates: /root/openstack-chef/cookbooks/
+
+- name: Update python to v3.6 for Ubuntu 18.04
+  replace:
+    dest: /root/openstack-chef/cookbooks/openstack-common/recipes/python.rb
+    regexp: "^.*python_runtime .* do.*$"
+    replace: "  python_runtime '3.6' do"
+  when: ansible_distribution_release == 'bionic'
+
+- name: Update mysql ruby gem to 0.5.2 on Ubuntu 18.04
+  replace:
+    dest: /root/openstack-chef/cookbooks/openstack-ops-database/recipes/mariadb-client.rb
+    regexp: "^.*gem_version .*$"
+    replace: "  gem_version '0.5.2'"
+  when: ansible_distribution_release == 'bionic'
+
+- name: ensure iSCSCI target directory exists on Ubuntu 18.04
+  file:
+    state: directory
+    dest: /etc/target/
+  when: ansible_distribution_release == 'bionic'
 
 - name: Install chef client via the omnibus installer
   shell: curl -L https://omnitruck.chef.io/install.sh | bash
@@ -87,9 +119,10 @@
     mode: 0600
   when: ansible_os_family == 'Debian'
 
-- name: Add python update for chef Debian deployments
+- name: Add python upate for chef Debian deployments
   apt:
-    name: ['python','python3','python-pip','python3-pip']
+    update_cache: yes
+    name: ['python-pip','python3-pip']
   when: ansible_os_family == 'Debian'
 
 - name: Ensure pip 18.0 for chef Debian
@@ -97,6 +130,7 @@
     name: pip
     version: 18.0
     executable: 'pip3'
+    state: forcereinstall
   when: ansible_os_family == 'Debian'
 
 - name: Install python api pre-requisites

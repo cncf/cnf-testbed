@@ -6,6 +6,7 @@ if [ $# -lt 4 ]; then
   echo " subnet cidr (e.g. 24)"
   echo " gateway address (e.g. network address +1)"
   echo " internal vlan id (e.g. 1044)"
+exit 1
 fi
 
 source ~/openrc

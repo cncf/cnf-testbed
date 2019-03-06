@@ -2,7 +2,23 @@ heat_template_version: 2017-09-01
 
 description: Simple template to deploy a single compute instance
 
+ 
 resources:
+  port_0:
+    type: OS::Neutron::Port
+    properties:
+      network: vlan1044
+      mac_address: fa:17:b6:aa:aa:aa
+  port_1:
+    type: OS::Neutron::Port
+    properties:
+      network: vlan1072
+      mac_address: fa:18:b6:aa:aa:aa
+  float:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: netext
+
   my_instance:
     type: OS::Nova::Server
     properties:
@@ -18,4 +34,6 @@ resources:
         curl https://github.com/rstarmer.keys >> ~/.ssh/authorized_keys
         EOF
       networks:
-        - network: vlan1044
+        - port: { get_resource: port_0 }
+          floating_ip: { get_resource: float }
+        - port: { get_resource: port_1 }

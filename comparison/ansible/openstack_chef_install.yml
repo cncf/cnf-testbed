@@ -1,13 +1,24 @@
 ---
 - hosts: all
   vars:
-    vlan_interface: enp94s0f1
-    vlan_pci_id: 0000:5e:00.1
+    vlan_interface: eno1
+#    vlan_interface: enp94s0f1
+    vlan_pci_id: 0000:1a:00.1
+#    vlan_pci_id: 0000:5e:00.1
+    vpp_interface: TenGigabitEthernet1a/0/1
+#    vpp_interface: TenGigabitEthernet5e/0/1
     vpp_network: true
-    vpp_src: true
+    vpp_src: false
     create_vlans: true
+
+#  environment:
+#    http_proxy: http://rhs-build.kumulus.co:3128
+#    https_proxy: http://rhs-build.kumulus.co:3128  
+#    no_proxy: 127.0.0.1,localhost,10.*
+
   pre_tasks:
   - setup:
+
   roles:
     - role: packet_l2
       delegate_to: localhost
@@ -19,9 +30,11 @@
         server_list: "{{ lookup('env','SERVER_LIST') }}"
         project_name: "{{ lookup('env','PROJECT_NAME') }}"
         vlans:
-          mlxtestvlan1:
+          quadtestvlan1:
             interface: "eth1"
-          mlxtestvlan2:
+          quadtestvlan2:
+            interface: "eth1"
+          quadtestvlan3:
             interface: "eth1"
       when: create_vlans
 

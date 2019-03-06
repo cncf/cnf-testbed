@@ -15,7 +15,7 @@ echo "[all:vars]" > ${parentdir}/comparison/ansible/inventory
 echo "ansible_ssh_extra_args='-o StrictHostKeyChecking=no'" >> ${parentdir}/comparison/ansible/inventory
 echo "[all]" >> ${parentdir}/comparison/ansible/inventory
 
-docker run \
+docker run --rm \
   -v ${parentdir}/comparison/ansible:/ansible \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
@@ -38,7 +38,7 @@ echo "[etcd]" >> ${parentdir}/comparison/ansible/inventory
 cat ${parentdir}/tools/terraform-ansible/openstack.tfstate | awk -F\" '/0.add/ {print $4}' >> ${parentdir}/comparison/ansible/inventory
 fi
 SERVER_LIST=`for ((n=1;n<$NODE_COUNT;n++)); do echo -n $NODE_NAME$n,;done;echo -n $NODE_NAME$NODE_COUNT`
-time docker run \
+time docker run --rm \
   -v ${parentdir}/comparison/ansible:/ansible \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
