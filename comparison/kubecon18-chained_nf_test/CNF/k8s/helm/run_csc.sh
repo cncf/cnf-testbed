@@ -34,6 +34,65 @@ function die () {
 }
 
 
+function host_ssh() {
+    # usage: host_ssh <Node IP> <Command>
+    ssh -o StrictHostKeyChecking=no root@${1} "${@:2}"
+}
+
+function host_scp() {
+    # usage: host_scp <Node IP> <Source> <Destination>
+    scp -o StrictHostKeyChecking=no ${2} root@${1}:${3}
+}
+
+function detect_mellanox () {
+    # Check presence of Mellanox card.
+    # Returns:
+    # - 0 - If Mellanox NIC is there.
+    # - 1 - If Mellanox NIC is not there.
+
+    set -euo pipefail
+
+    host_ssh $node_ip lspci | grep Mellanox >/dev/null
+}
+
+
+function detect_xxv710 () {
+    # Check presence of XXV710 card.
+    # Returns:
+    # - 0 - If XXV710 NIC is there.
+    # - 1 - If XXV710 NIC is not there.
+
+    set -euo pipefail
+
+    host_ssh $node_ip lspci | grep XXV710 >/dev/null
+}
+
+function update_host_vpp() {
+    if [[ "${OPERATION}" == "clean" ]]; then
+        # No need to update configuration
+        return 0
+    fi
+    node_ip="$(kubectl describe node | grep InternalIP | awk '{print $2}')"
+    if [ -z "$node_ip" ]; then
+        die "ERROR: Unable to get IP of k8s node"
+    fi
+    if detect_mellanox; then
+        csp_nic="mellanox"
+    else
+        if detect_xxv710; then
+            csp_nic="csit"
+        else
+            csp_nic="intel"
+        fi
+    fi
+    echo "Updating host VPP configuration to support ${CHAINS} chains, ${NODES} nodes"
+    vlans=( $(host_ssh $node_ip cat /etc/vpp/templates/1chain_cnf.j2 | grep 'create sub' | awk '{print $4}') )
+    csp_nic=$csp_nic ./create_vpp_config_csc.sh $CHAINS $NODES ${vlans[0]} ${vlans[1]} $config_file
+    host_scp $node_ip $config_file /etc/vpp/setup.gate
+    host_ssh $node_ip service vpp restart
+    sleep 5
+}
+
 function validate_input() {
     # Validate script input.
     #
@@ -136,8 +195,17 @@ cd "${BASH_FUNCTION_DIR}" || die
 
 validate_input "${@}" || die
 
+config_file="vpp_config.cfg"
+
 if [ "${OPERATION}" == "clean" ]; then
     clean_containers || die
 else
+    if [[ ! -z "$(kubectl get pods | grep cnf)" ]]; then
+      die "ERROR: CNFs already exist. Clean up environment before running"
+    fi
+    update_host_vpp || die
     run_containers || die
+    if [ -f "${config_file}" ]; then
+        rm "${config_file}" || die
+    fi
 fi
