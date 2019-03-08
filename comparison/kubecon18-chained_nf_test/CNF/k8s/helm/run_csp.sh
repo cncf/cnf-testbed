@@ -33,6 +33,32 @@ function die () {
     exit "${2:-1}"
 }
 
+function host_ssh() {
+  # usage: host_ssh <Node IP> <Command>
+  ssh -o StrictHostKeyChecking=no root@${1} "${@:2}"
+}
+
+function update_host_vpp() {
+    if [[ "${OPERATION}" == "clean" ]]; then
+      # No need to update configuration
+      return 0
+    fi
+    if [[ "${CHAINS}" -gt "3" ]]; then
+      warn "WARNING: Host VPP must be manually configured for more than 3 chains"
+      return 0
+    fi
+    node_ip="$(kubectl describe node | grep InternalIP | awk '{print $2}')"
+    if [ -z "$node_ip" ]; then
+      die "ERROR: Unable to get IP of k8s node"
+    fi
+    host_ssh $node_ip cmp /etc/vpp/setup.gate /etc/vpp/templates/${CHAINS}chain_cnf.j2 >/dev/null 2>&1
+    if [[ ! "$?" == "0" ]]; then
+     echo "Updating host VPP configuration to support ${CHAINS} chains"
+     host_ssh $node_ip cp /etc/vpp/templates/${CHAINS}chain_cnf.j2 /etc/vpp/setup.gate
+     host_ssh $node_ip service vpp restart
+     sleep 5
+   fi
+}
 
 function validate_input() {
     # Validate script input.
@@ -135,6 +161,8 @@ BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
 cd "${BASH_FUNCTION_DIR}" || die
 
 validate_input "${@}" || die
+
+update_host_vpp || die
 
 if [ "${OPERATION}" == "clean" ]; then
     clean_containers || die

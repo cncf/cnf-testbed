@@ -50,3 +50,12 @@
 
 - name: Write nfvbench config file
   template: src=nfvbench_config.j2 dest=/root/nfvbench_config.cfg
+
+- name: Add run_nfvbench_test file
+  template: src=run_nfvbench_test.sh dest=/root/run_nfvbench_test.sh
+
+- name: Update permissions for run_nfvbench_test.sh
+  file:
+    path: /root/run_nfvbench_test.sh
+    state: file
+    mode: 0755
