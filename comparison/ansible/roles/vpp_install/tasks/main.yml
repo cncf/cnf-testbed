@@ -109,6 +109,12 @@
     dest: /etc/vpp/startup.conf
   when: not inventory_hostname == host_0_address
 
+- name: Create perfmon tar bundle
+  command: tar Jxf PerfmonTables.tar.xz
+  args:
+   chdir: /usr/share/vpp/plugins/perfmon
+  igrnore_errors: true
+
 - name: Restart VPP service
   systemd:
     name: vpp

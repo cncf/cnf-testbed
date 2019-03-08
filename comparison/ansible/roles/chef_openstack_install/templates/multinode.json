@@ -13,6 +13,7 @@
     }
   },
   "override_attributes": {
+{%- if ansible_os_family == 'Debian' and not ansible_distribution_release == 'xenial' -%}
     "mariadb": {
       "install": {
          "version": "10.1"
@@ -22,6 +23,7 @@
          "base_url": "nyc2.mirrors.digitalocean.com/mariadb/repo/"
       }
     },
+{%- endif -%}
     "openstack": {
 {%- if ansible_os_family == 'Debian' and not ansible_distribution_release == 'xenial' -%}
       "block-storage": {

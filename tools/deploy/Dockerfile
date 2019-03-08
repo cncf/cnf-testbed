@@ -29,6 +29,8 @@ RUN apt update && \
 RUN mkdir -p ~/.terraform.d/plugins/
 COPY --from=golang /root/.terraform.d/plugins/terraform-provisioner-ansible /root/.terraform.d/plugins/terraform-provisioner-ansible
 
+RUN mkdir -p /etc/ansible
+COPY ansible.cfg /etc/ansible/ansible.cfg
 
 WORKDIR /terraform
 ENTRYPOINT ["/bin/terraform"]

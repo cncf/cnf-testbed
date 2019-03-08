@@ -1,23 +1,34 @@
 ---
 - hosts: all
   vars:
-    vlan_interface: eno1
-#    vlan_interface: enp94s0f1
-    vlan_pci_id: 0000:1a:00.1
-#    vlan_pci_id: 0000:5e:00.1
-    vpp_interface: TenGigabitEthernet1a/0/1
-#    vpp_interface: TenGigabitEthernet5e/0/1
     vpp_network: true
-    vpp_src: false
+    vpp_ver: 1901
+    vpp_branch: '19.03'
     create_vlans: true
-
-#  environment:
-#    http_proxy: http://rhs-build.kumulus.co:3128
-#    https_proxy: http://rhs-build.kumulus.co:3128  
-#    no_proxy: 127.0.0.1,localhost,10.*
 
   pre_tasks:
   - setup:
+  - name: Check for Mellanox ConnectX inteface
+    shell: cat /proc/bus/pci/devices | cut -f1 | grep 5e00
+    register: mellanox
+    ignore_errors: true
+
+  - name: Get Bond0 Slave1 interface
+    set_fact:
+      vlan_interface: "{{ansible_bond0.slaves[1]}}"
+    when: ansible_bond0.slaves[1] is defined
+
+  - name: set vpp interface name for Mellanox
+    set_fact:
+      vpp_interface: TenGigabitEthernet5e/0/1
+      vpp_src: true
+    when: mellanox.rc == 0
+
+  - name: set vpp interface name for Intel
+    set_fact:
+      vpp_interface: TenGigabitEthernet1a/0/1
+      vpp_src: false
+    when: not mellanox.rc == 0
 
   roles:
     - role: packet_l2
@@ -30,11 +41,9 @@
         server_list: "{{ lookup('env','SERVER_LIST') }}"
         project_name: "{{ lookup('env','PROJECT_NAME') }}"
         vlans:
-          quadtestvlan1:
+          mlxtestvlan1:
             interface: "eth1"
-          quadtestvlan2:
-            interface: "eth1"
-          quadtestvlan3:
+          mlxtestvlan2:
             interface: "eth1"
       when: create_vlans
 

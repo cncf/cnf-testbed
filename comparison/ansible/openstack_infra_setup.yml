@@ -37,9 +37,6 @@
     ignore_errors: true
 
   vars:
-    vlan_interface: eno2
-    #vlan_pci_id: 0000:5e:00.1
-    vlan_pci_id: 0000:1a:00.1
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
@@ -110,5 +107,5 @@
     - role: packet_vlan_enable
       when: ansible_bond0.slaves[1] is defined
     - role: mellanox_src_install
-      when: mellanox.rc == 0
+      when: mellanox.rc == 0 and not ansible_distribution_release == 'xenial'
     - role: grub_openstack

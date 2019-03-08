@@ -1,24 +1,27 @@
 ---
 # Get chef and chef OpenStack cookbooks
-#- name: update apt
-#  apt:
-#    update_cache: yes
-#  when: ansible_os_family == 'Debian'
+- name: Resolve potential missing packages
+  command: apt --fix-missing install -y
+
+- name: update apt
+  apt:
+    update_cache: yes
+  when: ansible_os_family == 'Debian'
 
 - name: get chef package
   yum:
     name: https://packages.chef.io/files/stable/chefdk/3.4.38/el/7/chefdk-3.4.38-1.el7.x86_64.rpm
   when: ansible_os_family == 'RedHat'
 
-- name: download chef package Debian
-  get_url:
-    url: https://packages.chef.io/files/stable/chefdk/3.2.30/ubuntu/18.04/chefdk_3.2.30-1_amd64.deb
-    dest: /root/chefdk_3.2.30-1_amd64.deb
-  when: ansible_os_family == 'Debian'
+#- name: download chef package Debian
+#  get_url:
+#    url: https://packages.chef.io/files/stable/chefdk/3.2.30/ubuntu/18.04/chefdk_3.2.30-1_amd64.deb
+#    dest: /root/chefdk_3.2.30-1_amd64.deb
+#  when: ansible_os_family == 'Debian'
 
 - name: get chef package
   apt:
-    deb: /root/chefdk_3.2.30-1_amd64.deb
+    deb: https://packages.chef.io/files/stable/chefdk/3.2.30/ubuntu/18.04/chefdk_3.2.30-1_amd64.deb
   when: ansible_os_family == 'Debian'
 
 - name: get openstack-chef code 
@@ -165,6 +168,12 @@
     dest: /root/openstack-chef/roles/multinode-controller.json
   when: not vpp_network
 
+- name: Update the multinode-controller storage role
+  template:
+    src: multinode-storage.json
+    dest: /root/openstack-chef/roles/multinode-storage.json
+  when: vpp_network
+
 - name: Update the multinode-compute role - VPP
   template:
     src: multinode-compute.json
@@ -183,9 +192,14 @@
     chdir: /root/openstack-chef
   when: host_0_address == inventory_hostname
  
+- name: Add Chef based OpenStack storage installer on First (controller) node
+  command: chef-client -z -E multinode -r 'role[multinode-storage]'
+  args:
+    chdir: /root/openstack-chef
+  when: host_0_address == inventory_hostname
+ 
 - name: Launch Chef based OpenStack installer on Other (compute) nodes
   command: chef-client -z -E multinode -r 'role[multinode-compute]'
   args:
     chdir: /root/openstack-chef
   when: not host_0_address == inventory_hostname
- 
