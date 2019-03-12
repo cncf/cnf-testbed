@@ -60,6 +60,17 @@
     dest: /root/create_instance.sh
     mode: 0755
 
+- name: add masquerade/router setup
+  template:
+    src: create_masq.sh
+    dest: /root/create_masq.sh
+    mode: 0755
+
+- name: run masquerade setup
+  command: /root/create_masq.sh 10.20.30.0 24 10.20.30.1 1076
+  ignore_errors: true
+  when: host_0_address == inventory_hostname and create_masquerade
+
 - name: add create_dual_mac.sh
   template:
     src: create_dual_mac.sh
@@ -71,4 +82,3 @@
     src: delete_dual.sh
     dest: /root/delete_dual.sh
     mode: 0755
-

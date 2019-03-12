@@ -106,9 +106,9 @@
   command: neutron-db-manage --subproject networking-vpp --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head
   when: ansible_os_family == 'Debian' and host_0_address == inventory_hostname
 
-- name: bring ex-slave interface down
-  command: ip l s dev {{vlan_interface}} down
-  ignore_errors: true
+#- name: bring ex-slave interface down
+#  command: ip l s dev {{vlan_interface}} down
+#  ignore_errors: true
 
 - name: add vpp-agent script
   template:
@@ -223,3 +223,19 @@
   when: host_0_address == inventory_hostname
   notify:
   - Restart mysql
+
+- name: restart etcd
+  service:
+    name: etcd
+    state: restarted
+
+- name: restart services on controller
+  service:
+    name: ['mysql','rabbitmq-server','apache2','neutron-server','vpp-agent'] 
+  when: host_0_address == inventory_hostname
+  
+- name: restart services on controller
+  service:
+    name: ['nova-compute','vpp-agent'] 
+  when: not host_0_address == inventory_hostname
+  
