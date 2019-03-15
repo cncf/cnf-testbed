@@ -15,15 +15,16 @@
     dest: /srv/
     creates: /srv/MLNX_OFED_LINUX-{{mlnx_ver}}-{{arch}}
 
-#- name: install main Debian prereqs
-#  apt:
-#    name: ['ethtool','tcl','libelf1','libnl-route-3-200','swig','libnuma1','quilt','python-libxml2','libltdl-dev','dkms','tk','gfortran','chrpath','pciutils','dpatch','pkg-config']
-#  when: ansible_os_family == 'Debian'
-#
-#- name: install debhelper for Debian
-#  apt:
-#    name: 'debhelper'
-#  when: ansible_os_family == 'Debian'
+- name: install main Debian prereqs
+  apt:
+#           debhelper python-libxml2 quilt autoconf libnuma1 pkg-config m4 pciutils ethtool gcc dpatch automake chrpath swig autotools-dev graphviz libltdl-dev dkms linux-headers-4.15.0-20-generic
+    name: ['ethtool','tcl','libelf1','libnl-route-3-200','swig','libnuma1','quilt','python-libxml2','libltdl-dev','dkms','tk','gfortran','chrpath','pciutils','dpatch','pkg-config']
+  when: ansible_os_family == 'Debian'
+
+- name: install debhelper for Debian
+  apt:
+    name: 'debhelper'
+  when: ansible_os_family == 'Debian'
 
 - name: run Mlnx OFED install
   command: ./mlnxofedinstall --dpdk --upstream-libs --force

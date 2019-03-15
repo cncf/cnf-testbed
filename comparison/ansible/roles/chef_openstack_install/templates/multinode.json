@@ -13,7 +13,7 @@
     }
   },
   "override_attributes": {
-{%- if ansible_os_family == 'Debian' and not ansible_distribution_release == 'xenial' -%}
+{%- if ansible_os_family == 'Debian' and not ansible_distribution_release == 'xenial' %}
     "mariadb": {
       "install": {
          "version": "10.1"
@@ -23,15 +23,18 @@
          "base_url": "nyc2.mirrors.digitalocean.com/mariadb/repo/"
       }
     },
-{%- endif -%}
+    "rabbitmq": {
+       "version": "3.6.10"
+    },
+{%- endif %}
     "openstack": {
-{%- if ansible_os_family == 'Debian' and not ansible_distribution_release == 'xenial' -%}
+{%- if ansible_os_family == 'Debian' and not ansible_distribution_release == 'xenial' %}
       "block-storage": {
          "platform": {
             "cinder_iscsitarget_packages": [ "targetcli-fb" ]
          }
       },
-{%- endif -%}
+{%- endif %}
       "is_release": true,
       "network_lbaas": {
         "enabled": false

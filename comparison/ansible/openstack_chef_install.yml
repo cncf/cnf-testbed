@@ -2,9 +2,11 @@
 - hosts: all
   vars:
     vpp_network: true
-    vpp_ver: 1901
-    vpp_branch: '19.03'
+    vpp_ver: 1807
+    vpp_branch: '18.07'
+    vpp_commit: stable/1807
     create_vlans: true
+    create_masquerade: true
 
   pre_tasks:
   - setup:
@@ -13,14 +15,14 @@
     register: mellanox
     ignore_errors: true
 
-  - name: Get Bond0 Slave1 interface
+  - name: Get Bond0 Slave interface
     set_fact:
-      vlan_interface: "{{ansible_bond0.slaves[1]}}"
-    when: ansible_bond0.slaves[1] is defined
+      vlan_interface: "{{ansible_bond0.slaves[0]}}"
+    when: ansible_bond0.slaves[0] is defined
 
   - name: set vpp interface name for Mellanox
     set_fact:
-      vpp_interface: TenGigabitEthernet5e/0/1
+      vpp_interface: TwentyFiveGigabitEthernet5e/0/1
       vpp_src: true
     when: mellanox.rc == 0
 
@@ -57,7 +59,6 @@
     - role: chef_openstack_install
     - role: openstack_ovs_provider
       when: not vpp_network
-    - role: openstack_scripts
     - role: openstack_vnc_fix
 
     - role: vpp_src_install
@@ -66,3 +67,4 @@
       when: vpp_network and not vpp_src
     - role: vpp_openstack
       when: vpp_network
+    - role: openstack_scripts
