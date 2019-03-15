@@ -1,18 +1,18 @@
 #!/bin/bash
 
-if [ $# -lt 4 ]; then
+if [ $# -lt 1 ]; then
   echo "you need to pass three parameters:"
-  echo " subnet start address (e.g. network address)"
-  echo " subnet cidr (e.g. 24)"
-  echo " gateway address (e.g. network address +1)"
   echo " internal vlan id (e.g. 1044)"
+  echo " opt: subnet start address (e.g. network address)"
+  echo " opt: subnet cidr (e.g. 24)"
+  echo " opt: gateway address (e.g. network address +1)"
 exit 1
 fi
 
-subnet=$1
-cidr=$2
-gateway=$3
-vlan=$4
+vlan=$1
+subnet=${2:-10.20.30.0}
+cidr=${3:-24}
+gateway=${4:-10.20.30.1}
 
 source ~/openrc
 if [ !  "$( openstack network list | grep ${vlan} |  awk '{print $4}' )" == "vlan${vlan}" ] ;then
@@ -41,5 +41,5 @@ if [ ! "$(grep net.ipv4.ip_forward=1 /etc/sysctl.conf | wc -l)" == "1" ]; then
 echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
 echo 'net.ipv6.conf.default.forwarding=1' >> /etc/sysctl.conf
 sysctl --system
-iptables -t nat -A POSTROUTING -s 10.0.0.0/8 -o bond0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -s ${subnet}/${cidr} -o bond0 -j MASQUERADE
 fi

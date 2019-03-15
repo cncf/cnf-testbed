@@ -66,8 +66,14 @@
     dest: /root/create_masq.sh
     mode: 0755
 
+- name: add masquerade/router teardown
+  template:
+    src: delete_masq.sh
+    dest: /root/delete_masq.sh
+    mode: 0755
+
 - name: run masquerade setup
-  command: /root/create_masq.sh 10.20.30.0 24 10.20.30.1 1076
+  command: /root/create_masq.sh 1076
   ignore_errors: true
   when: host_0_address == inventory_hostname and create_masquerade
 
