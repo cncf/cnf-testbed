@@ -1,7 +1,7 @@
 ---
 # Get chef and chef OpenStack cookbooks
 - name: Resolve potential missing packages
-  command: apt --fix-missing install -y
+  command: apt --fix-broken install -y
 
 - name: update apt
   apt:
@@ -186,6 +186,13 @@
     dest: /root/openstack-chef/roles/multinode-compute.json
   when: not vpp_network
 
+#- name: address bug in Chef rabbit module mis-understand 3.6 vs 3.7
+#  lineinfile:
+#    dest: /root/openstack-chef/cookbooks/rabbitmq/providers/plugin.rb
+#    regexp: '^.*rabbitmq-plugins list -q -e.*$'
+#    line: |
+#                   "rabbitmq-plugins list -e '#{name}\\b'"
+#    
 - name: Launch Chef based OpenStack installer on First (controller) node
   command: chef-client -z -E multinode -r 'role[multinode-controller]'
   args:

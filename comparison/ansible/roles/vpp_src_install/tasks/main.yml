@@ -11,12 +11,17 @@
     update: no
   ignore_errors: true
 
-- name: Set VPP DPDK mlx5 PMD use
-  lineinfile:
-    dest: /srv/vpp/build-data/platforms/vpp.mk
-    regexp: '^.*vpp_uses_dpdk_mlx5_pmd.*'
-    line: 'vpp_uses_dpdk_mlx5_pmd = yes'
+- name: install libmnl-dev on Debian
+  apt:
+    name: libmnl-dev
+  when: ansible_os_family == 'Debian'
 
+#- name: Set VPP DPDK mlx5 PMD use
+#  lineinfile:
+#    dest: /srv/vpp/build-data/platforms/vpp.mk
+#    regexp: '^.*vpp_uses_dpdk_mlx5_pmd.*'
+#    line: 'vpp_uses_dpdk_mlx5_pmd = yes'
+#
 - name: Build Install Deb
   expect: 
     chdir: /srv/vpp
@@ -91,6 +96,11 @@
 - name: Install vpp api python packages
   command: apt install {{item.path}}
   with_items: "{{vpp_api_python['files']}}"
+
+- name: make sure config directory exists
+  file:
+    name: /etc/vpp
+    state: directory
 
 - name: add uplink vpp tap startup script
   template:
