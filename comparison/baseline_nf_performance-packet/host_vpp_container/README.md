@@ -67,5 +67,5 @@ VPP can be accessed through the container
 
 ```
 docker exec -it VPPcontainer /bin/bash
-$ vppcli
+$ vppctl
 ```
