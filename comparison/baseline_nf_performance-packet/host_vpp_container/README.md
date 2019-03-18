@@ -59,7 +59,25 @@ Run the following commands to build and run the container
 ./runner.sh
 ```
 
-The configuration used for running VPP can be found in `shared/startup.conf` 
+The configuration used for running VPP can be found in `shared/startup.conf`
+
+In addition, three CNF Pipeline (CSP) configurations are included in the `shared/` folder.
+By default, the 3 chain configuration is used, but this can be changed by replacing the `setup.gate` file
+with one matching the required configuration
+
+```
+# 1 chain CSP
+cp shared/1c_csp_setup.gate shared/setup.gate
+docker restart VPPcontainer
+
+# 2 chain CSP
+cp shared/2c_csp_setup.gate shared/setup.gate
+docker restart VPPcontainer
+
+# 3 chain CSP
+cp shared/3c_csp_setup.gate shared/setup.gate
+docker restart VPPcontainer
+```
 
 ### Access VPP CLI in container
 
