@@ -94,19 +94,19 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 
 
 
-**Upcoming Events:**
+## Upcoming Events:
 
-## CNFs At Open Networking Summit NA 2019
+### CNFs At Open Networking Summit NA 2019
 
 Wednesday, April 3 • 3:50pm - 4:20pm - [Works on My Machine: How to Validate Performance of VNFs and CNFs in a Reproducible Testbed - W. Watson, Vulk Cooperative & Denver Williams](https://sched.co/LKUF)
 
-## CNFs At KubeCon + CloudNativeCon EU 2019
+### CNFs At KubeCon + CloudNativeCon EU 2019
 
 Thursday, May 23 • 11:05am - 12:30pm - [Intro + Deep Dive BoF: Cloud Native Network Functions (CNF) Testbed - Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://sched.co/MSzj)
 
-**Past Events:**
+## Past Events:
 
-## CNFs At KubeCon + CloudNativeCon North America 2018
+### CNFs At KubeCon + CloudNativeCon North America 2018
 
 Two Birds-of-a-Feather (BoF) sessions covered aspects of the CNF Testbed.
 
