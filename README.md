@@ -81,9 +81,9 @@ Meeting ID: 297 749 799
 
 Find your local number: https://zoom.us/u/acX94Wyyaj
 
-- **Next meeting: Monday, March 18th, 2019 at 8AM PT**
+- **Next meeting: An in-person CNF Testbed BoF will be scheduled during [Open Networking Summit in San Jose, CA](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/) (Date/Location TBD).
 
-- **Note:** No zoom meeting on Monday, April 1st. An in-person BoF will be scheduled during [Open Networking Summit in San Jose, CA](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/) (Date/Location TBD).
+- Next zoom meeting: Monday, April 15th at 8AM PT 
 
 ## Meeting Minutes
 
@@ -99,6 +99,8 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 ### CNFs At Open Networking Summit NA 2019
 
 Wednesday, April 3 • 3:50pm - 4:20pm - [Works on My Machine: How to Validate Performance of VNFs and CNFs in a Reproducible Testbed - W. Watson, Vulk Cooperative & Denver Williams](https://sched.co/LKUF)
+
+TBD - In-person CNF Testbed BoF
 
 ### CNFs At KubeCon + CloudNativeCon EU 2019
 
