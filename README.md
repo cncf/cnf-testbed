@@ -81,7 +81,7 @@ Meeting ID: 297 749 799
 
 Find your local number: https://zoom.us/u/acX94Wyyaj
 
-- **Next meeting: An in-person CNF Testbed BoF will be scheduled during [Open Networking Summit in San Jose, CA](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/) (Date/Location TBD).
+- **Next meeting: An in-person CNF Testbed BoF will be scheduled during [Open Networking Summit in San Jose, CA](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/) (Date/Location TBD).**
 
 - Next zoom meeting: Monday, April 15th at 8AM PT 
 
