@@ -1,0 +1,67 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "VPPcontainer.fullname" . }}
+  labels:
+    app: {{ include "VPPcontainer.name" . }}
+    chart: {{ include "VPPcontainer.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "VPPcontainer.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "VPPcontainer.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: [ "/usr/bin/vpp", "-c", "/etc/vpp/startup.conf" ]
+          #args: [ "bash", "-c", "sleep 1000" ]
+          securityContext:
+            privileged: true
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+          - name: config-volume
+            mountPath: /etc/vpp/
+          - name: hugepages
+            mountPath: /hugepages
+          - name: dev
+            mountPath: /dev/
+          - name: vpp-sockets
+            mountPath: {{ .Values.volumeMounts.vpp_sockets.mountPath }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ template "VPPcontainer.fullname" . }}
+            items:
+            - key: startup.conf
+              path: startup.conf
+            - key: 3ccsp
+              path: setup.gate
+            - key: 1ccsp
+              path: 1c_csp_setup.gate
+            - key: 2ccsp
+              path: 2c_csp_setup.gate
+            - key: 3ccsp
+              path: 3c_csp_setup.gate
+        - name: hugepages
+          emptyDir:
+            medium: HugePages
+        - name: config-volume
+          hostPath:
+            path: /etc/vpp/
+        - name: devices
+          hostPath:
+            path: /dev/
+        - name: vpp-sockets
+          hostPath:
+            path: /etc/vpp/sockets/
