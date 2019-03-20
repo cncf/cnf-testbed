@@ -81,9 +81,9 @@ Meeting ID: 297 749 799
 
 Find your local number: https://zoom.us/u/acX94Wyyaj
 
-- **Next meeting: Monday, March 18th, 2019 at 8AM PT**
+- **Next meeting: An in-person CNF Testbed BoF will be scheduled during [Open Networking Summit in San Jose, CA](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/) (Date/Location TBD).**
 
-- **Note:** No zoom meeting on Monday, April 1st. An in-person BoF will be scheduled during [Open Networking Summit in San Jose, CA](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/) (Date/Location TBD).
+- Next zoom meeting: Monday, April 15th at 8AM PT 
 
 ## Meeting Minutes
 
@@ -92,7 +92,23 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 ## Slack
 [slack.cncf.io](slack.cncf.io) - #cnf
 
-## CNFs At KubeCon + CloudNativeCon North America 2018
+
+
+## Upcoming Events:
+
+### CNFs At Open Networking Summit NA 2019
+
+Wednesday, April 3 • 3:50pm - 4:20pm - [Works on My Machine: How to Validate Performance of VNFs and CNFs in a Reproducible Testbed - W. Watson, Vulk Cooperative & Denver Williams](https://sched.co/LKUF)
+
+TBD - In-person CNF Testbed BoF
+
+### CNFs At KubeCon + CloudNativeCon EU 2019
+
+Thursday, May 23 • 11:05am - 12:30pm - [Intro + Deep Dive BoF: Cloud Native Network Functions (CNF) Testbed - Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://sched.co/MSzj)
+
+## Past Events:
+
+### CNFs At KubeCon + CloudNativeCon North America 2018
 
 Two Birds-of-a-Feather (BoF) sessions covered aspects of the CNF Testbed.
 
