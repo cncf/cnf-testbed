@@ -6,7 +6,13 @@ project_root=$(cd ../ ; pwd -P)
 tool_path="${project_root}/tools"
 deploy_tools_path="${tool_path}/deploy"
 
+
+VPP_VSWITCH=true
+
 ######  
+
+## Deploy k8s
+SECONDS=0
 
 docker run \
   --rm \
@@ -39,3 +45,14 @@ docker run \
   -e TF_VAR_packet_project_id=$PACKET_PROJECT_ID \
   -e PACKET_AUTH_TOKEN=$PACKET_AUTH_TOKEN \
   -ti registry.cidev.cncf.ci/cncf/cross-cloud/provisioning:master
+  
+K8S_ELAPSED_TIME=$SECONDS
+echo "$(($K8S_ELAPSED_TIME / 60)) minutes and $(($K8S_ELAPSED_TIME % 60)) seconds elapsed - K8s Deploy."
+
+if [ "$VPP_VSWITCH" = "true" ] ; then
+   SECONDS=0
+   $(project_root)/tools/deploy_k8s_vppvswitch.sh $(pwd)/data/kubeconfig
+   VSWITCH_ELAPSED_TIME=$SECONDS
+   echo "$(($VSWITCH_ELAPSED_TIME / 60)) minutes and $(($VSWITCH_ELAPSED_TIME % 60)) seconds elapsed - VPP vSwitch Deploy."
+fi
+

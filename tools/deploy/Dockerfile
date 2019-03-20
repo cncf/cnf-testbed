@@ -22,12 +22,15 @@ RUN apt update && \
     unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin && \
     rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \ 
     ansible-galaxy install nickjj.docker && \ 
+    ansible-galaxy install avinetworks.docker && \
     ansible-galaxy install mrlesmithjr.config-interfaces 
    
 # Copy Terraform Ansible Plugin
 RUN mkdir -p ~/.terraform.d/plugins/
 COPY --from=golang /root/.terraform.d/plugins/terraform-provisioner-ansible /root/.terraform.d/plugins/terraform-provisioner-ansible
 
+RUN mkdir -p /etc/ansible
+COPY ansible.cfg /etc/ansible/ansible.cfg
 
 WORKDIR /terraform
 ENTRYPOINT ["/bin/terraform"]

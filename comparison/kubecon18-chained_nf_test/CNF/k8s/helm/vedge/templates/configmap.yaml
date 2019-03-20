@@ -8,6 +8,23 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 data:
+  {{ if .Values.ipv6 }}
+  setup.gate: |-
+    bin memif_socket_filename_add_del add id 1 filename {{ .Values.volumeMounts.vpp_sockets.mountPath }}{{ .Values.sock1 }}.sock
+    bin memif_socket_filename_add_del add id 2 filename {{ .Values.volumeMounts.vpp_sockets.mountPath }}{{ .Values.sock2 }}.sock
+    create interface memif id {{ .Values.memid1 }} socket-id 1 hw-addr {{ .Values.mac1 }} {{ .Values.owner1 }} rx-queues {{ .Values.queues }} tx-queues {{ .Values.queues }}
+    create interface memif id {{ .Values.memid2 }} socket-id 2 hw-addr {{ .Values.mac2 }} {{ .Values.owner2 }} rx-queues {{ .Values.queues }} tx-queues {{ .Values.queues }}
+    set int ip addr memif1/{{ .Values.memid1 }} {{ .Values.subnet1 }}
+    set int ip addr memif2/{{ .Values.memid2 }} {{ .Values.subnet2 }}
+    enable ip6 interface memif1/{{ .Values.memid1 }}
+    enable ip6 interface memif2/{{ .Values.memid2 }}
+    set ip6 neighbor memif1/{{ .Values.memid1 }} {{ .Values.remip1 }} {{ .Values.remmac1 }} static
+    set ip6 neighbor memif2/{{ .Values.memid2 }} {{ .Values.remip2 }} {{ .Values.remmac2 }} static
+    ip route add fde5::1:0:0/96 via {{ .Values.remip1 }}
+    ip route add fde5::2:0:0/96 via {{ .Values.remip2 }}
+    set int state memif1/{{ .Values.memid1 }} up
+    set int state memif2/{{ .Values.memid2 }} up
+  {{ else }}
   setup.gate: |-
     bin memif_socket_filename_add_del add id 1 filename {{ .Values.volumeMounts.vpp_sockets.mountPath }}{{ .Values.sock1 }}.sock
     bin memif_socket_filename_add_del add id 2 filename {{ .Values.volumeMounts.vpp_sockets.mountPath }}{{ .Values.sock2 }}.sock
@@ -21,6 +38,7 @@ data:
     set ip arp static memif2/{{ .Values.memid2 }} {{ .Values.remip2 }} {{ .Values.remmac2 }}
     ip route add 172.16.64.0/18 via {{ .Values.remip1 }}
     ip route add 172.16.192.0/18 via {{ .Values.remip2 }}
+  {{ end }}
   startup.conf: |-
     unix {
       nodaemon

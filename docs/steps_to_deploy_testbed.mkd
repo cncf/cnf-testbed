@@ -1,0 +1,23 @@
+WIP: Steps to deploy the testbed for different environments
+---
+
+
+**Common Steps**
+1. Clone https://github.com/cncf/cnf-testbed and install any pre-requites listed in the README
+1. Create configuration with Packet API, number of nodes, etc ([k8s example](https://github.com/cncf/cnf-testbed/blob/master/tools/k8s_benchmark_quad_intel.env.example))
+1. Run the ([k8s](https://github.com/cncf/cnf-testbed/blob/38a89ad2dde59711fda8015308a1f0b19f50e946/tools/deploy_k8s_cluster.sh) or [openstack](https://github.com/cncf/cnf-testbed/blob/38a89ad2dde59711fda8015308a1f0b19f50e946/tools/deploy_openstack_cluster.sh)) deploy cluster script which provisions the Packet machines with Terraform
+
+
+**Openstack**
+
+4. Terraform starts Ansible which pre-configures the Packet machines (using the openstack infrastructure playbook). The playbook configures the data plane interfaces, installs mellanox drivers, optimizes grub config and reboots the compute nodes
+5. Ansible then runs the openstack install playbook, which configures the  Packet switch and VLANs and then deploys OpenStack using Chef to the Packet nodes
+6. Ansible then installs & configures VPP as a vSwitch using the Openstack vpp-networking plugin to all compute nodes in the cluster
+7. All OpenStack compute nodes are available for scheduling
+
+
+**K8s**
+4. Cloud-init bootstraps the Kubernetes cluster on the Packet nodes. 
+5. The k8s vpp vswitch installer runs the Ansible k8s vpp vswitch playbook which configures the Packet switch and VLANs 
+6. Ansible then optimizes the system configuration, installs & configures the VPP vSwitch and reboots the worker nodes
+

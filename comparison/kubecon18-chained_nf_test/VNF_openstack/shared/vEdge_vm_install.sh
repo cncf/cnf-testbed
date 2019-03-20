@@ -1,5 +1,170 @@
 #!/bin/bash
-set -o xtrace  # print commands during script execution
+
+set -euo pipefail
+
+
+function die () {
+    # Print the message to standard error end exit with error code specified
+    # by the second argument.
+    #
+    # Hardcoded values:
+    # - The default error message.
+    # Arguments:
+    # - ${1} - The whole error message, be sure to quote. Optional
+    # - ${2} - the code to exit with, default: 1.
+
+    set -x
+    set +eu
+    warn "${1:-Unspecified run-time error occurred!}"
+    exit "${2:-1}"
+}
+
+
+function validate_input() {
+    # Validate script input.
+    #
+    # Arguments:
+    # - ${@} - Script parameters.
+    # Variable set:
+    # - ${CHAIN} - Chain ID.
+    # - ${NODE} - Node ID.
+    # - ${NODES} - Number of NFs in chain.
+    # - ${OPERATION} - Operation bit [baseline].
+
+    set -euo pipefail
+
+    CHAIN="${1}"
+    NODE="${2}"
+    NODES="${3}"
+    REMMAC1="${4}"
+    REMMAC2="${5}"
+
+    if [[ -n ${CHAIN//[0-9]/} ]] || [[ -n ${NODE//[0-9]/} ]] || [[ -n ${NODES//[0-9]/} ]]; then
+        die "ERROR: Chain, node and nodeness must be an integer values!"
+    fi
+
+    if [[ "${CHAIN}" -lt "1" ]] || [[ "${CHAIN}" -gt "8" ]]; then
+        die "ERROR: Chain must be an integer value between 1-8!"
+    fi
+
+    if [[ "${NODE}" -lt "1" ]] || [[ "${NODE}" -gt "8" ]]; then
+        die "ERROR: Node must be an integer value between 1-8!"
+    fi
+}
+
+
+function warn () {
+    # Print the message to standard error.
+    #
+    # Arguments:
+    # - ${@} - The text of the message.
+
+    echo "$@" >&2
+}
+
+
+function set_subnets () {
+    # Set subnets.
+    #
+    # Variable read:
+    # - ${CHAIN} - Chain ID.
+    # - ${NODE} - Node ID.
+    # - ${NODES} - Number of NFs in chain.
+    # Variable set:
+    # - ${SUBNET1} - East subnet.
+    # - ${SUBNET2} - West subnet.
+
+    set -euo pipefail
+
+    if [[ "${NODE}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
+      if $ipv6; then
+        SUBNET1=fde5::3:0:10$(( ${CHAIN} - 1 ))/96
+        SUBNET2=fde5::4:0:10$(( ${CHAIN} - 1 ))/96
+      else
+        SUBNET1=172.16.10.1$(( ${CHAIN} - 1 ))/24
+        SUBNET2=172.16.20.1$(( ${CHAIN} - 1 ))/24
+      fi
+    elif [[ "${NODE}" == "1" ]]; then
+      if $ipv6; then
+        SUBNET1=fde5::3:0:10$(( ${CHAIN} - 1 ))/96
+        SUBNET2=fde5::31:0:10/96
+      else
+        SUBNET1=172.16.10.1$(( ${CHAIN} - 1 ))/24
+        SUBNET2=172.16.31.10/24
+      fi
+    elif [[ "${NODE}" == "${NODES}" ]]; then
+      if $ipv6; then
+        SUBNET1=fde5::$(($NODE + 29)):0:11/96
+        SUBNET2=fde5::4:0:10$(( ${CHAIN} - 1 ))/96
+      else
+        SUBNET1=172.16.$(($NODE + 29)).11/24
+        SUBNET2=172.16.20.1$(( ${CHAIN} - 1 ))/24
+      fi
+    else
+      if $ipv6; then
+        SUBNET1=fde5::$(($NODE + 29)):0:11/96
+        SUBNET2=fde5::$(($NODE + 30)):0:10/96
+      else
+        SUBNET1=172.16.$(($NODE + 29)).11/24
+        SUBNET2=172.16.$(($NODE + 30)).10/24
+      fi
+    fi
+}
+
+
+function set_remote_ips () {
+    # Set remote IPs.
+    #
+    # Variable read:
+    # - ${NODE} - Node ID.
+    # - ${CHAIN} - Chain ID.
+    # - ${NODES} - Number of NFs in chain.
+    # Variable set:
+    # - ${REMIP1} - East IP.
+    # - ${REMIP2} - West IP.
+
+    set -euo pipefail
+
+    if [[ "${NODE}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
+      if $ipv6; then
+        REMIP1=fde5::3:0:100$(( ${CHAIN} - 1 ))
+        REMIP2=fde5::4:0:100$(( ${CHAIN} - 1 ))
+      else
+        REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))
+        REMIP2=172.16.20.10$(( ${CHAIN} - 1 ))
+      fi
+    elif [[ "${NODE}" == "1" ]]; then
+      if $ipv6; then
+        REMIP1=fde5::3:0:100$(( ${CHAIN} - 1 ))
+        REMIP2=fde5::31:0:11
+      else
+        REMIP1=172.16.10.10$(( ${CHAIN} - 1 ))
+        REMIP2=172.16.31.11
+      fi
+    elif [[ "${NODE}" == "${NODES}" ]]; then
+      if $ipv6; then
+        REMIP1=fde5::$(($NODE + 29)):0:10
+        REMIP2=fde5::4:0:100$(( ${CHAIN} - 1 ))
+      else
+        REMIP1=172.16.$(($NODE + 29)).10
+        REMIP2=172.16.20.10$(( ${CHAIN} - 1 ))
+      fi
+    else
+      if $ipv6; then
+        REMIP1=fde5::$(($NODE + 29)):0:10
+        REMIP2=fde5::$(($NODE + 30)):0:11
+      else
+        REMIP1=172.16.$(($NODE + 29)).10
+        REMIP2=172.16.$(($NODE + 30)).11
+      fi
+    fi
+}
+
+ipv6=false
+
+validate_input "${@}" || die
+set_subnets || die
+set_remote_ips || die
 
 sudo service vpp stop
 
@@ -25,144 +190,26 @@ unix {
   gid vpp
   startup-config /etc/vpp/setup.gate
 }
-
 api-trace {
-## This stanza controls binary API tracing. Unless there is a very strong reason,
-## please leave this feature enabled.
   on
-## Additional parameters:
-##
-## To set the number of binary API trace records in the circular buffer, configure nitems
-##
-## nitems <nnn>
-##
-## To save the api message table decode tables, configure a filename. Results in /tmp/<filename>
-## Very handy for understanding api message changes between versions, identifying missing
-## plugins, and so forth.
-##
-## save-api-table <filename>
 }
-
 api-segment {
   gid vpp
 }
-
 cpu {
-        ## In the VPP there is one main thread and optionally the user can create worker(s)
-        ## The main thread and worker thread(s) can be pinned to CPU core(s) manually or automatically
-
-        ## Manual pinning of thread(s) to CPU core(s)
-
-        ## Set logical CPU core where main thread runs
-        main-core 0
-
-        ## Set logical CPU core(s) where worker threads are running
-        corelist-workers 1-2
-
-        ## Automatic pinning of thread(s) to CPU core(s)
-
-        ## Sets number of CPU core(s) to be skipped (1 ... N-1)
-        ## Skipped CPU core(s) are not used for pinning main thread and working thread(s).
-        ## The main thread is automatically pinned to the first available CPU core and worker(s)
-        ## are pinned to next free CPU core(s) after core assigned to main thread
-        # skip-cores 4
-
-        ## Specify a number of workers to be created
-        ## Workers are pinned to N consecutive CPU cores while skipping "skip-cores" CPU core(s)
-        ## and main thread's CPU core
-        # workers 2
-
-        ## Set scheduling policy and priority of main and worker threads
-
-        ## Scheduling policy options are: other (SCHED_OTHER), batch (SCHED_BATCH)
-        ## idle (SCHED_IDLE), fifo (SCHED_FIFO), rr (SCHED_RR)
-        # scheduler-policy fifo
-
-        ## Scheduling priority is used only for "real-time policies (fifo and rr),
-        ## and has to be in the range of priorities supported for a particular policy
-        # scheduler-priority 50
+  main-core 0
+  corelist-workers 1-2
 }
-
 dpdk {
-        ## Change default settings for all intefaces
-        dev default {
-                ## Number of receive queues, enables RSS
-                ## Default is 1
-                num-rx-queues 2
-
-                ## Number of transmit queues, Default is equal
-                ## to number of worker threads or 1 if no workers treads
-                # num-tx-queues 3
-
-                ## Number of descriptors in transmit and receive rings
-                ## increasing or reducing number can impact performance
-                ## Default is 1024 for both rx and tx
-                num-rx-desc 512
-                num-tx-desc 512
-
-                ## VLAN strip offload mode for interface
-                ## Default is off
-                # vlan-strip-offload on
-        }
-
-        ## Whitelist specific interface by specifying PCI address
-        ${dev_list}
-
-        ## Whitelist specific interface by specifying PCI address and in
-        ## addition specify custom parameters for this interface
-        # dev 0000:02:00.1 {
-        #       num-rx-queues 2
-        # }
-
-        ## Specify bonded interface and its slaves via PCI addresses
-        ##
-        ## Bonded interface in XOR load balance mode (mode 2) with L3 and L4 headers
-        # vdev eth_bond0,mode=2,slave=0000:02:00.0,slave=0000:03:00.0,xmit_policy=l34
-        # vdev eth_bond1,mode=2,slave=0000:02:00.1,slave=0000:03:00.1,xmit_policy=l34
-        ##
-        ## Bonded interface in Active-Back up mode (mode 1)
-        # vdev eth_bond0,mode=1,slave=0000:02:00.0,slave=0000:03:00.0
-        # vdev eth_bond1,mode=1,slave=0000:02:00.1,slave=0000:03:00.1
-
-        ## Change UIO driver used by VPP, Options are: igb_uio, vfio-pci,
-        ## uio_pci_generic or auto (default)
-        # uio-driver vfio-pci
-
-        ## Disable mutli-segment buffers, improves performance but
-        ## disables Jumbo MTU support
-        no-multi-seg
-
-        ## Increase number of buffers allocated, needed only in scenarios with
-        ## large number of interfaces and worker threads. Value is per CPU socket.
-        ## Default is 16384
-        # num-mbufs 128000
-
-        ## Change hugepages allocation per-socket, needed only if there is need for
-        ## larger number of mbufs. Default is 256M on each detected CPU socket
-        # socket-mem 2048,2048
-
-        ## Disables UDP / TCP TX checksum offload. Typically needed for use
-        ## faster vector PMDs (together with no-multi-seg)
-        # no-tx-checksum-offload
+  ${dev_list}
+  no-multi-seg
+  no-tx-checksum-offload
+}
+plugins {
+  plugin default { disable }
+  plugin dpdk_plugin.so { enable }
 }
 
-
-# plugins {
-        ## Adjusting the plugin path depending on where the VPP plugins are
-        #       path /home/bms/vpp/build-root/install-vpp-native/vpp/lib64/vpp_plugins
-
-        ## Disable all plugins by default and then selectively enable specific plugins
-        # plugin default { disable }
-        # plugin dpdk_plugin.so { enable }
-        # plugin acl_plugin.so { enable }
-
-        ## Enable all plugins by default and then selectively disable specific plugins
-        # plugin dpdk_plugin.so { disable }
-        # plugin acl_plugin.so { disable }
-# }
-
-        ## Alternate syntax to choose plugin path
-        # plugin_path /home/bms/vpp/build-root/install-vpp-native/vpp/lib64/vpp_plugins
 EOF
 
 sudo service vpp start
@@ -178,18 +225,37 @@ if [ ! "${#intfs[@]}" == "2" ]; then
 fi
 
 # Create interface configuration for VPP
+if $ipv6; then
 sudo bash -c "cat > /etc/vpp/setup.gate" <<EOF
 set int state ${intfs[0]} up
-set interface ip address ${intfs[0]} 172.16.10.10/24
+set interface ip address ${intfs[0]} ${SUBNET1}
 
 set int state ${intfs[1]} up
-set interface ip address ${intfs[1]} 172.16.20.10/24
+set interface ip address ${intfs[1]} ${SUBNET2}
 
-set ip arp static ${intfs[0]} 172.16.10.100 8a:fd:d5:d5:d6:b6
-set ip arp static ${intfs[1]} 172.16.20.100 06:9c:b3:cc:f0:62
+enable ip6 interface ${intfs[0]}
+enable ip6 interface ${intfs[1]}
 
-ip route add 172.16.64.0/18 via 172.16.10.100
-ip route add 172.16.192.0/18 via 172.16.20.100
+set ip6 neighbor ${intfs[0]} ${REMIP1} ${REMMAC1} static
+set ip6 neighbor ${intfs[1]} ${REMIP2} ${REMMAC2} static
+
+ip route add fde5::1:0:0/96 via ${REMIP1}
+ip route add fde5::2:0:0/96 via ${REMIP2}
 EOF
+else
+sudo bash -c "cat > /etc/vpp/setup.gate" <<EOF
+set int state ${intfs[0]} up
+set interface ip address ${intfs[0]} ${SUBNET1}
+
+set int state ${intfs[1]} up
+set interface ip address ${intfs[1]} ${SUBNET2}
+
+set ip arp static ${intfs[0]} ${REMIP1} ${REMMAC1}
+set ip arp static ${intfs[1]} ${REMIP2} ${REMMAC2}
+
+ip route add 172.16.64.0/18 via ${REMIP1}
+ip route add 172.16.192.0/18 via ${REMIP2}
+EOF
+fi
 
 sudo service vpp restart

@@ -1,0 +1,17 @@
+---
+- name: find the controller host address
+  set_fact:
+    host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
+
+- name: copy heat templates to control node
+  template:
+    src: heat_dual_mac.yml
+    dest: heat_dual_mac.yml
+  when: inventory_hostname == host_0_address
+
+- name: copy heat template environment to control node
+  template:
+    src: heat_dual_mac.env
+    dest: heat_dual_mac.env
+  when: inventory_hostname == host_0_address
+

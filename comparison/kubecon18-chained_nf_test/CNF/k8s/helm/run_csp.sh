@@ -8,7 +8,7 @@ function clean_containers () {
     #
     # Variable reads:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     set -euo pipefail
     cnf_list=$(helm ls --all --short | grep cnf)
     if [[ ! -z "${cnf_list}" ]]; then
@@ -33,6 +33,32 @@ function die () {
     exit "${2:-1}"
 }
 
+function host_ssh() {
+  # usage: host_ssh <Node IP> <Command>
+  ssh -o StrictHostKeyChecking=no root@${1} "${@:2}"
+}
+
+function update_host_vpp() {
+    if [[ "${OPERATION}" == "clean" ]]; then
+      # No need to update configuration
+      return 0
+    fi
+    if [[ "${CHAINS}" -gt "3" ]]; then
+      warn "WARNING: Host VPP must be manually configured for more than 3 chains"
+      return 0
+    fi
+    node_ip="$(kubectl describe node | grep InternalIP | awk '{print $2}')"
+    if [ -z "$node_ip" ]; then
+      die "ERROR: Unable to get IP of k8s node"
+    fi
+    host_ssh $node_ip cmp /etc/vpp/setup.gate /etc/vpp/templates/${CHAINS}chain_cnf.j2 >/dev/null 2>&1
+    if [[ ! "$?" == "0" ]]; then
+     echo "Updating host VPP configuration to support ${CHAINS} chains"
+     host_ssh $node_ip cp /etc/vpp/templates/${CHAINS}chain_cnf.j2 /etc/vpp/setup.gate
+     host_ssh $node_ip service vpp restart
+     sleep 5
+   fi
+}
 
 function validate_input() {
     # Validate script input.
@@ -41,7 +67,7 @@ function validate_input() {
     # - ${@} - Script parameters.
     # Variable set:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [clean].
 
     set -euo pipefail
@@ -53,7 +79,7 @@ function validate_input() {
     fi
 
     CHAINS="${1-}"
-    NODENESS="${2-}"
+    NODES="${2-}"
     OPERATION="${3-}"
     KUBECONFIG="${KUBECONFIG:-}"
 
@@ -67,19 +93,19 @@ function validate_input() {
       return 0
     fi
 
-    if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODENESS//[0-9]/} ]]; then
-        die "ERROR: Chains and nodeness must be an integer values!"
+    if [[ -n ${CHAINS//[0-9]/} ]] || [[ -n ${NODES//[0-9]/} ]]; then
+        die "ERROR: Chains and nodes must be an integer values!"
     fi
 
     if [[ "${CHAINS}" -lt "1" ]] || [[ "${CHAINS}" -gt "7" ]]; then
         die "ERROR: Chains must be an integer value between 1-7!"
     fi
 
-    if [[ "${NODENESS}" -lt "1" ]] || [[ "${NODENESS}" -gt "7" ]]; then
-        die "ERROR: Nodeness must be an integer value between 1-7!"
+    if [[ "${NODES}" -lt "1" ]] || [[ "${NODES}" -gt "7" ]]; then
+        die "ERROR: Nodes must be an integer value between 1-7!"
     fi
 
-    if [[ "$((NODENESS * CHAINS))" -gt "7" ]]; then
+    if [[ "$((NODES * CHAINS))" -gt "7" ]]; then
         die "ERROR: Total number of CNFs can not exceed 7"
     fi
 
@@ -104,7 +130,7 @@ function run_containers () {
     #
     # Variable read:
     # - ${CHAINS} - Number of parallel chains.
-    # - ${NODENESS} - Number of NFs in chain.
+    # - ${NODES} - Number of NFs in chain.
     # - ${OPERATION} - Operation bit [cleanup|baseline].
     # Variable read:
     # - ${MAIN_CORES} - List of main cores.
@@ -118,9 +144,9 @@ function run_containers () {
     # Run conainer matrix.
     idx=0
     for chain in $(seq 1 "${CHAINS}"); do
-      for node in $(seq 1 "${NODENESS}"); do
+      for node in $(seq 1 "${NODES}"); do
         echo "Starting Chain ${chain}, Node ${node}"
-        ./config_csp.sh $chain $node $NODENESS ${MAIN_CORES[$idx]} ${WORKER_CORES[$idx]}
+        ./config_csp.sh $chain $node $NODES ${MAIN_CORES[$idx]} ${WORKER_CORES[$idx]}
         sleep 1
         helm install --name cnf${chain}-${node} ./vedge/
         ((idx++))
@@ -135,6 +161,8 @@ BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
 cd "${BASH_FUNCTION_DIR}" || die
 
 validate_input "${@}" || die
+
+update_host_vpp || die
 
 if [ "${OPERATION}" == "clean" ]; then
     clean_containers || die

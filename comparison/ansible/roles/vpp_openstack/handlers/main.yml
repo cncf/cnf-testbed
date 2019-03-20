@@ -1,15 +1,13 @@
-- name: Restart etcd
-  service:
-    enabled: true
-    name: etcd
-    state: restarted
+- name: Daemon Reload
+  systemd:
+    daemon_reload: yes
 
-- name: Restart nova-compute
+- name: Restart mysql
   service:
     enabled: true
-    name: nova-compute
+    name: mysql
     state: restarted
-  when: not host_0_address == inventory_hostname and ansible_os_family == 'Debian'
+  when: host_0_address == inventory_hostname
 
 - name: Restart neutron-server
   service:
@@ -18,20 +16,33 @@
     state: restarted
   when: host_0_address == inventory_hostname
 
-- name: Restart vpp
-  service:
-    enabled: true
-    name: vpp
-    state: restarted
-
 - name: Restart apache
   service:
     name: apache2
     state: restarted
   when: ansible_os_family == 'Debian' and host_0_address == inventory_hostname
 
+- name: Restart vpp
+  service:
+    enabled: true
+    name: vpp
+    state: restarted
+
+- name: Restart etcd
+  service:
+    enabled: true
+    name: etcd
+    state: restarted
+
 - name: Restart vpp-agent
   service:
     enabled: true
     name: vpp-agent
     state: restarted
+
+- name: Restart nova-compute
+  service:
+    enabled: true
+    name: nova-compute
+    state: restarted
+  when: not host_0_address == inventory_hostname and ansible_os_family == 'Debian'

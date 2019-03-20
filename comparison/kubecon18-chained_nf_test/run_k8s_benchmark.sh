@@ -20,7 +20,7 @@ docker run \
        -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
        -e ANSIBLE_HOST_KEY_CHECKING=False \
        --entrypoint=ansible-playbook \
-       -ti cnfdeploytools:latest -i "$worker_ips," -e deploy_env=${NAME} -e server_list=${worker_hostnames} /ansible/$PLAYBOOK
+       -ti cnfdeploytools:latest -i "$worker_ips," -e deploy_env=${DEPLOY_ENV} -e server_list=${worker_hostnames} /ansible/$PLAYBOOK
 VSWITCH_ELAPSED_TIME=$SECONDS
 
 echo "$(($K8S_ELAPSED_TIME / 60)) minutes and $(($K8S_ELAPSED_TIME % 60)) seconds elapsed - K8s Deploy."
