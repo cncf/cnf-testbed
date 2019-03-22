@@ -1,30 +1,30 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ include "VPPcontainer.fullname" . }}
+  name: {{ include "vppvswitch.fullname" . }}
   labels:
-    app: {{ include "VPPcontainer.name" . }}
-    chart: {{ include "VPPcontainer.chart" . }}
+    app: {{ include "vppvswitch.name" . }}
+    chart: {{ include "vppvswitch.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "VPPcontainer.name" . }}
+      app: {{ include "vppvswitch.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "VPPcontainer.name" . }}
+        app: {{ include "vppvswitch.name" . }}
         release: {{ .Release.Name }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: [ "/usr/bin/vpp", "-c", "/etc/vpp/startup.conf" ]
-          #args: [ "bash", "-c", "sleep 1000" ]
+          command: [ "/usr/bin/vpp", "-c", "/etc/vpp/startup.conf" ]
+          #command: [ "bash", "-c", "sleep 1000" ]
           securityContext:
             privileged: true
           resources:
@@ -41,7 +41,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: {{ template "VPPcontainer.fullname" . }}
+            name: {{ template "vppvswitch.fullname" . }}
             items:
             - key: startup.conf
               path: startup.conf
@@ -56,10 +56,7 @@ spec:
         - name: hugepages
           emptyDir:
             medium: HugePages
-        - name: config-volume
-          hostPath:
-            path: /etc/vpp/
-        - name: devices
+        - name: dev
           hostPath:
             path: /dev/
         - name: vpp-sockets
