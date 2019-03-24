@@ -3,7 +3,7 @@
   lineinfile: 
     dest: /etc/default/grub 
     regexp: ^GRUB_CMDLINE_LINUX= 
-    line: GRUB_CMDLINE_LINUX="console=tty0 console=ttyS1,115200n8 biosdevname=0 rd.auto rd.auto=1 net.ifnames=1 hugepagesz=2MB hugepages=32768 transparent_hugepages=never nmi_watchdog=0 audit=0 nosoftlockup processor.max_cstate=1 intel_idle.max_cstate=1 hpet=disable tsc=reliable mce=off numa_balancing=disable intel_pstate=disable intel_iommu=on iommu=pt"
+    line: GRUB_CMDLINE_LINUX="console=tty0 console=ttyS1,115200n8 biosdevname=0 rd.auto rd.auto=1 net.ifnames=1 hugepagesz=2MB hugepages=32768 transparent_hugepages=never nmi_watchdog=0 audit=0 nosoftlockup processor.max_cstate=1 intel_idle.max_cstate=1 hpet=disable tsc=reliable mce=off numa_balancing=disable intel_pstate=disable intel_iommu=on iommu=pt isolcpus=2,4,30,32 nohz_full=2-27,30-55 rcu_nocbs=2-27,30-55"
   register: grub_update
 
 - name: Update Grub
