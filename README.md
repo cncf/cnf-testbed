@@ -98,6 +98,8 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 
 ### CNFs At Open Networking Summit NA 2019
 
+Wednesday, April 3 • 10:30am - 12:00pm - [Tutorial: Driving Telco Performance with the Cloud Native Network Function (CNF) Testbed - Sponsored by Cloud Native Computing Foundation (Pre-registration required)](https://sched.co/MnkD)
+
 Wednesday, April 3 • 3:50pm - 4:20pm - [Works on My Machine: How to Validate Performance of VNFs and CNFs in a Reproducible Testbed - W. Watson, Vulk Cooperative & Denver Williams](https://sched.co/LKUF)
 
 TBD - In-person CNF Testbed BoF
