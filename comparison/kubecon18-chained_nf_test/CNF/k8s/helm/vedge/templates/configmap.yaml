@@ -63,16 +63,7 @@ data:
       corelist-workers {{ .Values.corelistWorkers }}
     }
  
-    dpdk {
-      no-pci
-      uio-driver igb_uio
-      no-multi-seg
-      socket-mem {{ .Values.socketMem }}
-      no-tx-checksum-offload
-    }
-
     plugins {
       plugin default { disable }
-      plugin dpdk_plugin.so { enable }
       plugin memif_plugin.so { enable }
     }
