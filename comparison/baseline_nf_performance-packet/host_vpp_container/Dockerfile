@@ -18,4 +18,6 @@ RUN apt-get install -y \
     vpp-dbg=${VPP_VER}-release \
     vpp-lib=${VPP_VER}-release
 
-ENTRYPOINT ["vpp", "-c", "/tmp/shared/startup.conf"]
+COPY shared/run_vpp/run_vpp.sh /tmp/
+
+ENTRYPOINT ["bash", "/tmp/run_vpp.sh"]
