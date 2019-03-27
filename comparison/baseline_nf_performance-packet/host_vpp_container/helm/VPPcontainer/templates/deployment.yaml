@@ -23,7 +23,7 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/usr/bin/vpp", "-c", "/etc/vpp/startup.conf" ]
+          command: [ "bash", "/tmp/run_vpp.sh" ]
           #command: [ "bash", "-c", "sleep 1000" ]
           securityContext:
             privileged: true
