@@ -1,6 +1,6 @@
 # Deploy OpenStack to Packet
 
-See [common setup steps](steps_to_deploy_testbed.mkd) for the cnf testbed.
+See [common setup steps](steps_to_deploy_testbed.mkd#common-steps) for the cnf testbed.
 
 ## Build the tools
 
