@@ -1,13 +1,13 @@
 # Deploy OpenStack to Packet
 
+See [common setup steps](steps_to_deploy_testbed.mkd) for the cnf testbed.
+
 ## Build the tools
 
-It is assumed that all efforts start from a shell in the 'comparison' directory
-
-On a machine with the cncf/cnfs project, and a docker capable enviornment (e.g. Linux with Docker, or a laptop with the Docker installed), and from a bash command line:
+On a machine with the cncf/cnf-testbed repo, and a docker capable enviornment (e.g. Linux with Docker, or a laptop with the Docker installed), and from a bash command line:
 
 ```
-pushd ../tools
+cd tools
 docker build -t ubuntu:packet_api -f packet_api/Dockerfile  packet_api/
 docker build -t cnfdeploytools:latest -f deploy/Dockerfile deploy/
 popd
