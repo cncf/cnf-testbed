@@ -1,4 +1,4 @@
-# Deploy k8s
+# Deploy OpenStack to Packet
 
 ## Build the tools
 
