@@ -11,4 +11,3 @@
   * OpenStack and K8s
   * Everything (sans ansible) belongs here for the Keynote comparison
   * _NOTE_: directory may be renamed before Dec 10th, 2018
-- openstack_chained_nf_test - TO BE MOVED TO kubecon18-chained_nf_test
