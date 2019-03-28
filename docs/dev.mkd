@@ -12,6 +12,33 @@ _Build tool container_
 docker build -t cnfdeploytools:latest  ../../tools/deploy/
 ```
 
+### Openstack deploy
+
+*Deploying Openstack to reserved Packet machines (currently all Intel)*
+
+Follow common steps https://github.com/cncf/cnf-testbed/blob/master/docs/steps_to_deploy_testbed.mkd#common-steps
+
+Then do the following:
+
+1. Create a env file and source it
+
+2. Create servers and ignore terraform error about json
+```
+PROVISION_ONLY=true ./deploy_openstack_cluster.sh
+```
+
+3. Manually update comparison/ansible/inventory with the IPs for the new servers as seen in the Packet web ui
+
+4. Re-run provisioning to finish setting up servers and vlan
+```
+PROVISION_ONLY=true ./deploy_openstack_cluster.sh
+```
+
+5. deploy openstack and setup vpp vswitch
+```SKIP_PROVISIONING=true ./deploy_openstack_cluster.sh```
+
+
+
 ### Using the ansible playbooks directly from the tool container
 
 Steps to build and use provisioning tools when in comparison/kubecon18-chained_nf_test

@@ -10,52 +10,71 @@ PACKET_FACILITY=${PACKET_FACILITY:-sjc1}
 PACKET_PROJECT_NAME=${PACKET_PROJECT_NAME:-"CNCF CNFs"}
 
 SECONDS=0
-if [ ! -f ${parentdir}/comparison/ansible/inventory ]; then
-echo "[all:vars]" > ${parentdir}/comparison/ansible/inventory
-echo "ansible_ssh_extra_args='-o StrictHostKeyChecking=no'" >> ${parentdir}/comparison/ansible/inventory
-echo "[all]" >> ${parentdir}/comparison/ansible/inventory
+PACKET_SERVER_DEPLOY=0
+OPENSTACK_DEPLOY_TIME=0
 
-time docker run --rm \
-  -v ${parentdir}/comparison/ansible:/ansible \
-  -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
-  -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
-  -v ${parentdir}/tools/terraform-ansible/:/terraform \
-  -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
-  -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
-  -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \
-  -e TF_VAR_packet_node_count=${NODE_COUNT} \
-  -e TF_VAR_packet_master_device_plan=${NODE_PLAN} \
-  -e TF_VAR_packet_facility=${PACKET_FACILITY} \
-  -e TF_VAR_name=${NODE_NAME} \
-  -e TF_VAR_playbook=/ansible/openstack_infra_setup.yml \
-  -e TF_VAR_packet_operating_system=${PACKET_OS} \
-  -ti cnfdeploytools:latest apply -auto-approve \
-  -state=/terraform/openstack.tfstate
-PACKET_SERVER_DEPLOY=$SECONDS
-echo "[etcd]" >> ${parentdir}/comparison/ansible/inventory
-cat ${parentdir}/tools/terraform-ansible/openstack.tfstate | awk -F\" '/0.add/ {print $4}' >> ${parentdir}/comparison/ansible/inventory
-else
-time docker run --rm \
-  -v ${parentdir}/comparison/ansible:/ansible \
-  -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
-  -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
-  -v ${parentdir}/tools/terraform-ansible/:/terraform \
-  -v ${parentdir}/comparison/ansible/inventory:/etc/ansible/hosts \
-  -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
-  -e PACKET_FACILITY=${PACKET_FACILITY} \
-  -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
-  -e SERVER_LIST=${SERVER_LIST} \
-  -e DEPLOY_ENV=${DEPLOY_ENV} \
-  -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
-  -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \
-  -e TF_VAR_packet_node_count=${NODE_COUNT} \
-  -e TF_VAR_packet_master_device_plan=${NODE_PLAN} \
-  -e TF_VAR_packet_facility=${PACKET_FACILITY} \
-  -e TF_VAR_name=${NODE_NAME} \
-  -e TF_VAR_packet_operating_system=${PACKET_OS} \
-  --entrypoint ansible-playbook -ti cnfdeploytools:latest ${ANSIBLE_ARGS} /ansible/openstack_infra_setup.yml
-PACKET_SERVER_DEPLOY=$SECONDS
+if [ ! "$SKIP_PROVISIONING" = "true" ] ; then
+
+  # NOTE: Inventory needs to be created ahead of time for reserved Packets instances
+  if [ ! -f ${parentdir}/comparison/ansible/inventory ]; then
+    echo "[all:vars]" > ${parentdir}/comparison/ansible/inventory
+    echo "ansible_ssh_extra_args='-o StrictHostKeyChecking=no'" >> ${parentdir}/comparison/ansible/inventory
+    echo "[all]" >> ${parentdir}/comparison/ansible/inventory
+
+    time docker run --rm \
+      -v ${parentdir}/comparison/ansible:/ansible \
+      -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
+      -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
+      -v ${parentdir}/tools/terraform-ansible/:/terraform \
+      -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
+      -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
+      -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \
+      -e TF_VAR_packet_node_count=${NODE_COUNT} \
+      -e TF_VAR_packet_master_device_plan=${NODE_PLAN} \
+      -e TF_VAR_packet_facility=${PACKET_FACILITY} \
+      -e TF_VAR_name=${NODE_NAME} \
+      -e TF_VAR_playbook=/ansible/openstack_infra_setup.yml \
+      -e TF_VAR_packet_operating_system=${PACKET_OS} \
+      -ti cnfdeploytools:latest apply -auto-approve \
+      -state=/terraform/openstack.tfstate
+    PACKET_SERVER_DEPLOY=$SECONDS
+    echo "[etcd]" >> ${parentdir}/comparison/ansible/inventory
+    cat ${parentdir}/tools/terraform-ansible/openstack.tfstate | awk -F\" '/0.add/ {print $4}' >> ${parentdir}/comparison/ansible/inventory
+
+    if [ "$PROVISION_ONLY" = "true" ] ; then
+      echo "Only provisioning resources"
+      exit 0
+    fi
+  else
+    echo "Using existing inventory from ${parentdir}/comparison/ansible/inventory"
+    time docker run --rm \
+      -v ${parentdir}/comparison/ansible:/ansible \
+      -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
+      -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
+      -v ${parentdir}/tools/terraform-ansible/:/terraform \
+      -v ${parentdir}/comparison/ansible/inventory:/etc/ansible/hosts \
+      -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
+      -e PACKET_FACILITY=${PACKET_FACILITY} \
+      -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
+      -e SERVER_LIST=${SERVER_LIST} \
+      -e DEPLOY_ENV=${DEPLOY_ENV} \
+      -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
+      -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \
+      -e TF_VAR_packet_node_count=${NODE_COUNT} \
+      -e TF_VAR_packet_master_device_plan=${NODE_PLAN} \
+      -e TF_VAR_packet_facility=${PACKET_FACILITY} \
+      -e TF_VAR_name=${NODE_NAME} \
+      -e TF_VAR_packet_operating_system=${PACKET_OS} \
+      --entrypoint ansible-playbook -ti cnfdeploytools:latest ${ANSIBLE_ARGS} /ansible/openstack_infra_setup.yml
+    PACKET_SERVER_DEPLOY=$SECONDS
+
+    if [ "$PROVISION_ONLY" = "true" ] ; then
+      echo "Only provisioning resources"
+      exit 0
+    fi
+  fi
 fi
+
 SECONDS=0
 SERVER_LIST=`for ((n=1;n<$NODE_COUNT;n++)); do echo -n $NODE_NAME$n,;done;echo -n $NODE_NAME$NODE_COUNT`
 time docker run --rm \
@@ -72,5 +91,5 @@ time docker run --rm \
   --entrypoint ansible-playbook -ti cnfdeploytools:latest ${ANSIBLE_ARGS} /ansible/openstack_chef_install.yml
 OPENSTACK_DEPLOY_TIME=$SECONDS
 
-echo "$(($PACKET_SERVER_DEPLOY / 60)) minutes and $(($PACKET_SERVER_DEPLOY % 60)) seconds elapsed - Packet.net Infra Setup."
+[[ ! "$SKIP_PROVISIONING" == "true" ]] && echo "$(($PACKET_SERVER_DEPLOY / 60)) minutes and $(($PACKET_SERVER_DEPLOY % 60)) seconds elapsed - Packet.net Infra Setup."
 echo "$(($OPENSTACK_DEPLOY_TIME / 60)) minutes and $(($OPENSTACK_DEPLOY_TIME % 60)) seconds elapsed - Openstack Deploy."

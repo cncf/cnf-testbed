@@ -4,80 +4,86 @@ See [common setup steps](steps_to_deploy_testbed.mkd#common-steps) for the cnf t
 
 ## Build the tools
 
-On a machine with the cncf/cnf-testbed repo, and a docker capable enviornment (e.g. Linux with Docker, or a laptop with the Docker installed), and from a bash command line:
+On a machine with the cncf/cnf-testbed repo and a docker capable enviornment (e.g. Linux with Docker, or a laptop with the Docker installed) run the following from a bash command line:
 
 ```
 cd tools
 docker build -t ubuntu:packet_api -f packet_api/Dockerfile  packet_api/
 docker build -t cnfdeploytools:latest -f deploy/Dockerfile deploy/
-popd
 ```
 
 ## SSH access to build machines
 
-In order to provision the hosts, it is necessary to have an SSH key pair including a private and public key on the same host as in the previous step, where the docker container is built and will be run.  A new key pair can be created on the same host, e.g.:
-
-```
-ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
-```
-
-The public key from the newly generated key pair will need to be captured and included in the ssh keys registered with Packet.net so that it becomes possible to log into the deployed Packet.net nodes.
-
-```
-cat ~/.ssh/id_rsa.pub
-```
+Ensure SSH public/private key pair setup on Packet (in [common setup steps](steps_to_deploy_testbed.mkd#common-steps)) is available at $HOME/.ssh/id_rsa[.pub] on the workstation starting the deployment
 
 ## Deployment to Packet reserved instances
 
 Steps to bring up an OpenStack cluster, Provision L2 Networking & VPP vSwitch
 
 To Deploy the OpenStack cluster
-1. Starting in the comparison directroy
-3. Create os.env with Packet and cluster info.  (See ../tools/os.env.example or the example exports below)
+1. Create openstack-cluster.env with Packet and cluster info.  (See [os-cluster.env.example](tools/os-cluster.env.example))
    * Add your Packet Auth token with Network configuration capabilities
    * Add your Packet Project ID
    * Add your Packet Project Name (Quotes are needed to escape any spaces in the name)
-4. Next source the os.env file and run the deploy script
-   * Note that as this process can take approximately an hour, if you are running this test from a remote machine, it is recommended that you launch a session with a tool like `screen` in order to avoid a partial build if the session fails
+   * Set NODE_PLAN to m2.xlarge for a Mellanox NIC machine and n2.xlarge for a Intel NIC machine
+2. If using reserved instances, copy [reserved_override.tf.disabled](tools/terrafrom-ansible/reserved_override.tf.disabled) to override.tf
+3. Next source the openstack-cluster.env file and run the deploy script
+   * Note that as this process can take approximately an hour, if you are running this test from a remote machine, it is recommended that you launch a session with a tool like `tmux` or `screen` in order to avoid a partial build if the session fails
+
 
 ```
-screen
-source os.env
-../tools/deploy_openstack_cluster.sh
+cd tools
+cp terraform-ansible/reserved_override.tf.disabled terraform-ansible/override.tf
+source openstack-cluster.env
+./deploy_openstack_cluster.sh
 ```
 
 The deploy may take up to an hour, depending on the speed with which the Packet.net machines are built.
 
-example os.env:
-```
-export NODE_NAME=os-
-export NODE_COUNT=3
-export NODE_PLAN=m2.xlarge.x86
-export PACKET_OS=ubuntu_16_04
-export PACKET_FACILITY=sjc1
-export PACKET_AUTH_TOKEN=YOUR_API_KEY
-export PACKET_PROJECT_ID=PROJECT_ID
-export PACKET_PROJECT_NAME='Project Name'
-```
 
-Once the machines have built, log into the first host (the -1 machine from the Packet.net UI, or the first machine in the [all] section from the ansible/inventory file):
+---
 
-```
-ssh {ip_of_first_machine}
-```
+The Openstack deploy can also be done in stages as follows
 
-Now we can complete the provisioning of the network and access lists for network security:
+#### Provision packet machines
+
+Packet web ui or `PROVISION_ONLY=true ./deploy_openstack_cluster.sh`
+
+#### Issue: Packet Terraform provider bug causes reserved instances to not be added to it's state file
+
+Because of a [Terraform Packet provider bug](https://github.com/cncf/cnf-testbed/issues/215) the inventory file for ansible does not contain the server IPs.  If the ansible inventory file does not contain the new server IPs, then add manually adding them is required.
 
 ```
-./create_security_groups.sh
-./create_vlan.sh {vlan_id_from Packet.net Networks}
+[etcd]
+{node_1_ip}
+{node_2_ip}
+.
+.
+.
+{node_n_ip}
+[all]
 ```
 
-And finally we can provision a VM:
 
-```
-./create_instance.sh
-```
+
+Run `PROVISION_ONLY=true ./deploy_openstack_cluster.sh` again to finish setting up the systems
+
+#### Deploy OpenStack and setup the VPP vSwitch
+
+Run `SKIP_PROVISIONING=true ./deploy_openstack_cluster.sh` again to finish setting up the systems
+
+
+---
+
+
+### Testing
+
+1. SSH to the control node.  Eg.  ssh {ip_of_first_machine}
+
+2. Load the Openstack env config `source openrc`
+
+3. Run the `./create_instance.sh` script to create a VM
+
 
 For arbitrary Openstack CLI commands (e.g. listing servers deployed):
 
