@@ -25,7 +25,7 @@ This directory provides a way to reproduce chained vnf vs cnf testing results.
 ![network_overview](https://user-images.githubusercontent.com/40474606/48859161-9536f500-ed7a-11e8-88a9-627d2b3c79ec.png)
 
 # Any other pictures needed here?
-![openstack](https://raw.githubusercontent.com/cncf/cnfs/master/comparison/kubecon18-chained_nf_test/docs/images/openstack_overview.jpg)
+![openstack](https://raw.githubusercontent.com/cncf/cnfs/master/docs/images/openstack_overview.jpg)
 
 
 ---
@@ -114,7 +114,7 @@ Caveats:
     ```
 1. Kubernetes deploy and test execution 
     1. Build k8s cluster on packet 
-        1. [quad intel additional steps](https://github.com/cncf/cnfs/tree/master/comparison/kubecon18-chained_nf_test/docs/quad_intel_install.md)
+        1. [quad intel additional steps](https://github.com/cncf/cnfs/tree/master/docs/quad_intel_install.md)
     1. packet Layer 2 setup
     1. Execute k8s test
 
@@ -128,7 +128,7 @@ Caveats:
 
 1. Openstack deploy and test execution
     1. Build Openstack cluster on packet
-        1. [quad intel additional steps](https://github.com/cncf/cnfs/tree/master/comparison/kubecon18-chained_nf_test/docs/quad_intel_install.md)
+        1. [quad intel additional steps](https://github.com/cncf/cnfs/tree/master/docs/quad_intel_install.md)
     1. packet Layer 2 setup
     1. Execute Openstack test
     ```
