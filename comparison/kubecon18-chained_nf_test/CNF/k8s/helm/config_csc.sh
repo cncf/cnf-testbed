@@ -179,8 +179,8 @@ function set_remote_macs () {
 
     set -euo pipefail
 
-    trex_mac1=e4:43:4b:2e:b1:d1
-    trex_mac2=e4:43:4b:2e:b1:d2
+    trex_mac1=e4:43:4b:2e:9f:e2
+    trex_mac2=e4:43:4b:2e:9f:e3
 
     if [[ "${NODE}" == "1" ]] && [[ "${NODENESS}" == "1" ]]; then
         REMMAC1=${trex_mac1}

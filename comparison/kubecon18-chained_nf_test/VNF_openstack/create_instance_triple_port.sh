@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # Network names
-left="vlan1087"
+left="vlan1076"
 middle1="middle1"
 middle2="middle2"
-right="vlan1088"
-external="ext1129"
+right="vlan1078"
+external="netext"
 
 CREATE_PORTS=true
 CREATE_VMS=true
 
-trex_macs=( ee:00:51:d3:06:e8 ba:a7:6c:aa:67:7b )
+trex_macs=( e4:43:4b:2e:9f:e2 e4:43:4b:2e:9f:e3 )
 
 if [ $# -lt 2 ]; then
   echo "ERROR: this script requires 2 parameters"
@@ -25,23 +25,26 @@ if ${CREATE_PORTS}; then
 for CHAIN in $(seq 1 ${CHAINS}); do
   for NODE in $(seq 1 ${NODES}); do
     if [[ "${NODE}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
-      openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${left} --no-security-group --disable-port-security
-      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${right} --no-security-group --disable-port-security
+      openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${left}
+      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${right}
     elif [[ "${NODE}" == "1" ]]; then
-      openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${left} --no-security-group --disable-port-security
-      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${middle1} --no-security-group --disable-port-security
+      openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${left}
+      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${middle1}
     elif [[ "${NODE}" == "${NODES}" ]]; then
       if [[ "${NODES}" == "2" ]]; then
-        openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle1} --no-security-group --disable-port-security
+        openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle1}
       else
-        openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle2} --no-security-group --disable-port-security
+        openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle2}
       fi
-      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${right} --no-security-group --disable-port-security
+      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${right}
     else
-      openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle1} --no-security-group --disable-port-security
-      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${middle2} --no-security-group --disable-port-security
+      openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle1}
+      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${middle2}
     fi
-    openstack port create ${CHAIN}_${NODE}_${NODES}_e --network ${external}
+    openstack port create ${CHAIN}_${NODE}_${NODES}_e --network ${left}
+    float=$(openstack floating ip create ${external} | awk '/floating_ip_address/ {print $4}')
+    port_id=$(openstack port list | grep ${CHAIN}_${NODE}_${NODES}_e | awk '{print $2}')
+    openstack floating ip set --port=${port_id} ${float}
   done
 done
 fi
@@ -73,8 +76,15 @@ ubuntu
 EOL
 cat >/etc/resolv.conf <<EOL
 nameserver 8.8.8.8
+nameserver 8.8.8.4
 EOL
 
+cat >/etc/rc.local <<EOL
+#! /bin/bash
+
+if [ ! -f /opt/beenthere ]; then
+
+touch /opt/beenthere
 # Download igb_uio.ko kernal module
 curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/$BRANCH/comparison/kubecon18-chained_nf_test/VNF_openstack/base_image/shared/igb_uio.ko" -o /opt/igb_uio.ko
 
@@ -89,13 +99,18 @@ curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/$BRANCH/comparison/kubec
 cd /opt
 chmod +x dpdk-devbind.py
 
-ifdown ens3 ens4
-
 # Download and run vm install script
 curl -k -L "https://raw.githubusercontent.com/cncf/cnfs/$BRANCH/comparison/kubecon18-chained_nf_test/VNF_openstack/shared/vEdge_vm_install.sh" -o /opt/vEdge_vm_install.sh
 cd /opt
 chmod +x vEdge_vm_install.sh
 ./vEdge_vm_install.sh $CHAIN $NODE $NODES $REMMAC1 $REMMAC2
+
+else
+  echo "Skipping VPP install"
+fi
+EOL
+
+chmod +x /etc/rc.local
 
 sed -i -e '/auto ens3/,+6d' /etc/network/interfaces.d/50-cloud-init.cfg
 sed -i -e '/auto ens4/,+6d' /etc/network/interfaces.d/50-cloud-init.cfg
