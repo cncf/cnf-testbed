@@ -285,6 +285,7 @@ On the server used for deploying, change to the directory `<CNF Testbed root>/co
 ./run_csp.sh 3 2 [clean]
 # Create or delete CSC containers
 ./run_csc.sh 3 2 [clean]
+  # I added a temporary skip to this file: "HOST_VPP_CONTAINER=true", as the script normally fetches VLAN info from target
 ```
 Verify with `kubectl` or `helm` that containers are created or deleted.
 
