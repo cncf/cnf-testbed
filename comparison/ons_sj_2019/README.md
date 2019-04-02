@@ -280,6 +280,8 @@ To use the configuration update `/tmp/run_vpp.sh` in the container, so that it p
 
 ### Creating the network functions
 On the server used for deploying, change to the directory `<CNF Testbed root>/comparison/baseline_nf_performance-packet/host_vpp_container/helm`. In that directory, use the following commands to create and delete NFs:
+
+**Note: For the ONS demo/presentation, use "pair" server and `~/src/michaelp/cnfs/comparison/kubecon18-chained_nf_test/CNF/k8s/helm` as the directory for running the below scripts (see note in block below)**
 ```
 # Create or delete CSP containers
 ./run_csp.sh 3 2 [clean]
@@ -287,6 +289,7 @@ On the server used for deploying, change to the directory `<CNF Testbed root>/co
 ./run_csc.sh 3 2 [clean]
   # I added a temporary skip to this file: "HOST_VPP_CONTAINER=true", as the script normally fetches VLAN info from target
 ```
+
 Verify with `kubectl` or `helm` that containers are created or deleted.
 
 ### Running the traffic generator (NFVbench)
