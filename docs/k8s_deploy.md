@@ -1,46 +1,37 @@
-# Deploy k8s
+# Deploy K8s to Packet
+
+See [common setup steps](steps_to_deploy_testbed.mkd#common-steps) for the cnf testbed.
 
 ## Build the tools
 
+On a machine with the cncf/cnf-testbed repo and a docker capable enviornment (e.g. Linux with Docker, or a laptop with the Docker installed) run the following from a bash command line:
+
 ```
-pushd ../../tools
+cd tools
 docker build -t ubuntu:packet_api -f packet_api/Dockerfile  packet_api/
 docker build -t cnfdeploytools:latest -f deploy/Dockerfile deploy/
-popd
 ```
 
+## SSH access to build machines
+
+Ensure SSH public/private key pair setup on Packet (in [common setup steps](steps_to_deploy_testbed.mkd#common-steps)) is available at $HOME/.ssh/id_rsa[.pub] on the workstation starting the deployment
 
 ## Deployment to Packet reserved instances
 
 Steps to bring up a K8s cluster, Provision L2 Networking & VPP vSwitch
 
-To Deploy the k8s cluster
-1. First find the reserved instance id that you want to use as a k8s worker node on packet.net, this can be done by clicking deploy server in the packet.net gui and there should be a list of reserved servers available and their associated ids
-2. Once found, update the k8s_worker_override.tf file under cnfs/tools with the desired id
-3. Create k8s.env with Packet and cluster info.  (See k8s.env.example)
-4. Next source the k8s.env file in the cnfs/tools dir, which has packet api token, k8s version, node types ect - and deploy
-
-
-
-Create k8s.env:
-```
-export MASTER_NODE_COUNT=3
-export WORKER_NODE_COUNT=1
-export MASTER_NODE_TYPE=t1.small
-export WORKER_NODE_TYPE=m2.xlarge
-export NODE_OS=ubuntu_18_04
-export FACILITY=ewr1
-export ETCD_VERSION=v3.2.8
-export CNI_VERSION=v0.6.0
-export K8S_RELEASE=v1.12.2
-export PLAYBOOK=/ansible/k8s_l2_workers.yml
-export PACKET_AUTH_TOKEN=YOUR_API_KEY
-export PACKET_PROJECT_ID=PROJECT_ID
-```
+_To Deploy the k8s cluster_
+1. Create k8s-cluster.env with Packet and cluster info.  (See [k8s-cluster.env.example](tools/k8s-cluster.env.example))
+   * Add your Packet Auth token with Network configuration capabilities
+   * Add your Packet Project ID
+   * Add your Packet Project Name (Quotes are needed to escape any spaces in the name)
+   * Set NODE_PLAN to m2.xlarge for a Mellanox NIC machine and n2.xlarge for a Intel NIC machine
+2. If using reserved instances, copy [k8s_worker_override.tf.disabled](tools/k8s_worker_override.tf.disabled) to k8s_worker_override.tf
+3. Next source the k8s-cluster.env file in the cnfs/tools dir, which has packet api token, k8s version, node types ect - and deploy
 
 
 ```
-source k8s.env
+source k8s-cluster.env
 ../../tools/deploy_k8s_cluster.sh
 #Once deploy_cluster.sh is finished you will find you kubeconfig file under 
 REPO/tools/packet-data/kubeconfig

@@ -10,9 +10,9 @@ fi
 ## load/set configuration
 
 #export KUBECONFIG=$(pwd)/data/kubeconfig
-export KUBECONFIG=$0
+export KUBECONFIG="$1"
 
-if [ ! -f $KUBECONFIG ] ; then
+if [ ! -f "$KUBECONFIG" ] ; then
    echo "Could not find kubeconfig $KUBECONFIG"
    exit 1
 fi

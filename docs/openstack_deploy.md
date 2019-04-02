@@ -20,7 +20,7 @@ Ensure SSH public/private key pair setup on Packet (in [common setup steps](step
 
 Steps to bring up an OpenStack cluster, Provision L2 Networking & VPP vSwitch
 
-To Deploy the OpenStack cluster
+_To Deploy the OpenStack cluster_
 1. Create openstack-cluster.env with Packet and cluster info.  (See [os-cluster.env.example](tools/os-cluster.env.example))
    * Add your Packet Auth token with Network configuration capabilities
    * Add your Packet Project ID
