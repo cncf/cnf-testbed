@@ -3,13 +3,18 @@
 #
 
 # Defaults
-export NODE_NAME=openstack-
+export NODE_NAME="openstack-"
+export DEPLOY_ENV="test"
+# Node count includes 1 controller (first allocated node) and additional compute nodes
 export NODE_COUNT=3
-export NODE_PLAN=m2.xlarge.x86
-export PACKET_OS=centos_7
-export PACKET_FACILITY=nrt1
+export NODE_PLAN="m2.xlarge.x86"
+export PACKET_OS="ubuntu_18_04"
+export PACKET_FACILITY="nrt1"
+
+# Enable / disable VPP vSwitch (false will use OVS)
+export ANSIBLE_ARGS="-e vpp_network=true"
 
 # Required
-export PACKET_AUTH_TOKEN=yourauthtoken
-export PACKET_PROJECT_ID=yourprojectid
+export PACKET_AUTH_TOKEN="yourauthtoken"
+export PACKET_PROJECT_ID="yourprojectid"
 export PACKET_PROJECT_NAME="your project name"

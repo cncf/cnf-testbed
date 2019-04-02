@@ -1,0 +1,127 @@
+2019-03-29 10:06:46,796 INFO Loading configuration file: /tmp/nfvbench/nfvbench_config_os.cfg
+2019-03-29 10:06:46,833 INFO EXT chain with OpenStack mode disabled
+2019-03-29 10:06:46,833 INFO -c /tmp/nfvbench/nfvbench_config_os.cfg --rate 10Gbps --flow-count 1024 --duration 60 --json /tmp/nfvbench/vnf-pipe-1p_3c2n_10Gbps-1.json
+2019-03-29 10:06:46,835 INFO Connecting to TRex (127.0.0.1)...
+2019-03-29 10:06:46,980 INFO Connected to TRex
+2019-03-29 10:06:46,980 INFO    Port 0: Ethernet Controller X710 for 10GbE SFP+ speed=10Gbps mac=e4:43:4b:2e:9f:e2 pci=0000:1a:00.2 driver=net_i40e
+2019-03-29 10:06:46,980 INFO    Port 1: Ethernet Controller X710 for 10GbE SFP+ speed=10Gbps mac=e4:43:4b:2e:9f:e3 pci=0000:1a:00.3 driver=net_i40e
+2019-03-29 10:06:46,981 INFO ChainRunner initialized
+2019-03-29 10:06:46,982 INFO Starting 3xEXT benchmark...
+2019-03-29 10:06:47,093 INFO Polling ARP until successful...
+2019-03-29 10:06:47,303 INFO    ARP: port=0 chain=0 src IP=172.16.10.100 dst IP=172.16.10.10 -> MAC=fa:16:3e:0e:be:32
+2019-03-29 10:06:47,304 INFO    ARP: port=0 chain=1 src IP=172.16.10.101 dst IP=172.16.10.11 -> MAC=fa:16:3e:99:53:7b
+2019-03-29 10:06:47,304 INFO    ARP: port=0 chain=2 src IP=172.16.10.102 dst IP=172.16.10.12 -> MAC=fa:16:3e:87:09:c2
+2019-03-29 10:06:47,304 INFO ARP resolved successfully for port 0
+2019-03-29 10:06:47,514 INFO    ARP: port=1 chain=0 src IP=172.16.20.100 dst IP=172.16.20.10 -> MAC=fa:16:3e:c3:0d:46
+2019-03-29 10:06:47,514 INFO    ARP: port=1 chain=1 src IP=172.16.20.101 dst IP=172.16.20.11 -> MAC=fa:16:3e:64:1b:93
+2019-03-29 10:06:47,514 INFO    ARP: port=1 chain=2 src IP=172.16.20.102 dst IP=172.16.20.12 -> MAC=fa:16:3e:85:b1:c8
+2019-03-29 10:06:47,514 INFO ARP resolved successfully for port 1
+2019-03-29 10:06:47,616 INFO Port 0: dst MAC ['fa:16:3e:0e:be:32', 'fa:16:3e:99:53:7b', 'fa:16:3e:87:09:c2']
+2019-03-29 10:06:47,616 INFO Port 1: dst MAC ['fa:16:3e:c3:0d:46', 'fa:16:3e:64:1b:93', 'fa:16:3e:85:b1:c8']
+2019-03-29 10:06:47,616 INFO Starting traffic generator to ensure end-to-end connectivity
+2019-03-29 10:06:47,636 INFO Created 3 traffic streams for port 0.
+2019-03-29 10:06:47,639 INFO Created 3 traffic streams for port 1.
+2019-03-29 10:06:47,755 INFO Captured unique src mac 0/6, capturing return packets (retry 1/100)...
+2019-03-29 10:06:49,877 INFO Received packet from mac: fa:16:3e:85:b1:c8 (chain=2, port=1)
+2019-03-29 10:06:49,877 INFO Received packet from mac: fa:16:3e:64:1b:93 (chain=1, port=1)
+2019-03-29 10:06:49,877 INFO Received packet from mac: fa:16:3e:c3:0d:46 (chain=0, port=1)
+2019-03-29 10:06:49,877 INFO Received packet from mac: fa:16:3e:0e:be:32 (chain=0, port=0)
+2019-03-29 10:06:49,877 INFO Received packet from mac: fa:16:3e:87:09:c2 (chain=2, port=0)
+2019-03-29 10:06:49,877 INFO Received packet from mac: fa:16:3e:99:53:7b (chain=1, port=0)
+2019-03-29 10:06:49,877 INFO End-to-end connectivity established
+2019-03-29 10:06:49,897 INFO Cleared all existing streams
+2019-03-29 10:06:49,925 INFO Created 6 traffic streams for port 0.
+2019-03-29 10:06:49,929 INFO Created 6 traffic streams for port 1.
+2019-03-29 10:06:49,930 INFO Starting to generate traffic...
+2019-03-29 10:06:49,930 INFO Running traffic generator
+2019-03-29 10:06:59,955 INFO TX: 148950708; RX: 39750887; Est. Dropped: 109199821; Est. Drop rate: 73.3127%
+2019-03-29 10:07:09,969 INFO TX: 297967622; RX: 79538019; Est. Dropped: 218429603; Est. Drop rate: 73.3065%
+2019-03-29 10:07:19,983 INFO TX: 446981377; RX: 119314379; Est. Dropped: 327666998; Est. Drop rate: 73.3066%
+2019-03-29 10:07:29,998 INFO TX: 595996610; RX: 159078829; Est. Dropped: 436917781; Est. Drop rate: 73.3088%
+2019-03-29 10:07:40,012 INFO TX: 745012335; RX: 198844957; Est. Dropped: 546167378; Est. Drop rate: 73.3098%
+2019-03-29 10:07:49,966 INFO TX: 892857540; RX: 238318499; Est. Dropped: 654539041; Est. Drop rate: 73.3083%
+2019-03-29 10:07:49,967 INFO ...traffic generating ended.
+2019-03-29 10:07:49,973 INFO Service chain 'EXT' run completed.
+2019-03-29 10:07:49,973 INFO Clean up skipped.
+2019-03-29 10:07:50,000 INFO Saving results in json file: /tmp/nfvbench/vnf-pipe-1p_3c2n_10Gbps-1.json...
+2019-03-29 10:07:50,008 INFO 
+========== NFVBench Summary ==========
+Date: 2019-03-29 10:06:46
+NFVBench version 2.0.5
+Openstack Neutron:
+  vSwitch: 
+  Encapsulation: 
+Benchmarks:
+> Networks:
+  > Components:
+    > Traffic Generator:
+        Profile: trex-local
+        Tool: TRex
+    > Versions:
+      > Traffic_Generator:
+          build_date: Nov 13 2017
+          version: v2.32
+          built_by: hhaim
+          mode: STL
+          build_time: 10:58:17
+  > Service chain:
+    > EXT:
+      > Traffic:
+          Profile: traffic_profile_64B
+          Bidirectional: True
+          Flow count: 1024
+          Service chains count: 3
+          Compute nodes: []
+            
+            Run Summary:
+            
+              +-----------------+-------------+----------------------+----------------------+----------------------+
+              |   L2 Frame Size |  Drop Rate  |  Avg Latency (usec)  |   Min Latency (usec) |  Max Latency (usec)  |
+              +=================+=============+======================+======================+======================+
+              |              64 |  73.3083%   |        2,279         |                   70 |        2,831         |
+              +-----------------+-------------+----------------------+----------------------+----------------------+
+              
+            
+            L2 frame size: 64
+            
+            Run Config:
+            
+              +-------------+---------------------------+------------------------+-----------------+---------------------------+------------------------+-----------------+
+              |  Direction  |  Requested TX Rate (bps)  |  Actual TX Rate (bps)  |  RX Rate (bps)  |  Requested TX Rate (pps)  |  Actual TX Rate (pps)  |  RX Rate (pps)  |
+              +=============+===========================+========================+=================+===========================+========================+=================+
+              |   Forward   |        5.0000 Gbps        |      5.0000 Gbps       |   1.3318 Gbps   |       7,440,476 pps       |     7,440,479 pps      |  1,981,812 pps  |
+              +-------------+---------------------------+------------------------+-----------------+---------------------------+------------------------+-----------------+
+              |   Reverse   |        5.0000 Gbps        |      5.0000 Gbps       |   1.3374 Gbps   |       7,440,476 pps       |     7,440,479 pps      |  1,990,162 pps  |
+              +-------------+---------------------------+------------------------+-----------------+---------------------------+------------------------+-----------------+
+              |    Total    |       10.0000 Gbps        |      10.0000 Gbps      |   2.6692 Gbps   |      14,880,952 pps       |     14,880,958 pps     |  3,971,974 pps  |
+              +-------------+---------------------------+------------------------+-----------------+---------------------------+------------------------+-----------------+
+              
+            Forward Chain Packet Counters and Latency:
+            
+              +---------+--------------+--------------------------+------------+------------+------------+
+              |  Chain  |  TRex.TX.p0  |        TRex.RX.p1        |  Avg lat.  |  Min lat.  |  Max lat.  |
+              +=========+==============+==========================+============+============+============+
+              |    0    | 148,809,590  | -109,607,285 (-73.6561%) | 2,312 usec |  70 usec   | 2,813 usec |
+              +---------+--------------+--------------------------+------------+------------+------------+
+              |    1    | 148,809,590  | -108,982,153 (-73.2360%) | 2,311 usec |  90 usec   | 2,780 usec |
+              +---------+--------------+--------------------------+------------+------------+------------+
+              |    2    | 148,809,590  | -108,930,570 (-73.2013%) | 2,278 usec |  100 usec  | 2,731 usec |
+              +---------+--------------+--------------------------+------------+------------+------------+
+              |  total  | 446,428,770  | -327,520,008 (-73.3644%) | 2,300 usec |  70 usec   | 2,813 usec |
+              +---------+--------------+--------------------------+------------+------------+------------+
+              
+            Reverse Chain Packet Counters and Latency:
+            
+              +---------+--------------+---------------------------------+------------+------------+------------+
+              |  Chain  |  TRex.TX.p1  |           TRex.RX.p0            |  Avg lat.  |  Min lat.  |  Max lat.  |
+              +=========+==============+=================================+============+============+============+
+              |    0    | 148,809,590  | +128,700,977,344 (+86487.0183%) | 2,297 usec | 1,000 usec | 2,787 usec |
+              +---------+--------------+---------------------------------+------------+------------+------------+
+              |    1    | 148,809,590  | +128,701,005,355 (+86487.0371%) | 2,221 usec | 1,000 usec | 2,721 usec |
+              +---------+--------------+---------------------------------+------------+------------+------------+
+              |    2    | 148,809,590  | +128,700,989,642 (+86487.0266%) | 2,258 usec |  400 usec  | 2,831 usec |
+              +---------+--------------+---------------------------------+------------+------------+------------+
+              |  total  | 446,428,770  | +386,102,972,341 (+86487.0273%) | 2,259 usec |  400 usec  | 2,831 usec |
+              +---------+--------------+---------------------------------+------------+------------+------------+
+              
+
