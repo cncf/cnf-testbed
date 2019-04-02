@@ -11,6 +11,18 @@
     vlans: "{{ vlans|combine({item.item.key: {'vid': item.stdout, 'desc': deploy_env + item.item.key }}, recursive=True) }}"
   with_items: "{{ vlandata.results }}"
 
+- name: ensure host_facts directory exists
+  file:
+    dest: /etc/ansible/facts.d
+    state: directory
+
+- name: write vlan id to host_fact file
+  lineinfile:
+    dest: /etc/ansible/facts.d/vlans.fact
+    create: true
+    line: '"{{vlans}}"'
+    mode: 0644
+  
 - name: updated vlan data
   debug: var=vlans
 

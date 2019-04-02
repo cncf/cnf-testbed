@@ -1,10 +1,12 @@
 #!/bin/bash
 
 if [[ $# == '0' ]]; then
+  vlans=({% for key,value in packet_vlans.iteritems() %}{{value.vid}} {% endfor %})
+  if [ -z "${vlans}"]; then
   echo "usage: $0 {vlan-id}"
   exit 1
+  fi
 fi
-
 source ~/openrc
 if [ !  "$( openstack network list | grep vlan${1} | awk '{print $4}' )" == "vlan${1}" ] ;then
 openstack network create --disable-port-security --provider-segment ${1} --provider-network-type vlan --provider-physical-network provider vlan${1}

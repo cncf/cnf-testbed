@@ -17,7 +17,7 @@ RUN apt update && \
     apt install -y software-properties-common && \ 
     apt-add-repository ppa:ansible/ansible -y && \
     apt update && \
-    apt install -y git curl ansible unzip && \
+    apt install -y git curl ansible unzip python-netaddr && \
     curl https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip > terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin && \
     rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \ 

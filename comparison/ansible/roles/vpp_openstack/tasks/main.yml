@@ -2,6 +2,7 @@
 - name: find the controller host address
   set_fact:
     host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
+    bond0_addr: "{{ansible_bond0.ipv4.address|ipmath(-1)}}/{{ansible_bond0.ipv4.netmask}}"
 
 - name: add hostname to /etc/hosts
   lineinfile:

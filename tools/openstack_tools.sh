@@ -7,15 +7,19 @@ NODE_COUNT=${NODE_COUNT:-4}
 NODE_PLAN=${NODE_PLAN:-m2.xlarge.x86}
 PACKET_OS=${PACKET_OS:-centos_7}
 PACKET_FACILITY=${PACKET_FACILITY:-sjc1}
+SERVER_LIST=`for ((n=1;n<$NODE_COUNT;n++)); do echo -n $NODE_NAME$n,;done;echo -n $NODE_NAME$NODE_COUNT`
 
 docker run --rm \
   -v ${parentdir}/comparison/ansible:/ansible \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
   -v ${parentdir}/tools/terraform-ansible/:/terraform \
+  -v ${parentdir}/comparison/ansible/inventory:/etc/ansible/hosts \
   -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
   -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
   -e PACKET_FACILITY=${PACKET_FACILITY} \
+  -e SERVER_LIST=${SERVER_LIST} \
+  -e DEPLOY_ENV=${DEPLOY_ENV} \
   -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
   -e TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN} \
   -e TF_VAR_packet_node_count=${NODE_COUNT} \

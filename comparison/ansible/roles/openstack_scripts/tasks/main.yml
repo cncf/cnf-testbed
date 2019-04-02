@@ -3,40 +3,89 @@
   set_fact:
     host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
 
+- name: check for vlan facts
+  delegate_to: localhost
+  command: ls /etc/ansible/facts.d/vlans.fact
+  ignore_errors: true
+  register: vlan_facts
+  run_once: true
+
+- name: make remote facts directory
+  file:
+    dest: /etc/ansible/facts.d
+    state: directory
+  run_once: true
+
+- name: upload vlan facts
+  copy:
+    src: /etc/ansible/facts.d/vlans.fact
+    dest: /etc/ansible/facts.d/vlans.fact
+  when: host_0_address == inventory_hostname and create_vlans and vlan_facts.rc == 0
+
+- name: find vlan facts on master
+  find:
+    path: '/etc/ansible/facts.d/vlans.fact'
+  register: facts_dest
+
+- name: push default vlan facts if no vlans were discovered
+  template:
+    dest: /etc/ansible/facts.d/vlans.fact
+    src: default_vlans.fact
+  when: host_0_address == inventory_hostname and facts_dest.matched == 0 and not vlan_facts.rc == 0
+
+- name: update facts for new vlans data
+  setup:
+
+- name: set fact for vlans
+  set_fact:
+    packet_vlans: "{{ansible_local.vlans}}"
+  when: host_0_address == inventory_hostname
+
+- name: debug find vlans
+  debug:
+    msg: "Key {{item.key}}, Value {{item.value['vid']}}"
+  with_dict: "{{packet_vlans}}"
+  when: host_0_address == inventory_hostname
+
 - name: add create_vlans.sh openstack client script
   template:
     src: create_vlans.sh
     dest: /root/create_vlans.sh
     mode: 0755
+  when: host_0_address == inventory_hostname
 
 - name: add create_router.sh openstack script
   template:
     src: create_router.sh
     dest: /root/create_router.sh
     mode: 0755
-
-- name: add create_security_groups.sh openstack client script
-  template:
-    src: create_security_groups.sh
-    dest: /root/create_security_groups.sh
-    mode: 0755
-
-- name: add security_groups
-  command: /root/create_security_groups.sh
-  ignore_errors: true
   when: host_0_address == inventory_hostname
+
+# VPP currently doesn't support security groups
+#- name: add create_security_groups.sh openstack client script
+#  template:
+#    src: create_security_groups.sh
+#    dest: /root/create_security_groups.sh
+#    mode: 0755
+#
+#- name: add security_groups
+#  command: /root/create_security_groups.sh
+#  ignore_errors: true
+#  when: host_0_address == inventory_hostname
 
 - name: add create_flavor.sh script
   template:
     src: create_flavor.sh
     dest: /root/create_flavor.sh
     mode: 0755
+  when: host_0_address == inventory_hostname
 
 - name: add set_quotas.sh script
   template:
     src: set_quotas.sh
     dest: /root/set_quotas.sh
     mode: 0755
+  when: host_0_address == inventory_hostname
 
 - name: add flavor
   command: /root/create_flavor.sh
@@ -48,6 +97,7 @@
     src: create_xenial.sh
     dest: /root/create_xenial.sh
     mode: 0755
+  when: host_0_address == inventory_hostname
 
 - name: add xenial image
   command: /root/create_xenial.sh
@@ -59,32 +109,37 @@
     src: create_instance.sh
     dest: /root/create_instance.sh
     mode: 0755
+  when: host_0_address == inventory_hostname
 
 - name: add masquerade/router setup
   template:
     src: create_masq.sh
     dest: /root/create_masq.sh
     mode: 0755
+  when: host_0_address == inventory_hostname
 
 - name: add masquerade/router teardown
   template:
     src: delete_masq.sh
     dest: /root/delete_masq.sh
     mode: 0755
+  when: host_0_address == inventory_hostname
 
-- name: run masquerade setup
-  command: /root/create_masq.sh 1076
-  ignore_errors: true
-  when: host_0_address == inventory_hostname and create_masquerade
+#- name: run masquerade setup
+#  command: /root/create_masq.sh {VLAN}
+#  ignore_errors: true
+#  when: host_0_address == inventory_hostname and create_masquerade
 
 - name: add create_dual_mac.sh
   template:
     src: create_dual_mac.sh
     dest: /root/create_dual_mac.sh
     mode: 0755
+  when: host_0_address == inventory_hostname
 
 - name: add delete_dual.sh
   template:
     src: delete_dual.sh
     dest: /root/delete_dual.sh
     mode: 0755
+  when: host_0_address == inventory_hostname
