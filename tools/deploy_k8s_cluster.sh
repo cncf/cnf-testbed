@@ -51,7 +51,8 @@ echo "$(($K8S_ELAPSED_TIME / 60)) minutes and $(($K8S_ELAPSED_TIME % 60)) second
 
 if [ "$VPP_VSWITCH" = "true" ] ; then
    SECONDS=0
-   $(project_root)/tools/deploy_k8s_vppvswitch.sh $(pwd)/data/kubeconfig
+   chmod +x ${project_root}/tools/deploy_k8s_vppvswitch.sh
+   ${project_root}/tools/deploy_k8s_vppvswitch.sh $(pwd)/data/kubeconfig
    VSWITCH_ELAPSED_TIME=$SECONDS
    echo "$(($VSWITCH_ELAPSED_TIME / 60)) minutes and $(($VSWITCH_ELAPSED_TIME % 60)) seconds elapsed - VPP vSwitch Deploy."
 fi
