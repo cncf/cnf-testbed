@@ -1,16 +1,21 @@
 #!/bin/bash
 
+# NOTE: Set the environment variables for VLANID_LEFT, VLANID_RIGHT, TREX_MAC1 and TREX_MAC2
+
 # Network names
-left="vlan1076"
+#left="vlan1076"
+left="vlan${VLANID_LEFT}"
 middle1="middle1"
 middle2="middle2"
-right="vlan1078"
+#right="vlan1078"
+right="vlan${VLANID_RIGHT}"
 external="netext"
 
-CREATE_PORTS=true
-CREATE_VMS=true
+[[ -n "$CREATE_PORTS" ]] || CREATE_PORTS=true
+[[ -n "$CREATE_VMS" ]] || CREATE_VMS=true
 
-trex_macs=( e4:43:4b:2e:9f:e2 e4:43:4b:2e:9f:e3 )
+#trex_macs=( e4:43:4b:2e:9f:e2 e4:43:4b:2e:9f:e3 )
+trex_macs=( $TREX_MAC1 $TREX_MAC2 )
 
 if [ $# -lt 2 ]; then
   echo "ERROR: this script requires 2 parameters"
@@ -67,8 +72,11 @@ for CHAIN in $(seq 1 ${CHAINS}); do
         REMMAC2=$(openstack port show ${CHAIN}_$((NODE + 1))_${NODES}_l | awk '/ mac_address / {print $4}')
       fi
 
-export BRANCH="master"
-cat > /tmp/vnfconf.cfg <<EOF
+      export BRANCH="master"
+      tmp_vnfconf="$TEMPDIR/vnfconf-$RANDOM.cfg"
+
+#cat > /tmp/vnfconf.cfg <<EOF
+cat > "$tmp_vnfconf" <<EOF
 #!/bin/bash
 passwd ubuntu <<EOL
 ubuntu
@@ -119,16 +127,17 @@ reboot
 
 EOF
 
-KEYPAIR=${KEYPAIR:-oskey}
+        KEYPAIR=${KEYPAIR:-oskey}
 
-openstack server create ${CHAIN}_${NODE}_${NODES} --flavor vnf.3c --key-name ${KEYPAIR} --image xenial --nic port-id=${CHAIN}_${NODE}_${NODES}_l --nic port-id=${CHAIN}_${NODE}_${NODES}_r --nic port-id=${CHAIN}_${NODE}_${NODES}_e --config-drive True --user-data /tmp/vnfconf.cfg
+        openstack server create ${CHAIN}_${NODE}_${NODES} --flavor vnf.3c --key-name ${KEYPAIR} --image xenial --nic port-id=${CHAIN}_${NODE}_${NODES}_l --nic port-id=${CHAIN}_${NODE}_${NODES}_r --nic port-id=${CHAIN}_${NODE}_${NODES}_e --config-drive True --user-data "$tmp_vnfconf"
 
-rm /tmp/vnfconf.cfg
-else
-  echo ""
-  echo "Server ${CHAIN}_${NODE}_${NODES} already exists"
-  echo ""
-fi
-done
-done
+        #rm /tmp/vnfconf.cfg
+        rm "$tmp_vnfconf"
+      else
+        echo ""
+        echo "Server ${CHAIN}_${NODE}_${NODES} already exists"
+        echo ""
+      fi
+    done
+  done
 fi
