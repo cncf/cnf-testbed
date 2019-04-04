@@ -90,7 +90,7 @@ Find your local number: https://zoom.us/u/acX94Wyyaj
 Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/cncf-cnf-testbed-bof).
 
 ## Slack
-[slack.cncf.io](slack.cncf.io) - #cnf
+[https://slack.cncf.io/](slack.cncf.io) - #cnf
 
 
 
