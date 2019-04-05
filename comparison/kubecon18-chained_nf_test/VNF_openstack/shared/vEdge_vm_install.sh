@@ -177,7 +177,7 @@ if [ ! "${#pci_devs[@]}" == "0" ]; then
   done
 fi
 
-sudo /opt/dpdk-devbind.py -b igb_uio ${pci_devs[@]}
+sudo /opt/dpdk-devbind.py -b uio_pci_generic ${pci_devs[@]}
 
 # Overwrite default VPP configuration 
 sudo bash -c "cat > /etc/vpp/startup.conf" <<EOF

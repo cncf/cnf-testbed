@@ -1,0 +1,5 @@
+#! /bin/bash
+
+cp /opt/igb_uio.ko /lib/modules/$(uname -r)/kernel/drivers/
+echo 'igb_uio' | tee -a /etc/modules
+depmod
