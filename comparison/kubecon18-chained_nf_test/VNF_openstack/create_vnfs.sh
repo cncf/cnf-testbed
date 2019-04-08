@@ -26,25 +26,58 @@ fi
 CHAINS="${1}"
 NODES="${2}"
 
+function set_macs () {
+    # Set interface MACs.
+    #
+    # Variable read:
+    # - ${CHAIN} - Chain ID.
+    # - ${NODE} - Node ID.
+    # - ${NODES} - Number of NFs in chain.
+    # Variable set:
+    # - ${MAC1} - East MAC.
+    # - ${MAC2} - West MAC.
+
+    CHAIN=$1
+    NODE=$2
+    NODES=$3
+
+    set -euo pipefail
+
+    if [[ "${NODE}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
+        MAC1=52:53:0$(( ${CHAIN} - 1 )):00:00:aa
+        MAC2=52:53:0$(( ${CHAIN} - 1 )):00:00:bb
+    elif [[ "${NODE}" == "1" ]]; then
+        MAC1=52:53:0$(( ${CHAIN} - 1 )):00:00:aa
+        MAC2=52:53:0$(( ${CHAIN} - 1 )):00:01:bb
+    elif [[ "${NODE}" == "${NODES}" ]]; then
+        MAC1=52:53:0$(( ${CHAIN} - 1 )):00:0${NODE}:aa
+        MAC2=52:53:0$(( ${CHAIN} - 1 )):00:00:bb
+    else
+        MAC1=52:53:0$(( ${CHAIN} - 1 )):00:0${NODE}:aa
+        MAC2=52:53:0$(( ${CHAIN} - 1 )):00:0${NODE}:bb
+    fi
+}
+
 if ${CREATE_PORTS}; then
 for CHAIN in $(seq 1 ${CHAINS}); do
   for NODE in $(seq 1 ${NODES}); do
+    set_macs $CHAIN $NODE $NODES
     if [[ "${NODE}" == "1" ]] && [[ "${NODES}" == "1" ]]; then
-      openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${left}
-      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${right}
+      openstack port create ${CHAIN}_${NODE}_${NODES}_l --mac-address $MAC1 --network ${left}
+      openstack port create ${CHAIN}_${NODE}_${NODES}_r --mac-address $MAC2 --network ${right}
     elif [[ "${NODE}" == "1" ]]; then
-      openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${left}
-      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${middle1}
+      openstack port create ${CHAIN}_${NODE}_${NODES}_l --mac-address $MAC1 --network ${left}
+      openstack port create ${CHAIN}_${NODE}_${NODES}_r --mac-address $MAC2 --network ${middle1}
     elif [[ "${NODE}" == "${NODES}" ]]; then
       if [[ "${NODES}" == "2" ]]; then
-        openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle1}
+        openstack port create ${CHAIN}_${NODE}_${NODES}_l --mac-address $MAC1 --network ${middle1}
       else
-        openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle2}
+        openstack port create ${CHAIN}_${NODE}_${NODES}_l --mac-address $MAC1 --network ${middle2}
       fi
-      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${right}
+      openstack port create ${CHAIN}_${NODE}_${NODES}_r --mac-address $MAC2 --network ${right}
     else
-      openstack port create ${CHAIN}_${NODE}_${NODES}_l --network ${middle1}
-      openstack port create ${CHAIN}_${NODE}_${NODES}_r --network ${middle2}
+      openstack port create ${CHAIN}_${NODE}_${NODES}_l --mac-address $MAC1 --network ${middle1}
+      openstack port create ${CHAIN}_${NODE}_${NODES}_r --mac-address $MAC2 --network ${middle2}
     fi
     openstack port create ${CHAIN}_${NODE}_${NODES}_e --network ${left}
     float=$(openstack floating ip create ${external} | awk '/floating_ip_address/ {print $4}')
@@ -81,8 +114,7 @@ cat > $tmp_vnfconf <<EOF
 ifconfig ens3 down
 ifconfig ens4 down
 
-sed -i -e '/auto ens3/,+6d' /etc/network/interfaces.d/50-cloud-init.cfg
-sed -i -e '/auto ens4/,+6d' /etc/network/interfaces.d/50-cloud-init.cfg
+sed -i '/ens3:/,/set-name: ens4/d' /etc/netplan/50-cloud-init.yaml
 
 /opt/vEdge_vm_install.sh $CHAIN $NODE $NODES $REMMAC1 $REMMAC2
 EOF
