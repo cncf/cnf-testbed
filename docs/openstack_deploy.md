@@ -96,15 +96,14 @@ openstack server list
 ## Overview setup and steps
 
 VLAN assignments
-quad port intel:
-{not yet supported}
-  vlan1 => eth1 (req)
-  vlan2 => eth2 (req)
-  vlan3 => eth3 (cluster mgmt)
-
-dual port Mellanox:
-   vlan1 => eth1
-   vlan2 => eth1
+* quad port intel: 
+_not yet supported_
+  * vlan1 => eth1 (req)
+  * vlan2 => eth2 (req)
+  * vlan3 => eth3 (cluster mgmt)
+* dual port Mellanox:
+  * vlan1 => eth1
+  * vlan2 => eth1
 
 
 1. cross-cloud (terraform)
