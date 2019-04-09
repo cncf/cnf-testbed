@@ -53,7 +53,7 @@ function run_bench () {
             dcr_image="nfvbench"
             dcr_param="--interactive "
             dcr_param+="--tty "
-            nfv_param="nfvbench -c /tmp/nfvbench/nfvbench_config.cfg "
+            nfv_param="nfvbench -c /tmp/nfvbench/nfvbench_config_openstack.cfg "
             nfv_param+="--rate ${rate} "
             nfv_param+="--flow-count 1024 "
             nfv_param+="--duration ${DURATION} "
@@ -69,9 +69,9 @@ function run_bench () {
 BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
     die "Some error during localizing this source directory."
 }
-CHAINS="${1:-1}"
-NODES="${2:-1}"
-PREFIX="${3:-csp}"
+CHAINS="${1:-2}"
+NODES="${2:-3}"
+PREFIX="${3:-vnf}"
 RATES=( 10Gbps ndr_pdr )
 ITERATIONS=1
 DURATION=30

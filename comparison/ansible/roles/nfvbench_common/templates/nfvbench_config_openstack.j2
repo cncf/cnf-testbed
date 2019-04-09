@@ -144,8 +144,12 @@ traffic_generator:
     gateway_ip_addrs_step: 0.0.0.1
     udp_src_port: 34100
     udp_dst_port: 34101
-    mac_addrs_left: [{{nfvbench_mac_addrs_left}}]
-    mac_addrs_right: [{{nfvbench_mac_addrs_right}}]
+    #mac_addrs_left: ['52:53:00:00:00:aa']
+    #mac_addrs_right: ['52:53:00:00:00:bb']
+    #mac_addrs_left: ['52:53:00:00:00:aa', '52:53:01:00:00:aa']
+    #mac_addrs_right: ['52:53:00:00:00:bb', '52:53:01:00:00:bb']
+    mac_addrs_left: ['52:53:00:00:00:aa', '52:53:01:00:00:aa', '52:53:02:00:00:aa']
+    mac_addrs_right: ['52:53:00:00:00:bb', '52:53:01:00:00:bb', '52:53:02:00:00:bb']
 
     # Traffic Generator Profiles
     # In case you have multiple testbeds or traffic generators,
@@ -264,11 +268,14 @@ vlan_tagging: {{ nfvbench_vlan_tagging }}
 # Default behavior (empty list) is to retrieve VLAN IDs from OpenStack networks described in external_networks.
 # This property is ignored in the case of l2-loopback
 # Example: [1998, 1999]
-vlans: [{{ nfvbench_vlan_ids }}]
+#vlans: [{{ nfvbench_vlan_id1 }}, {{ nfvbench_vlan_id2 }}]
+#vlans: [[{{ nfvbench_vlan_id1 }}, {{ nfvbench_vlan_id1 }}], [{{ nfvbench_vlan_id2 }}, {{ nfvbench_vlan_id2 }}]]
+vlans: [[{{ nfvbench_vlan_id1 }}, {{ nfvbench_vlan_id1 }}, {{ nfvbench_vlan_id1 }}], [{{ nfvbench_vlan_id2 }}, {{ nfvbench_vlan_id2
+}}, {{ nfvbench_vlan_id2 }}]]
 
 # Used only with EXT chain. MAC addresses of traffic generator ports are used as destination
 # if 'no_arp' is set to 'true'. Otherwise ARP requests are sent to find out destination MAC addresses.
-no_arp: false
+no_arp: true
 
 # Traffic Profiles
 # You can add here more profiles as needed

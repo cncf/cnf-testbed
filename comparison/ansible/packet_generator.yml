@@ -107,13 +107,6 @@
       insertafter: EOF
       line: 'vfio-pci'
     when: intel
-#  post_tasks:
-#  - name: Reboot Server
-#    reboot:
-#  - name: Restart NFVbench
-#    docker_container:
-#      name: nfvbench
-#      restart: yes
 
   vars:
     intel: "{{ true if quad_intel is defined else false }}"
@@ -121,9 +114,8 @@
     trex_port_1_pci: "{{ ansible_eno4.pciid if intel else ansible_enp94s0f5.pciid }}"
     mellanox_pf: "enp94s0f1"
     nfvbench_service_chain_count: 1
-    nfvbench_mac_addrs_left: "'52:54:00:00:00:aa'"
-    nfvbench_mac_addrs_right: "'52:54:00:00:00:bb'"
-    nfvbench_vlan_ids: "{{ hostvars.localhost.vlans.vlan1.vid }}, {{ hostvars.localhost.vlans.vlan2.vid }}"
+    nfvbench_vlan_id1: "{{ hostvars.localhost.vlans.vlan1.vid }}"
+    nfvbench_vlan_id2: "{{ hostvars.localhost.vlans.vlan2.vid }}"
     nfvbench_vlan_tagging: "{{ false if intel else true }}"
     config_network_bonds: true
     config_network_bridges: false
