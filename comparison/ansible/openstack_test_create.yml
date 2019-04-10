@@ -1,0 +1,55 @@
+- hosts: all[0]
+  tasks:
+  - name: run vlan setup
+    command: /root/create_vlans.sh
+
+  - name: run masquerade setup
+    command: /root/create_masq.sh
+
+  - name: run create instance
+    command: /root/create_instance.sh
+    run_once: true
+    register: create_output
+
+  - name: print create output
+    debug:
+      var: create_output.stdout
+
+  - name: parse create output
+    command: awk '/ubuntu/ {print $1}'
+    args:
+      stdin: "{{ create_output.stdout }}"
+    register: user_at_vm
+
+  - name: print parse output
+    debug:
+      var: user_at_vm.stdout
+
+  - name: wait for ssh ready
+    wait_for: 
+      host: "{{ user_at_vm.stdout.split('@')[1] }}" 
+      port: 22
+      delay: 10
+      timeout: 60
+
+  - name: test ssh connection to new vm
+    command: ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa {{ user_at_vm.stdout }} ls
+    register: return_code
+
+  - name: print rc output
+    debug:
+      var: return_code
+
+  - name: evaluate test result
+    debug:
+      msg: "Create Test {{ 'PASSED' if return_code.rc == 0 else 'FAILED' }}"
+      
+  post_tasks:
+  - name: run delete instance
+    command: /root/delete_instance.sh
+
+  - name: run delete masq
+    command: /root/delete_masq.sh
+    
+  - name: run delete vlans
+    command: /root/delete_vlans.sh
