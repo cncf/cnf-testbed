@@ -10,7 +10,7 @@ MASTER_PLAN=${MASTER_PLAN:-m2.xlarge.x86}
 NODE_PLAN=${NODE_PLAN:-m2.xlarge.x86}
 PACKET_OS=${PACKET_OS:-ubuntu_18.04}
 PACKET_FACILITY=${PACKET_FACILITY:-sjc1}
-FACILITY=PACKET_FACILITY # TODO: rectify duplicate env var with k8s project: FACILITY <=> PACKET_FACILITY
+FACILITY=${PACKET_FACILITY} # TODO: rectify duplicate env var with k8s project: FACILITY <=> PACKET_FACILITY
 PACKET_PROJECT_NAME=${PACKET_PROJECT_NAME:-"CNCF CNFs"}
 
 SECONDS=0
@@ -87,6 +87,7 @@ time docker run --rm \
   -v ${parentdir}/comparison/ansible/inventory:/etc/ansible/hosts \
   -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
   -e PACKET_FACILITY=${PACKET_FACILITY} \
+  -e FACILITY=${FACILITY} \
   -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
   -e SERVER_LIST=${SERVER_LIST} \
   -e DEPLOY_ENV=${DEPLOY_ENV} \
