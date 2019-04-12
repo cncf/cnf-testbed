@@ -1,0 +1,114 @@
+---
+- hosts: localhost
+  vars:
+    facility: "{{ lookup('env','PACKET_FACILITY') }}"
+    deploy_env: "{{ lookup('env','DEPLOY_ENV') }}"
+    server_list: "{{ lookup('env','SERVER_LIST') }}"
+    project_name: "{{ lookup('env','PROJECT_NAME') }}"
+    vlans:
+      vlan1:
+        interface: eth1
+      vlan2:
+        interface: eth1
+  roles:
+    - packet_l2
+
+- hosts: all
+  vars:
+    cnf: true
+    vnf: false
+    baseline: false # Currently no difference in VPP config
+    hugepages: 18432
+    corelist_workers: 2,4,30,32
+    mellanox_data_port: "{{ ansible_enp94s0f1.pciid }}"
+    vlan_ids:
+      - "{{ hostvars.localhost.vlans.vlan1.vid }}"
+      - "{{ hostvars.localhost.vlans.vlan2.vid }}"
+    config_network_bonds: true
+    config_network_bridges: false
+    config_network_interfaces: true
+    enable_configured_interfaces_after_defining: true
+    dns_nameservers:
+      - "{{ ansible_dns.nameservers[0] }}"
+      - "{{ ansible_dns.nameservers[0] }}"
+    network_bonds:
+      - name: 'bond0'
+        configure: true
+        method: 'static'
+        address: "{{ ansible_bond0.ipv4.address }}"
+        netmask: "{{ ansible_bond0.ipv4.netmask }}"
+        gateway: "{{ ansible_default_ipv4.gateway }}"
+        parameters:
+          - param: 'bond-downdelay'
+            val: '200'
+          - param: 'bond-miimon'
+            val: '100'
+          - param: 'bond-mode'
+            val: '4'
+          - param: 'bond-updelay'
+            val: '200'
+          - param: 'bond-xmit_hash_policy'
+            val: 'layer3+4'
+          - param: 'bond-lacp-rate'
+            val: '1'
+        slaves:
+          - "{{ ansible_bond0.slaves[0] }}"
+      - name: 'bond0:0'
+        configure: true
+        method: 'static'
+        address: "{{ ansible_bond0_0.ipv4.address }}"
+        netmask: "{{ ansible_bond0_0.ipv4.netmask }}"
+        parameters:
+          - param: 'post-up'
+            val: "route add -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
+          - param: 'post-down'
+            val: "route del -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
+    network_interfaces:
+      - name: "{{ ansible_bond0.slaves[0] }}"
+        configure: true
+        method: 'manual'
+        parameters:
+          - param:
+            val: 'bond-master bond0'
+  pre_tasks:
+  - name: Apt update
+    apt:
+      update_cache: yes
+  - name: Install Vlan Package
+    apt: 
+      name: vlan
+  - name: Get bond interface slaves
+    setup:
+      filter: "{{ ansible_bond0.slaves }}"
+  - name: Get dns servers
+    setup: 
+      filter: "{{ ansible_dns.nameservers }}"
+  - name: Get Bond0 Public IP
+    setup: 
+      filter: "{{ ansible_bond0.ipv4.address }}"
+  - name: Get bond0 netmask
+    setup: 
+      filter: "{{ ansible_bond0.ipv4.netmask }}"
+  - name: Echo bond0 netmask
+    setup: 
+      filter: "{{ ansible_default_ipv4.gateway }}"
+  - name: Get bond0 internal address
+    setup: 
+      filter: "{{ ansible_bond0_0.ipv4.address }}"
+  - name: Get bond0 internal netmask
+    setup:
+      filter: "{{ ansible_bond0_0.ipv4.netmask }}"
+  - name: Get bond0 internal gw
+    setup:
+      filter: "{{ ansible_bond0_0.ipv4.network }}"
+  - name: Get Mellanox data port pci id
+    setup: 
+      filter: "{{ ansible_enp94s0f1.pciid }}"
+  post_tasks:
+   - name: Reboot Server
+     reboot:
+  roles:
+    - mrlesmithjr.config-interfaces
+    - grub_vswitch
+    - rdma_mellanox_vpp #Vpp build, install, configure
+      #Has unique templating for mellanox
