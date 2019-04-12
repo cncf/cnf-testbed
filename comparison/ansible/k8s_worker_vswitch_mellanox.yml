@@ -2,7 +2,9 @@
 - hosts: localhost
   vars:
     #    server_list: quadtestb-07,quadtestb-08
-    deploy_env: k8sworker
+    facility: "{{ lookup('env','PACKET_FACILITY') }}"
+    deploy_env: "{{ lookup('env','K8S_DEPLOY_ENV') }}"
+    project_name: "{{ lookup('env','PROJECT_NAME') }}"
     vlans:
       vlan1:
         interface: eth1

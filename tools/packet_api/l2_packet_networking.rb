@@ -140,7 +140,7 @@ end
 if options[:facility]
   facility = options[:facility]
 else
-  facility = "#{ENV['FACILITY']}"
+  facility = "#{ENV['PACKET_FACILITY']}"
 end
 phttp = PacketHttp.new(api_token, packet_url)
 
