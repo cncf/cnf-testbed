@@ -81,7 +81,7 @@ Meeting ID: 297 749 799
 
 Find your local number: https://zoom.us/u/acX94Wyyaj
 
-- **Next meeting: Monday, April 15th at 8AM PT**
+- **Next meeting: Monday, May 6th at 8AM PT**
 
 ## Meeting Minutes
 
@@ -97,7 +97,12 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 
 ### CNFs At KubeCon + CloudNativeCon EU 2019
 
-Thursday, May 23 • 11:05am - 12:30pm - [Intro + Deep Dive BoF: Cloud Native Network Functions (CNF) Testbed - Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://sched.co/MSzj)
+Thursday, May 23 • 11:05am - 12:30pm - [Intro + Deep Dive BoF: Telecom User Group and Cloud Native Network Functions (CNF) Testbed - Cheryl Hung, Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://sched.co/MSzj)
+
+
+### CNFs At KubeCon + CloudNativeCon China 2019
+
+[TBD](https://www.lfasiallc.com/events/kubecon-cloudnativecon-china-2019/)
 
 
 ## Past Events:
