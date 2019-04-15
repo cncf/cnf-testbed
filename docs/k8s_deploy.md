@@ -87,8 +87,8 @@ HOST
 Packet projects are limited to a maximum of 12 virtual networks. Because of this, the ability to create vlans dynamically may become limited depending on the number of co-existing test environments. These playbooks are configured to re-use dynamically created VLANs but in some cases vlans may have been created ahead of time and need to be re-used. In such cases, one just needs to alter their configuration so that the generated name of the vlan matches the description of the vlan in the packet environment. The playbook generates vlan names as such:
 
 ```
-{deploy environment}testvlan1
-{deploy environment}testvlan2
+{deploy environment}vlan1
+{deploy environment}vlan2
 ```
 
-where deploy environment is the value of DEPLOY_ENV in your os-cluster.env environment variable. If finer grain control over the vlan name is needed, the 'testvlan*n*' portion of generated names can be changed in openstack_chef_install.yml under hosts["all"].roles["packet_l2"].vars.vlans
+where deploy environment is the value of DEPLOY_ENV in your os-cluster.env environment variable. If finer grain control over the vlan name is needed, the 'vlan*n*' portion of generated names can be changed in the playbook (eg. k8s_worker_vswitch_mellanox.yml) under hosts["all"].vars.vlans
