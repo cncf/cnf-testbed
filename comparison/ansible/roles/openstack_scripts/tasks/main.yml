@@ -54,6 +54,13 @@
     mode: 0755
   when: host_0_address == inventory_hostname
 
+- name: add delete_vlans.sh openstack client script
+  template:
+    src: delete_vlans.sh
+    dest: /root/delete_vlans.sh
+    mode: 0755
+  when: host_0_address == inventory_hostname
+
 - name: add create_router.sh openstack script
   template:
     src: create_router.sh
@@ -108,6 +115,13 @@
   template:
     src: create_instance.sh
     dest: /root/create_instance.sh
+    mode: 0755
+  when: host_0_address == inventory_hostname
+
+- name: add delete_instance.sh
+  template:
+    src: delete_instance.sh
+    dest: /root/delete_instance.sh
     mode: 0755
   when: host_0_address == inventory_hostname
 
