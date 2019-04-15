@@ -34,7 +34,6 @@ Brings up an OpenStack cluster, provisions L2 Networking & installs VPP vSwitch 
 
 
     ```
-    cd tools
     source openstack-cluster.env
     ./deploy_openstack_cluster.sh
     ```
@@ -74,7 +73,7 @@ Run `SKIP_PROVISIONING=true ./deploy_openstack_cluster.sh` again to finish setti
 
 ## Testing
 
-The quickest way to test is to execute run_openstack_benchmark.sh on the same host that performed the deployment. The steps within can be manually performed witht he following
+The quickest way to test is to execute run_openstack_benchmark.sh on the same host that performed the deployment. The steps within can be manually performed with the following
 
 1. SSH to the control node.  Eg.  `ssh {ip_of_first_machine}`
 
@@ -85,7 +84,7 @@ The quickest way to test is to execute run_openstack_benchmark.sh on the same ho
    * Run the `./create_masq.sh` script to create an external network with router setup to masquerade traffic out of the uplink on the master
    * Run the `./create_instance.sh` script to create a VM with a floating IP
 
-4. Verify SSH connectivity from the master node to the compute VM like such:
+4. Verify SSH connectivity from the controller node to the compute VM like such:
 
     `ssh ubuntu@{vm floating ip here}`
 
@@ -114,13 +113,13 @@ _not yet supported_
 1. Terraform creates instances
 2. The playbook openstack_infra_setup.yml is run by terraform-ansible-provisioner once each host is created. This playbook sets up nodes (ntp, GRUB config, etc.)
 3. The deployment container runs the ansible playbook openstack_chef install.yml against the hosts to deploy the actual openstack services
-  - set up chef and deploy openstack recipes
-  - runs chef in local mode to configure a single "control/network" node and "compute" node
-  - runs further ansible to set up vpp, and the openstack network-vpp driver
-  - sets up the etcd instance needed for VPP functionality
-  - configures nova-compute for hugepage support
-  - sets up a default flavor (id: 1) for hugepages support
-  - installs the xenial ubuntu image
+    - set up chef and deploy openstack recipes
+    - runs chef in local mode to configure a single "control/network" node and "compute" node
+    - runs further ansible to set up vpp, and the openstack network-vpp driver
+    - sets up the etcd instance needed for VPP functionality
+    - configures nova-compute for hugepage support
+    - sets up a default flavor (id: 1) for hugepages support
+    - installs the xenial ubuntu image
 
 
 ## Layer 2 Configuration
