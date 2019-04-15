@@ -32,9 +32,10 @@ docker run \
        -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
        -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
        -e PACKET_FACILITY=${PACKET_FACILITY} \
+       -e K8S_DEPLOY_ENV=${K8S_DEPLOY_ENV} \
        -e ANSIBLE_HOST_KEY_CHECKING=False \
        --entrypoint=ansible-playbook \
-       -ti cnfdeploytools:latest -i "${worker_ips// /,}," -e deploy_env=${K8S_DEPLOY_ENV} -e server_list="${worker_hostnames// /,}" /ansible/$PLAYBOOK
+       -ti cnfdeploytools:latest -i "${worker_ips// /,}," -e server_list="${worker_hostnames// /,}" /ansible/$PLAYBOOK
 
 #VSWITCH_ELAPSED_TIME=$SECONDS
 
