@@ -16,9 +16,9 @@ docker build -t cnfdeploytools:latest -f deploy/Dockerfile deploy/
 
 Ensure SSH public/private key pair setup on Packet (in [common setup steps](steps_to_deploy_testbed.mkd#common-steps)) is available at $HOME/.ssh/id_rsa[.pub] on the workstation starting the deployment
 
-If you're running on a local host or any other host outside of the cluster LAN, you will need to set your primary DNS to 147.75.69.23 and disable dnsmasq in orrder for the generated hostnames to be reachable 
+If you're running on a local host or any other host outside of the cluster LAN, you will need to set your primary DNS to 147.75.69.23 and disable dnsmasq in order for the generated hostnames to be reachable 
 
-## Deployment to Packet reserved instances
+## Deployment to Packet
 
 Brings up a k8s cluster, provisions L2 Networking & installs VPP vSwitch on master and compute nodes
 
@@ -34,10 +34,10 @@ Brings up a k8s cluster, provisions L2 Networking & installs VPP vSwitch on mast
 3. Next source the k8s-cluster.env file in the cnfs/tools dir, which has packet api token, k8s version, node types ect - and deploy
 
 
-```
-source k8s-cluster.env
-./deploy_k8s_cluster.sh
-```
+    ```
+    source k8s-cluster.env
+    ./deploy_k8s_cluster.sh
+    ```
 
 Once deploy_cluster.sh is finished you will find you kubeconfig file under REPO/tools/data/kubeconfig
 
@@ -82,4 +82,13 @@ HOST
   - removes ports from bond on worker nodes (ansible)
   - sets up vpp on worker node (ansible)
 
+## VPP Vlan considerations with packet
 
+Packet projects are limited to a maximum of 12 virtual networks. Because of this, the ability to create vlans dynamically may become limited depending on the number of co-existing test environments. These playbooks are configured to re-use dynamically created VLANs but in some cases vlans may have been created ahead of time and need to be re-used. In such cases, one just needs to alter their configuration so that the generated name of the vlan matches the description of the vlan in the packet environment. The playbook generates vlan names as such:
+
+```
+{deploy environment}testvlan1
+{deploy environment}testvlan2
+```
+
+where deploy environment is the value of DEPLOY_ENV in your os-cluster.env environment variable. If finer grain control over the vlan name is needed, the 'testvlan*n*' portion of generated names can be changed in openstack_chef_install.yml under hosts["all"].roles["packet_l2"].vars.vlans
