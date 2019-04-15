@@ -3,32 +3,51 @@ WIP: Steps to deploy the testbed for different environments
 
 ## Common Steps
 
-1. Clone https://github.com/cncf/cnf-testbed
-2. Install any pre-requites
+1. Install any pre-requites
    - Install [Docker](https://docs.docker.com/install/)
    - Install [git](https://help.github.com/articles/set-up-git/)
+2. Clone https://github.com/cncf/cnf-testbed
 3. Setup Packet account 
    - Create a [Packet account](https://www.packet.net/) ([help page](https://help.packet.net/article/13-portal#display--description))
    - Create a Packet project
-   - Take note of the Project UUID from the Project Settings page
-   - Create a Project API key
-   - Take note of the Project API key
-   - Add your personal ssh key to the Packet project / account
+   - Take note of the Project UUID and Project Name from the Project Settings page
+   - Create a Project API key for terraform and ansible to use
+   - Add your personal ssh key in Packet Project Settings under SSH Keys on the left. 
+        - Alternatively, you can configure your ssh key on your user account and it will be automatically added to the hosts created in your projects. You can do so by clicking the down arrow icon next to your profile picture then clicking the SSH Keys link in the drop down
 
 For additional optimization of the quad-Intel Packet machines (eg. turning on hyper-threading) see the [quad Intel install docs](docs/quad_intel_install.md)
 
 ## Openstack deploy
 
-See [steps to deploy openstack documentation](docs/openstack_deploy.md) for specifics on how to deploy.
+See [steps to deploy openstack documentation](docs/openstack_deploy.md) for specifics on deployment.
 
-Overview of deploy stages for OpenStack
+#### Overview of deploy steps for OpenStack
 
-1. Create configuration with Packet API, number of nodes, etc
-1. Run the [openstack](https://github.com/cncf/cnf-testbed/blob/38a89ad2dde59711fda8015308a1f0b19f50e946/tools/deploy_openstack_cluster.sh) deploy cluster script which provisions the Packet machines with Terraform
+1. Change directory: `cd cnf-testbed/tools`
+1. Create your configuration file opestack-cluster.env (from os-cluster.env.example) with the required fields overridden:
+    - Packet API key/auth token created above
+    - Packet Project ID
+    - Packet Project Name
+    - Facility (note: this field typically has a default but you will likely want to adjust it according to the region the deployment host is running from)
+1. Source your config: `source openstack-cluster.env`
+1. Run the [deploy_openstack_cluster.sh](/tools/deploy_openstack_cluster.sh) script to start the deployment
+
+#### Overview of stages in OpenStack deployment
 1. Terraform starts Ansible which pre-configures the Packet machines (using the openstack infrastructure playbook). The playbook configures the data plane interfaces, installs mellanox drivers, optimizes grub config and reboots the compute nodes
 1. Ansible then runs the openstack install playbook, which configures the  Packet switch and VLANs and then deploys OpenStack using Chef to the Packet nodes
 1. Ansible then installs & configures VPP as a vSwitch using the Openstack vpp-networking plugin to all compute nodes in the cluster
 1. All OpenStack compute nodes are available for scheduling
+
+#### Additional testing
+1. Running the test_openstack_create.sh script will conduct a simple test
+1. Openstack network/neutron resources are created:
+    - Vlans
+    - Vlan subnets
+    - External network with router and routes to vlan subnets
+    - iptables masquerade for all traffic coming from the vpp uplink interface (including enabling ipv*n* forwarding configs on the packet host)
+1. A compute VM is created and a floating IP assigned to it
+1. The controller node then establishes an SSH connection to the newly created VM via the floating IP
+1. The outcome of the connection attempt is printed then the created resources are deleted and config changes reverted
 
 
 ## K8s
@@ -38,9 +57,14 @@ See [steps to deploy k8s documentation](docs/k8s_deploy.md) for specifics on how
 
 Overview of deploy stages for K8s
 
-1. Create configuration with Packet API, number of nodes, etc ([k8s example](https://github.com/cncf/cnf-testbed/blob/master/tools/k8s_benchmark_quad_intel.env.example))
-1. Run the ([k8s](https://github.com/cncf/cnf-testbed/blob/38a89ad2dde59711fda8015308a1f0b19f50e946/tools/deploy_k8s_cluster.sh) deploy cluster script which provisions the Packet machines and starts the K8s bootstrap process
-1. Cloud-init bootstraps the Kubernetes cluster on the Packet nodes. 
+1. Change directory: `cd cnf-testbed/tools`
+1. Create your configuration file k8s-cluster.env (from k8s-cluster.env.example) with the required fields overridden:
+    - Packet API key/auth token created above
+    - Packet Project ID
+    - Packet Project Name
+    - Facility (note: this field typically has a default but you will likely want to adjust it according to the region the deployment host is running from)
+1. Run the [deploy_k8s_cluster.sh](/tools/deploy_k8s_cluster.sh) deploy cluster script which provisions the Packet machines and starts the K8s bootstrap process
+1. Cross-cloud container Cloud-init bootstraps the Kubernetes cluster on the Packet nodes. 
 1. The k8s vpp vswitch installer runs the Ansible k8s vpp vswitch playbook which configures the Packet switch and VLANs 
 1. Ansible then optimizes the system configuration, installs & configures the VPP vSwitch and reboots the worker nodes
 
