@@ -70,7 +70,7 @@ VLAN assignments
   * vlan2 => eth1
 
 
-1. cross-cloud container creates hosts via terraform and deploys kubernetes
+1. cross-cloud provisioner creates hosts via terraform and deploys kubernetes
 2. when VPP is enabled (defualt) ansible-playbook runs the playbook specified in the .env file (default: k8s_worker_vswitch_mellanox.yml) to setup the k8s cluster L2 networking
 
 PACKET
