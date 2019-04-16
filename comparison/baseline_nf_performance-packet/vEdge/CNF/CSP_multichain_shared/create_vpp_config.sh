@@ -229,6 +229,10 @@ function warn () {
 
 validate_input "${@}" || die
 clean_vpp_config || die
+if [ -z "$(apt-cache policy pciutils | grep Installed)" ]; then
+    warn "Installing pciutils"
+    apt update && apt install pciutils
+fi
 if detect_mellanox; then
     # This is most probably Packet mlx env
     VPP_INTERFACES=( "TwentyFiveGigabitEthernet5e/0/1" )
