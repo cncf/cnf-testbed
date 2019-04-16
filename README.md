@@ -102,7 +102,7 @@ Thursday, May 23 • 11:05am - 12:30pm - [Intro + Deep Dive BoF: Telecom User Gr
 
 ### CNFs At KubeCon + CloudNativeCon China 2019
 
-[TBD](https://www.lfasiallc.com/events/kubecon-cloudnativecon-china-2019/)
+Tuesday, June 25 • 11:20 - 11:55am - [Intro + Deep Dive BoF: Telecom User Group and Cloud Native Network Functions (CNF) Testbed - Cheryl Hung, Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://sched.co/OBhN)
 
 
 ## Past Events:
