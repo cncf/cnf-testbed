@@ -156,3 +156,27 @@ Packet projects are limited to a maximum of 12 virtual networks. Because of this
 
 where deploy environment is the value of DEPLOY_ENV in your os-cluster.env environment variable. If finer grain control over the vlan name is needed, the 'testvlan*n*' portion of generated names can be changed in openstack_chef_install.yml under hosts["all"].roles["packet_l2"].vars.vlans
 
+## Accessing VNFs from "Outside" - Inbound Access ##
+
+Inbound access into the Virutal Machines is possible when using the ```create_masq.sh``` script by adding a floating IP addres from the `netext` network, but this access is only available from the single control node.  In order to support access from other machines we can use the create_masq.sh script to define and add a Public IPv4 network to the enviornment.
+
+On a new deployment, ensure that the create_masquerade variable is set to false on creation (see the Layer 2 section and add create_masquerade=false to the ANSIBLE_ARGS '-e' parameter).  If a deployment is already complete, you can remove the `netext` network from the router and delete the network.
+
+In either case, with a Packet.net environment, one should:
+
+1) ensure there is a separate network (e.g. VLAN) for client traffic forwarding available
+2) ensure that the client traffic VLAN is the only one with a gateway set so that routed traffic flows by default over that network
+3) create an additional IPv4 "Public" network segment of at least /29 CIDR size and allocate the entire network to the control node via the Packet.net API/UI (or route a similar network to the control node)
+4) run the create_masq.sh script with the new network information, overriding the default:
+
+```
+create_masq.sh {gateway_network_VLAN_id} {public_v4_network} {public_v4_CIDR} {public_v4_gateway}
+```
+
+For example, if the network that Packet assigned is 10.11.12.0/29, and VLAN 2113 was created for gateway access:
+
+```
+create_masq.sh 2113 10.11.12.0 29 10.11.12.1
+```
+
+At this point, a floating IP can be allocated from the `netext` pool and associated with a VM, and that address will then forward to the VM in question from anywhere that the `netext` network is routed.  Note that OpenStack security is disabled in the current VPP environment so all ports will be exposed with this model.
