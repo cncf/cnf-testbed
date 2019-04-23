@@ -1,5 +1,9 @@
 # Provision L2 Networking 
 
-resource "packet_device" "cnfs" {
+resource "packet_device" "master" {
+  hardware_reservation_id = "next-available"
+}
+
+resource "packet_device" "worker" {
   hardware_reservation_id = "next-available"
 }
