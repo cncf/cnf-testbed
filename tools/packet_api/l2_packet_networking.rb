@@ -140,7 +140,7 @@ end
 if options[:facility]
   facility = options[:facility]
 else
-  facility = "#{ENV['FACILITY']}"
+  facility = "#{ENV['PACKET_FACILITY']}"
 end
 phttp = PacketHttp.new(api_token, packet_url)
 
@@ -159,7 +159,7 @@ if options[:show_vlan_devices]
   vlans_response = phttp.api(url_extention: "/projects/#{project_id}/virtual-networks")
   parsed_vlans = JSON.parse(vlans_response.body) 
   p "parsed vlans_response: #{parsed_vlans}"  if options[:verbose]
-  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["description"] == "#{options[:show_vlan_devices]}"}
+  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["description"] == "#{options[:show_vlan_devices]}" && x["facility_code"].casecmp(facility) == 0 }
   p "existing_vlan1: #{vlan1}"  if options[:verbose]
   puts vlan1.to_json
 end
@@ -260,7 +260,7 @@ if options[:create_vlan]
   parsed_vlans = JSON.parse(vlans_response.body) 
   p "parsed vlans_response: #{parsed_vlans}"  if options[:verbose]
   # 7.b Get existing vlan if it exists by description
-  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["description"] == "#{options[:create_vlan]}"}
+  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["description"] == "#{options[:create_vlan]}" && x["facility_code"].casecmp(facility) == 0 }
   p "existing_vlan1: #{vlan1}"  if options[:verbose]
   # 7.b Create new Vlans, vxlan = vlan
   unless vlan1
@@ -290,7 +290,7 @@ if options[:delete_vlan]
   parsed_vlans = JSON.parse(vlans_response.body) 
   p "parsed vlans_response: #{parsed_vlans}"  if options[:verbose]
   # 7.b Get existing vlan if it exists by description
-  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["description"] == "#{options[:delete_vlan]}"}
+  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["description"] == "#{options[:delete_vlan]}" && x["facility_code"].casecmp(facility) == 0 }
   p "existing_vlan1: #{vlan1}"  if options[:verbose]
   # 7.b Create new Vlans, vxlan = vlan
   if vlan1
@@ -319,7 +319,7 @@ if options[:assign_vlan]
   parsed_vlans = JSON.parse(vlans_response.body) 
   p "parsed vlans_response: #{parsed_vlans}"  if options[:verbose]
   # 7.b Get existing vlan if it exists by description
-  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["description"] == "#{options[:assign_vlan]}"}
+  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["description"] == "#{options[:assign_vlan]}" && x["facility_code"].casecmp(facility) == 0 }
   if vlan1.nil?
     puts "No VLAN found for #{options[:assign_vlan]}"
     exit 1
@@ -349,7 +349,7 @@ if options[:assign_vlan_id]
   parsed_vlans = JSON.parse(vlans_response.body) 
   p "parsed vlans_response: #{parsed_vlans}"  if options[:verbose]
   # 7.b Get existing vlan if it exists by description
-  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["vxlan"] == options[:assign_vlan_id].to_i}
+  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["vxlan"] == options[:assign_vlan_id].to_i && x["facility_code"].casecmp(facility) == 0 }
   if vlan1.nil?
     puts "No VLAN found for #{options[:assign_vlan_id]}"
     exit 1
@@ -380,7 +380,7 @@ if options[:unassign_vlan_id]
   parsed_vlans = JSON.parse(vlans_response.body) 
   p "parsed vlans_response: #{parsed_vlans}"  if options[:verbose]
   # 7.b Get existing vlan if it exists by description
-  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["vxlan"] == options[:unassign_vlan_id].to_i}
+  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["vxlan"] == options[:unassign_vlan_id].to_i && x["facility_code"].casecmp(facility) == 0 }
   if vlan1.nil?
     puts "No VLAN found for #{options[:unassign_vlan_id]}"
     exit 1
@@ -411,7 +411,7 @@ if options[:unassign_vlan]
   parsed_vlans = JSON.parse(vlans_response.body) 
   p "parsed vlans_response: #{parsed_vlans}"  if options[:verbose]
   # 7.b Get existing vlan if it exists by description
-  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["description"] == "#{options[:unassign_vlan]}"}
+  vlan1 = parsed_vlans["virtual_networks"].find{|x| x["description"] == "#{options[:unassign_vlan]}" && x["facility_code"].casecmp(facility) == 0 }
   p "existing_vlan1: #{vlan1}"  if options[:verbose]
   vlan_port = device["network_ports"].find{|x| x["name"]==options[:unassign_vlan_port]}
   p "vlan port: #{vlan_port}"  if options[:verbose]
