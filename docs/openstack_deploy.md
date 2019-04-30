@@ -4,10 +4,10 @@ See [common setup steps](steps_to_deploy_testbed.mkd#common-steps) for the cnf t
 
 ## Build the tools
 
-On a machine with the cncf/cnf-testbed repo and a docker capable enviornment (e.g. Linux with Docker, or a laptop with the Docker installed) run the following from a bash command line:
+On a machine with a docker capable enviornment (e.g. Linux with Docker, or a laptop with the Docker installed), clone the cncf/cnf-testbed repo and run the following from a bash command line to build the deployment container images:
 
 ```
-cd tools
+cd cnf-testbed/tools
 docker build -t ubuntu:packet_api -f packet_api/Dockerfile  packet_api/
 docker build -t cnfdeploytools:latest -f deploy/Dockerfile deploy/
 ```
@@ -16,42 +16,40 @@ docker build -t cnfdeploytools:latest -f deploy/Dockerfile deploy/
 
 Ensure SSH public/private key pair setup on Packet (in [common setup steps](steps_to_deploy_testbed.mkd#common-steps)) is available at $HOME/.ssh/id_rsa[.pub] on the workstation starting the deployment
 
-## Deployment to Packet reserved instances
+## Deploy the OpenStack cluster
+Brings up an OpenStack cluster, provisions L2 Networking & installs VPP vSwitch on master and compute nodes
 
-Steps to bring up an OpenStack cluster, Provision L2 Networking & VPP vSwitch
-
-_To Deploy the OpenStack cluster_
 1. Create openstack-cluster.env with Packet and cluster info.  (See [os-cluster.env.example](tools/os-cluster.env.example))
    * Add your Packet Auth token with Network configuration capabilities
    * Add your Packet Project ID
    * Add your Packet Project Name (Quotes are needed to escape any spaces in the name)
+   * Add your Packet Facility (for L2 provisioning)
    * Set NODE_PLAN to m2.xlarge for a Mellanox NIC machine and n2.xlarge for a Intel NIC machine
-2. If using reserved instances, copy [reserved_override.tf.disabled](tools/terrafrom-ansible/reserved_override.tf.disabled) to override.tf
+   * Set DEPLOY_ENV to generate VLAN descriptions or make use of pre-existing vlans (more on that below)
+   * If using reserved instances
+     * copy [reserved_override.tf.disabled](tools/terrafrom-ansible/reserved_override.tf.disabled) to override.tf in cnf-testbed/tools/terrafrom-ansible/ : `cp terraform-ansible/reserved_override.tf.disabled terraform-ansible/override.tf`
+     * Create an inventory file of reserved instances at cnf-testbed/comparison/ansible/inventory (see below for details)
 3. Next source the openstack-cluster.env file and run the deploy script
-   * Note that as this process can take approximately an hour, if you are running this test from a remote machine, it is recommended that you launch a session with a tool like `tmux` or `screen` in order to avoid a partial build if the session fails
+   * Note this process can take approximately an hour, depending on the speed with which the Packet.net machines are built. If you are running this test from a remote machine, it is recommended that you launch a session with a tool like `tmux` or `screen` in order to avoid a partial build if the session fails
 
 
-```
-cd tools
-cp terraform-ansible/reserved_override.tf.disabled terraform-ansible/override.tf
-source openstack-cluster.env
-./deploy_openstack_cluster.sh
-```
-
-The deploy may take up to an hour, depending on the speed with which the Packet.net machines are built.
-
+    ```
+    source openstack-cluster.env
+    ./deploy_openstack_cluster.sh
+    ```
 
 ---
 
 The Openstack deploy can also be done in stages as follows
 
-#### Provision packet machines
+## Provision packet machines
 
-Packet web ui or `PROVISION_ONLY=true ./deploy_openstack_cluster.sh`
+This can be done with the Packet web ui or by invoking only the terraform portion of the deployment like such: 
+`PROVISION_ONLY=true ./deploy_openstack_cluster.sh`
 
-#### Issue: Packet Terraform provider bug causes reserved instances to not be added to it's state file
+#### Issue: Packet Terraform provider unable to add reserved instances to it's state file
 
-Because of a [Terraform Packet provider bug](https://github.com/cncf/cnf-testbed/issues/215) the inventory file for ansible does not contain the server IPs.  If the ansible inventory file does not contain the new server IPs, then add manually adding them is required.
+Because of a [Terraform Packet provider bug](https://github.com/cncf/cnf-testbed/issues/215) an inventory file for reserved instances must be manually created with the reserved instance IP addresses. 
 
 ```
 [etcd]
@@ -63,12 +61,9 @@ Because of a [Terraform Packet provider bug](https://github.com/cncf/cnf-testbed
 {node_n_ip}
 [all]
 ```
+Place the inventory in cnf-testbed/comparison/ansible/ then run `PROVISION_ONLY=true ./deploy_openstack_cluster.sh` to set up the systems
 
-
-
-Run `PROVISION_ONLY=true ./deploy_openstack_cluster.sh` again to finish setting up the systems
-
-#### Deploy OpenStack and setup the VPP vSwitch
+## Deploy OpenStack and setup the VPP vSwitch
 
 Run `SKIP_PROVISIONING=true ./deploy_openstack_cluster.sh` again to finish setting up the systems
 
@@ -76,13 +71,22 @@ Run `SKIP_PROVISIONING=true ./deploy_openstack_cluster.sh` again to finish setti
 ---
 
 
-### Testing
+## Testing
 
-1. SSH to the control node.  Eg.  ssh {ip_of_first_machine}
+The quickest way to test is to execute run_openstack_benchmark.sh on the same host that performed the deployment. The steps within can be manually performed with the following
+
+1. SSH to the control node.  Eg.  `ssh {ip_of_first_machine}`
 
 2. Load the Openstack env config `source openrc`
 
-3. Run the `./create_instance.sh` script to create a VM
+3. Run the following scripts to set up network resources in openstack neutron and create a compute VM:
+   * Run the `./create_vlans.sh` script to create vlans and their subnetworks
+   * Run the `./create_masq.sh` script to create an external network with router setup to masquerade traffic out of the uplink on the master
+   * Run the `./create_instance.sh` script to create a VM with a floating IP
+
+4. Verify SSH connectivity from the controller node to the compute VM like such:
+
+    `ssh ubuntu@{vm floating ip here}`
 
 
 For arbitrary Openstack CLI commands (e.g. listing servers deployed):
@@ -106,17 +110,16 @@ _not yet supported_
   * vlan2 => eth1
 
 
-1. cross-cloud (terraform)
-2. terraform-ansible runs the playbook openstack_infra_create.yml 
-3. openstack_infra_create.yml playbook sets up nodes (ntp, GRUB config, etc.)
-4. start script then launches ansible-playbook with openstack_chef_create.yaml playbook
-  - set up chef and openstack recipes
-  - runs chef in local mode to configure a single "control/network" node and "compute" node
-  - runs further ansible to set up vpp, and the openstack newtork-vpp driver
-  - sets up the etcd instance needed for VPP functionality
-  - configures nova-compute for hugepage support
-  - sets up a default flavor (id: 1) for hugepages support
-  - installs the xenial ubuntu image
+1. Terraform creates instances
+2. The playbook openstack_infra_setup.yml is run by terraform-ansible-provisioner once each host is created. This playbook sets up nodes (ntp, GRUB config, etc.)
+3. The deployment container runs the ansible playbook openstack_chef install.yml against the hosts to deploy the actual openstack services
+    - set up chef and deploy openstack recipes
+    - runs chef in local mode to configure a single "control/network" node and "compute" node
+    - runs further ansible to set up vpp, and the openstack network-vpp driver
+    - sets up the etcd instance needed for VPP functionality
+    - configures nova-compute for hugepage support
+    - sets up a default flavor (id: 1) for hugepages support
+    - installs the xenial ubuntu image
 
 
 ## Layer 2 Configuration
@@ -130,7 +133,7 @@ By default, the openstack_chef_create.yaml playbook will set up VPP as the opens
     vpp_branch: '18.07'
     vpp_commit: stable/1807
     create_vlans: true
-    create_masquerade: true
+    create_masquerade: true # NOTE: this var is currently disabled in the codebase. Masquerade creation must be run manually at the present time
 ```
 
 * vpp_network - When set to false, OVS will be deployed as the L2 instead
@@ -153,3 +156,27 @@ Packet projects are limited to a maximum of 12 virtual networks. Because of this
 
 where deploy environment is the value of DEPLOY_ENV in your os-cluster.env environment variable. If finer grain control over the vlan name is needed, the 'testvlan*n*' portion of generated names can be changed in openstack_chef_install.yml under hosts["all"].roles["packet_l2"].vars.vlans
 
+## Accessing VNFs from "Outside" - Inbound Access ##
+
+Inbound access into the Virutal Machines is possible when using the ```create_masq.sh``` script by adding a floating IP addres from the `netext` network, but this access is only available from the single control node.  In order to support access from other machines we can use the create_masq.sh script to define and add a Public IPv4 network to the enviornment.
+
+On a new deployment, ensure that the create_masquerade variable is set to false on creation (see the Layer 2 section and add create_masquerade=false to the ANSIBLE_ARGS '-e' parameter).  If a deployment is already complete, you can remove the `netext` network from the router and delete the network.
+
+In either case, with a Packet.net environment, one should:
+
+1) ensure there is a separate network (e.g. VLAN) for client traffic forwarding available
+2) ensure that the client traffic VLAN is the only one with a gateway set so that routed traffic flows by default over that network
+3) create an additional IPv4 "Public" network segment of at least /29 CIDR size and allocate the entire network to the control node via the Packet.net API/UI (or route a similar network to the control node)
+4) run the create_masq.sh script with the new network information, overriding the default:
+
+```
+create_masq.sh {gateway_network_VLAN_id} {public_v4_network} {public_v4_CIDR} {public_v4_gateway}
+```
+
+For example, if the network that Packet assigned is 10.11.12.0/29, and VLAN 2113 was created for gateway access:
+
+```
+create_masq.sh 2113 10.11.12.0 29 10.11.12.1
+```
+
+At this point, a floating IP can be allocated from the `netext` pool and associated with a VM, and that address will then forward to the VM in question from anywhere that the `netext` network is routed.  Note that OpenStack security is disabled in the current VPP environment so all ports will be exposed with this model.
