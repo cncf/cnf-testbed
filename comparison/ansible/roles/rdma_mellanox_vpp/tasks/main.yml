@@ -73,11 +73,11 @@
   when: baseline
 
 - name: Write vpp startup config file
-  template: src=vEdge_startup.conf.j2 dest=/etc/vpp/old_startup.conf
+  template: src=vEdge_startup.conf.j2 dest=/etc/vpp/startup.conf
   when: not baseline
 
 - name: Update CNF VPP configuration
-  template: src=vEdge_cnf.conf.j2 dest=/etc/vpp/old_setup.gate
+  template: src=vEdge_cnf.conf.j2 dest=/etc/vpp/setup.gate
   when: cnf
 
 - name: Add 1 chain VPP template
@@ -93,7 +93,7 @@
   when: cnf
 
 - name: Update VNF VPP configuration
-  template:  src=vEdge_vnf.conf.j2 dest=/etc/vpp/old_setup.gate
+  template:  src=vEdge_vnf.conf.j2 dest=/etc/vpp/setup.gate
   when: vnf
 
 - name: Restart vpp

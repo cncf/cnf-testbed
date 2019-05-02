@@ -1,0 +1,26 @@
+---
+
+- name: create VPP directory
+  file:
+    state: directory
+    dest: /etc/vpp
+    mode: 0755
+
+- name: make sure vfio-pci loads on startup
+  template:
+    src: vfio-pci.conf
+    dest: /etc/modules-load.d/vfio-pci.conf
+
+- name: Docker start vppcontainer (Intel)
+  docker_container:
+    name: vppcontainer
+    image: soelvkaer/vppcontainer:latest
+    state: started
+    network_mode: host
+    privileged: true
+    restart_policy: always
+    devices:
+      - "/dev/hugepages/:/dev/hugepages/:rwm"
+    volumes:
+      - /etc/vpp/:/etc/vpp/
+      - /dev:/dev

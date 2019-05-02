@@ -5,8 +5,10 @@
 
 - hosts: localhost
   vars:
-    #    server_list: quadtestb-07,quadtestb-08   
-    deploy_env: k8sworker
+    facility: "{{ lookup('env','PACKET_FACILITY') }}"
+    deploy_env: "{{ lookup('env','DEPLOY_ENV') }}"
+    server_list: "{{ lookup('env','SERVER_LIST') }}"
+    project_name: "{{ lookup('env','PROJECT_NAME') }}"
     vlans:
       vlan1:
         interface: eth1
@@ -21,6 +23,8 @@
   vars:
     cnf: true
     vnf: false
+    # Run host vSwitch in container
+    vswitch_container: false
     baseline: false
     hugepages: 10240
     corelist_workers: 2,4,30,32
@@ -79,6 +83,14 @@
   - name: Install Vlan Package
     apt: 
       name: vlan
+  - name: Install pip
+    apt:
+      name: python-pip
+    when: vswitch_container
+  - name: Install docker-py
+    pip:
+      name: docker-py
+    when: vswitch_container
   - name: Get bond interface slaves
     setup:
       filter: "{{ ansible_bond0.slaves }}"
@@ -115,6 +127,8 @@
   roles:
     - mrlesmithjr.config-interfaces
     - grub_vswitch
-    - vpp_install #Vpp Install
+    - { role: "avinetworks.docker", when: vswitch_container }
+    - { role: "vpp_install", when: not vswitch_container }
+    - { role: "vpp_container_install", when: vswitch_container }
     - vpp_vswitch #Vpp vswitch configure,
     #Has unique config for quad intel cards

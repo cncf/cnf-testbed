@@ -37,6 +37,11 @@
   service: 
     name: vpp
     state: restarted
+  when: not vswitch_container
+
+- name: Restart vpp (container)
+  command: docker restart vppcontainer
+  when: vswitch_container
 
 - name: Write hugepages sys.conf
   template: src=80-vpp.conf.j2 dest=/etc/sysctl.d/80-vpp.conf
