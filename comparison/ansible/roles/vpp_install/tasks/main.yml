@@ -68,7 +68,7 @@
 - name: install vpp service(s) Ubuntu
   apt:
     update_cache: yes
-    name: ["vpp","vpp-plugins","vpp-dev","vpp-dbg", "vpp-lib"]
+    name: ['vpp','vpp-dev','vpp-dbg','libvppinfra', 'vpp-plugin-core', 'vpp-plugin-dpdk']
   when: ansible_os_family == "Debian"
 
 - name: install vpp api packages(s) RedHat
@@ -79,7 +79,7 @@
 - name: install vpp api packages(s) Ubuntu
   apt:
     update_cache: yes
-    name: ["vpp-api-python","vpp-api-lua","vpp-api-java"]
+    name: ["vpp-api-python","vpp-api-java"]
   when: ansible_os_family == "Debian"
 
 - name: Enable use of vfio-pci driver

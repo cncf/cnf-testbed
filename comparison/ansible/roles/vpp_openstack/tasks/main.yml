@@ -10,6 +10,13 @@
     regexp: '^.*{{inventory_hostname}}.*$'
     line: '{{inventory_hostname}}    {{ansible_hostname}}'
 
+# TODO: report bug for this
+- name: Add vpp log dir
+  file:
+    path: /var/log/vpp
+    state: directory
+  when: vpp_ver >= 1904
+
 - name: update plugins config for vpp
   template:
     src: ml2_conf.j2
@@ -89,6 +96,12 @@
     regexp: "ip_network.*subnet.*cidr.*"
     replace: ip_network(unicode(subnet['cidr']))
 
+- name: install new vpp python api pre-req vpp_ver 19.04+ into python 2.7
+  pip:
+    name: aenum
+    executable: pip2.7
+  when: vpp_ver >= 1904
+
 - name: install openstack networking-vpp plugin
   pip:
     name: /root/networking-vpp
@@ -104,6 +117,34 @@
 #- name: bring ex-slave interface down
 #  command: ip l s dev {{vlan_interface}} down
 #  ignore_errors: true
+
+- name: Install ethtool
+  apt:
+    name: ethtool
+  when: ansible_os_family == "Debian" and vpp_ver >= 1904
+
+# Create veth pair for uplink due to deprecated tap cli
+# source: https://github.com/midonet/ansible-midonet-gateway/blob/master/tasks/static_uplink.yml
+- name: Grab ip link status
+  command: ip link
+  register: ip_link
+  changed_when: False
+
+- name: Create veth pair
+  command: ip link add vpp0 type veth peer name uplink
+  when: '"vpp0" not in ip_link.stdout and vpp_ver >= 1904'
+
+- name: Set uplink up
+  command: ip link set uplink up
+  when: '"vpp0" not in ip_link.stdout and vpp_ver >= 1904'
+
+- name: Set vpp0 up
+  command: ip link set vpp0 up
+  when: '"vpp0" not in ip_link.stdout and vpp_ver >= 1904'
+
+- name: Disable rx/tx checksumming on uplink
+  command: ethtool -K uplink rx off tx off
+  when: '"vpp0" not in ip_link.stdout and vpp_ver >= 1904'
 
 - name: add vpp-agent script
   template:
