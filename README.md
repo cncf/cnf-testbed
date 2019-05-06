@@ -81,7 +81,8 @@ Meeting ID: 297 749 799
 
 Find your local number: https://zoom.us/u/acX94Wyyaj
 
-- **Next meeting: Monday, May 6th at 8AM PT**
+- **Next zoom call postponed to Monday, June 3rd at 8AM PT**
+ - Join us at KubeCon EU on Thursday, May 23 • 11:05am - 12:30pm - [Intro + Deep Dive BoF: Telecom User Group and Cloud Native Network Functions (CNF) Testbed - Cheryl Hung, Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://sched.co/MSzj)
 
 ## Meeting Minutes
 
@@ -96,6 +97,10 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 
 
 ### CNFs At KubeCon + CloudNativeCon EU 2019
+
+Monday, May 20 • 10:00 – 10:30am - [Cloud Native Network Services Day (Hosted by LF Networking): Exploring Cloud Native Network Solutions: A cross-project collaboration, Taylor Carpenter](https://www.linuxfoundation.org/calendar/kubecon-cloudnativecon-europe/)
+
+Monday, May 20 • TBD - [Fd.io Mini-Summit](https://fdiominisummiteu19.sched.com/)
 
 Thursday, May 23 • 11:05am - 12:30pm - [Intro + Deep Dive BoF: Telecom User Group and Cloud Native Network Functions (CNF) Testbed - Cheryl Hung, Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://sched.co/MSzj)
 
