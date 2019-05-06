@@ -67,7 +67,7 @@ __Pull Requests__
 
 ## Meeting Time
 
-The CNF Testbed BoF meets on the first and third Mondays of the month at 8AM PT (USA and Canada)
+The CNF Testbed is discussed as part of CNCF's Telecom User Group on the first and third Mondays of the month at 8AM PT (USA and Canada)
 
 Join Zoom Meeting:  https://zoom.us/j/297749799
 
