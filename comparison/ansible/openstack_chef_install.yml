@@ -5,8 +5,15 @@
     vpp_ver: 1904 # vpp ver for binary install
     vpp_branch: '19.03' # ver for networking-vpp
     vpp_commit: stable/1807 # vpp ver for source build
+    vpp_vxlan: false
     create_vlans: true
     create_masquerade: true
+    vlans:
+      k8sworkervlan1:
+        interface: "eth1"
+      k8sworkervlan2:
+        interface: "eth1"
+
 
   pre_tasks:
   - setup:
@@ -42,11 +49,6 @@
         deploy_env: "{{ lookup('env','DEPLOY_ENV') }}"
         server_list: "{{ lookup('env','SERVER_LIST') }}"
         project_name: "{{ lookup('env','PROJECT_NAME') }}"
-        vlans:
-          testvlan1:
-            interface: "eth1"
-          testvlan2:
-            interface: "eth1"
       when: create_vlans
 
     - role: retr0h.etcd

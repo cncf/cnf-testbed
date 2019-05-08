@@ -4,7 +4,9 @@ interface_driver = linuxbridge
 [ml2]
 tenant_network_types = 
 extension_drivers = port_security
-type_drivers = vlan,flat,vxlan
+type_drivers = vlan,flat{% if vpp_vxlan %},vxlan
+{% endif  %}
+
 mechanism_drivers = vpp
 
 [ml2_type_vxlan]
@@ -22,8 +24,11 @@ firewall_driver = neutron.agent.not.a.real.FirewallDriver
 jwt_signing = False
 etcd_insecure_explicit_disable_https = True
 l3_hosts = {{ ansible_hostname }}
+{% if vpp_vxlan %}
 gpe_locators = bond
+{% endif  %}{% if vpp_vxlan %}
 gpe_src_cidr = {{bond0_addr | ipaddr('host/prefix')}}
+{% endif  %}
 enable_vpp_restart = False
 physnets = provider:{{vpp_interface}},flat:{{ 'tapcli-0' if vpp_ver < 1904 else 'host-vpp0' }},bond:tapcli-1
 etcd_pass =

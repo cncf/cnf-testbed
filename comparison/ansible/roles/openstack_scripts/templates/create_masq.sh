@@ -1,15 +1,22 @@
 #!/bin/bash
 
-if [[ $# == '0' ]]; then
+if [ $# -lt 1 ]; then
   vlans=({% for key,value in packet_vlans.iteritems() %}{{value.vid}} {% endfor %})
-  if [ -z "${vlans}" ]; then
-  echo "usage: $0 {vlan-id}"
-  exit 1
+  if [ -z "$vlans" ]; then
+    echo "you need to pass three parameters:"
+    echo " internal vlan id (e.g. 1044)"
+    echo " opt: subnet start address (e.g. network address)"
+    echo " opt: subnet cidr (e.g. 24)"
+    echo " opt: gateway address (e.g. network address +1)"
+    exit 1
   fi
-else
-  vlans=$1
 fi
 
+if [ -z "$1" ]; then
+  vlan=${vlans[0]}
+else
+  vlan=${1}
+fi
 subnet=${2:-10.20.30.0}
 cidr=${3:-24}
 gateway=${4:-10.20.30.1}
@@ -43,6 +50,10 @@ if ! grep '^net.ipv4.ip_forward=1' /etc/sysctl.conf -q ; then
   sysctl --system
 fi
 
+<<<<<<< 13b4635e41143d0b7617543567c7d1be6c11deea
 if ! iptables -t nat -C POSTROUTING -s ${subnet}/${cidr} -o bond0 -j MASQUERADE ; then
+=======
+if [ "$(iptables-save -t nat | grep MASQUERADE > /dev/null 2>&1; echo $? )" == "1" ]; then
+>>>>>>> Update for VXLan template support
   iptables -t nat -A POSTROUTING -s ${subnet}/${cidr} -o bond0 -j MASQUERADE
 fi
