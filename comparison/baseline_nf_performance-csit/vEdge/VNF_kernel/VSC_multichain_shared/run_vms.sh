@@ -58,7 +58,18 @@ function restart_vpp () {
 
     warn "Restarting of VPP ....."
     sudo service vpp restart || die "Service restart failed!"
-    sleep 5 || die
+    for i in $(seq 1 5); do
+        sleep 5
+        if [ -z "$(vppctl show ver | grep 'vpp v')" ]; then
+            warn "VPP not running yet"
+            if [ "${i}" == "5" ]; then
+                die "ERROR, VPP still not running"
+            fi
+        else
+            warn "VPP running"
+            break
+        fi
+    done
 }
 
 

@@ -36,10 +36,10 @@ function boot_vm () {
         -fsdev local,id=root9p,path=/,security_model=none \
         -device virtio-9p-pci,fsdev=root9p,mount_tag=/dev/root \
         -device virtio-net-pci,netdev=net0,mac="${MAC1}",bus=pci.0,addr=6.0,mq=on,tx_queue_size=1024,rx_queue_size=1024,csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off,mrg_rxbuf=off \
-        -chardev socket,id=socket0,path=/var/run/vpp/sock$((${SOCK_OFFSET} + (${NODE} * 2 - 1))),server \
+        -chardev socket,id=socket0,path=/etc/vpp/sockets/sock$((${SOCK_OFFSET} + (${NODE} * 2 - 1))).sock \
         -netdev vhost-user,id=net0,chardev=socket0,queues=1 \
         -device virtio-net-pci,netdev=net1,mac="${MAC2}",bus=pci.0,addr=7.0,mq=on,tx_queue_size=1024,rx_queue_size=1024,csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off,mrg_rxbuf=off \
-        -chardev socket,id=socket1,path=/var/run/vpp/sock$((${SOCK_OFFSET} + (${NODE} * 2))),server \
+        -chardev socket,id=socket1,path=/etc/vpp/sockets/sock$((${SOCK_OFFSET} + (${NODE} * 2))).sock \
         -netdev vhost-user,id=net1,chardev=socket1,queues=1 \
         -pidfile /var/run/qemu_"${VM_ID}".pid \
         -append "ro rootfstype=9p rootflags=trans=virtio console=ttyS0 tsc=reliable hugepages=256 init=${INIT}"

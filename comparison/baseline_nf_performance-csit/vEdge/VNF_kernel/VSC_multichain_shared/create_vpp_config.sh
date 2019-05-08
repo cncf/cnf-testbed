@@ -97,7 +97,7 @@ function generate_vpp_config_intel () {
     append_vpp_config ""
     sockets=$(( "${CHAINS}" * ("${NODES}" * 2) ))
     for socket in $(seq 1 "${sockets}"); do
-        append_vpp_config "create vhost-user socket /var/run/vpp/sock${socket}"
+        append_vpp_config "create vhost-user socket /etc/vpp/sockets/sock${socket}.sock"
     done
     append_vpp_config ""
     append_vpp_config "set int state ${VPP_INTERFACES[0]} up"
@@ -157,7 +157,7 @@ function generate_vpp_config_mlx () {
     append_vpp_config ""
     sockets=$(( "${CHAINS}" * ("${NODES}" * 2) ))
     for socket in $(seq 1 "${sockets}"); do
-        append_vpp_config "create vhost-user socket /var/run/vpp/sock${socket}.sock server"
+        append_vpp_config "create vhost-user socket /etc/vpp/sockets/sock${socket}.sock server"
     done
     append_vpp_config ""
     append_vpp_config "set int state ${VPP_INTERFACES[0]} up"
