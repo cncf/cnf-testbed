@@ -65,6 +65,11 @@
     patterns: "mariadb-client.rb"
   register: mariadb_client_rb 
 
+- name: remove admin endpoint references from openstack orchestration
+  template:
+   src: openstack-orchestration-identity_registration.rb
+   dest: /root/openstack-chef/cookbooks/openstack-orchestration/recipes/identity_registration.rb
+
 - name: Update mysql ruby gem to 0.5.2 on Ubuntu 18.04
   replace:
     dest: "{{item.path}}"
