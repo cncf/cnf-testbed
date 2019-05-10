@@ -1,10 +1,13 @@
 ---
 - hosts: all
+  vars_files:
+  - vars/{{ ansible_os_family }}_os_install.yml
   vars:
     vpp_network: true
-    vpp_ver: 1904 # vpp ver for binary install
-    vpp_branch: '19.03' # ver for networking-vpp
-    vpp_commit: stable/1807 # vpp ver for source build
+    # See os specific var files
+    # vpp_ver: 1904 # vpp ver for binary install
+    # vpp_branch: '19.03' # ver for networking-vpp
+    # vpp_commit: stable/1807 # vpp ver for source build
     create_vlans: true
     create_masquerade: true
 

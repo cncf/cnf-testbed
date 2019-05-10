@@ -16,7 +16,8 @@ network_vlan_ranges = provider:1000:2000
 flat_networks = provider,flat
 
 [securitygroup]
-firewall_driver = neutron.agent.not.a.real.FirewallDriver
+enable_security_group = False
+firewall_driver = neutron.agent.firewall.NoopFirewallDriver
 
 [ml2_vpp]
 jwt_signing = False
@@ -25,7 +26,7 @@ l3_hosts = {{ ansible_hostname }}
 gpe_locators = bond
 gpe_src_cidr = {{bond0_addr | ipaddr('host/prefix')}}
 enable_vpp_restart = False
-physnets = provider:{{vpp_interface}},flat:{{ 'tapcli-0' if vpp_ver < 1904 else 'host-vpp0' }},bond:tapcli-1
+physnets = provider:{{vpp_interface}},flat:{{ 'tapcli-0' if vpp_ver < 1904 or vpp_src else 'host-vpp0' }},bond:tapcli-1
 etcd_pass =
 etcd_user =
 etcd_port = 2379

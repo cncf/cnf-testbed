@@ -46,3 +46,9 @@
     name: nova-compute
     state: restarted
   when: not host_0_address == inventory_hostname and ansible_os_family == 'Debian'
+
+- name: restart nova-compute
+  service:
+    name: openstack-nova-compute
+    state: restarted
+  when: not host_0_address == inventory_hostname and ansible_os_family == 'RedHat'

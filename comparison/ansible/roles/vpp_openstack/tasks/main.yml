@@ -2,7 +2,7 @@
 - name: find the controller host address
   set_fact:
     host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
-    bond0_addr: "{{ansible_bond0.ipv4.address|ipmath(-1)}}/{{ansible_bond0.ipv4.netmask}}"
+    bond0_addr: "{{ansible_bond0.ipv4.address|ipmath(1)}}/{{ansible_bond0.ipv4.netmask}}"
 
 - name: add hostname to /etc/hosts
   lineinfile:
@@ -107,12 +107,8 @@
     name: /root/networking-vpp
 
 - name: migrate neutron vpp database
-  command: neutron-db-manage --subproject networking-vpp --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini upgrade head
-  when: ansible_os_family == 'RedHat'
-
-- name: migrate neutron vpp database
   command: neutron-db-manage --subproject networking-vpp --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head
-  when: ansible_os_family == 'Debian' and host_0_address == inventory_hostname
+  when: host_0_address == inventory_hostname
 
 #- name: bring ex-slave interface down
 #  command: ip l s dev {{vlan_interface}} down
@@ -121,7 +117,7 @@
 - name: Install ethtool
   apt:
     name: ethtool
-  when: ansible_os_family == "Debian" and vpp_ver >= 1904
+  when: ansible_os_family == "Debian" and vpp_ver >= 1904 and not vpp_src
 
 # Create veth pair for uplink due to deprecated tap cli
 # source: https://github.com/midonet/ansible-midonet-gateway/blob/master/tasks/static_uplink.yml
@@ -132,19 +128,19 @@
 
 - name: Create veth pair
   command: ip link add vpp0 type veth peer name uplink
-  when: '"vpp0" not in ip_link.stdout and vpp_ver >= 1904'
+  when: '"vpp0" not in ip_link.stdout and vpp_ver >= 1904 and not vpp_src'
 
 - name: Set uplink up
   command: ip link set uplink up
-  when: '"vpp0" not in ip_link.stdout and vpp_ver >= 1904'
+  when: '"vpp0" not in ip_link.stdout and vpp_ver >= 1904 and not vpp_src'
 
 - name: Set vpp0 up
   command: ip link set vpp0 up
-  when: '"vpp0" not in ip_link.stdout and vpp_ver >= 1904'
+  when: '"vpp0" not in ip_link.stdout and vpp_ver >= 1904 and not vpp_src'
 
 - name: Disable rx/tx checksumming on uplink
   command: ethtool -K uplink rx off tx off
-  when: '"vpp0" not in ip_link.stdout and vpp_ver >= 1904'
+  when: '"vpp0" not in ip_link.stdout and vpp_ver >= 1904 and not vpp_src'
 
 - name: add vpp-agent script
   template:
@@ -179,6 +175,11 @@
     src: /lib/systemd/system/vpp-agent.service
     dest: /etc/systemd/system/multi-user.target.wants/vpp-agent.service
   when: ansible_os_family == 'Debian'
+
+- name: ensure rootwrap.d folder exists
+  file:
+    path: /etc/neutron/rootwrap.d/
+    state: directory
 
 - name: ensure linuxbridge rootwrap neutron filters exist
   template:
@@ -221,12 +222,13 @@
     name: eventlet
     version: 0.22
 
-- name: update mysql thread pool to 1451
-  lineinfile:
-    dest: /etc/mysql/conf.d/openstack.cnf
-    regexp: '^.*max_connections =.*$'
-    line: 'max_connections = 1451'
-  when: host_0_address == inventory_hostname
+# This should no longer be neccesary thanks to update to multinode.json default_attributes["openstack"]["mysql"]["max_connections"] = 1451
+# - name: update mysql thread pool to 1451
+#   lineinfile:
+#     dest: /etc/mysql/conf.d/openstack.cnf
+#     regexp: '^.*max_connections =.*$'
+#     line: 'max_connections = 1451'
+#   when: host_0_address == inventory_hostname
 
 - name: stop vpp and vpp-agent
   service:
@@ -243,14 +245,20 @@
   service:
     state: restarted
     name: "{{item}}"
-  with_items: ['mysql','rabbitmq-server','apache2','neutron-server']
+  with_items: "{{['mysql','rabbitmq-server','apache2','neutron-server'] if ansible_os_family == 'Debian' else ['mysql','rabbitmq-server','neutron-server']}}"
   when: host_0_address == inventory_hostname
   
 - name: restart services on compute
   service:
     state: restarted
     name: nova-compute
-  when: not host_0_address == inventory_hostname
+  when: not host_0_address == inventory_hostname and ansible_os_family == 'Debian'
+
+- name: restart services on compute
+  service:
+    name: openstack-nova-compute
+    state: restarted
+  when: not host_0_address == inventory_hostname and ansible_os_family == 'RedHat'
 
 - name: start vpp and vpp-agent
   service:
