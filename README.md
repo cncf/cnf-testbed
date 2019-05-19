@@ -67,22 +67,7 @@ __Pull Requests__
 
 ## Meeting Time
 
-The CNF Testbed is discussed as part of CNCF's Telecom User Group on the first and third Mondays of the month at 8AM PT (USA and Canada)
-
-Join Zoom Meeting:  https://zoom.us/j/297749799
-
-Dial by your location
-        +1 669 900 6833 US (San Jose)
-        +1 646 558 8656 US (New York)
-        +1 877 369 0926 US Toll-free
-        +1 855 880 1246 US Toll-free
-
-Meeting ID: 297 749 799
-
-Find your local number: https://zoom.us/u/acX94Wyyaj
-
-- **Next zoom call postponed to Monday, June 3rd at 8AM PT**
- - Join us at KubeCon EU on Thursday, May 23 • 11:05am - 12:30pm - [Intro + Deep Dive BoF: Telecom User Group and Cloud Native Network Functions (CNF) Testbed - Cheryl Hung, Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://sched.co/MSzj)
+The CNF Testbed is discussed as part of the CNCF Telecom User Group. Please see https://github.com/cncf/telecom-user-group#meeting-time.
 
 ## Meeting Minutes
 
