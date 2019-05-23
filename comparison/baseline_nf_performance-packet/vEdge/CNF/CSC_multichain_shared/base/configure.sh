@@ -316,15 +316,8 @@ cpu {
   corelist-workers ${WORKERS}
 }
 
-dpdk {
-  no-pci
-  no-multi-seg
-  no-tx-checksum-offload
-}
-
 plugins {
   plugin default { disable }
-  plugin dpdk_plugin.so { enable }
   plugin memif_plugin.so { enable }
 }
 EOF

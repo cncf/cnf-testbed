@@ -1,5 +1,7 @@
 FROM ubuntu:bionic
 
+ENV VPP_VER "19.04"
+
 COPY base/ /vEdge
 WORKDIR /vEdge
 
@@ -22,10 +24,12 @@ RUN apt-get update -y && \
 RUN curl -s https://packagecloud.io/install/repositories/fdio/release/script.deb.sh | bash
 
 RUN apt-get install -y \
-        vpp=18.10-release \
-        vpp-dbg=18.10-release\
-        vpp-dev=18.10-release\
-        vpp-lib=18.10-release\
-        vpp-plugins=18.10-release
+        dpdk \
+        vpp=${VPP_VER}-release \
+        vpp-plugin-core=${VPP_VER}-release \
+        vpp-plugin-dpdk=${VPP_VER}-release \
+        vpp-dev=${VPP_VER}-release \
+        vpp-dbg=${VPP_VER}-release \
+        libvppinfra=${VPP_VER}-release
 
 RUN touch in_container

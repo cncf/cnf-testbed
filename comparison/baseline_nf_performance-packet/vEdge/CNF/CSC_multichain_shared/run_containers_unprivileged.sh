@@ -42,9 +42,15 @@ function restart_vpp () {
 
     set -euo pipefail
 
-    warn "Restarting of VPP ....."
-    sudo service vpp restart || die "Service restart failed!"
-    sleep 5 || die
+    if [ ! -z "$(docker ps | grep vppcontainer)" ]; then
+        warn "Restarting host VPP container"
+        docker restart vppcontainer
+        sleep 5 || die
+    else
+        warn "Restarting host VPP"
+        sudo service vpp restart || die "Service restart failed!"
+        sleep 5 || die
+    fi
 }
 
 
@@ -55,7 +61,7 @@ function update_vpp_config() {
 
     if ! cmp -s "/etc/vpp/setup.gate" "vEdge_csc_vpp.conf"; then
         warn "Updating VPP configuration."
-        sudo cp vEdge_csp_vpp.conf /etc/vpp/setup.gate || {
+        sudo cp vEdge_csc_vpp.conf /etc/vpp/setup.gate || {
             die "Failed to copy VPP configuration!"
         }
         restart_vpp || die
@@ -117,7 +123,7 @@ function run_containers () {
 
     set -euo pipefail
 
-    VLANS=()
+    VLANS=( )
 
     # Build containers.
     source ./build_container.sh || {
@@ -143,7 +149,6 @@ function run_containers () {
     cpu_list=($(source "${COMMON_DIR}"/tools/cpu_util.sh "${CHAINS}" "${NODES}" "${mtcr}" "${dtcr}" ))
     # Run conainer matrix.
     n=0
-    # Run conainer matrix.
     for chain in $(seq 1 "${CHAINS}"); do
         for node in $(seq 1 "${NODES}"); do
             dcr_name="c${chain}n${node}Edge"
@@ -151,20 +156,19 @@ function run_containers () {
             if [ -z "$(docker inspect -f {{.State.Running}} ${dcr_name})" ]; then
                 sudo docker run --tty --detach \
                     --volume "/etc/vpp/sockets/:/root/sockets/" \
-                    --name "${dcr_name}" cnf_vedge_csp \
+                    --name "${dcr_name}" cnf_vedge_csc \
                     /vEdge/configure.sh "${chain}" "${node}" "${NODES}" "${cpuset_cpus}" || {
                     die "Failed to start ${dcr_name} container!"
                 }
             fi
             n=$(( n+3 ))
-            warn "${dcr_name} container started."
+            warn "${dcr_name} container started at ${cpuset_cpus}."
             sleep 5 || die
         done
     done
     # Restart VPP to get correct queue pinning of Memifs.
     restart_vpp || die
 }
-
 
 BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
     die "Some error during localizing this source directory!"

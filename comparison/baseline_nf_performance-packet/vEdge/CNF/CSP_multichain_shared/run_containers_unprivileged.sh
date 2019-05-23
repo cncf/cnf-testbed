@@ -155,9 +155,7 @@ function run_containers () {
             dcr_name="c${chain}n${node}Edge"
             cpuset_cpus="${cpu_list[n]},${cpu_list[n+1]},${cpu_list[n+2]}"
             if [ -z "$(docker inspect -f {{.State.Running}} ${dcr_name})" ]; then
-                sudo docker run --privileged --cpus 3 --tty --detach \
-                    --cpuset-cpus "${cpuset_cpus}" \
-                    --device=/dev/hugepages/:/dev/hugepages/ \
+                sudo docker run --tty --detach \
                     --volume "/etc/vpp/sockets/:/root/sockets/" \
                     --name "${dcr_name}" cnf_vedge_csp \
                     /vEdge/configure.sh "${chain}" "${node}" "${NODES}" "${cpuset_cpus}" || {

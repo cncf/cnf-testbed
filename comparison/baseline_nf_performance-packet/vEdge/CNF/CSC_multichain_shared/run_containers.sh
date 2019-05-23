@@ -42,9 +42,15 @@ function restart_vpp () {
 
     set -euo pipefail
 
-    warn "Restarting of VPP ....."
-    sudo service vpp restart || die "Service restart failed!"
-    sleep 5 || die
+    if [ ! -z "$(docker ps | grep vppcontainer)" ]; then
+        warn "Restarting host VPP container"
+        docker restart vppcontainer
+        sleep 5 || die
+    else
+        warn "Restarting host VPP"
+        sudo service vpp restart || die "Service restart failed!"
+        sleep 5 || die
+    fi
 }
 
 
