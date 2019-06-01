@@ -74,7 +74,7 @@ The CNF Testbed is discussed as part of the CNCF Telecom User Group. Please see 
 Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/cncf-cnf-testbed-bof).
 
 ## Slack
-[https://slack.cncf.io/](https://slack.cncf.io/) - #cnf
+[https://slack.cncf.io/](https://slack.cncf.io/) - #tug
 
 
 
