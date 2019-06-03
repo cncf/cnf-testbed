@@ -1,8 +1,10 @@
 # Cloud native Network Function (CNF) Testbed
 
-The CNCF CNF Testbed provides reference code and test comparisons for running the same networking code packaged as containers (Cloud native Network Functions or CNFs) on Kubernetes and as virtual machines (Virtual Network Functions or VNFs) on OpenStack.
+The CNCF CNF Testbed provides reference code and test cases for running the same networking code packaged as containers (Cloud native Network Functions or CNFs) on Kubernetes and as virtual machines (Virtual Network Functions or VNFs) on OpenStack.
 
 Status: The CNF Testbed is *not* a CNCF-hosted [project](https://www.cncf.io/projects/). Instead, it is an initiative to create a repeatable, apples-to-apples testbed that telcos and telecoms vendors can use to evaluate how CNF architectures compare to more traditional VNF ones.
+
+The initiative collaborates with the [CNCF Telecom User Group](https://github.com/cncf/telecom-user-group) to test and demonstrate differents options.
 
 Note: _The CNF Testbed is still in the prototype stage. Additional reference code and benchmarking tests will be added incrementally._
 
@@ -74,11 +76,18 @@ The CNF Testbed is discussed as part of the CNCF Telecom User Group. Please see 
 Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/cncf-cnf-testbed-bof).
 
 ## Slack
-[https://slack.cncf.io/](https://slack.cncf.io/) - #tug
 
+[https://slack.cncf.io/](https://slack.cncf.io/)
+- #tug (Telecom User Group)
+- #cnf-testbed (Testing and R&D) 
+- #nsm (Network Service Mesh)
 
 
 ## Upcoming Events:
+
+### CNFs At KubeCon + CloudNativeCon China 2019
+
+TBD
 
 
 ### CNFs At KubeCon + CloudNativeCon EU 2019
