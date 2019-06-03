@@ -87,7 +87,10 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 
 ### CNFs At KubeCon + CloudNativeCon China 2019
 
-TBD
+Tuesday, June 25 • 11:20 - 11:55am - [Intro + Deep Dive BoF: Telecom User Group and Cloud Native Network Functions (CNF) Testbed - Cheryl Hung, Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://sched.co/OBhN)
+
+
+## Past Events:
 
 
 ### CNFs At KubeCon + CloudNativeCon EU 2019
@@ -98,13 +101,6 @@ Monday, May 20 • TBD - [Fd.io Mini-Summit](https://fdiominisummiteu19.sched.co
 
 Thursday, May 23 • 11:05am - 12:30pm - [Intro + Deep Dive BoF: Telecom User Group and Cloud Native Network Functions (CNF) Testbed - Cheryl Hung, Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://sched.co/MSzj)
 
-
-### CNFs At KubeCon + CloudNativeCon China 2019
-
-Tuesday, June 25 • 11:20 - 11:55am - [Intro + Deep Dive BoF: Telecom User Group and Cloud Native Network Functions (CNF) Testbed - Cheryl Hung, Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://sched.co/OBhN)
-
-
-## Past Events:
 
 ### CNFs At Open Networking Summit NA 2019
 
