@@ -1,0 +1,83 @@
+---
+- hosts: all
+  vars:
+    use_case: None
+    nfvbench_macs:
+      - "e4:43:4b:2e:9f:e2"
+      - "e4:43:4b:2e:9f:e3"
+
+  pre_tasks:
+  - name: Print vars
+    debug:
+      msg: "use_case: {{ use_case }}"
+  - name: Check use_case
+    fail:
+      msg: "Please specify use_case=[ipsec|3c2n_csp|3c2n_csc] when running"
+    when: use_case != "ipsec" and use_case != "3c2n_csp" and use_case != "3c2n_csc"
+
+  - name: Check if Docker is installed
+    command: which docker
+    changed_when: false
+    # failed_when: docker_installed.rc not in [0,1]
+    register: docker_installed
+  - name: Fail is Docker is not installed
+    fail:
+      msg: "Docker is not installed - Exiting play"
+    when: docker_installed.rc not in [ 0 ]
+
+    # Workaround for Ansible 2.7
+  - name: Get info on vppcontainer
+    command: docker inspect --format={{ '{{.State.Running}}' }} vppcontainer
+    changed_when: false
+    ignore_errors: true
+    register: vppcontainer
+  - name: Check if vppcontainer exists
+    debug:
+      msg: "vppcontainer {{ 'exists' if vppcontainer.rc in [ 0 ] else 'does not exist' }}"
+
+# For use with Ansible 2.8
+#  - name: Get info on VPP
+#    docker_container_info:
+#      name: vppcontainer
+#    register: vppcontainer
+#  - name: Check if vppcontainer exists
+#    debug:
+#      msg: "The container {{ 'exists' if vppcontainer.exists else 'does not exist' }}"
+ 
+  - name: Get info on vpp service
+    command: systemctl status vpp
+    changed_when: false
+    ignore_errors: true
+    register: vpp_service
+  - name: Check if vpp service is running
+    debug:
+      msg: "vpp service {{ 'running' if vpp_service.rc in [ 0 ] else 'not running' }}"
+
+  - name: Set vpp fact 1
+    set_fact:
+      vppc: "{{ true if vppcontainer.rc in [ 0 ] else false }}"
+
+  - name: set vpp fact 2
+    set_fact:
+      vpps: "{{ true if vpp_service.rc in [ 0 ] else false }}"
+
+  - name: Ensure one instance of VPP is running
+    fail:
+      msg: "Zero or two instances of VPP running"
+    when: vppc == vpps
+
+  - name: Get existing CNFs
+    shell: docker ps -a | grep CNF | awk '{print $1}'
+    changed_when: false
+    register: cnf_list
+
+  - name: Print CNF list (debug)
+    debug:
+      msg: "cnf_list: {{ cnf_list.stdout_lines }}"
+  
+  - name: Remove existing CNFs
+    command: docker rm --force {{ item }}
+    with_items: "{{ cnf_list.stdout_lines }}"
+
+  roles:
+    - cnf_install

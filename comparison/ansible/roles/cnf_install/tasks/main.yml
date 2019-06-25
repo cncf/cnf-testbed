@@ -1,0 +1,58 @@
+---
+- include_vars: vars.yml
+
+- name: Create base directories
+  file:
+    path: /opt/cnf_testbed/{{ use_case }}/{{ item }}
+    state: directory
+  with_sequence: count="{{ cnf.cnfs }}"
+
+- name: Update host vSwitch configuration file
+  copy:
+    src: "{{ use_case }}/setup.gate"
+    dest: /etc/vpp/setup.gate
+
+- name: Restart VPP container
+  command: docker restart vppcontainer
+  when: vppc
+
+- name: Restart VPP service
+  service:
+    name: vpp
+    state: restarted
+  when: vpps
+
+- name: Push CNF templates 1/2
+  template:
+    src: "{{ use_case }}/{{ item }}/setup.gate.j2"
+    dest: "/opt/cnf_testbed/{{ use_case }}/{{ item }}/setup.gate"
+  with_sequence: count="{{ cnf.cnfs }}"
+
+- name: Push CNF templates 2/2
+  template:
+    src: "{{ use_case }}/startup.conf.j2"
+    dest: "/opt/cnf_testbed/{{ use_case }}/{{ item }}/startup.conf"
+  with_sequence: count="{{ cnf.cnfs }}"
+
+- name: Start CNFs
+  docker_container:
+    name: "CNF_{{ item }}_{{ use_case }}"
+    image: soelvkaer/vppcontainer:latest
+    privileged: true
+    devices:
+      - "/dev/hugepages/:/dev/hugepages/:rwm"
+    volumes:
+      - /etc/vpp/sockets/:/root/sockets/
+      - "/opt/cnf_testbed/{{ use_case }}/{{ item }}/:/etc/vpp/"
+  with_sequence: count="{{ cnf.cnfs }}"
+  
+
+- name: Restart VPP container (Post-deploy)
+  command: docker restart vppcontainer
+  when: vppc
+ 
+- name: Restart VPP service (Post-deploy)
+  service:
+    name: vpp
+    state: restarted
+  when: vpps

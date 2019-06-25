@@ -1,0 +1,19 @@
+create memif socket id 1 filename /root/sockets/memif3.sock
+create interface memif id 3 socket-id 1 hw-addr 52:54:00:00:03:aa slave rx-queues 1 tx-queues 1
+set interface ip address memif1/3 172.16.32.11/24
+set interface state memif1/3 up
+create memif socket id 2 filename /root/sockets/int21.sock
+create interface memif id 11 socket-id 2 hw-addr 52:54:00:00:03:bb master rx-queues 1 tx-queues 1
+set interface ip address memif2/11 172.16.33.10/24
+set interface state memif2/11 up
+
+set ip arp static memif1/3 172.16.32.10 52:54:00:00:02:bb
+set ip arp static memif2/11 172.16.33.11 52:54:00:00:04:aa
+
+ip route add 172.16.192.0/18 via 172.16.33.11
+
+create ipsec tunnel local-ip 172.16.32.11 remote-ip 172.16.32.10 local-spi 100000 remote-spi 200000 local-crypto-key 47505069546a6461647565786163726865757346 remote-crypto-key 714c7a456b41476442585353474b586c78796d45 crypto-alg aes-gcm-128
+
+set interface unnumbered ipsec0 use memif1/3
+set interface state ipsec0 up
+ip route add  172.16.64.0/18 via 172.16.32.10 ipsec0
