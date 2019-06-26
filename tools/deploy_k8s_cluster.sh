@@ -22,6 +22,7 @@ if [ ! "$SKIP_PROVISIONING" = "true" ] ; then
     -v $(pwd)/data:/cncf/data \
     -v $(pwd)/k8s_cluster_override.tf:/cncf/packet/override.tf \
     -v $(pwd)/k8s_worker_override.tf:/cncf/packet/modules/worker/override.tf \
+    -v $(pwd)/provision.sh:/cncf/provision.sh \
     -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
     -v "${project_root}/comparison/ansible:/ansible" \
     -e NAME=$NAME \
