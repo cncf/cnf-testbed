@@ -3,6 +3,13 @@
   service:
     name: nova-compute
     state: restarted
+  when: ansible_os_family == 'Debian'
+
+- name: restart nova-compute
+  service:
+    name: openstack-nova-compute
+    state: restarted
+  when: ansible_os_family == 'RedHat'
 
 - name: restart neutron-server
   service:

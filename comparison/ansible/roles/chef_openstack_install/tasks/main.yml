@@ -2,6 +2,7 @@
 # Get chef and chef OpenStack cookbooks
 - name: Resolve potential missing packages
   command: apt --fix-broken install -y
+  when: ansible_os_family == 'Debian'
 
 - name: update apt
   apt:
@@ -10,7 +11,7 @@
 
 - name: get chef package
   yum:
-    name: https://packages.chef.io/files/stable/chefdk/3.4.38/el/7/chefdk-3.4.38-1.el7.x86_64.rpm
+    name: https://packages.chef.io/files/stable/chefdk/3.2.30/el/7/chefdk-3.2.30-1.el7.x86_64.rpm
   when: ansible_os_family == 'RedHat'
 
 #- name: download chef package Debian
@@ -168,7 +169,7 @@
     mode: 0600
   when: ansible_os_family == 'Debian'
 
-- name: Add python upate for chef Debian deployments
+- name: Add python update for chef Debian deployments
   apt:
     update_cache: yes
     name: ['python-pip','python3-pip']
@@ -182,9 +183,48 @@
     state: forcereinstall
   when: ansible_os_family == 'Debian'
 
+- name: Add python update for chef CentOs deployments
+  yum:
+    update_cache: yes
+    name: ['python-pip','python34-pip']
+  when: ansible_os_family == 'RedHat'
+
+- name: Get rabbitmq pre-req minimal erlang REPO
+  command: curl -s https://packagecloud.io/install/repositories/rabbitmq/erlang/script.rpm.sh
+  register: rmq_erlang_script
+  when: ansible_os_family == 'RedHat'
+
+- name: Install rabbitmq pre-req minimal erlang REPO
+  command: bash
+  args:
+    stdin: "{{ rmq_erlang_script.stdout }}"
+  when: ansible_os_family == 'RedHat'
+
+- name: Install rabbitmq pre-req minimal erlang PKG
+  yum:
+    update_cache: yes
+    name: erlang 
+  when: ansible_os_family == 'RedHat'
+
 - name: Install python api pre-requisites
   pip:
     name: ['pycparser','cffi']
+  when: ansible_os_family == 'Debian'
+
+- name: Install python api pre-requisite RPMs
+  yum:
+    name: ['python-pycparser', 'python-cffi']
+  when: ansible_os_family == 'RedHat'
+
+- name: Install python api pre-requisites
+  pip:
+    name: ['pycparser','cffi']
+  when: ansible_os_family == 'Debian'
+
+- name: Install python api pre-requisite RPMs
+  yum:
+    name: ['python-pycparser', 'python-cffi']
+  when: ansible_os_family == 'RedHat'
 
 - name: Update the multinode-controller role - VPP
   template:

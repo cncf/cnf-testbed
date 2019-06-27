@@ -107,12 +107,8 @@
     name: /root/networking-vpp
 
 - name: migrate neutron vpp database
-  command: neutron-db-manage --subproject networking-vpp --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini upgrade head
-  when: ansible_os_family == 'RedHat'
-
-- name: migrate neutron vpp database
   command: neutron-db-manage --subproject networking-vpp --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head
-  when: ansible_os_family == 'Debian' and host_0_address == inventory_hostname
+  when: host_0_address == inventory_hostname
 
 #- name: bring ex-slave interface down
 #  command: ip l s dev {{vlan_interface}} down
@@ -180,6 +176,11 @@
     dest: /etc/systemd/system/multi-user.target.wants/vpp-agent.service
   when: ansible_os_family == 'Debian'
 
+- name: ensure rootwrap.d folder exists
+  file:
+    path: /etc/neutron/rootwrap.d/
+    state: directory
+
 - name: ensure linuxbridge rootwrap neutron filters exist
   template:
     src: linuxbridge.filters
@@ -221,12 +222,13 @@
     name: eventlet
     version: 0.22
 
-- name: update mysql thread pool to 1451
-  lineinfile:
-    dest: /etc/mysql/conf.d/openstack.cnf
-    regexp: '^.*max_connections =.*$'
-    line: 'max_connections = 1451'
-  when: host_0_address == inventory_hostname
+# This should no longer be neccesary thanks to update to multinode.json default_attributes["openstack"]["mysql"]["max_connections"] = 1451
+# - name: update mysql thread pool to 1451
+#   lineinfile:
+#     dest: /etc/mysql/conf.d/openstack.cnf
+#     regexp: '^.*max_connections =.*$'
+#     line: 'max_connections = 1451'
+#   when: host_0_address == inventory_hostname
 
 - name: stop vpp and vpp-agent
   service:
@@ -243,14 +245,20 @@
   service:
     state: restarted
     name: "{{item}}"
-  with_items: ['mysql','rabbitmq-server','apache2','neutron-server']
+  with_items: "{{['mysql','rabbitmq-server','apache2','neutron-server'] if ansible_os_family == 'Debian' else ['mysql','rabbitmq-server','neutron-server']}}"
   when: host_0_address == inventory_hostname
   
 - name: restart services on compute
   service:
     state: restarted
     name: nova-compute
-  when: not host_0_address == inventory_hostname
+  when: not host_0_address == inventory_hostname and ansible_os_family == 'Debian'
+
+- name: restart services on compute
+  service:
+    name: openstack-nova-compute
+    state: restarted
+  when: not host_0_address == inventory_hostname and ansible_os_family == 'RedHat'
 
 - name: start vpp and vpp-agent
   service:

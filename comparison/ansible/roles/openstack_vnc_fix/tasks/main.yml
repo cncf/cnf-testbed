@@ -22,12 +22,24 @@
   service:
     name: nova-compute
     state: restarted
-  when: nova_update.changed and not inventory_hostname == host_0_address
+  when: ansible_os_family == 'Debian' and nova_update.changed and not inventory_hostname == host_0_address
+
+- name: restart nova-compute
+  service:
+    name: openstack-nova-compute
+    state: restarted
+  when: ansible_os_family == 'RedHat' and nova_update.changed and not inventory_hostname == host_0_address
 
 - name: restart nova-novncproxy
   service:
     name: nova-novncproxy
     state: restarted
-  when: nova_update.changed and inventory_hostname == host_0_address
+  when: ansible_os_family == 'Debian' and nova_update.changed and inventory_hostname == host_0_address
+
+- name: restart nova-novncproxy
+  service:
+    name: openstack-nova-novncproxy
+    state: restarted
+  when: ansible_os_family == 'RedHat' and nova_update.changed and inventory_hostname == host_0_address
 
 

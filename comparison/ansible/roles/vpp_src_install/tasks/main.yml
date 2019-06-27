@@ -16,6 +16,11 @@
     name: libmnl-dev
   when: ansible_os_family == 'Debian'
 
+- name: install libmnl-devel on RedHat family
+  yum:
+    name: libmnl-devel
+  when: ansible_os_family == 'RedHat'
+
 #- name: Set VPP DPDK mlx5 PMD use
 #  lineinfile:
 #    dest: /srv/vpp/build-data/platforms/vpp.mk
@@ -29,13 +34,14 @@
     regexp: 'else \n	DEB_DEPENDS \+= default-jdk-headless'
     replace: 'else \n	DEB_DEPENDS += openjdk-8-jdk-headless'
 
-- name: Build Install Deb
+- name: Build Install Dependencies
   expect: 
     chdir: /srv/vpp
     command: make install-dep
     echo: yes
     responses:
-      "Do you want to continue.*": "Y"
+      "Do you want to continue.*": "Y" # Debian
+      "Is this ok*": "y" # Centos
     timeout: 300
 
 #- name: get NASM code from launchpad
@@ -60,49 +66,97 @@
     chdir: /srv/vpp
   when: ansible_os_family == 'Debian'
 
-- name: find vpp debs to install
+- name: Build rpm
+  command: make pkg-rpm vpp_uses_dpdk_mlx5_pmd=yes
+  args:
+    chdir: /srv/vpp
+  when: ansible_os_family == 'RedHat'
+
+- name: find vpp pkgs to install
   find:
     paths: /srv/vpp
     recurse: yes
-    patterns: "vpp_18*deb"
+    patterns: "vpp{{'_1*.deb' if ansible_os_family == 'Debian' else '-1*.rpm'}}"
   register: vpp
 
-- name: find vpp-lib debs to install
+- name: find vpp-lib pkgs to install
   find:
     paths: /srv/vpp
     recurse: yes
-    patterns: "vpp-lib_18*.deb"
+    patterns: "vpp-lib{{'_1*.deb' if ansible_os_family == 'Debian' else '-1*.rpm'}}"
   register: vpp_lib
 
-- name: find vpp-plugins debs to install
+- name: find vpp-plugins pkgs to install
   find:
     paths: /srv/vpp
     recurse: yes
-    patterns: "vpp-plugins_18*.deb"
+    patterns: "vpp-plugins{{'_1*.deb' if ansible_os_family == 'Debian' else '-1*.rpm'}}"
   register: vpp_plugin
 
-- name: find vpp-api-python debs to install
+- name: find vpp-selinux-policy rpms to install
   find:
     paths: /srv/vpp
     recurse: yes
-    patterns: "vpp-api-python_18*.deb"
+    patterns: "vpp-selinux-policy-19*.rpm"
+  register: vpp_selinux_policy
+  when: ansible_os_family == 'RedHat'
+
+- name: find vpp-api-python pkgs to install
+  find:
+    paths: /srv/vpp
+    recurse: yes
+    patterns: "vpp-api-python{{'_1*.deb' if ansible_os_family == 'Debian' else '-1*.rpm'}}"
   register: vpp_api_python
 
 - name: Install vpp library packages
   command: dpkg -i {{item.path}}
   with_items: "{{vpp_lib['files']}}"
+  when: ansible_os_family == 'Debian'
+
+- name: Install vpp vpp_selinux_policy packages
+  yum:
+    name: "{{vpp_selinux_policy['files'] | map(attribute='path') | list}}"
+    state: installed
+  when: ansible_os_family == 'RedHat'
+
+- name: Install vpp library packages
+  yum:
+    name: "{{vpp_lib['files'] | map(attribute='path') | list}}"
+    state: installed
+  when: ansible_os_family == 'RedHat'
 
 - name: Install vpp packages
   command: apt install {{item.path}}
   with_items: "{{vpp['files']}}"
+  when: ansible_os_family == 'Debian'
+
+- name: Install vpp packages
+  yum:
+    name: "{{vpp['files'] | map(attribute='path') | list}}"
+    state: installed
+  when: ansible_os_family == 'RedHat'
 
 - name: Install vpp plugins packages
   command: apt install {{item.path}}
   with_items: "{{vpp_plugin['files']}}"
+  when: ansible_os_family == 'Debian'
+
+- name: Install vpp plugins packages
+  yum:
+    name: "{{vpp_plugin['files'] | map(attribute='path') | list}}"
+    state: installed
+  when: ansible_os_family == 'RedHat'
 
 - name: Install vpp api python packages
   command: apt install {{item.path}}
   with_items: "{{vpp_api_python['files']}}"
+  when: ansible_os_family == 'Debian'
+
+- name: Install vpp api python packages
+  yum:
+    name: "{{vpp_api_python['files'] | map(attribute='path') | list}}"
+    state: installed
+  when: ansible_os_family == 'RedHat'
 
 - name: make sure config directory exists
   file:

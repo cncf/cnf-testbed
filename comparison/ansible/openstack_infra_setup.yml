@@ -9,9 +9,20 @@
       update_cache: yes
     when: ansible_os_family == "Debian"
 
-  - name: Install EPEL Package
+  - name: Install git
+    apt:
+      name: git
+    when: ansible_os_family == "Debian"
+
+  # - name: Install EPEL Package # disabled due to missing: ninja-build, cmake3
+  #   yum:
+  #     name: epel-release
+  #   when: ansible_os_family == "RedHat"
+  
+  - name: Install latest EPEL Package
     yum:
-      name: epel-release
+      name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      state: present
     when: ansible_os_family == "RedHat"
 
   - name: Yum update
@@ -19,6 +30,18 @@
       name: '*'
       state: latest
       update_cache: yes
+    when: ansible_os_family == "RedHat"
+
+  # TODO: move this to tasks and add when clause if possible
+  - name: Install centos vpp source build deps
+    yum:
+      name: ['cmake3', 'ninja-build']
+      state: present
+    when: ansible_os_family == "RedHat"
+  
+  - name: Install git
+    yum:
+      name: git
     when: ansible_os_family == "RedHat"
 
   - name: Install Vlan Package
@@ -36,11 +59,12 @@
     register: mellanox
     ignore_errors: true
 
+  vars_files:
+  - vars/{{ ansible_os_family }}_os_infra.yml
   vars:
-    #mlnx_ver: 4.5-1.0.1.0
-    arch: ubuntu18.04-x86_64
-    mlnx_ver: 4.4-2.0.7.0
-    # arch: ubuntu16.04-x86_64
+    # See os specific vars files
+    # arch: ubuntu18.04-x86_64
+    # mlnx_ver: 4.4-2.0.7.0
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
@@ -110,6 +134,6 @@
       when: ansible_os_family == 'Debian'
     - role: packet_vlan_enable
       when: ansible_bond0.slaves[1] is defined
+    - role: grub_openstack
     - role: mellanox_src_install
       when: mellanox.rc == 0 and not ansible_distribution_release == 'xenial'
-    - role: grub_openstack
