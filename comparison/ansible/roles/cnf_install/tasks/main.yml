@@ -34,7 +34,7 @@
     dest: "/opt/cnf_testbed/{{ use_case }}/{{ item }}/startup.conf"
   with_sequence: count="{{ cnf.cnfs }}"
 
-- name: Start CNFs
+- name: Start CNFs (Docker)
   docker_container:
     name: "CNF_{{ item }}_{{ use_case }}"
     image: soelvkaer/vppcontainer:latest
@@ -45,14 +45,64 @@
       - /etc/vpp/sockets/:/root/sockets/
       - "/opt/cnf_testbed/{{ use_case }}/{{ item }}/:/etc/vpp/"
   with_sequence: count="{{ cnf.cnfs }}"
-  
+  when: not k8s
+
+#- name: Start CNFs (K8s)
+#  k8s:
+#    state: present
+#    definition:
+#      apiVersion: v1
+#      kind: Deployment
+#      metadata:
+#        name: "CNF_{{ item }}_{{ use_case }}"
+#      spec:
+#        replicas: 1
+#        selector:
+#          matchLabels:
+#            app: "CNF_{{ item }}_{{ use_case }}"
+#            release: 0.1.0
+#        template:
+#          metadata:
+#            labels:
+#              app: "CNF_{{ item }}_{{ use_case }}"
+#              release: 0.1.0
+#          spec:
+#            containers:
+#              - name: "CNF_{{ item }}_{{ use_case }}"
+#                image: soelvkaer/vppcontainer:latest
+#                imagePullPolicy: Always
+#                securityContext:
+#                  privileged: true
+#                resources:
+#                  limits:
+#                    cpu: "3"
+#                    hugepages-2Mi: 200Mi
+#                volumeMounts:
+#                - name: vpp-sockets
+#                  mountPath: /root/sockets/
+#                - name: hugepage
+#                  mountPath: /dev/hugepages/
+#                - name: vpp-configs
+#                  mountPath: /etc/vpp/
+#            volumes:
+#              - name: hugepage
+#                emptyDir:
+#                  medium: HugePages
+#              - name: vpp-sockets
+#                hostPath:
+#                  path: /etc/vpp/sockets/
+#              - name: vpp-configs
+#                hostPath:
+#                  path: "/opt/cnf_testbed/{{ use_case }}/{{ item }}/"
+#  with_sequence: count="{{ cnf.cnfs }}"
+#  when: k8s
 
 - name: Restart VPP container (Post-deploy)
   command: docker restart vppcontainer
-  when: vppc
+  when: vppc and not k8s
  
 - name: Restart VPP service (Post-deploy)
   service:
     name: vpp
     state: restarted
-  when: vpps
+  when: vpps and not k8s
