@@ -6,7 +6,7 @@
 - hosts: localhost
   vars:
     facility: "{{ lookup('env','PACKET_FACILITY') }}"
-    deploy_env: "{{ lookup('env','DEPLOY_ENV') }}"
+    deploy_env: "{{ lookup('env','K8S_DEPLOY_ENV') }}"
     server_list: "{{ lookup('env','SERVER_LIST') }}"
     project_name: "{{ lookup('env','PROJECT_NAME') }}"
     vlans:
