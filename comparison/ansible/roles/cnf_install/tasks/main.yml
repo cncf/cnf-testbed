@@ -34,7 +34,7 @@
     dest: "/opt/cnf_testbed/{{ use_case }}/{{ item }}/startup.conf"
   with_sequence: count="{{ cnf.cnfs }}"
 
-- name: Start CNFs
+- name: Start CNFs (Docker)
   docker_container:
     name: "CNF_{{ item }}_{{ use_case }}"
     image: soelvkaer/vppcontainer:latest
@@ -45,14 +45,14 @@
       - /etc/vpp/sockets/:/root/sockets/
       - "/opt/cnf_testbed/{{ use_case }}/{{ item }}/:/etc/vpp/"
   with_sequence: count="{{ cnf.cnfs }}"
-  
+  when: not k8s
 
 - name: Restart VPP container (Post-deploy)
   command: docker restart vppcontainer
-  when: vppc
+  when: vppc and not k8s
  
 - name: Restart VPP service (Post-deploy)
   service:
     name: vpp
     state: restarted
-  when: vpps
+  when: vpps and not k8s

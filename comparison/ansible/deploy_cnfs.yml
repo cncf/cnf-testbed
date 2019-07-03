@@ -1,25 +1,50 @@
 ---
+- hosts: localhost
+  vars:
+    k8s: false
+    # ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+  pre_tasks:
+  - name: Enable python pip
+    apt:
+      name: ['python-dev','python-pip']
+    when: k8s
+  - name: Install OpenShift client
+    pip:
+      name:
+        - openshift>=0.6
+        - pyyaml>=3.11
+    when: k8s
+
 - hosts: all
   vars:
+    k8s: false
     use_case: None
     nfvbench_macs:
       - "e4:43:4b:2e:9f:e2"
       - "e4:43:4b:2e:9f:e3"
 
   pre_tasks:
-  - name: Print vars
-    debug:
-      msg: "use_case: {{ use_case }}"
   - name: Check use_case
     fail:
-      msg: "Please specify use_case=[ipsec|3c2n_csp|3c2n_csc] when running"
-    when: use_case != "ipsec" and use_case != "3c2n_csp" and use_case != "3c2n_csc"
+      msg: "Please specify use_case=[ipsec|3c2n-csp|3c2n-csc] when running"
+    when: use_case != "ipsec" and use_case != "3c2n-csp" and use_case != "3c2n-csc"
+
+  - name: Check K8S_AUTH_KUBECONFIG if k8s
+    local_action: stat path="{{ lookup('env', 'K8S_AUTH_KUBECONFIG') }}"
+    register: kubeconfig
+
+  - name: Verify that kubeconfig exists
+    fail:
+      msg: "Kubeconfig file not found at: {{ lookup('env', 'K8S_AUTH_KUBECONFIG') }}"
+    when: not kubeconfig.stat.exists and k8s
 
   - name: Check if Docker is installed
     command: which docker
     changed_when: false
     # failed_when: docker_installed.rc not in [0,1]
     register: docker_installed
+
   - name: Fail is Docker is not installed
     fail:
       msg: "Docker is not installed - Exiting play"
@@ -70,14 +95,45 @@
     shell: docker ps -a | grep CNF | awk '{print $1}'
     changed_when: false
     register: cnf_list
+    when: not k8s
 
-  - name: Print CNF list (debug)
-    debug:
-      msg: "cnf_list: {{ cnf_list.stdout_lines }}"
-  
   - name: Remove existing CNFs
     command: docker rm --force {{ item }}
     with_items: "{{ cnf_list.stdout_lines }}"
+    when: not k8s
 
   roles:
     - cnf_install
+
+- hosts: localhost
+  vars:
+    k8s: false
+
+  tasks:
+  - name: Create a k8s namespace
+    k8s:
+      name: cnf
+      api_version: v1
+      kind: Namespace
+      state: present
+    when: k8s
+
+  - name: Run cnf_install_k8s role
+    include_role:
+      name: cnf_install_k8s
+    when: k8s
+
+- hosts: all
+  vars:
+    k8s: false
+
+  tasks:
+  - name: Restart VPP container (Post-deploy)
+    command: docker restart vppcontainer
+    when: vppc and k8s
+
+  - name: Restart VPP service (Post-deploy)
+    service:
+      name: vpp
+      state: restarted
+    when: vpps and k8s

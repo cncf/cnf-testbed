@@ -1,0 +1,65 @@
+---
+- include_vars: vars.yml
+
+- name: Remove CNFs (K8s)
+  k8s:
+    state: absent
+    definition:
+      kind: Deployment
+      metadata:
+        name: "cnf-{{ item }}"
+        namespace: cnf
+  with_sequence: count=6
+  ignore_errors: true 
+  when: k8s
+
+- name: Start CNFs (K8s)
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Deployment
+      metadata:
+        name: "cnf-{{ item }}"
+        namespace: cnf
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: "cnf"
+            release: 0.1.0
+        template:
+          metadata:
+            labels:
+              app: "cnf"
+              release: 0.1.0
+          spec:
+            containers:
+              - name: "cnf-{{ item }}-{{ use_case }}"
+                image: soelvkaer/vppcontainer:latest
+                imagePullPolicy: Always
+                securityContext:
+                  privileged: true
+                resources:
+                  limits:
+                    cpu: "3"
+                    hugepages-2Mi: 200Mi
+                volumeMounts:
+                - name: vpp-sockets
+                  mountPath: /root/sockets/
+                - name: hugepage
+                  mountPath: /dev/hugepages/
+                - name: vpp-configs
+                  mountPath: /etc/vpp/
+            volumes:
+              - name: hugepage
+                emptyDir:
+                  medium: HugePages
+              - name: vpp-sockets
+                hostPath:
+                  path: /etc/vpp/sockets/
+              - name: vpp-configs
+                hostPath:
+                  path: "/opt/cnf_testbed/{{ use_case }}/{{ item }}/"
+  with_sequence: count="{{ cnf.cnfs }}"
+  when: k8s
