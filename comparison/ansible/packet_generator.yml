@@ -74,6 +74,7 @@
   - name: Configure interfaces
     include_role:
       name: mrlesmithjr.config-interfaces
+    when: not intel
   - name: Do Mellanox setup
     include_role:
       name: mellanox_nic
