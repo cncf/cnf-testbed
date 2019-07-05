@@ -50,6 +50,20 @@
       msg: "Docker is not installed - Exiting play"
     when: docker_installed.rc not in [ 0 ]
 
+  - name: Install utilities
+    apt:
+      name: pciutils
+      state: present
+      update_cache: yes
+
+  - name: Get NIC type
+    shell: 'lspci | grep Eth | head -n 1 | grep -oP "controller:\s+\K\w+"'
+    register: lspci_nic
+
+  - name: Set NIC fact
+    set_fact:
+      intel_nic: "{{ true if lspci_nic.stdout == 'Intel' else false }}"
+
     # Workaround for Ansible 2.7
   - name: Get info on vppcontainer
     command: docker inspect --format={{ '{{.State.Running}}' }} vppcontainer
@@ -74,6 +88,8 @@
     changed_when: false
     ignore_errors: true
     register: vpp_service
+    failed_when: vpp_service.rc not in [0,4]
+
   - name: Check if vpp service is running
     debug:
       msg: "vpp service {{ 'running' if vpp_service.rc in [ 0 ] else 'not running' }}"

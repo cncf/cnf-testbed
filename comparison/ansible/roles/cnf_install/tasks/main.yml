@@ -7,9 +7,19 @@
     state: directory
   with_sequence: count="{{ cnf.cnfs }}"
 
+- name: Get VLANs if using Mellanox
+  shell: cat /etc/vpp/setup.gate | grep sub | awk '{print $4}'
+  register: vlan_out
+  when: not intel_nic
+
+- name: Create VLAN array
+  set_fact:
+    vlans: "{{ vlan_out.stdout_lines }}"
+  when: not intel_nic
+
 - name: Update host vSwitch configuration file
-  copy:
-    src: "{{ use_case }}/setup.gate"
+  template:
+    src: "{{ use_case }}/setup.gate.j2"
     dest: /etc/vpp/setup.gate
 
 - name: Restart VPP container
