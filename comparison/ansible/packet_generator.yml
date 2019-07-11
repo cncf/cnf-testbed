@@ -114,7 +114,7 @@
     trex_port_0_pci: "{{ ansible_eno3.pciid if intel else ansible_enp94s0f4.pciid }}"
     trex_port_1_pci: "{{ ansible_eno4.pciid if intel else ansible_enp94s0f5.pciid }}"
     mellanox_pf: "enp94s0f1"
-    nfvbench_service_chain_count: 1
+    nfvbench_service_chain_count: 3
     nfvbench_vlan_id1: "{{ hostvars.localhost.vlans.vlan1.vid }}"
     nfvbench_vlan_id2: "{{ hostvars.localhost.vlans.vlan2.vid }}"
     nfvbench_vlan_tagging: "{{ false if intel else true }}"
