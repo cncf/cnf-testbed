@@ -2,7 +2,6 @@
 - hosts: localhost
   vars:
     k8s: false
-    # ansible_python_interpreter: "{{ ansible_playbook_python }}"
 
   pre_tasks:
   - name: Enable python pip
@@ -55,6 +54,15 @@
       name: pciutils
       state: present
       update_cache: yes
+
+  - name: install pip
+    apt:
+      name: ['python-dev','python-pip']
+      state: present
+
+  - name: install Docker SDK for Python
+    pip:
+      name: docker
 
   - name: Get NIC type
     shell: 'lspci | grep Eth | head -n 1 | grep -oP "controller:\s+\K\w+"'
@@ -111,12 +119,10 @@
     shell: docker ps -a | grep CNF | awk '{print $1}'
     changed_when: false
     register: cnf_list
-    when: not k8s
 
   - name: Remove existing CNFs
     command: docker rm --force {{ item }}
     with_items: "{{ cnf_list.stdout_lines }}"
-    when: not k8s
 
   roles:
     - cnf_install
@@ -134,6 +140,17 @@
       state: present
     when: k8s
 
+  - name: Remove CNFs (K8s)
+    k8s:
+      state: absent
+      definition:
+        kind: Deployment
+        metadata:
+          name: "cnf-{{ item }}"
+          namespace: cnf
+    with_sequence: count=6
+    ignore_errors: true
+
   - name: Run cnf_install_k8s role
     include_role:
       name: cnf_install_k8s
@@ -146,10 +163,10 @@
   tasks:
   - name: Restart VPP container (Post-deploy)
     command: docker restart vppcontainer
-    when: vppc and k8s
+    when: vppc
 
   - name: Restart VPP service (Post-deploy)
     service:
       name: vpp
       state: restarted
-    when: vpps and k8s
+    when: vpps

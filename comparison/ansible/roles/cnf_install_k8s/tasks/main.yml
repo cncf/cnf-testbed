@@ -1,18 +1,6 @@
 ---
 - include_vars: vars.yml
 
-- name: Remove CNFs (K8s)
-  k8s:
-    state: absent
-    definition:
-      kind: Deployment
-      metadata:
-        name: "cnf-{{ item }}"
-        namespace: cnf
-  with_sequence: count=6
-  ignore_errors: true 
-  when: k8s
-
 - name: Start CNFs (K8s)
   k8s:
     state: present
