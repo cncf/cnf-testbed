@@ -1,0 +1,24 @@
+---
+- name: Start Packet-filtering CNFs
+  command: "kubectl apply -f {{ role_path }}/files/packet-filtering/{{ item }}"
+  with_items:
+    - packet-filtering.yaml
+    - gateway.yaml
+    - packet-filter.yaml
+    - simple-client.yaml
+    - ucnf-client.yaml
+  when: not reuse
+
+- name: Pause for 30s if not reusing CNFs
+  pause:
+    seconds: 30
+  when: not reuse
+
+- name: Check connectivity
+  shell: "{{ role_path }}/files/check_packet_filtering.sh"
+  changed_when: false
+  register: connectivity
+
+- name: Print connectivity result
+  debug:
+    msg: "{{ connectivity.stdout_lines }}"
