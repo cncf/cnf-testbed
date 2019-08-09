@@ -339,4 +339,97 @@ Once everything is configured, the benchmark can be started. If you are running 
   # The 3 optional arguments can be used to override the values configured previously
 ```
 
-Once the benchmark completes, results will be available in the `results/` directory. 
+Once the benchmark completes, results will be available in the `results/` directory.
+
+## Run NSM Packet-filtering example
+To show the functionality of [Network Service Mesh](https://github.com/networkservicemesh/networkservicemesh) on CNF Testbed, one of the [examples](https://github.com/networkservicemesh/examples) provided by the team can be deployed through an ansible playbook.
+```
+    +--------+
+    |        |
+    | Kernel |
+    | Client +-------+
+    |        |       |
+    +--------+       |       ----------------+                +---------+
+                     +------->               |  10.60.2.0/24  |         | 10.60.1.0/24
+               10.60.3.0/24  | Packet Filter +----------------> Gateway +-------------->
+                     +------->               |                |         |
+    +--------+       |       +---------------+                +---------+
+    |        |       |
+    |  VPP   +-------+
+    | Client |
+    |        |
+    +--------+
+```
+
+Before running the example, make sure you have a K8s cluster and an ansible environment available (see above sections).
+
+To deploy and test, do the following steps:
+```
+## In the ansible environment
+$$ cd /ansible/
+$$ export KUBECONFIG=</path/to/kubeconfig>
+  # The cnf-testbed/comparison/ansible host directory is mapped to /ansible inside the container
+$$ ansible-playbook deploy_nsm.yml [-e reuse=true]
+  # The optional reuse option can be used for skipping cleanup and redeployment of the containers/CNFs
+  # The connectivity test will run regardless of the option
+```
+
+The playbook starts by deploying the NSM infrastructure using an included Helm chart. Once NSM is deployed, the 4 CNFs are deployed as Kubernetes deployments.
+
+Once the playbook finishes, you should see output similar to the below, indicating connectivity between the Kernel Client / VPP Client and Gateway is successful (the VPP Client is described as ucnf-client in the output):
+```
+ok: [localhost] => {
+    "msg": [
+        "pod/gateway-b56bcb689-p9vwv condition met",
+        "pod/packet-filter-7c9fb57cd9-rjzjs condition met",
+        "pod/simple-client-76c8478495-bmwpg condition met",
+        "pod/ucnf-client-5cd6bb6ffc-g5rm2 condition met",
+        "===== >>>>> PROCESSING simple-client-76c8478495-bmwpg  <<<<< ===========",
+        "Try 1",
+        "PING 10.60.3.2 (10.60.3.2): 56 data bytes",
+        "64 bytes from 10.60.3.2: seq=0 ttl=64 time=2.009 ms",
+        (...)
+        "64 bytes from 10.60.3.2: seq=9 ttl=64 time=4.859 ms",
+        "",
+        "--- 10.60.3.2 ping statistics ---",
+        "10 packets transmitted, 10 packets received, 0% packet loss",
+        "round-trip min/avg/max = 2.009/2.371/4.859 ms",
+        "NSC simple-client-76c8478495-bmwpg with IP 10.60.3.1/30 pinging vpn-gateway-nse TargetIP: 10.60.3.2 successful",
+        "PING 10.60.2.2 (10.60.2.2): 56 data bytes",
+        "64 bytes from 10.60.2.2: seq=0 ttl=63 time=3.275 ms",
+        (...)
+        "64 bytes from 10.60.2.2: seq=9 ttl=63 time=3.173 ms",
+        "",
+        "--- 10.60.2.2 ping statistics ---",
+        "10 packets transmitted, 10 packets received, 0% packet loss",
+        "round-trip min/avg/max = 2.106/3.074/3.275 ms",
+        "NSC simple-client-76c8478495-bmwpg with IP 10.60.3.1/30 pinging vpn-gateway-nse TargetIP: 10.60.2.2 successful",
+        "All check OK. NSC simple-client-76c8478495-bmwpg behaving as expected.",
+        "===== >>>>> PROCESSING ucnf-client-5cd6bb6ffc-g5rm2  <<<<< ===========",
+        "Try 1",
+        "116 bytes from 10.60.3.6: icmp_seq=1 ttl=64 time=2.1475 ms",
+        "116 bytes from 10.60.3.6: icmp_seq=2 ttl=64 time=2.2173 ms",
+        "116 bytes from 10.60.3.6: icmp_seq=3 ttl=64 time=2.1433 ms",
+        "",
+        "Statistics: 3 sent, 3 received, 0% packet loss",
+        "NSC ucnf-client-5cd6bb6ffc-g5rm2 with IP 10.60.3.5/30",
+        " pinging ucnf-endpoint TargetIP: 10.60.3.6 successful",
+        "116 bytes from 10.60.2.2: icmp_seq=1 ttl=63 time=3.2145 ms",
+        "116 bytes from 10.60.2.2: icmp_seq=2 ttl=63 time=3.2853 ms",
+        "116 bytes from 10.60.2.2: icmp_seq=3 ttl=63 time=3.2367 ms",
+        "",
+        "Statistics: 3 sent, 3 received, 0% packet loss",
+        "NSC ucnf-client-5cd6bb6ffc-g5rm2 with IP 10.60.3.5/30",
+        " pinging ucnf-endpoint TargetIP: 10.60.2.2 successful"
+    ]
+}
+```
+
+To remove the CNFs and NSM, the following steps can be used from inside the ansible environment:
+```
+$$ kubectl delete deployments --all
+  # This will delete all deployments in the default namespace
+$$ helm delete $(helm list -q)
+  # This will delete anything deployed through Helm
+```
+
