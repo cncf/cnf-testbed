@@ -1,6 +1,6 @@
 # Steps to deploy CNF Testbed
 
-_Updated August 2nd, 2019_
+_Updated August 9th, 2019_
 
 This document will show how to set up a CNF Testbed environment. Everything will be deployed on servers hosted by [Packet](https://www.packet.com/).
 
