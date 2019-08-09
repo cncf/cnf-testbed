@@ -80,6 +80,7 @@ $ screen -S <name>
   # Enter screen with "screen -r <name>"
   # List screens with "screen -ls"
 ## Running the "cnfdeploytools" container
+$ cd ~/cnf-testbed
 $ docker run -e PACKET_API_TOKEN=<Auth token> -v $(pwd)/comparison/ansible:/ansible -v ~/.ssh/id_rsa:/root/.ssh/id_rsa --entrypoint /bin/bash -ti cnfdeploytools:latest
   # Replace <Auth token> with the key for your project at Packet
 $$ cd /ansible/
