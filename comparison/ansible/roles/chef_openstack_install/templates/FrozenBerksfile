@@ -1,0 +1,50 @@
+source 'https://supermarket.chef.io'
+
+# %w(
+#   integration-test
+#   orchestration
+#   telemetry
+#   block-storage
+#   common
+#   compute
+#   dashboard
+#   dns
+#   identity
+#   image
+#   network
+#   ops-database
+#   ops-messaging
+#   bare-metal
+# ).each do |cookbook|
+
+# Update berksfile to freeze version of sub-recipes
+{
+    'integration-test' => 'master',
+    'orchestration' => 'master',
+    'telemetry' => 'master',
+    'block-storage' => 'master',
+    'common' => '782bfbfe645e627600e059d0cfba7b10bba6c8b6',
+    'compute' => 'bf0aeae4f50316224c5757cae05ebef2637df05e',
+    'dashboard' => 'master',
+    'dns' => 'master',
+    'identity' => '1ad3f2ec044d5166523d0003123803bd1dd444b3',
+    'image' => 'b5e593d9b1902b7356eae50d14eaf0234e36d05d',
+    'network' => 'e4abfa8d61d1b96832ba340a5b9e6307c50340d6',
+    'ops-database' => 'master',
+    'ops-messaging' => 'master',
+    'bare-metal' => 'master'
+}.each do |cookbook, commit|
+  if Dir.exist?("../cookbook-openstack-#{cookbook}")
+    cookbook "openstack-#{cookbook}", path: "../cookbook-openstack-#{cookbook}"
+  else
+    cookbook "openstack-#{cookbook}", git: "https://git.openstack.org/openstack/cookbook-openstack-#{cookbook}", ref: commit
+  end
+end
+
+if Dir.exist?('../cookbook-openstackclient')
+  cookbook 'openstackclient', path: '../cookbook-openstackclient'
+else
+  cookbook 'openstackclient', git: 'https://git.openstack.org/openstack/cookbook-openstackclient', ref: 'a05f750cde5c37fa5defe26b471911f20e60bc08'
+end
+
+cookbook 'statsd', github: 'librato/statsd-cookbook'
