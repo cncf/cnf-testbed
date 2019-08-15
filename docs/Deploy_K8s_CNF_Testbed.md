@@ -263,10 +263,11 @@ At this point we are ready to deploy the test-cases. One thing to note is that t
 
 The CNF test-cases are deployed using a provided playbook:
 ```
-$$ ansible-playbook -i "<K8s worker IP>," -e use_case=<test-case> [-e k8s=True] deploy_cnfs.yml
+$$ ansible-playbook -i "<K8s worker IP>," -e use_case=<test-case> [-e k8s=True] [-e privileged=False] deploy_cnfs.yml
   # <K8s worker IP> is the same IP used for SSH. Make sure to add the trailing comma (,) after the IP.
   # <test-case> can be: 3c2n-csp, 3c2n-csc or ipsec
   # [-e k8s=True] is used to specify the K8s deployment method
+  # [-e privileged=False] is used to run CNFs in unprivileged mode
 ```
 
 Re-running the script with different options (towards the same K8s worker IP) will automatically remove existing CNFs and update the host vSwitch (VPP) as needed.

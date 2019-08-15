@@ -48,9 +48,7 @@
   docker_container:
     name: "CNF_{{ item }}_{{ use_case }}"
     image: soelvkaer/vppcontainer:latest
-    privileged: true
-    devices:
-      - "/dev/hugepages/:/dev/hugepages/:rwm"
+    privileged: "{{ privileged }}"
     volumes:
       - /etc/vpp/sockets/:/root/sockets/
       - "/opt/cnf_testbed/{{ use_case }}/{{ item }}/:/etc/vpp/"
