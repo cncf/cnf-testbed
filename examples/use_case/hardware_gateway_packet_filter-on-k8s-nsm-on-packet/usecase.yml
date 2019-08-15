@@ -4,12 +4,15 @@ deployment:
   service_chains:
      - example_service_chain: ip_forwarder
      - example_service_chain: hardware_gateway_packet_filter-on-k8s-nsm-on-packet
-     CNFs:
-     - name: packet_filter 
-       repo: nsm/packet_filter
-     - name: IP_Fowader
-       repo: michael/ip_forwarder
-       version: 5.8
-     - name: hardware_gateway
-       repo: cnftestbed/hardware_gateway
-       version: 5.8
+     -name: packet_filter-ipforwarder
+      CNFS:
+       - name: simple_client
+       - name: packet_filter 
+         repo: nsm/packet_filter
+       - name: IP_Fowader
+         repo: michael/ip_forwarder
+         version: 5.8
+  workload_infra:
+    - example_k8s_nsm
+  hardware_infra:
+    - 3master_3worker_node
