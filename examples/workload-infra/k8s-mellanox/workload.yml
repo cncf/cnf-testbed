@@ -3,10 +3,21 @@ name: k8s_mellanox
 - version: v1.15
 # nsm: true
 hardware_infra:
+  example_hardware_infra: mellanox_default
+  master_nodes: 2
+  worker_nodes: 1
+
+
+## option to specific
+name: k8s_mellanox
+- version: v1.15
+# nsm: true
+hardware_infra:
+  name: custom_mellanox_intel
   masters:
   - type: c1.small
   - type: c1.small
   controllers:
-  - type: m2.xlarge
-  - type: m2.xlarge
+  - type: n2.xlarge # Intel
+  - type: n2.xlarge # Intel
   - type: m2.xlarge # mellanox NICs
