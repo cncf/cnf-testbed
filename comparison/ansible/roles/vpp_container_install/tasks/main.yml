@@ -10,6 +10,7 @@
   template:
     src: vfio-pci.conf
     dest: /etc/modules-load.d/vfio-pci.conf
+  when: nic_type == "intel"
 
 - name: Docker start vppcontainer (Intel)
   docker_container:
@@ -24,3 +25,19 @@
     volumes:
       - /etc/vpp/:/etc/vpp/
       - /dev:/dev
+  when: nic_type == "intel"
+
+- name: Docker start vppcontainer (Mellanox)
+  docker_container:
+    name: vppcontainer
+    image: soelvkaer/rdma_vppcontainer:latest
+    state: started
+    network_mode: host
+    privileged: true
+    restart_policy: always
+    devices:
+      - "/dev/hugepages/:/dev/hugepages/:rwm"
+    volumes:
+      - /etc/vpp/:/etc/vpp/
+      - /dev:/dev
+  when: nic_type == "mellanox"

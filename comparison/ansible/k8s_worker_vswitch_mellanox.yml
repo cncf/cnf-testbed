@@ -17,6 +17,9 @@
   vars:
     cnf: true
     vnf: false
+    # Run host vSwitch in container
+    vswitch_container: false
+    nic_type: "mellanox"
     baseline: false # Currently no difference in VPP config
     hugepages: 18432
     corelist_workers: 2,4,30,32
@@ -77,6 +80,14 @@
   - name: Install Vlan Package
     apt: 
       name: vlan
+  - name: Install pip
+    apt:
+      name: python-pip
+    when: vswitch_container
+  - name: Install docker-py
+    pip:
+      name: docker-py
+    when: vswitch_container
   - name: Get bond interface slaves
     setup:
       filter: "{{ ansible_bond0.slaves }}"
@@ -110,4 +121,6 @@
   roles:
     - mrlesmithjr.config-interfaces
     - grub_vswitch
+    - { role: "avinetworks.docker", when: vswitch_container }
     - rdma_mellanox_vpp
+    - { role: "vpp_container_install", when: vswitch_container }

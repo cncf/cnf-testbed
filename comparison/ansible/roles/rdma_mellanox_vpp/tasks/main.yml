@@ -4,19 +4,22 @@
     update_cache: yes
 
 - name: Install list of packages
-  apt: name={{item}} state=present
-  with_items:
-       - make
-       - git
-       - cpp
-       - gcc
-       - libssl-dev
-       - libmnl-dev
-       - libnuma-dev
-       - net-tools
-       - rdma-core
-       - nasm
-       - python-pexpect
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - make
+    - git
+    - cpp
+    - gcc
+    - libssl-dev
+    - libmnl-dev
+    - libnuma-dev
+    - net-tools
+    - rdma-core
+    - nasm
+    - python-pexpect
 
 - name: Clone Repo
   git:
@@ -24,6 +27,7 @@
     dest: /srv/vpp
     version: stable/1904
     update: no
+  when: not vswitch_container
 
 - name: Build Install Deb
   expect: 
@@ -32,29 +36,35 @@
     echo: yes
     responses:
       "Do you want to continue.*": "Y"
-    timeout: 300
+    timeout: 600
+  when: not vswitch_container
 
 - name: Build dpdk
   command: make dpdk-install-dev DPDK_MLX5_PMD=y DPDK_MLX5_PMD_DLOPEN_DEPS=y
   args:
     chdir: /srv/vpp
+  when: not vswitch_container
 
 - shell: ls /opt/vpp/external/x86_64/lib/ | grep 'librte_pmd_mlx5_glue*'
   register: mlx_glue
+  when: not vswitch_container
 
 - name: Copy Mellanox glue library
   copy:
     src: /opt/vpp/external/x86_64/lib/{{ mlx_glue.stdout }}
     dest: /usr/lib/
     remote_src: yes
+  when: not vswitch_container
 
 - name: Build pkg
   command: make pkg-deb vpp_uses_dpdk_mlx5_pmd=yes DPDK_MLX5_PMD_DLOPEN_DEPS=y
   args:
     chdir: /srv/vpp
+  when: not vswitch_container
 
 - shell: ls /srv/vpp/build-root/ | grep '.deb' | grep -v 'dbg' | grep -v 'python' | grep -v 'vpp-api'
   register: deb_libs
+  when: not vswitch_container
 
 - name: Install VPP libs
   command: dpkg -i {{ item }}
@@ -62,6 +72,7 @@
     - "{{ deb_libs.stdout }}"
   args:
     chdir: /srv/vpp/build-root
+  when: not vswitch_container
 
 - name: Create vpp sockets directory
   file: path=/etc/vpp/sockets state=directory
@@ -101,6 +112,7 @@
   service: 
     name: vpp
     state: restarted
+  when: not vswitch_container
 
 - name: Write hugepages sys.conf
   template: src=80-vpp.conf.j2 dest=/etc/sysctl.d/80-vpp.conf
