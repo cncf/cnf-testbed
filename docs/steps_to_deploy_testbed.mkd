@@ -14,17 +14,18 @@ WIP: Steps to deploy the testbed for different environments
    - Create a Project API key for terraform and ansible to use
    - Add your personal ssh key in Packet Project Settings under SSH Keys on the left. 
         - Alternatively, you can configure your ssh key on your user account and it will be automatically added to the hosts created in your projects. You can do so by clicking the down arrow icon next to your profile picture then clicking the SSH Keys link in the drop down
+   - Create the build containers as per [Build the tools](openstack_deploy.md#build-the-tools)
 
 For additional optimization of the quad-Intel Packet machines (eg. turning on hyper-threading) see the [quad Intel install docs](docs/quad_intel_install.md)
 
 ## Openstack deploy
 
-See [steps to deploy openstack documentation](docs/openstack_deploy.md) for specifics on deployment.
+See [steps to deploy openstack documentation](openstack_deploy.md) for specifics on deployment.
 
 #### Overview of deploy steps for OpenStack
 
 1. Change directory: `cd cnf-testbed/tools`
-1. Create your configuration file opestack-cluster.env (from os-cluster.env.example) with the required fields overridden:
+1. Create your configuration file openstack-cluster.env (from openstack-cluster.env.example) with the required fields overridden:
     - Packet API key/auth token created above
     - Packet Project ID
     - Packet Project Name

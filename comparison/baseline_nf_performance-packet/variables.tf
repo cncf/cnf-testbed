@@ -10,4 +10,4 @@ variable "packet_billing_cycle" { default = "hourly" }
 
 # VM Image and size
 variable "packet_master_device_plan" { default = "m2.xlarge.x86" }
-variable "packet_operating_system" { default = "ubuntu_18_04" }
+variable "packet_operating_system" { default = "201bc259-982b-41a1-a4c1-bba01ce71f51" }
