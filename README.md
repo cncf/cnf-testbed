@@ -83,14 +83,29 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 - #nsm (Network Service Mesh)
 
 
-## Upcoming Events:
+## Upcoming Events: 
+
+### TUG + CNFs At Open Networking Summit EU 2019
+
+Monday, September 23 • 08:45 - 10:15 - [Tutorial: Take a Test Drive with the Cloud Native Network Function (CNF) Testbed - Sponsored by Cloud Native Computing Foundation (Pre-registration required)](https://sched.co/ScCA)
+
+Monday, September 23 • 10:45 - 12:15 - [CNCF Telecom User Group Meeting](https://sched.co/Saoc)
+
+Wednesday, September 25 • 16:15 - 16:45 - [Panel Discussion: Embracing Cloud Native on the Path to 5G - Heather Kirksey, The Linux Foundation; Rabi Abdel, Vodafone; Lincoln Lavoie, UNH Interoperability Lab; Frederick Kautz, doc.ai; Taylor Carpenter, Vulk Coop](https://sched.co/SYwo)
+
+
+ ### TUG + CNFs At KubeCon + CloudNativeCon NA 2019
+
+Thursday, September 5 • KubeCon NA 2019 Schedule Announcement
+
+Tuesday, November 19 • TBD - [Intro + Deep Dive BoF: Telecom User Group and Cloud Native Network Functions (CNF) Testbed - Cheryl Hung, Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://events.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2019/register/)
+
+
+## Past Events:
 
 ### CNFs At KubeCon + CloudNativeCon China 2019
 
 Tuesday, June 25 • 11:20 - 11:55am - [Intro + Deep Dive BoF: Telecom User Group and Cloud Native Network Functions (CNF) Testbed - Cheryl Hung, Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://sched.co/OBhN)
-
-
-## Past Events:
 
 
 ### CNFs At KubeCon + CloudNativeCon EU 2019
@@ -107,6 +122,7 @@ Thursday, May 23 • 11:05am - 12:30pm - [Intro + Deep Dive BoF: Telecom User Gr
 [Tutorial: Driving Telco Performance with the Cloud Native Network Function (CNF) Testbed - Sponsored by Cloud Native Computing Foundation (Pre-registration required)](https://sched.co/MnkD)
 
 [Works on My Machine: How to Validate Performance of VNFs and CNFs in a Reproducible Testbed - W. Watson, Vulk Cooperative & Denver Williams](https://sched.co/LKUF)
+
 
 ### CNFs At KubeCon + CloudNativeCon North America 2018
 
