@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "gateway"
+      networkservicemesh.io/impl: "packet-filtering"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "gateway"
+        networkservicemesh.io/impl: "packet-filtering"
+    spec:
+      containers:
+        - name: universal-cnf-endpoint
+          image: networkservicemesh/universal-cnf-vppagent:master
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            limits:
+              networkservicemesh.io/socket: 1
+          volumeMounts:
+            - mountPath: /etc/universal-cnf/config.yaml
+              subPath: config.yaml
+              name: universal-cnf-config-volume
+      volumes:
+        - name: universal-cnf-config-volume
+          configMap:
+            name: universal-cnf-gateway
+metadata:
+  name: gateway
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: universal-cnf-gateway
+data:
+  config.yaml: |
+    initactions:
+      - command:
+          name: "echo"
+          args: ["Do attach the PCI device here and assign it an IP address from 10.60.1.0/24"]
+    endpoints:
+    - name: "packet-filtering"
+      labels:
+        app: "gateway"
+      ipam:
+        prefixpool: "10.60.2.0/24"
+        routes: ["10.60.1.0/24"]
+      ifname: "endpoint0"
