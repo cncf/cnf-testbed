@@ -73,7 +73,7 @@ Run `SKIP_PROVISIONING=true ./deploy_openstack_cluster.sh` again to finish setti
 
 ## Testing
 
-The quickest way to test is to execute run_openstack_benchmark.sh on the same host that performed the deployment. The steps within can be manually performed with the following
+The quickest way to test is to execute test_openstack_create.sh on the same host that performed the deployment. The steps within can be manually performed with the following
 
 1. SSH to the control node.  Eg.  `ssh {ip_of_first_machine}`
 
