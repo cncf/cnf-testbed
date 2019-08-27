@@ -31,6 +31,11 @@
     version: "{{ openstack_chef_version }}"
     dest: /root/openstack-chef
     update: no
+
+- name: Update the Berksfile with known good git commits
+  template:
+    src: FrozenBerksfile
+    dest: /root/openstack-chef/Berksfile
     
 - name: run the berks command in the openstack-chef repo
   command: berks install
@@ -64,37 +69,22 @@
     paths: /root/openstack-chef/cookbooks/
     recurse: yes
     patterns: "mariadb-client.rb"
-  register: mariadb_client_rb 
+  register: mariadb_client_rb
 
 - name: Find orchestration identity registration recipe files from cookbooks
   command: find /root/openstack-chef/cookbooks/ -path  "*openstack-orchestration*/identity_registration.rb"
   # find: Cant use find module becausee it doesn't support regex of parent folders
-  #   paths: /root/openstack-chef/cookbooks/
-  #   recurse: yes
-  #   patterns: "identity_registration.rb"
+  #   paths: /root/openstack-chef/cookbooks/	
+  #   recurse: yes	
+  #   patterns: "identity_registration.rb"	
   register: orch_identity_registration_recipes
 
-# TODO: file a bug for this
+ # TODO: file a bug for this	
 - name: remove admin endpoint references from openstack orchestration
   template:
     src: openstack-orchestration-identity_registration.rb
     dest: "{{ item }}"
   with_items: "{{ orch_identity_registration_recipes.stdout_lines }}"
-
-- name: Find block storage identity registration recipe files from cookbooks
-  command: find /root/openstack-chef/cookbooks/ -path  "*openstack-block-storage*/identity_registration.rb"
-  # find: Cant use find module becausee it doesn't support regex of parent folders
-  #   paths: /root/openstack-chef/cookbooks/
-  #   recurse: yes
-  #   patterns: "identity_registration.rb"
-  register: block_identity_registration_recipes
-
-- name: remove admin endpoint reference from openstack block storage
-  lineinfile:
-    path: "{{ item }}"
-    regexp: "  admin: { url: admin_endpoint\\(\\'block-storage\\'\\) },"
-    line: "#  admin: { url: admin_endpoint('block-storage') },"
-  with_items: "{{ block_identity_registration_recipes.stdout_lines }}" 
 
 - name: Update mysql ruby gem to 0.5.2 on Ubuntu 18.04
   replace:

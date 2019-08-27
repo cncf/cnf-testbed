@@ -7,13 +7,11 @@
   - name: Enable python pip
     apt:
       name: ['python-dev','python-pip']
-    when: k8s
   - name: Install OpenShift client
     pip:
       name:
         - openshift>=0.6
         - pyyaml>=3.11
-    when: k8s
 
 - hosts: all
   vars:

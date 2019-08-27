@@ -1,0 +1,50 @@
+source 'https://supermarket.chef.io'
+
+# %w(
+#   integration-test
+#   orchestration
+#   telemetry
+#   block-storage
+#   common
+#   compute
+#   dashboard
+#   dns
+#   identity
+#   image
+#   network
+#   ops-database
+#   ops-messaging
+#   bare-metal
+# ).each do |cookbook|
+
+# Update berksfile to freeze version of sub-recipes
+{
+    'integration-test' => '5fc3d0635b6c7831b498e1e63f47683502771409',
+    'orchestration' => '40b5466c8a523fdd00a0039ba8811cae00b760f9',
+    'telemetry' => 'e0a39ccaf12703e6e41b77c652fb4e5c9e2950eb',
+    'block-storage' => '9c2757e528b273275b78cbdd13bd0af0842e8da8',
+    'common' => '782bfbfe645e627600e059d0cfba7b10bba6c8b6',
+    'compute' => 'bf0aeae4f50316224c5757cae05ebef2637df05e',
+    'dashboard' => 'd44b03c2bb99485ed07fe99c202e5bd0e317d020',
+    'dns' => 'be2fd380fa50bd1701fe416e6874142749d424fa',
+    'identity' => '1ad3f2ec044d5166523d0003123803bd1dd444b3',
+    'image' => 'b5e593d9b1902b7356eae50d14eaf0234e36d05d',
+    'network' => 'e4abfa8d61d1b96832ba340a5b9e6307c50340d6',
+    'ops-database' => '7fc39a0e8d6ac78c6fb2b27198ec599352f29501',
+    'ops-messaging' => '3abf7d79a1ee55a244c0b8b05498d630197a2af9',
+    'bare-metal' => '813fbd2c6876d2ac22d65d3087c4fb45146c30ca'
+}.each do |cookbook, commit|
+  if Dir.exist?("../cookbook-openstack-#{cookbook}")
+    cookbook "openstack-#{cookbook}", path: "../cookbook-openstack-#{cookbook}"
+  else
+    cookbook "openstack-#{cookbook}", git: "https://git.openstack.org/openstack/cookbook-openstack-#{cookbook}", ref: commit
+  end
+end
+
+if Dir.exist?('../cookbook-openstackclient')
+  cookbook 'openstackclient', path: '../cookbook-openstackclient'
+else
+  cookbook 'openstackclient', git: 'https://git.openstack.org/openstack/cookbook-openstackclient', ref: 'a05f750cde5c37fa5defe26b471911f20e60bc08'
+end
+
+cookbook 'statsd', github: 'librato/statsd-cookbook'
