@@ -6,10 +6,10 @@ if [ -f "images/vnf_base.raw" ]; then
 fi
 
 export ARCH="amd64"
-export BASE_ELEMENTS="bootloader cloud-init-datasources ubuntu vnf"
+export BASE_ELEMENTS="bootloader cloud-init-datasources devuser ubuntu vnf"
 export DIB_CLOUD_INIT_DATASOURCES="ConfigDrive"
-export DIB_DEV_USER_USERNAME=ubuntu
-export DIB_DEV_USER_PASSWORD=ubuntu
+export DIB_DEV_USER_USERNAME=cnftestbed
+export DIB_DEV_USER_PASSWORD=cnftestbed
 export DIB_DEV_USER_PWDLESS_SUDO=Y
 export DIB_RELEASE="bionic"
 export ELEMENTS_PATH="./elements/"
