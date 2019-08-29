@@ -96,11 +96,11 @@
     regexp: "ip_network.*subnet.*cidr.*"
     replace: ip_network(unicode(subnet['cidr']))
 
-# - name: install new vpp python api pre-req vpp_ver 19.04+ into python 2.7
-#   pip:
-#     name: aenum
-#     executable: pip2
-#   when: vpp_ver >= 1904
+- name: install new vpp python api pre-req vpp_ver 19.04+ into python 2.7
+  pip:
+    name: aenum
+    executable: pip2
+  when: vpp_ver >= 1904 and not vpp_src
 
 - name: install openstack networking-vpp plugin
   pip:
