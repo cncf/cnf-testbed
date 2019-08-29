@@ -1,4 +1,9 @@
 ---
+- include_vars:
+    file: /terraform/openstack.tfstate
+    name: os_tfstate
+  delegate_to: localhost
+  delegate_facts: yes
 # Get chef and chef OpenStack cookbooks
 - name: Resolve potential missing packages
   command: apt --fix-broken install -y
@@ -120,7 +125,7 @@
 # Update cookbooks, roles, and environments
 - name: find the controller host address
   set_fact:
-    host_0_address: "{{hostvars[groups['all'][0]].ansible_bond0.ipv4.address}}"
+    host_0_address: "{{ hostvars['localhost']['os_tfstate'].modules[0].resources['packet_device.master'].primary.attributes.access_public_ipv4 }}"
 
 - name: Locally upload the chef recieps
   command: knife cookbook upload -a -z --include-dependencies --cookbook-path cookbooks/

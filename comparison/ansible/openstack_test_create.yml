@@ -1,4 +1,13 @@
-- hosts: all[0]
+- hosts: localhost
+  tasks:
+  - include_vars:
+      file: /terraform/openstack.tfstate
+      name: os_tfstate
+  - name: find the controller host address
+    set_fact:
+      host_0_address: "{{ os_tfstate.modules[0].resources['packet_device.master'].primary.attributes.access_public_ipv4 }}"
+
+- hosts: "{{hostvars['localhost']['host_0_address']}}"
   tasks:
   - name: run vlan setup
     command: /root/create_vlans.sh
