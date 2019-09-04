@@ -91,6 +91,8 @@ Monday, September 23 • 08:45 - 10:15 - [Tutorial: Take a Test Drive with the C
 
 Monday, September 23 • 10:45 - 12:15 - [CNCF Telecom User Group Meeting](https://sched.co/Saoc)
 
+Wednesday, September 25 • 14:35 - 15:05 - [Cloud Native Network Provisioning with Network Service Mesh in the CNF Testbed - Taylor Carpenter, Vulk Coop & Nikolay Nikolaev, VMware](https://sched.co/SYvw)
+
 Wednesday, September 25 • 16:15 - 16:45 - [Panel Discussion: Embracing Cloud Native on the Path to 5G - Heather Kirksey, The Linux Foundation; Rabi Abdel, Vodafone; Lincoln Lavoie, UNH Interoperability Lab; Frederick Kautz, doc.ai; Taylor Carpenter, Vulk Coop](https://sched.co/SYwo)
 
 
