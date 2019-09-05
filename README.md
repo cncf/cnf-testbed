@@ -98,9 +98,9 @@ Wednesday, September 25 • 16:15 - 16:45 - [Panel Discussion: Embracing Cloud N
 
  ### TUG + CNFs At KubeCon + CloudNativeCon NA 2019
 
-Thursday, September 5 • KubeCon NA 2019 Schedule Announcement
+Thursday, November 21 • 10:55am - 12:25pm - [Intro + Deep Dive: Telecom User Group](https://sched.co/Uakt)
 
-Tuesday, November 19 • TBD - [Intro + Deep Dive BoF: Telecom User Group and Cloud Native Network Functions (CNF) Testbed - Cheryl Hung, Dan Kohn, CNCF & Taylor Carpenter, Vulk Coop](https://events.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2019/register/)
+Thursday, November 21 • 4:25pm - 5:55pm - [Intro + Deep Dive: Cloud Native Network Function (CNF) Testbed](https://sched.co/UakA)
 
 
 ## Past Events:
