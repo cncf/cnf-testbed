@@ -1,0 +1,20 @@
+---
+apiVersion: networkservicemesh.io/v1alpha1
+kind: NetworkService
+metadata:
+  name: packet-filtering
+spec:
+  payload: IP
+  matches:
+    - match:
+      sourceSelector:
+        app: packet-filter
+      route:
+        - destination:
+          destinationSelector:
+            app: gateway
+    - match:
+      route:
+        - destination:
+          destinationSelector:
+            app: packet-filter
