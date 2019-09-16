@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "csc.fullname" . }}
+  name: {{ include "csp.fullname" . }}
   labels:
-    app: {{ include "csc.name" . }}
-    chart: {{ include "csc.chart" . }}
+    app: {{ include "csp.name" . }}
+    chart: {{ include "csp.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "csc.name" . }}
+      app: {{ include "csp.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "csc.name" . }}
+        app: {{ include "csp.name" . }}
         release: {{ .Release.Name }}
     spec:
       containers:
@@ -43,7 +43,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: {{ template "csc.fullname" . }}
+            name: {{ template "csp.fullname" . }}
             items:
             {{ range $k, $v := .Values.cnf }}
             - key: startup_{{$k}}.conf
