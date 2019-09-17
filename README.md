@@ -4,7 +4,7 @@ The CNCF CNF Testbed provides reference code and test cases for running the same
 
 Status: The CNF Testbed is *not* a CNCF-hosted [project](https://www.cncf.io/projects/). Instead, it is an initiative to create a repeatable, apples-to-apples testbed that telcos and telecoms vendors can use to evaluate how CNF architectures compare to more traditional VNF ones.
 
-The initiative collaborates with the [CNCF Telecom User Group](https://github.com/cncf/telecom-user-group) to test and demonstrate differents options.
+The initiative collaborates with the [CNCF Telecom User Group](https://github.com/cncf/telecom-user-group) to test and demonstrate different options.
 
 Note: _The CNF Testbed is still in the prototype stage. Additional reference code and benchmarking tests will be added incrementally._
 
