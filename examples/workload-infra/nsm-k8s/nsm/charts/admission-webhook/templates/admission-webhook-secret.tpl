@@ -40,10 +40,31 @@ spec:
               value: "{{ .Values.org }}"
             - name: TAG
               value: "{{ .Values.tag }}"
+{{- if .Values.global.JaegerTracing }}
+          env:
+            - name: JAEGER_AGENT_HOST
+              value: jaeger.nsm-system
+            - name: JAEGER_AGENT_PORT
+              value: "6831"
+{{- end }}
           volumeMounts:
             - name: webhook-certs
               mountPath: /etc/webhook/certs
               readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 5555
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 5555
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
       volumes:
         - name: webhook-certs
           secret:
