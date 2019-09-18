@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "ucnf-client"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "ucnf-client"
+    spec:
+      hostPID: true
+      containers:
+        - name: universal-cnf-client
+          image: networkservicemesh/universal-cnf-vppagent:master
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            limits:
+              networkservicemesh.io/socket: 1
+          volumeMounts:
+            - mountPath: /etc/universal-cnf/config.yaml
+              subPath: config.yaml
+              name: universal-cnf-config-volume
+      volumes:
+        - name: universal-cnf-config-volume
+          configMap:
+            name: universal-cnf-client
+metadata:
+  name: ucnf-client
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: universal-cnf-client
+data:
+  config.yaml: |
+    initactions:
+      - command:
+          name: "vppctl"
+          args: ["show", "version"]
+      - client:
+          name: "packet-filtering"
+          ifname: "client0"
+          labels:
+            app: "ucnf-client"
