@@ -21,7 +21,16 @@ A few other optional steps you can decide if you need:
 $ rm get_helm.sh
 ## If you have a version mismatch between server and client
 $ helm init --upgrade
+``
+`
+Note: in case of `Error: no available release name found` do (according to [helm issue](https://github.com/helm/helm/issues/4412)):
+
 ```
+$ kubectl create serviceaccount --namespace kube-system tiller
+$ kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+$ kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+```
+
 
 ### Installing NSM
 Install NSM by running the following command from this directory:
