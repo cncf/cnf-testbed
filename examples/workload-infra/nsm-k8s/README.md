@@ -21,8 +21,8 @@ A few other optional steps you can decide if you need:
 $ rm get_helm.sh
 ## If you have a version mismatch between server and client
 $ helm init --upgrade
-``
-`
+```
+
 Note: in case of `Error: no available release name found` do (according to [helm issue](https://github.com/helm/helm/issues/4412)):
 
 ```
