@@ -11,7 +11,7 @@
   - CSC "Snake": CNFs always connect through the host vSwitch using memif interfaces
 * Each setup has been benchmarked with both privileged and unprivileged CNFs
 
-### CSP "Snake" results
+### CSP "Pipeline" results
 Privileged CNFs:
 * PDR: 6.05 Gbps (9.01 Mpps)
 * NDR: 6.05 Gbps (9.01 Mpps)
@@ -22,7 +22,7 @@ Unprivileged CNFs:
 * NDR: 5.57 Gbps (8.29 Mpps)
 * MRR: 5.38 Gbps (8.00 Mpps)
 
-### CSC "Pipeline" results
+### CSC "Snake" results
 Privileged CNFs:
 * PDR: 4.18 Gbps (6.22 Mpps)
 * NDR: 4.16 Gbps (6.19 Mpps)
