@@ -14,9 +14,7 @@ spec:
     imagePullPolicy: IfNotPresent
     securityContext:
       privileged: true
-    #command: [ "/bin/bash", "-c", "--" ]
     command: [ "/bin/bash", "/opt/vpp/run_vpp.sh" ]
-    #args: [ "while true; do sleep 300000; done;" ]
     resources:
       requests:
         memory: 200Mi
@@ -93,7 +91,7 @@ data:
 
     cp /opt/vpp/startup.template /etc/vpp/startup.conf
 
-    devstring="      "
+    devstring="  "
 
     # Avoiding modifications to IFS
     for i in $(echo $pcidevs | sed "s/,/ /g"); do
