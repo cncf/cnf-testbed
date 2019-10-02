@@ -9,6 +9,13 @@ A Kubernetes deployment must be avaialble prior to installing the plugin.
 
 You should have a `kubeconfig` file ready on the machine used for installing the plugin.
 
+`kubectl` must be installed. The steps included here are taken fron [kubernetes.io](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux):
+```
+$ curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+$ chmod +x kubectl
+$ mv kubectl /usr/local/bin/kubectl
+```
+
 Before installing, connect (SSH) to the worker node of the Kubernetes cluster, and stop any instance of VPP running on the node:
 ```
 ## If running as a service
