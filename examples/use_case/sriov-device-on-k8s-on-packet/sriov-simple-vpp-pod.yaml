@@ -17,6 +17,7 @@ spec:
     command: [ "/bin/bash", "/opt/vpp/run_vpp.sh" ]
     resources:
       requests:
+        hugepages-2Mi: 100Mi
         memory: 200Mi
         intel.com/vfio_ports: '1'
       limits:
