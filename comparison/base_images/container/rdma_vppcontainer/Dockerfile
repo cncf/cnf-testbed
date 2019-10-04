@@ -16,7 +16,7 @@ RUN apt update && apt install -y \
     vim \
     systemd
 
-RUN git clone -b stable/1904 https://github.com/FDio/vpp.git /srv/vpp
+RUN git clone https://github.com/FDio/vpp.git --branch v19.08.1 --single-branch /srv/vpp
 
 RUN cd /srv/vpp \
     && yes Y | make install-dep \
