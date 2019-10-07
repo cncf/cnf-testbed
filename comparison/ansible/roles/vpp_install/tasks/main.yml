@@ -5,7 +5,7 @@
 
 - name: Add packagecloud gpg key
   apt_key:
-    url: https://packagecloud.io/fdio/{{vpp_ver}}/gpgkey
+    url: https://packagecloud.io/fdio/{{vpp_branch}}/gpgkey
     state: present
   when: ansible_os_family == "Debian"
 
@@ -57,7 +57,11 @@
 - name: install dpdk on Debian
   apt:
     update_cache: yes
-    name: ['libibverbs-dev','dpdk']
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - libibverbs-dev
+    - dpdk
   when: ansible_os_family == "Debian"
 
 - name: install vpp service(s) RedHat
@@ -68,7 +72,15 @@
 - name: install vpp service(s) Ubuntu
   apt:
     update_cache: yes
-    name: ['vpp','vpp-dev','vpp-dbg','libvppinfra', 'vpp-plugin-core', 'vpp-plugin-dpdk']
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - vpp={{vpp_ver}}-release
+    - vpp-dev={{vpp_ver}}-release
+    - vpp-dbg={{vpp_ver}}-release
+    - libvppinfra={{vpp_ver}}-release
+    - vpp-plugin-core={{vpp_ver}}-release
+    - vpp-plugin-dpdk={{vpp_ver}}-release
   when: ansible_os_family == "Debian"
 
 - name: install vpp api packages(s) RedHat
@@ -79,7 +91,12 @@
 - name: install vpp api packages(s) Ubuntu
   apt:
     update_cache: yes
-    name: ["vpp-api-python","vpp-api-java"]
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - vpp-api-python={{vpp_ver}}-release
+    - vpp-api-java
+      # vpp-api-java is on a different release schedule, see https://wiki.fd.io/view/JVPP
   when: ansible_os_family == "Debian"
 
 - name: Enable use of vfio-pci driver
