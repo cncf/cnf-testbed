@@ -2,13 +2,13 @@
 
 This example is used to install a POD using the [SRIOV Network Device Plugin](https://github.com/intel/sriov-network-device-plugin).
 
-The POD is assigned a sigle port using vfio-pci, which is then attached to an instance of VPP running in the container.
+The POD is assigned a single port using vfio-pci, which is then attached to an instance of VPP running in the container.
 
 ### Limitations
 
 The SRIOV Network Device Plugin is intended for providing a limited set of resources to a running container. For this example, the POD is running in privileged mode, which makes all of the available ports using the vfio-pci driver visible inside the container. The POD created through this example will read the list of assigned ports from the environment and configure VPP to only use the allocated resources.
 
-The reason for privileged mode is errors with VPP due to hugepages and access to the vfio-pci kernel module. We are looking into a solution that allows running it unprivilged, but by limiting the configuration to the assigned resources from the SRIOV Device Plugin, the resulting behavior will emulate that of the intended plugin behavior.
+The reason for privileged mode is errors with VPP due to hugepages and access to the vfio-pci kernel module. We are looking into a solution that allows running it unprivileged, but by limiting the configuration to the assigned resources from the SRIOV Device Plugin, the resulting behavior will emulate that of the intended plugin behavior.
 
 ### Prerequisites
 A Kubernetes deployment with the SRIOV Network Device Plugin installed must be available.
