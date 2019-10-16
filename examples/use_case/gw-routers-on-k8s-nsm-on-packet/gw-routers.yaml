@@ -1,0 +1,29 @@
+---
+apiVersion: networkservicemesh.io/v1alpha1
+kind: NetworkService
+metadata:
+  name: gw-routers
+spec:
+  payload: IP
+  matches:
+    - match:
+      sourceSelector:
+        app: router-left
+      route:
+        - destination:
+          destinationSelector:
+            app: router-left
+    - match:
+      sourceSelector:
+        app: router-right
+      route:
+        - destination:
+          destinationSelector:
+            app: router-right
+    - match:
+      sourceSelector:
+        app: gw-right
+      route:
+        - destination:
+          destinationSelector:
+            app: gw-right
