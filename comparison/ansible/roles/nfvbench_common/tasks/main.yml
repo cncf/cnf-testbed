@@ -1,33 +1,29 @@
 ---
-- name: Get Kernal Version
-  setup: 
-    filter: "{{ ansible_kernel }}"
-
 - name: Docker start opnfv/nfvbench (Intel)
   docker_container:
     name: nfvbench
-    image: opnfv/nfvbench:2.0.5
+    image: opnfv/nfvbench:3.4.1
     state: started
     network_mode: host
     privileged: true
     volumes:
       - /root:/tmp/nfvbench
       - /dev:/dev
-      - /lib/modules/{{ ansible_kernel }}:/lib/modules/{{ ansible_kernel }}
+      - /lib/modules:/lib/modules
       - /usr/src:/usr/src
   when: intel 
 
 - name: Docker start opnfv/nfvbench (Mellanox)
   docker_container:
     name: nfvbench
-    image: opnfv/nfvbench:2.0.5
+    image: opnfv/nfvbench:3.4.1
     state: started
     network_mode: host
     privileged: true
     volumes: 
       - /root:/tmp/nfvbench
       - /dev:/dev
-      - /lib/modules/{{ ansible_kernel }}:/lib/modules/{{ ansible_kernel }}
+      - /lib/modules:/lib/modules
       - /usr/src:/usr/src
       - /usr/bin/ofed_info:/usr/bin/ofed_info
       - /etc/libibverbs.d:/etc/libibverbs.d
@@ -37,32 +33,18 @@
       - /lib:/lib
   when: not intel
 
-- name: Update the number of hugepages available for TRex
-  command: docker exec -i nfvbench sed -i -e "s/512 /2048 /" -e "s/512\"/2048\"/" /opt/trex/v2.32/trex-cfg
+- name: Allow shared use of NIC in TRex (i40e)
+  command: docker exec -i nfvbench sed -e '/self.check_i40e_binds(if_list)/ s/^#*/#/' -i /opt/trex/v2.56/dpdk_setup_ports.py
+  when: intel
 
-- name: Change the mbuf factor to further reduce the memory usage
-  command: docker exec -i nfvbench sed -i -e "s/--cfg {} \&>/--cfg {} --mbuf-factor 0.2 \&>/g" /nfvbench/nfvbench/traffic_server.py
+- name: Write nfvbench config file
+  template: src=nfvbench_config.j2 dest=/root/nfvbench_config.cfg
 
-- name: Write nfvbench config file (openstack)
-  template: src=nfvbench_config_openstack.j2 dest=/root/nfvbench_config_openstack.cfg
+- name: Add run script
+  template: src=run_test.sh dest=/root/run_test.sh
 
-- name: Write nfvbench config file (kubernetes)
-  template: src=nfvbench_config_kubernetes.j2 dest=/root/nfvbench_config_kubernetes.cfg
-
-- name: Add run script (openstack)
-  template: src=run_test_openstack.sh dest=/root/run_test_openstack.sh
-
-- name: Add run script (kubernetes)
-  template: src=run_test_kubernetes.sh dest=/root/run_test_kubernetes.sh
-
-- name: Update permissions for run_test_openstack.sh
+- name: Update permissions for run_test.sh
   file:
-    path: /root/run_test_openstack.sh
-    state: file
-    mode: 0755
-
-- name: Update permissions for run_test_kubernetes.sh
-  file:
-    path: /root/run_test_kubernetes.sh
+    path: /root/run_test.sh
     state: file
     mode: 0755
