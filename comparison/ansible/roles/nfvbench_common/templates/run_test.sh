@@ -53,9 +53,8 @@ function run_bench () {
             dcr_image="nfvbench"
             dcr_param="--interactive "
             dcr_param+="--tty "
-            nfv_param="nfvbench -c /tmp/nfvbench/nfvbench_config_openstack.cfg "
+            nfv_param="nfvbench -c /tmp/nfvbench/nfvbench_config.cfg "
             nfv_param+="--rate ${rate} "
-            nfv_param+="--flow-count 1024 "
             nfv_param+="--duration ${DURATION} "
             nfv_param+="--json /tmp/nfvbench/${PREFIX}_${CHAINS}c${NODES}n_${rate}-${iter}.json"
             results="${out_dir}/${PREFIX}_${CHAINS}c${NODES}n_${rate}-${iter}.log"
@@ -69,11 +68,11 @@ function run_bench () {
 BASH_FUNCTION_DIR="$(dirname "$(readlink -e "${BASH_SOURCE[0]}")")" || {
     die "Some error during localizing this source directory."
 }
-CHAINS="${1:-2}"
-NODES="${2:-3}"
-PREFIX="${3:-vnf}"
+CHAINS="${1:-3}"
+NODES="${2:-2}"
+PREFIX="${3:-cnf}"
 RATES=( 10Gbps ndr_pdr )
 ITERATIONS=1
-DURATION=30
+DURATION=2
 
 run_bench || die

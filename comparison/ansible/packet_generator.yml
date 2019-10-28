@@ -74,19 +74,26 @@
   - name: Configure interfaces
     include_role:
       name: mrlesmithjr.config-interfaces
-    when: not intel
   - name: Do Mellanox setup
     include_role:
       name: mellanox_nic
     when: not intel
-  - name: Reboot following MLX setup
+  - name: Update Grub
+    include_role:
+      name: grub_packet_generator
+  - name: Load VFIO-PCI on startup
+    lineinfile:
+      path: /etc/modules
+      insertafter: EOF
+      line: 'vfio-pci'
+    when: intel
+  - name: Reboot server
     reboot:
-    when: not intel
+      post_reboot_delay: 60
   - name: Ensure rc.local has been started
     service:
       name: rc-local
       state: started
-    when: not intel
   - name: Sleep for 10 seconds to ensure VFs are available
     wait_for: timeout=10
     when: not intel
@@ -96,18 +103,14 @@
   - name: Sleep for 10 seconds to ensure Facts are updated
     wait_for: timeout=10
     when: not intel
-  - name: Get trex_port_0 pci id
+  - name: Get trex_port_0 pci id (MLX)
     setup:
-      filter: "{{ ansible_eno3.pciid if intel else ansible_enp94s0f4.pciid }}"
-  - name: Get trex_port_1 pci id
+      filter: "{{ ansible_enp94s0f4.pciid }}"
+    when: not intel
+  - name: Get trex_port_1 pci id (MLX)
     setup:
-      filter: "{{ ansible_eno4.pciid if intel else ansible_enp94s0f5.pciid }}"
-  - name: Load VFIO-PCI on startup
-    lineinfile:
-      path: /etc/modules
-      insertafter: EOF
-      line: 'vfio-pci'
-    when: intel
+      filter: "{{ ansible_enp94s0f5.pciid }}"
+    when: not intel
 
   vars:
     intel: "{{ true if quad_intel is defined else false }}"
@@ -165,5 +168,4 @@
           - param:
             val: 'bond-master bond0'
   roles:
-    - grub_packet_generator
     - nfvbench_common
