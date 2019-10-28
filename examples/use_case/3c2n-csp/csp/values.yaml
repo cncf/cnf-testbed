@@ -9,9 +9,6 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
-  #nameOverride: ""
-  #fullnameOverride: ""
-
 resources:
   limits:
     cpu: "3"
@@ -24,8 +21,8 @@ volumeMounts:
 ## Configuration for 3c2n_csp
 cnf:
   1:
-    main_core: 6
-    worker_cores: '12,40'
+    main_core: 8
+    worker_cores: '14,42'
     sock: ['memif1','int11']
     memid: ['1','10']
     mac: ['52:54:00:00:00:aa','52:54:00:00:01:bb']
@@ -36,8 +33,8 @@ cnf:
     remmac: ['{{ index .Values.nfvbench_macs 0 }}','52:54:00:00:02:aa']
 
   2:
-    main_core: 8
-    worker_cores: '14,42'
+    main_core: 10
+    worker_cores: '16,44'
     sock: ['int11','memif2']
     memid: ['10','2']
     mac: ['52:54:00:00:02:aa','52:54:00:00:00:bb']
@@ -48,8 +45,8 @@ cnf:
     remmac: ['52:54:00:00:01:bb','{{ index .Values.nfvbench_macs 1 }}']
 
   3:
-    main_core: 10
-    worker_cores: '16,44'
+    main_core: 12
+    worker_cores: '18,46'
     sock: ['memif3','int21']
     memid: ['3','10']
     mac: ['52:54:01:00:00:aa','52:54:01:00:01:bb']
@@ -60,8 +57,8 @@ cnf:
     remmac: ['{{ index .Values.nfvbench_macs 0 }}','52:54:01:00:02:aa']
 
   4:
-    main_core: 34
-    worker_cores: '18,46'
+    main_core: 36
+    worker_cores: '20,48'
     sock: ['int21','memif4']
     memid: ['10','4']
     mac: ['52:54:01:00:02:aa','52:54:01:00:00:bb']
@@ -72,8 +69,8 @@ cnf:
     remmac: ['52:54:01:00:01:bb','{{ index .Values.nfvbench_macs 1 }}']
 
   5:
-    main_core: 36
-    worker_cores: '20,48'
+    main_core: 38
+    worker_cores: '22,50'
     sock: ['memif5','int31']
     memid: ['5','10']
     mac: ['52:54:02:00:00:aa','52:54:02:00:01:bb']
@@ -84,8 +81,8 @@ cnf:
     remmac: ['{{ index .Values.nfvbench_macs 0 }}','52:54:02:00:02:aa']
 
   6:
-    main_core: 38
-    worker_cores: '22,50'
+    main_core: 40
+    worker_cores: '24,52'
     sock: ['int31','memif6']
     memid: ['10','6']
     mac: ['52:54:02:00:02:aa','52:54:02:00:00:bb']

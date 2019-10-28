@@ -23,9 +23,28 @@ You will also need to configure a packet generator to test the example. Steps fo
 
 **Preparing the K8s worker node**
 
-The host vSwitch (VPP) configuration must be updated prior to running this example. For now this can be done using the provided `setup.gate` template.
+The host vSwitch (VPP) configuration must be updated prior to running this example.
 
-On the worker node, start out by checking the existing configuration located in `/etc/vpp/setup.gate`. It should contain lines with the interface names, i.e. `TenGigabitEthernetXX/X/X`. Note down the these, and replace the names provided in the example `setup.gate` file with those. Once that is done, replace the content of `/etc/vpp/setup.gate` on the worker node with the content of the example file. Once that has been done, restart the vSwitch using the below step (depending on how the vSwitch is deployed):
+On the worker node, start by checking the PCI devices used by VPP:
+```
+$ grep dev /etc/vpp/startup.conf | grep -v default
+## (example, n2.xlarge) dev 0000:1a:00.1 dev 0000:1a:00.2
+## (example, m2.xlarge) dev 0000:5e:00.1
+## n2.xlarge (Intel) servers have two devices, m2.xlarge (Mellanox) has one device
+```
+
+Now replace the configuration file with the one for this example as follows:
+```
+$ cp /etc/vpp/templates/3c2n-csp.gate /etc/vpp/setup.gate
+```
+
+Once the filw has been replaced, open it (`/etc/vpp/setup.gate`) with your favorite editor, and make sure the device names match the PCI devices listed previously. Make sure all instances of the name are updated:
+```
+## (example, n2.xlarge) TenGigabitEthernet1a/0/1, TenGigabitEthernet1a/0/2
+## (example, m2.xlarge) TwentyFiveGigabitEthernet5e/0/1
+```
+
+Once that has been done, restart the vSwitch using the below step (depending on how the vSwitch is deployed):
 ```
 ## vSwitch running in host
 $ service vpp restart

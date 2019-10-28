@@ -28,7 +28,8 @@
     nic_type: "intel"
     baseline: false
     hugepages: 10240
-    corelist_workers: 2,4,30,32
+    corelist_workers: 2,4,6,30,32,34
+    rx_queues: 3
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
@@ -133,5 +134,4 @@
     - { role: "avinetworks.docker", when: vswitch_container }
     - { role: "vpp_install", when: not vswitch_container }
     - { role: "vpp_container_install", when: vswitch_container }
-    - vpp_vswitch #Vpp vswitch configure,
-    #Has unique config for quad intel cards
+    - vpp_config

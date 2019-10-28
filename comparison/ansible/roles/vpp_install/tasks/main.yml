@@ -16,15 +16,6 @@
   when: ansible_os_family == "RedHat"
   register: vpp_sh_rh
 
-#- name: get VPP install script for RedHat
-#  get_url:
-#    url: https://packagecloud.io/install/repositories/fdio/release/script.rpm.sh
-#    dest: /root/vpp.sh
-#    mode: 0755
-#  when: ansible_os_family == "RedHat"
-#  register: vpp_sh_rh
-
-
 - name: setup vpp repo for Ubuntu
   template:
     src: 99fd.io.list
@@ -32,18 +23,6 @@
   when: ansible_os_family == "Debian"
   register: vpp_sh_deb
 
-#- name: get VPP install script for Ubuntu
-#  get_url:
-#    url: https://packagecloud.io/install/repositories/fdio/release/script.deb.sh
-#    dest: /root/vpp.sh
-#    mode: 0755
-#  when: ansible_os_family == "Debian"
-#  register: vpp_sh_deb
-
-#- name: run VPP install script
-#  command: /root/vpp.sh
-#  when: vpp_sh_rh.changed or vpp_sh_deb.changed
-#
 - name: install dpdk on RedHat
   yum:
     name: ['libibverbs','dpdk']
@@ -106,25 +85,6 @@
     replace: 'vfio-pci'
     backup: no
   when: ansible_os_family == "Debian"
-
-
-- name: add uplink vpp tap startup script
-  template:
-    src: uplink.conf
-    dest: /etc/vpp/uplink.conf
-  # when: inventory_hostname == host_0_address
-
-- name: update vpp startup script for l3
-  template:
-    src: startupl3.conf
-    dest: /etc/vpp/startup.conf
-  # when: inventory_hostname == host_0_address
-
-# - name: update vpp startup script compute
-#   template:
-#     src: startup.conf
-#     dest: /etc/vpp/startup.conf
-#   when: not inventory_hostname == host_0_address
 
 - name: Create perfmon tar bundle
   command: tar Jxf PerfmonTables.tar.xz
