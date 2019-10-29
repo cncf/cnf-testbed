@@ -9,15 +9,28 @@ tag: master
 pullPolicy: IfNotPresent
 
 forwardingPlane: vpp
+insecure: true
 
 vpp:
-  image: vppagent-dataplane
+  image: vppagent-forwarder
 
 kernel:
   image: kernel-forwarder
   resources:
     limitCPU: 1
     requestsCPU: 1m
+
+spire:
+  enabled: true
+  org: networkservicemesh
+  tag: master
+
+admission-webhook:
+  org: networkservicemesh
+  tag: master
+
+namespace: nsm-system
+
 global:
   # set to true to enable Jaeger tracing for NSM components
   JaegerTracing: false
