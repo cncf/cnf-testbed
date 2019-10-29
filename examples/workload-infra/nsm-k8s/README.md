@@ -37,5 +37,12 @@ Install NSM by running the following command from this directory:
 ```
 ## set environment variable for KUBECONFIG (replace path to match your location)
 $ export KUBECONFIG=<path>/<to>/kubeconfig
-$ helm install nsm/
+$ helm install --name=nsm nsm/
 ```
+
+### Deleting NSM
+Run the following command:
+```
+$ helm delete --purge nsm
+```
+
