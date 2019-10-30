@@ -8,22 +8,22 @@ spec:
   matches:
     - match:
       sourceSelector:
-        app: router-left
+        app: gateway-left
       route:
         - destination:
           destinationSelector:
             app: router-left
     - match:
       sourceSelector:
-        app: router-right
+        app: router-left
       route:
         - destination:
           destinationSelector:
             app: router-right
     - match:
       sourceSelector:
-        app: gw-right
+        app: router-right
       route:
         - destination:
           destinationSelector:
-            app: gw-right
+            app: gateway-right
