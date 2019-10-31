@@ -1,0 +1,197 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "gateway-left"
+      networkservicemesh.io/impl: "gw-routers"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "gateway-left"
+        networkservicemesh.io/impl: "gw-routers"
+    spec:
+      containers:
+        - name: universal-cnf-endpoint
+          image: networkservicemesh/universal-cnf-vppagent:master
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            postStart:
+              exec:
+                command: ["mount", "-o", "rw,nosuid,nodev,noexec,relatime,remount", "/sys"]
+          securityContext:
+            privileged: true
+          env:
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            requests:
+              hugepages-2Mi: 100Mi
+              memory: 100Mi
+            limits:
+              networkservicemesh.io/socket: 1
+              hugepages-2Mi: 100Mi
+              memory: 100Mi
+          volumeMounts:
+            - mountPath: /etc/universal-cnf/config.yaml
+              subPath: config.yaml
+              name: universal-cnf-config-volume
+            - mountPath: /etc/vpp/vpp.conf
+              subPath: vpp.conf
+              name: universal-cnf-config-volume
+            - mountPath: /dev/hugepages
+              name: hugepages
+      volumes:
+        - name: universal-cnf-config-volume
+          configMap:
+            name: universal-cnf-gateway-left
+        - name: hugepages
+          emptyDir:
+            medium: HugePages
+metadata:
+  name: gateway-left
+  namespace: default
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "4"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "router-left"
+      networkservicemesh.io/impl: "gw-routers"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "router-left"
+        networkservicemesh.io/impl: "gw-routers"
+    spec:
+      containers:
+        - name: universal-cnf-endpoint
+          image: networkservicemesh/universal-cnf-vppagent:master
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            limits:
+              networkservicemesh.io/socket: 1
+          volumeMounts:
+            - mountPath: /etc/universal-cnf/config.yaml
+              subPath: config.yaml
+              name: universal-cnf-config-volume
+      volumes:
+        - name: universal-cnf-config-volume
+          configMap:
+            name: universal-cnf-router-left
+metadata:
+  name: router-left
+  namespace: default
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "3"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "router-right"
+      networkservicemesh.io/impl: "gw-routers"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "router-right"
+        networkservicemesh.io/impl: "gw-routers"
+    spec:
+      containers:
+        - name: universal-cnf-endpoint
+          image: networkservicemesh/universal-cnf-vppagent:master
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            limits:
+              networkservicemesh.io/socket: 1
+          volumeMounts:
+            - mountPath: /etc/universal-cnf/config.yaml
+              subPath: config.yaml
+              name: universal-cnf-config-volume
+      volumes:
+        - name: universal-cnf-config-volume
+          configMap:
+            name: universal-cnf-router-right
+metadata:
+  name: router-right
+  namespace: default
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "2"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "gateway-right"
+      networkservicemesh.io/impl: "gw-routers"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "gateway-right"
+        networkservicemesh.io/impl: "gw-routers"
+    spec:
+      containers:
+        - name: universal-cnf-endpoint
+          image: networkservicemesh/universal-cnf-vppagent:master
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            postStart:
+              exec:
+                command: ["mount", "-o", "rw,nosuid,nodev,noexec,relatime,remount", "/sys"]
+          securityContext:
+            privileged: true
+          env:
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            requests:
+              hugepages-2Mi: 100Mi
+              memory: 100Mi
+            limits:
+              networkservicemesh.io/socket: 1
+              hugepages-2Mi: 100Mi
+              memory: 100Mi
+          volumeMounts:
+            - mountPath: /etc/universal-cnf/config.yaml
+              subPath: config.yaml
+              name: universal-cnf-config-volume
+            - mountPath: /etc/vpp/vpp.conf
+              subPath: vpp.conf
+              name: universal-cnf-config-volume
+            - mountPath: /dev/hugepages
+              name: hugepages
+      volumes:
+        - name: universal-cnf-config-volume
+          configMap:
+            name: universal-cnf-gateway-right
+        - name: hugepages
+          emptyDir:
+            medium: HugePages
+metadata:
+  name: gateway-right
+  namespace: default
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "1"

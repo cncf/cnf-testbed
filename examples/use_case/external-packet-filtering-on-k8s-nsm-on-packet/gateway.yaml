@@ -17,6 +17,10 @@ spec:
         - name: universal-cnf-endpoint
           image: networkservicemesh/universal-cnf-vppagent:master
           imagePullPolicy: IfNotPresent
+          lifecycle:
+            postStart:
+              exec:
+                command: ["mount", "-o", "rw,nosuid,nodev,noexec,relatime,remount", "/sys"]
           securityContext:
             privileged: true
           env:
