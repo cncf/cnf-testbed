@@ -1,11 +1,4 @@
 ---
-
-- name: create VPP directory
-  file:
-    state: directory
-    dest: /etc/vpp
-    mode: 0755
-
 - name: make sure vfio-pci loads on startup
   template:
     src: vfio-pci.conf
