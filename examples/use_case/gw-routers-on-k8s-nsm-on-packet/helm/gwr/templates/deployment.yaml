@@ -53,6 +53,9 @@ spec:
 metadata:
   name: gateway-left
   namespace: default
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "4"
 
 ---
 apiVersion: apps/v1
@@ -90,6 +93,9 @@ spec:
 metadata:
   name: router-left
   namespace: default
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "3"
 
 ---
 apiVersion: apps/v1
@@ -127,6 +133,9 @@ spec:
 metadata:
   name: router-right
   namespace: default
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "2"
 
 ---
 apiVersion: apps/v1
@@ -183,3 +192,6 @@ spec:
 metadata:
   name: gateway-right
   namespace: default
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "1"
