@@ -1,0 +1,74 @@
+---
+- name: Backup existing Kubelet configuration
+  copy:
+    src: /etc/default/kubelet
+    dest: /etc/default/kubelet_backup
+    remote_src: yes
+
+- name: Update Kubelet configuration
+  copy:
+    src: files/kubelet
+    dest: /etc/default/
+
+- name: Add bridge configuration
+  copy:
+    src: files/10-bridge.conflist
+    dest: /etc/cni/net.d/
+
+- name: Add SRIOV CNI binary
+  copy:
+    src: files/sriov
+    dest: /opt/cni/bin/
+
+- name: Add dpdk-devbind tool
+  copy:
+    src: files/{{ item }}
+    dest: /opt/cnf_testbed/
+    mode: '0755'
+  with_items:
+    - "dpdk-devbind.py"
+    - "vf_setup.sh"
+
+- name: Add rc-local service
+  copy:
+    src: files/rc-local.service
+    dest: /lib/systemd/system/
+    mode: '0644'
+
+- name: add rc-local
+  copy:
+    src: files/rc.local
+    dest: /etc/
+    mode: '0755'
+
+- name: Enable rc-local service
+  command: systemctl enable rc-local
+
+- name: Add kubelet-watcher service
+  copy:
+    src: files/{{ item }}
+    dest: /etc/systemd/system/
+    mode: '0644'
+  with_items:
+    - "kubelet-watcher.service"
+    - "kubelet-watcher.path"
+
+- name: Enable kubelet-watcher service
+  command: systemctl {{ item }}
+  with_items:
+    - "enable kubelet-watcher.service"
+    - "enable kubelet-watcher.path"
+    - "start kubelet-watcher.path"
+    - "start kubelet-watcher.service"
+
+- name: Stop VPP (host)
+  service:
+    name: vpp
+    enabled: no
+  when: not vswitch_container
+
+- name: Stop VPP (container)
+  docker_container:
+    name: vppcontainer
+    state: stopped
+  when: vswitch_container

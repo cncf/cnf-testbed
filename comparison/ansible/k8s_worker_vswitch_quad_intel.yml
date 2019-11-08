@@ -26,6 +26,7 @@
     # Run host vSwitch in container
     vswitch_container: false
     nic_type: "intel"
+    multus_cni: false
     baseline: false
     hugepages: 10240
     corelist_workers: 2,4,6,30,32,34
@@ -135,3 +136,4 @@
     - { role: "vpp_install", when: not vswitch_container }
     - { role: "vpp_container_install", when: vswitch_container }
     - vpp_config
+    - { role: "multus_cni", when: multus_cni }

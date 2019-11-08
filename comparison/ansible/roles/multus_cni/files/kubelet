@@ -1,0 +1,20 @@
+KUBELET_OPTS="--allow-privileged=true \
+--anonymous-auth=false \
+--authorization-mode=Webhook \
+--client-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt \
+--cloud-provider=  \
+--cluster-domain=cluster.local \
+--image-pull-progress-deadline=2m \
+--kubeconfig=/var/lib/kubelet/kubeconfig \
+--bootstrap-kubeconfig=/var/lib/kubelet/bootstrap.kubeconfig \
+--network-plugin=cni \
+--cni-bin-dir=/opt/cni/bin/ \
+--cni-conf-dir=/etc/cni/net.d/ \
+--node-labels=kubernetes.io/role=node \
+--pod-manifest-path=/etc/kubernetes/manifests \
+--runtime-request-timeout=15m \
+--cpu-manager-policy=static \
+--kube-reserved=cpu=1 \
+--tls-cert-file=/etc/srv/kubernetes/pki/kubelet.crt \
+--tls-private-key-file=/etc/srv/kubernetes/pki/kubelet.key \
+--v=2"
