@@ -65,11 +65,25 @@ $ service vpp stop
 $ docker stop vppcontainer
 ```
 
+While on the worker node, run the following command to get the two PCI devide IDs that will be used when installing the example:
+```
+$ cat /etc/vpp/startup.conf | grep dev | grep -v default
+(example) dev 0000:1a:00.1 dev 0000:1a:00.2
+```
+
 ### Installing the NSMCon External Packet-filtering Example
 Install the example by running the below commands from this directory:
 ```
 ## set environment variable for KUBECONFIG (replace path to match your location)
 $ export KUBECONFIG=<path>/<to>/kubeconfig
+
+## Update the values.yaml file with the PCI device IDs found earlier
+$ (example) cat helm/nsmconpf/values.yaml
+extport:
+  left: "0000:1a:00.1"
+  right:  "0000:1a:00.2"
+
+## Install the example
 $ helm install --name=nsmconpf helm/nsmconpf/
 ```
 
