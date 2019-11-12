@@ -1,0 +1,228 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "gateway-left"
+      networkservicemesh.io/impl: "packet-filtering"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "gateway-left"
+        networkservicemesh.io/impl: "packet-filtering"
+    spec:
+      containers:
+        - name: ucnf-gw-left
+          image: networkservicemesh/universal-cnf-vppagent:master
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            postStart:
+              exec:
+                command: ["mount", "-o", "rw,nosuid,nodev,noexec,relatime,remount", "/sys"]
+          securityContext:
+            privileged: true
+          env:
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            limits:
+              networkservicemesh.io/socket: 1
+              hugepages-2Mi: 100Mi
+              memory: 100Mi
+            requests:
+              memory: 100Mi
+          volumeMounts:
+            - mountPath: /etc/universal-cnf/config.yaml
+              subPath: config.yaml
+              name: ucnf-conf-vol
+            - mountPath: /etc/vpp/vpp.conf
+              subPath: vpp.conf
+              name: ucnf-conf-vol
+            - mountPath: /dev/hugepages
+              name: hugepages
+      volumes:
+        - name: ucnf-conf-vol
+          configMap:
+            name: ucnf-gw-left
+        - name: hugepages
+          emptyDir:
+            medium: HugePages
+metadata:
+  name: gateway-left
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "1"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "gateway-right"
+      networkservicemesh.io/impl: "packet-filtering"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "gateway-right"
+        networkservicemesh.io/impl: "packet-filtering"
+    spec:
+      containers:
+        - name: ucnf-gw-right
+          image: networkservicemesh/universal-cnf-vppagent:master
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            postStart:
+              exec:
+                command: ["mount", "-o", "rw,nosuid,nodev,noexec,relatime,remount", "/sys"]
+          securityContext:
+            privileged: true
+          env:
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            limits:
+              networkservicemesh.io/socket: 1
+              hugepages-2Mi: 100Mi
+              memory: 100Mi
+            requests:
+              memory: 100Mi
+          volumeMounts:
+            - mountPath: /etc/universal-cnf/config.yaml
+              subPath: config.yaml
+              name: ucnf-conf-vol
+            - mountPath: /etc/vpp/vpp.conf
+              subPath: vpp.conf
+              name: ucnf-conf-vol
+            - mountPath: /dev/hugepages
+              name: hugepages
+      volumes:
+        - name: ucnf-conf-vol
+          configMap:
+            name: ucnf-gw-right
+        - name: hugepages
+          emptyDir:
+            medium: HugePages
+metadata:
+  name: gateway-right
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "2"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "packet-filter"
+      networkservicemesh.io/impl: "packet-filtering"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "packet-filter"
+        networkservicemesh.io/impl: "packet-filtering"
+    spec:
+      containers:
+        - name: ucnf-pf
+          image: networkservicemesh/universal-cnf-vppagent:master
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            limits:
+              networkservicemesh.io/socket: 1
+          volumeMounts:
+            - mountPath: /etc/universal-cnf/config.yaml
+              subPath: config.yaml
+              name: ucnf-conf-vol
+      volumes:
+        - name: ucnf-conf-vol
+          configMap:
+            name: ucnf-pf
+metadata:
+  name: packet-filter
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "3"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "simple-client"
+      networkservicemesh.io/impl: "packet-filtering"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "simple-client"
+        networkservicemesh.io/impl: "packet-filtering"
+    spec:
+      containers:
+        - name: alpine-img
+          image: alpine:latest
+          imagePullPolicy: IfNotPresent
+          command: ['tail', '-f', '/dev/null']
+      initContainers:
+        - name: nsm-init-container
+          image: networkservicemesh/nsm-init:master
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NS_NETWORKSERVICEMESH_IO
+              value: packet-filtering
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            limits:
+              networkservicemesh.io/socket: "1"
+metadata:
+  name: simple-client
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "4"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "ucnf-client"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "ucnf-client"
+    spec:
+      hostPID: true
+      containers:
+        - name: ucnf-client
+          image: networkservicemesh/universal-cnf-vppagent:master
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            limits:
+              networkservicemesh.io/socket: 1
+          volumeMounts:
+            - mountPath: /etc/universal-cnf/config.yaml
+              subPath: config.yaml
+              name: ucnf-conf-vol
+      volumes:
+        - name: ucnf-conf-vol
+          configMap:
+            name: ucnf-client
+metadata:
+  name: ucnf-client
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "5"
