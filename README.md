@@ -1,6 +1,6 @@
 # Cloud native Network Function (CNF) Testbed
 
-The CNCF CNF Testbed provides reference code and test cases for running the same networking code packaged as containers (Cloud native Network Functions or CNFs) on Kubernetes and as virtual machines (Virtual Network Functions or VNFs) on OpenStack.
+The CNCF CNF Testbed provides reference code and test cases for running networking code on Kubernetes and OpenStack using emerging cloud native technologies in the Telecom domain.
 
 Status: The CNF Testbed is *not* a CNCF-hosted [project](https://www.cncf.io/projects/). Instead, it is an initiative to create a repeatable, apples-to-apples testbed that telcos and telecoms vendors can use to evaluate how CNF architectures compare to more traditional VNF ones.
 
@@ -29,7 +29,8 @@ Please review this slide [deck](https://docs.google.com/presentation/u/1/d/1nsPI
 
 **The CNF Testbed includes the following high-level goals:**
 
-- Comparing Virtual Network Functions (VNFs) vs. Cloud-native Network Functions (CNFs)
+- Development platform for CNFs
+- Comparing Virtual Network Functions (VNFs) to CNF implementations
 - Providing easily reproducible test cases and use cases
 - Providing Helm Charts for CNFs
 - Using 100% open source software
