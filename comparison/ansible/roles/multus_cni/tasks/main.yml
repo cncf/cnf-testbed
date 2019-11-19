@@ -15,10 +15,16 @@
     src: files/10-bridge.conflist
     dest: /etc/cni/net.d/
 
+- name: Make sure vfio-pci loads on startup
+  copy:
+    src: files/vfio-pci.conf
+    dest: /etc/modules-load.d/
+
 - name: Add SRIOV CNI binary
   copy:
     src: files/sriov
     dest: /opt/cni/bin/
+    mode: '0755'
 
 - name: Add dpdk-devbind tool
   copy:

@@ -1,0 +1,43 @@
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: sriov-net-left
+  annotations:
+    k8s.v1.cni.cncf.io/resourceName: intel.com/sriov_ports_left
+spec:
+  config: '{
+  "type": "sriov",
+  "cniVersion": "0.3.1",
+  "name": "sriov-net-left",
+  "ipam": {
+    "type": "host-local",
+    "subnet": "10.61.16.0/24",
+    "routes": [{
+      "dst": "0.0.0.0/0"
+    }],
+    "gateway": "10.61.16.1"
+  }
+}'
+
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: sriov-net-right
+  annotations:
+    k8s.v1.cni.cncf.io/resourceName: intel.com/sriov_ports_right
+spec:
+  config: '{
+  "type": "sriov",
+  "cniVersion": "0.3.1",
+  "name": "sriov-net-right",
+  "ipam": {
+    "type": "host-local",
+    "subnet": "10.61.0.0/24",
+    "routes": [{
+      "dst": "0.0.0.0/0"
+    }],
+    "gateway": "10.61.0.1"
+  }
+}'

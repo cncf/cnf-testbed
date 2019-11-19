@@ -1,5 +1,8 @@
 #! /bin/bash
 
+numvfs=8
+logfile=/var/log/port_setup.log
+
 function logtime() {
   date +"%Y-%m-%d %T"
 }
@@ -23,7 +26,7 @@ else
 fi
 
 for pf in ${pf_ids[@]}; do
-  $(echo "4" > /sys/bus/pci/devices/0000:$pf/sriov_numvfs)
+  $(echo "${numvfs}" > /sys/bus/pci/devices/0000:$pf/sriov_numvfs)
 done
 
 vf_ids=($(lspci | grep Eth | grep Virtual | awk '{print $1}'))
