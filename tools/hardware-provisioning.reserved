@@ -1,0 +1,10 @@
+# Provision with reserved servers 
+
+resource "packet_device" "master" {
+  hardware_reservation_id = "next-available"
+}
+
+
+resource "packet_device" "worker" {
+  hardware_reservation_id = "next-available"
+}
