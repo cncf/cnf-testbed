@@ -86,6 +86,15 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 
 ## Upcoming Events: 
 
+ ### TUG + CNFs At KubeCon + CloudNativeCon NA 2019
+
+Wednesday, November 20 • 3:20pm - 3:55pm - [Birds of a Feather: Telecom User Group](https://sched.co/Uakt)
+
+Thursday, November 21 • 4:25pm - 5:55pm - [Intro + Deep Dive: Cloud Native Network Function (CNF) Testbed](https://sched.co/UakA)
+
+
+## Past Events:
+
 ### TUG + CNFs At Open Networking Summit EU 2019
 
 Monday, September 23 • 08:45 - 10:15 - [Tutorial: Take a Test Drive with the Cloud Native Network Function (CNF) Testbed - Sponsored by Cloud Native Computing Foundation (Pre-registration required)](https://sched.co/ScCA)
@@ -95,16 +104,6 @@ Monday, September 23 • 10:45 - 12:15 - [CNCF Telecom User Group Meeting](https
 Wednesday, September 25 • 14:35 - 15:05 - [Cloud Native Network Provisioning with Network Service Mesh in the CNF Testbed - Taylor Carpenter, Vulk Coop & Nikolay Nikolaev, VMware](https://sched.co/SYvw)
 
 Wednesday, September 25 • 16:15 - 16:45 - [Panel Discussion: Embracing Cloud Native on the Path to 5G - Heather Kirksey, The Linux Foundation; Rabi Abdel, Vodafone; Lincoln Lavoie, UNH Interoperability Lab; Frederick Kautz, doc.ai; Taylor Carpenter, Vulk Coop](https://sched.co/SYwo)
-
-
- ### TUG + CNFs At KubeCon + CloudNativeCon NA 2019
-
-Thursday, November 21 • 10:55am - 12:25pm - [Intro + Deep Dive: Telecom User Group](https://sched.co/Uakt)
-
-Thursday, November 21 • 4:25pm - 5:55pm - [Intro + Deep Dive: Cloud Native Network Function (CNF) Testbed](https://sched.co/UakA)
-
-
-## Past Events:
 
 ### CNFs At KubeCon + CloudNativeCon China 2019
 
