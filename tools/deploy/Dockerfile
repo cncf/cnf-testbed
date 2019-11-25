@@ -1,15 +1,15 @@
-FROM golang:1.11-alpine3.7 as golang
+FROM golang:buster as golang
 MAINTAINER "Denver Williams <denver@debian.nz>"
 
-RUN apk --no-cache add git make
+RUN apt install -y git make
 RUN git clone https://github.com/denverwilliams/terraform-provisioner-ansible.git \
     $GOPATH/src/github.com/radekg/terraform-provisioner-ansible/ && \
     cd $GOPATH/src/github.com/radekg/terraform-provisioner-ansible/ && \
-    make build-linux 
+    make build-linux
 
 FROM ubuntu:packet_api
 
-ENV TERRAFORM_VERSION=0.11.10
+ENV TERRAFORM_VERSION=0.12.2
 ENV TERRAFORM_ANSIBLE=v2.0.1
 
 #Install Terraform 
@@ -25,6 +25,16 @@ RUN apt update && \
     ansible-galaxy install avinetworks.docker && \
     ansible-galaxy install mrlesmithjr.config-interfaces 
    
+# Install infra-provisioning
+RUN git clone https://github.com/crosscloudci/infra-provisioning.git /infra-provisioning \
+    && cp -a /infra-provisioning/terraform /terraform \
+    && cp /infra-provisioning/create_nodes.sh /terraform \
+    && cd /terraform \
+    && rm /terraform/s3-backend.tf \
+    && rm /terraform/reserved_override \
+    && terraform init
+    
+
 # Copy Terraform Ansible Plugin
 RUN mkdir -p ~/.terraform.d/plugins/
 COPY --from=golang /root/.terraform.d/plugins/terraform-provisioner-ansible /root/.terraform.d/plugins/terraform-provisioner-ansible
