@@ -21,18 +21,30 @@ if [ "$1" == "generate_config" ]; then
     fi
 docker run \
   --rm \
-  -v $(pwd)/data:/data \
+  -v $(pwd)/data/$DEPLOY_NAME:/k8s-infra/data \
   $HOSTS_VOLUME$HOSTS_TMP \
   -ti crosscloudci/k8s-infra:v1.0.0 \
-  /k8s-infra/bin/k8sinfra generate_config ${HOSTS_CMD} --release-type=$RELEASE_TYPE -o /data/$DEPLOY_NAME.yml
+  /k8s-infra/bin/k8sinfra generate_config ${HOSTS_CMD} --release-type=$RELEASE_TYPE -o /k8s-infra/data/$DEPLOY_NAME.yml
 fi
 
 #Provision Cluster
 if [ "$1" == "provision" ]; then
+    CLUSTER_DATA="$(pwd)/data/$DEPLOY_NAME/mycluster"
+    if [ -d "$CLUSTER_DATA" ]; then
+        echo 'cluster data for this deployment already exists, exiting'
+        exit 1
+    fi
 docker run \
   --rm \
-  -v $(pwd)/data:/data \
+  -v $(pwd)/data/$DEPLOY_NAME:/k8s-infra/data \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
   -ti crosscloudci/k8s-infra:v1.0.0 \
-  /k8s-infra/bin/k8sinfra provision --config-file=/data/$DEPLOY_NAME.yml
+  /k8s-infra/bin/k8sinfra provision --config-file=/k8s-infra/data/$DEPLOY_NAME.yml
+
+if [ "$?" == "1" ]; then
+   echo 'exit code 1 detected, provisioning failed'
+else
+   echo "Local System KUBECONFIG path: $(pwd)/data/$DEPLOY_NAME/mycluster/artifacts/admin.conf"
+   echo "To set fix permission run: chown $(whoami):$(whoami) $(pwd)/data/$DEPLOY_NAME -R"
+fi
 fi
