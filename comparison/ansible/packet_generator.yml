@@ -113,6 +113,7 @@
     when: not intel
 
   vars:
+    visualization: true
     intel: "{{ true if quad_intel is defined else false }}"
     trex_port_0_pci: "{{ ansible_eno3.pciid if intel else ansible_enp94s0f4.pciid }}"
     trex_port_1_pci: "{{ ansible_eno4.pciid if intel else ansible_enp94s0f5.pciid }}"
@@ -124,13 +125,14 @@
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
-    enable_configured_interfaces_after_defining: true
+    enable_configured_interfaces_after_defining: false
     dns_nameservers:
       - "{{ ansible_dns.nameservers[0] }}"
       - "{{ ansible_dns.nameservers[0] }}"
     network_bonds:
       - name: 'bond0'
         configure: true
+        enable: false
         method: 'static'
         address: "{{ ansible_bond0.ipv4.address }}"
         netmask: "{{ ansible_bond0.ipv4.netmask }}"
@@ -152,6 +154,7 @@
           - "{{ ansible_bond0.slaves[0] }}"
       - name: 'bond0:0'
         configure: true
+        enable: false
         method: 'static'
         address: "{{ ansible_bond0_0.ipv4.address }}"
         netmask: "{{ ansible_bond0_0.ipv4.netmask }}"
@@ -163,9 +166,11 @@
     network_interfaces:
       - name: "{{ ansible_bond0.slaves[0] }}"
         configure: true
+        enable: false
         method: 'manual'
         parameters:
           - param:
             val: 'bond-master bond0'
   roles:
     - nfvbench_common
+    - { role: "visualization", when: visualization }
