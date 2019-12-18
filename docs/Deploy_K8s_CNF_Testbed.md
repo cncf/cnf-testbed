@@ -1,6 +1,8 @@
 # Steps to deploy CNF Testbed
 
-_Updated August 9th, 2019_
+_Updated December 18th, 2019_
+
+_Script to run packet generator has been renamed_
 
 This document will show how to set up a CNF Testbed environment. Everything will be deployed on servers hosted by [Packet](https://www.packet.com/).
 
@@ -209,7 +211,7 @@ $$ ansible-playbook -i "<Server IP>," packet_generator.yml -e dual_mellanox=true
 
 Once the playbook is finished, you can disconnect from the Ansible container. Then go ahead and SSH to the packet generator machine, and run the following command:
 ```
-$ ./run_test_kubernetes.sh
+$ ./run_test.sh
 ```
 
 Let it run for a bit until you see the following lines:
@@ -313,7 +315,7 @@ If you have updated the configuration file, go ahead and restart the container:
 $ docker restart nfvbench
 ```
 
-Before running the benchmark, open `run_test_kubernetes.sh` to check or modify the test settings. Some useful option examples and information can be found below:
+Before running the benchmark, open `run_test.sh` to check or modify the test settings. Some useful option examples and information can be found below:
 ```
 CHAINS="${1:-3}"
   # Number of chains being benchmarked (defaults to 3 as in the 3c2n-* test-cases)
@@ -336,7 +338,7 @@ DURATION=30
 
 Once everything is configured, the benchmark can be started. If you are running multiple tests and iterations it is advised to use `tmux`, `screen` or similar to avoid an unexpected disconnect. The benchmark can then be started using:
 ```
-./run_test_kubernetes.sh [Chains] [Nodes] [Prefix]
+./run_test.sh [Chains] [Nodes] [Prefix]
   # The 3 optional arguments can be used to override the values configured previously
 ```
 
