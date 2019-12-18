@@ -2,7 +2,7 @@
 
 _Updated December 18th, 2019_
 
-_Script to run packet generator has been renamed_
+_Small changes to filenames_
 
 This document will show how to set up a CNF Testbed environment. Everything will be deployed on servers hosted by [Packet](https://www.packet.com/).
 
@@ -289,7 +289,7 @@ cd67d2f82722        opnfv/nfvbench:2.0.5   "/nfvbench/docker/nf…"   26 hours a
 ```
 
 If the container has exited (e.g. following a reboot), start it again using `docker start nfvbench`.
-By default, NFVbench (the traffic generator) is configured to run against either of the `3c2n-*` test-cases, so if you are running the `ipsec` test-case, you will need to update the `nfvbench_config_kubernetes.cfg` file with the following options (search the file for the key and update the value):
+By default, NFVbench (the traffic generator) is configured to run against either of the `3c2n-*` test-cases, so if you are running the `ipsec` test-case, you will need to update the `nfvbench_config.cfg` file with the following options (search the file for the key and update the value):
 ```
 # ipsec test-case
 service_chain_count: 1
