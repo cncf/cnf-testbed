@@ -1,6 +1,18 @@
 #!/bin/bash
 PROJECT_ROOT=$(cd ../ ; pwd -P)
 DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
+
+# generate_config & provisioning defaults
+RELEASE_TYPE=${RELEASE_TYPE:-stable}
+HOSTS_FILE=${HOSTS_FILE:-$(pwd)/data/$DEPLOY_NAME/nodes.env}
+
+# vswitch defaults
+PACKET_FACILITY=${PACKET_FACILITY:-sjc1}
+VLAN_SEGMENT=${VLAN_SEGMENT:-$DEPLOY_NAME}
+PLAYBOOK=${PLAYBOOK:-k8s_worker_vswitch_quad_intel.yml}
+KUBECONFIG=${KUBECONFIG:-$(pwd)/data/$DEPLOY_NAME/admin.conf}
+
+
 if [ "$1" == "generate_config" ]; then
 if ! [ -z ${MASTER_HOSTS+x} ] && ! [ -z ${WORKER_HOSTS+x} ]; then
    HOSTS_CMD="--master-hosts $MASTER_HOSTS --worker-hosts $WORKER_HOSTS"
