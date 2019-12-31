@@ -5,7 +5,17 @@ require "json"
 RSpec.describe 'Packet Test Suite', type: :aruba  do
   context "Packet test" do
     it 'tests bond-interface' do
-      # cmd = "ruby ../../l2_packet_networking.rb --server cnftestbed-worker1 --bond-interface eth1 --project-name='CNF Testbed' --packet-url='api.packet.net'" 
+      cmd = "ruby ../../l2_packet_networking.rb --server cnftestbed-worker1 --disbond-interface eth1 --project-name='CNF Testbed' --packet-url='api.packet.net' --facility='sjc1'" 
+      run(cmd)
+      sleep(15)
+      stop_all_commands
+
+      expect(last_command_started.output).to eq("success\n")
+      # A regular switch port can only be a member of one vlan.  All virtual networks (vlans) must to be unassigned 
+      # from a interface before it can be bonded, otherwise there will be an error.  Since other applications/workflows 
+      # may assign vlans to a port, it would be dangerous to automatically unassign all vlans from a port 
+      # during the bonding command, so that task is left up to the user (it would be too disruptive for us to automatically do in testing)
+      # This means that this test may fail on shared hosts.
       cmd = "ruby ../../l2_packet_networking.rb --server cnftestbed-worker1 --bond-interface eth1 --project-name='CNF Testbed' --packet-url='api.packet.net' --facility='sjc1'" 
       run(cmd)
       sleep(15)
