@@ -1,0 +1,33 @@
+---
+- name: Create vpp sockets directory
+  file: path=/etc/vpp/sockets state=directory
+
+- name: Create vpp templates directory
+  file: path=/etc/vpp/templates state=directory
+
+- name: Write VPP startup config
+  template: src=startup.j2 dest=/etc/vpp/startup.conf
+
+- name: Write default VPP config (3c2n-csp)
+  template: src=3c2n-csp.j2 dest=/etc/vpp/setup.gate
+
+- name: Write 3c2n-csp config
+  template: src=3c2n-csp.j2 dest=/etc/vpp/templates/3c2n-csp.gate
+
+- name: Write 3c2n-csc config
+  template: src=3c2n-csc.j2 dest=/etc/vpp/templates/3c2n-csc.gate
+
+- name: Write ipsec config
+  template: src=ipsec.j2 dest=/etc/vpp/templates/ipsec.gate
+
+- name: Write hugepages sys.conf
+  template: src=80-vpp.conf.j2 dest=/etc/sysctl.d/80-vpp.conf
+
+- name: Refresh sysctl
+  command: sysctl -p
+
+- name: Restart vpp
+  service:
+    name: vpp
+    state: restarted
+  when: not vswitch_container

@@ -1,0 +1,204 @@
+---
+- name: Prepare directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0777'
+  with_items:
+    - "/var/data/elasticsearch"
+    - "/var/log/elasticsearch"
+    - "/var/log/fluentd"
+
+- name: Prepare directories continued
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "/opt/Kibana"
+    - "/opt/Fluentd"
+    - "/opt/Elastic"
+
+- name: Add Elasticsearch configuration
+  template: src=elasticsearch-conf.j2 dest=/opt/Elastic/elasticsearch.yml
+
+- name: Docker start Elasticsearch
+  docker_container:
+    name: Elastic
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.0
+    state: started
+    #network_mode: host
+    cpuset_cpus: 3,35,5,37,7,39
+    published_ports:
+      - "9200:9200"
+    exposed_ports:
+      - "9200"
+    env:
+        discovery.type: "single-node"
+    volumes:
+      - /opt/Elastic/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - /var/log/elasticsearch:/var/log/elasticsearch
+      - /var/data/elasticsearch:/var/data/elasticsearch
+
+- name: Pause for 1 minute
+  pause:
+    minutes: 1
+
+- name: Generate passwords
+  shell: docker exec -it Elastic elasticsearch-setup-passwords auto -b \
+         | grep PASSWORD | grep -e kibana -e elastic | awk '{print $2 " " $4}'
+  register: rawpass
+
+- name: Register passwords
+  set_fact:
+    elkpasses: "{{ elkpasses | default({}) | combine ( { item.split(' ')[0]: item.split(' ')[1] } ) }}"
+  with_items: "{{rawpass.stdout_lines}}"
+
+- name: Store Elastic pass
+  copy:
+    content: "{{ elkpasses.elastic }}"
+    dest: /root/elastic_pass
+
+- name: Template certificate config
+  template: src=cert.j2 dest=/tmp/cert.conf
+
+- name: Generate self signed certificate
+  command: openssl req -config /tmp/cert.conf -new -x509 -sha256 -newkey rsa:2048 -nodes \
+           -keyout /root/local.key.pem -days 365 -out /root/local.cert.pem -nodes -subj '/CN=cnftestbed'
+
+- name: Move certificates
+  copy:
+    src: /root/{{ item }}
+    dest: /opt/Kibana/{{ item }}
+    remote_src: yes
+    mode: '0755'
+  with_items:
+    - "local.key.pem"
+    - "local.cert.pem"
+
+- name: Clean up cert files
+  file:
+    path: /root/{{ item }}
+    state: absent
+  with_items:
+    - "local.key.pem"
+    - "local.cert.pem" 
+
+- name: Add Kibana configuration
+  template: src=kibana-conf.j2 dest=/opt/Kibana/kibana.yml
+
+- name: Docker start Kibana
+  docker_container:
+    name: Kibana
+    image: docker.elastic.co/kibana/kibana:7.5.0
+    state: started
+    #network_mode: host
+    cpuset_cpus: 9,41,11,43,13,45
+    links:
+      - "Elastic:elasticsearch"
+    published_ports:
+      - "5601:5601"
+    volumes:
+      - /opt/Kibana:/usr/share/kibana/config
+
+- name: Pause for 1 minute
+  pause:
+    minutes: 1
+
+- name: Add CNF_Testbed role
+  uri:
+    url: https://localhost:5601/api/security/role/CNF_Testbed
+    user: elastic
+    password: "{{ elkpasses.elastic }}"
+    method: PUT
+    body: "{{ lookup('file','CNF_Testbed.role') }}"
+    body_format: json
+    validate_certs: no
+    force_basic_auth: yes
+    status_code: 204
+    headers:
+      kbn-xsrf: true
+
+- name: Add cnftestbed user
+  uri:
+    url: http://localhost:9200/_security/user/cnftestbed
+    user: elastic
+    password: "{{ elkpasses.elastic }}"
+    method: POST
+    body: "{{ lookup('file','cnftestbed.user') }}"
+    body_format: json
+    force_basic_auth: yes
+    status_code: 200
+
+- name: Generate password for Fluentd
+  set_fact:
+    fluentdpass: "{{ lookup('password', '/dev/null length=10 chars=ascii_letters') }}"
+
+- name: Add Fluend role
+  uri:
+    url: https://localhost:5601/api/security/role/Fluentd
+    user: elastic
+    password: "{{ elkpasses.elastic }}"
+    method: PUT
+    body: "{{ lookup('file','Fluentd.role') }}"
+    body_format: json
+    validate_certs: no
+    force_basic_auth: yes
+    status_code: 204
+    headers:
+      kbn-xsrf: true
+
+- name: Add fluentd user
+  uri:
+    url: http://localhost:9200/_security/user/fluentd
+    user: elastic
+    password: "{{ elkpasses.elastic }}"
+    method: POST
+    body: "{{ lookup('template','fluentd.role.j2') }}"
+    body_format: json
+    force_basic_auth: yes
+    status_code: 200
+
+- name: Add Fluentd configuration
+  template: src=fluentd-conf.j2 dest=/opt/Fluentd/fluentd.conf
+
+- name: Copy Fluentd dockerfile to server
+  copy:
+    src: files/fluentd.dockerfile
+    dest: /tmp/
+
+- name: Build Fluentd image
+  docker_image:
+    name: fluentdelastic
+    build:
+      dockerfile: fluentd.dockerfile
+      path: /tmp/
+      pull: yes
+    source: build
+
+- name: Docker start Fluentd
+  docker_container:
+    name: Fluentd
+    image: fluentdelastic:latest
+    state: started
+    #network_mode: host
+    cpuset_cpus: 15,47,17,49
+    links:
+      - "Elastic:elasticsearch"
+    published_ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    env:
+        FLUENTD_CONF: "fluentd.conf"
+    volumes:
+      - /opt/Fluentd:/fluentd/etc
+      - /var/log/fluentd:/fluentd/log
+
+- name: Copy Kibana settings to server
+  copy:
+    src: files/kibana-objects.ndjson 
+    dest: /tmp/
+
+- name: Update Kibana settings
+  command: 'curl -k -X POST -u elastic:"{{ elkpasses.elastic }}" \
+           "https://localhost:5601/api/saved_objects/_import?overwrite=true" \
+           -H "kbn-xsrf: true" --form file=@/tmp/kibana-objects.ndjson'

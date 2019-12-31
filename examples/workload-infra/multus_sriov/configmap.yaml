@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cnf-testbed-sriov-config
+  namespace: kube-system
+data:
+  config.json: |
+    {
+        "resourceList": [{
+                "resourceName": "vfio_ports_left",
+                "selectors": {
+                    "vendors": ["8086"],
+                    "devices": ["154c"],
+                    "drivers": ["vfio-pci"],
+                    "pfNames": ["eno2"]
+                }
+            },
+            {
+                "resourceName": "vfio_ports_right",
+                "selectors": {
+                    "vendors": ["8086"],
+                    "devices": ["154c"],
+                    "drivers": ["vfio-pci"],
+                    "pfNames": ["eno3"]
+                }
+            },
+            {
+                "resourceName": "sriov_ports_left",
+                "selectors": {
+                    "vendors": ["8086"],
+                    "devices": ["154c"],
+                    "drivers": ["i40evf"],
+                    "pfNames": ["eno2"]
+                }
+            },
+            {
+                "resourceName": "sriov_ports_right",
+                "selectors": {
+                    "vendors": ["8086"],
+                    "devices": ["154c"],
+                    "drivers": ["i40evf"],
+                    "pfNames": ["eno3"]
+                }
+            }
+        ]
+    }

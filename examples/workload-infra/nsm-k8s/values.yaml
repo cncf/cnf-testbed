@@ -1,0 +1,28 @@
+---
+# Default values for nsm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+registry: docker.io
+org: networkservicemesh
+tag: v0.2.0
+pullPolicy: IfNotPresent
+
+forwardingPlane: vpp
+insecure: true
+
+vpp:
+  image: vppagent-forwarder
+
+kernel:
+  image: kernel-forwarder
+  resources:
+    limitCPU: 1
+    requestsCPU: 1m
+
+spire:
+  enabled: true
+
+global:
+  # set to true to enable Jaeger tracing for NSM components
+  JaegerTracing: false

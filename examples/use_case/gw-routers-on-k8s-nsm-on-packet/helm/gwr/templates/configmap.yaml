@@ -1,0 +1,147 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: universal-cnf-gateway-left
+data:
+  config.yaml: |
+    initactions:
+      - command:
+          name: "vppctl"
+          args: [
+            "set int ip address {{ template "intf.left" . }} 10.60.0.50/24",
+            "set int state {{ template "intf.left" . }} up",
+            ]
+        client:
+          name: "gw-routers"
+          ifname: "client0"
+          routes: ["10.60.0.0/24"]
+          labels:
+            app: "router-left"
+  vpp.conf: |
+    unix {
+      nodaemon
+      log /var/log/vpp/vpp.log
+      full-coredump
+      cli-listen /run/vpp/cli.sock
+      gid vpp
+      poll-sleep-usec 1000
+    }
+
+    api-trace {
+      on
+    }
+
+    api-segment {
+      gid vpp
+    }
+
+    socksvr {
+      default
+    }
+
+    cpu {
+
+    }
+
+    dpdk {
+      dev {{ .Values.extport.left }}
+    }
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: universal-cnf-router-left
+data:
+  config.yaml: |
+    initactions:
+      - client:
+          name: "gw-routers"
+          ifname: "client0"
+          routes: ["10.60.0.0/24", "10.60.1.0/24"]
+          labels:
+            app: "router-right"
+    endpoints:
+    - name: "gw-routers"
+      labels:
+        app: "router-left"
+      ipam:
+        prefixpool: "10.60.1.0/24"
+        routes: ["10.60.2.0/24", "10.60.3.0/24", "10.60.4.0/24"]
+      ifname: "endpoint0"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: universal-cnf-router-right
+data:
+  config.yaml: |
+    initactions:
+      - client:
+          name: "gw-routers"
+          ifname: "client0"
+          routes: ["10.60.0.0/24", "10.60.1.0/24", "10.60.2.0/24"]
+          labels:
+            app: "gateway-right"
+    endpoints:
+    - name: "gw-routers"
+      labels:
+        app: "router-right"
+      ipam:
+        prefixpool: "10.60.2.0/24"
+        routes: ["10.60.3.0/24", "10.60.4.0/24"]
+      ifname: "endpoint0"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: universal-cnf-gateway-right
+data:
+  config.yaml: |
+    initactions:
+      - command:
+          name: "vppctl"
+          args: [
+            "set int ip address {{ template "intf.right" . }} 10.60.4.50/24",
+            "set int state {{ template "intf.right" . }} up",
+            ]
+    endpoints:
+    - name: "gw-routers"
+      labels:
+        app: "gateway-right"
+      ipam:
+        prefixpool: "10.60.3.0/24"
+        routes: ["10.60.4.0/24"]
+      ifname: "endpoint0"
+  vpp.conf: |
+    unix {
+      nodaemon
+      log /var/log/vpp/vpp.log
+      full-coredump
+      cli-listen /run/vpp/cli.sock
+      gid vpp
+      poll-sleep-usec 1000
+    }
+
+    api-trace {
+      on
+    }
+
+    api-segment {
+      gid vpp
+    }
+
+    socksvr {
+      default
+    }
+
+    cpu {
+
+    }
+
+    dpdk {
+      dev {{ .Values.extport.right }}
+    }

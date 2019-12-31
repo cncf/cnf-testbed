@@ -5,7 +5,7 @@
 
 - name: Add packagecloud gpg key
   apt_key:
-    url: https://packagecloud.io/fdio/{{vpp_ver}}/gpgkey
+    url: https://packagecloud.io/fdio/{{vpp_branch}}/gpgkey
     state: present
   when: ansible_os_family == "Debian"
 
@@ -16,15 +16,6 @@
   when: ansible_os_family == "RedHat"
   register: vpp_sh_rh
 
-#- name: get VPP install script for RedHat
-#  get_url:
-#    url: https://packagecloud.io/install/repositories/fdio/release/script.rpm.sh
-#    dest: /root/vpp.sh
-#    mode: 0755
-#  when: ansible_os_family == "RedHat"
-#  register: vpp_sh_rh
-
-
 - name: setup vpp repo for Ubuntu
   template:
     src: 99fd.io.list
@@ -32,18 +23,6 @@
   when: ansible_os_family == "Debian"
   register: vpp_sh_deb
 
-#- name: get VPP install script for Ubuntu
-#  get_url:
-#    url: https://packagecloud.io/install/repositories/fdio/release/script.deb.sh
-#    dest: /root/vpp.sh
-#    mode: 0755
-#  when: ansible_os_family == "Debian"
-#  register: vpp_sh_deb
-
-#- name: run VPP install script
-#  command: /root/vpp.sh
-#  when: vpp_sh_rh.changed or vpp_sh_deb.changed
-#
 - name: install dpdk on RedHat
   yum:
     name: ['libibverbs','dpdk']
@@ -57,7 +36,11 @@
 - name: install dpdk on Debian
   apt:
     update_cache: yes
-    name: ['libibverbs-dev','dpdk']
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - libibverbs-dev
+    - dpdk
   when: ansible_os_family == "Debian"
 
 - name: install vpp service(s) RedHat
@@ -68,7 +51,15 @@
 - name: install vpp service(s) Ubuntu
   apt:
     update_cache: yes
-    name: ['vpp','vpp-dev','vpp-dbg','libvppinfra', 'vpp-plugin-core', 'vpp-plugin-dpdk']
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - vpp={{vpp_ver}}-release
+    - vpp-dev={{vpp_ver}}-release
+    - vpp-dbg={{vpp_ver}}-release
+    - libvppinfra={{vpp_ver}}-release
+    - vpp-plugin-core={{vpp_ver}}-release
+    - vpp-plugin-dpdk={{vpp_ver}}-release
   when: ansible_os_family == "Debian"
 
 - name: install vpp api packages(s) RedHat
@@ -79,7 +70,12 @@
 - name: install vpp api packages(s) Ubuntu
   apt:
     update_cache: yes
-    name: ["vpp-api-python","vpp-api-java"]
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - vpp-api-python={{vpp_ver}}-release
+    - vpp-api-java
+      # vpp-api-java is on a different release schedule, see https://wiki.fd.io/view/JVPP
   when: ansible_os_family == "Debian"
 
 - name: Enable use of vfio-pci driver
@@ -89,25 +85,6 @@
     replace: 'vfio-pci'
     backup: no
   when: ansible_os_family == "Debian"
-
-
-- name: add uplink vpp tap startup script
-  template:
-    src: uplink.conf
-    dest: /etc/vpp/uplink.conf
-  # when: inventory_hostname == host_0_address
-
-- name: update vpp startup script for l3
-  template:
-    src: startupl3.conf
-    dest: /etc/vpp/startup.conf
-  # when: inventory_hostname == host_0_address
-
-# - name: update vpp startup script compute
-#   template:
-#     src: startup.conf
-#     dest: /etc/vpp/startup.conf
-#   when: not inventory_hostname == host_0_address
 
 - name: Create perfmon tar bundle
   command: tar Jxf PerfmonTables.tar.xz

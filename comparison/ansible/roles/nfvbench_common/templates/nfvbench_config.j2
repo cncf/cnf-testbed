@@ -1,0 +1,116 @@
+#
+# NFVbench default configuration file
+#
+# This configuration file is ALWAYS loaded by NFVbench and should never be modified by users.
+# To specify your own property values, always define them in a separate config file
+# and pass that file to the script using -c or --config <file>
+# Property values in that config file will override the default values in the current file
+#
+---
+service_chain: 'EXT'
+
+service_chain_count: {{nfvbench_service_chain_count}}
+
+flow_count: 10000
+
+sriov: false
+
+l2_loopback: false
+
+no_cleanup: false
+
+traffic_generator:
+    host_name: 'nfvbench_tg'
+    default_profile: trex-local
+
+    ip_addrs: ['172.16.64.0/18', '172.16.192.0/18']
+    ip_addrs_step: 0.0.0.1
+
+    tg_gateway_ip_addrs: ['172.16.10.100', '172.16.20.100']
+    tg_gateway_ip_cidrs: ['172.16.10.0/24','172.16.20.0/24']
+    tg_gateway_ip_addrs_step: 0.0.0.1
+
+    gateway_ip_addrs: ['172.16.10.10', '172.16.20.10']
+    gateway_ip_addrs_step: 0.0.0.1
+
+    udp_src_port:
+    udp_dst_port:
+
+    vtep_vlan:
+    src_vteps:
+    dst_vtep:
+
+    generator_profile:
+        - name: trex-local
+          tool: TRex
+          ip: 127.0.0.1
+          cores: 8
+          software_mode: false
+          limit_memory: 1024
+          zmq_pub_port: 4500
+          zmq_rpc_port: 4501
+          interfaces:
+            - port: 0
+              pci: {{ trex_port_0_pci }}
+              switch_port:
+            - port: 1
+              pci: {{ trex_port_1_pci }}
+              switch_port:
+          intf_speed:
+          platform:
+            master_thread_id: 2
+            latency_thread_id: 28
+            dual_if:
+              - socket: 0
+                threads: [4,32,6,34,8,36,10,38]
+
+restart: false
+
+cores:
+mbuf_factor: 0.2
+
+vxlan: false
+
+vlan_tagging: {{ nfvbench_vlan_tagging }}
+
+{% if intel is sameas true %}
+vlans:
+{% else %}
+#vlans: [{{ nfvbench_vlan_id1 }}, {{ nfvbench_vlan_id2 }}]
+#vlans: [[{{ nfvbench_vlan_id1 }}, {{ nfvbench_vlan_id1 }}], [{{ nfvbench_vlan_id2 }}, {{ nfvbench_vlan_id2 }}]]
+vlans: [[{{ nfvbench_vlan_id1 }}, {{ nfvbench_vlan_id1 }}, {{ nfvbench_vlan_id1 }}], [{{ nfvbench_vlan_id2 }}, {{ nfvbench_vlan_id2 }}, {{ nfvbench_vlan_id2 }}]]
+{% endif %}
+
+no_arp: false
+
+traffic_profile:
+    - name: traffic_profile_64B
+      l2frame_size: ['64']
+    - name: traffic_profile_IMIX
+      l2frame_size: ['IMIX']
+    - name: traffic_profile_1518B
+      l2frame_size: ['1518']
+    - name: traffic_profile_3sizes
+      l2frame_size: ['64', 'IMIX', '1518']
+
+traffic:
+    bidirectional: true
+    profile: traffic_profile_64B
+
+rate: ndr_pdr
+duration_sec: 2
+
+measurement:
+    NDR: 0.001
+    PDR: 0.1
+    load_epsilon: 0.1
+
+debug: false
+
+fluentd:
+    - logging_tag: nfvbench
+      result_tag: resultnfvbench
+      ip: 127.0.0.1
+      port: 24224
+
+no_vswitch_access: true

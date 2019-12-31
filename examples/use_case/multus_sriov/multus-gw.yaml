@@ -1,0 +1,144 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multus-gw
+  labels:
+    app: multus-gw
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: multus-gw
+  template:
+    metadata:
+      labels:
+        app: multus-gw
+      annotations:
+        k8s.v1.cni.cncf.io/networks: sriov-net-left, sriov-net-right
+    spec:
+      containers:
+        - name: vppcontainer
+          image: soelvkaer/vppcontainer:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          command: [ "/bin/bash", "/opt/vpp/run_vpp.sh" ]
+          resources:
+            requests:
+              intel.com/vfio_ports_left: '2'
+              intel.com/vfio_ports_right: '2'
+              intel.com/sriov_ports_left: '1'
+              intel.com/sriov_ports_right: '1'
+            limits:
+              cpu: "3"
+              hugepages-2Mi: 200Mi
+              intel.com/vfio_ports_left: '2'
+              intel.com/vfio_ports_right: '2'
+              intel.com/sriov_ports_left: '1'
+              intel.com/sriov_ports_right: '1'
+          volumeMounts:
+          - name: config-volume
+            mountPath: /opt/vpp/
+          - name: vpp-sockets
+            mountPath: /root/sockets
+          - name: hugepage
+            mountPath: /dev/hugepages
+      volumes:
+        - name: config-volume
+          configMap:
+            name: multus-gw-conf
+        - name: hugepage
+          emptyDir:
+            medium: HugePages
+        - name: vpp-sockets
+          hostPath:
+            path: /etc/vpp/sockets/
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: multus-gw-conf
+data:
+  startup.conf: |-
+    unix {
+      nodaemon
+      interactive
+      log /var/log/vpp/vpp.log
+      full-coredump
+      cli-listen /run/vpp/cli.sock
+      gid vpp
+      startup-config /etc/vpp/setup.gate
+    }
+
+    api-trace {
+      on
+    }
+
+    api-segment {
+      gid vpp
+    }
+
+    socksvr {
+      default
+    }
+
+    cpu {
+      main-core 8
+      corelist-workers 14,42
+    }
+
+    buffers {
+      buffers-per-numa 215040
+    }
+
+    dpdk {
+      dev default {
+        num-rx-queues 1
+      }
+      PCIID
+      no-multi-seg
+      no-tx-checksum-offload
+    }
+
+    plugins {
+      plugin default { disable }
+      plugin dpdk_plugin.so { enable }
+    }  
+  run_vpp.sh: |-
+    #! /bin/bash
+
+    mount -o rw,nosuid,nodev,noexec,relatime,remount /sys
+
+    if [ -z /etc/vpp/setup.gate ]; then
+      rm /etc/vpp/setup.gate
+    fi
+    cp /opt/vpp/startup.conf /etc/vpp/startup.conf
+
+    vppdevs="  "
+    sides=( "LEFT" "RIGHT" )
+    for side in "${sides[@]}"; do
+      counter=0
+      pcistring=$(env | grep PCIDEVICE_INTEL_COM_VFIO_PORTS_${side} | awk -F'=' '{print $2}')
+      pcidevs=($(echo "$pcistring" | tr ',' '\n'))
+      for dev in ${pcidevs[@]}; do
+        vppdevs="${vppdevs}dev $dev "
+        dotsplit=($(echo "$dev" | tr '.' '\n'))
+        colonsplit=($(echo "${dotsplit[0]}" | tr ':' '\n'))
+        vfeth="VirtualFunctionEthernet${colonsplit[1]}/$(echo "${colonsplit[2]}" | sed 's/^0*//')/${dotsplit[1]}"
+        if [ "$side" == "LEFT" ]; then
+          echo "set int ip addr ${vfeth} 10.60.$((16 + $counter)).15/24" >> /etc/vpp/setup.gate
+        else
+          echo "set int ip addr ${vfeth} 10.60.${counter}.15/24" >> /etc/vpp/setup.gate
+        fi
+        echo "set int state ${vfeth} up" >> /etc/vpp/setup.gate
+        echo "set int mtu 9200 ${vfeth}" >> /etc/vpp/setup.gate
+        echo "" >> /etc/vpp/setup.gate
+        ((counter++))
+      done
+    done
+
+    sed -i "s/.*PCIID.*/${vppdevs}/g" /etc/vpp/startup.conf
+
+    vpp -c /etc/vpp/startup.conf 2>&1 | tee /etc/vpp/output.log

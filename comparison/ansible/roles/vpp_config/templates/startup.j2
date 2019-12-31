@@ -1,0 +1,49 @@
+unix {
+  nodaemon
+  log /var/log/vpp/vpp.log
+  full-coredump
+  cli-listen /run/vpp/cli.sock
+  gid vpp
+  startup-config /etc/vpp/setup.gate
+}
+
+api-trace {
+  on
+}
+
+api-segment {
+  gid vpp
+}
+
+socksvr {
+  default
+}
+
+cpu {
+  main-core 0
+  corelist-workers {{ corelist_workers }}
+}
+
+buffers {
+  buffers-per-numa 215040
+}
+
+dpdk {
+  dev default {
+    num-rx-queues {{ rx_queues }}
+  }
+{% if lookup('vars', 'nic_type') == "intel" %}
+  dev {{ nic_port2 }} dev {{ nic_port3 }}
+{% else %}
+  dev {{ ansible_enp94s0f1.pciid }}
+{% endif %}
+  no-multi-seg
+  no-tx-checksum-offload
+}
+
+
+plugins {
+  plugin default { disable }
+  plugin dpdk_plugin.so { enable }
+  plugin memif_plugin.so { enable }
+}

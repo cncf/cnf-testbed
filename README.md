@@ -1,10 +1,10 @@
 # Cloud native Network Function (CNF) Testbed
 
-The CNCF CNF Testbed provides reference code and test cases for running the same networking code packaged as containers (Cloud native Network Functions or CNFs) on Kubernetes and as virtual machines (Virtual Network Functions or VNFs) on OpenStack.
+The CNCF CNF Testbed provides reference code and test cases for running networking code on Kubernetes and OpenStack using emerging cloud native technologies in the Telecom domain.
 
 Status: The CNF Testbed is *not* a CNCF-hosted [project](https://www.cncf.io/projects/). Instead, it is an initiative to create a repeatable, apples-to-apples testbed that telcos and telecoms vendors can use to evaluate how CNF architectures compare to more traditional VNF ones.
 
-The initiative collaborates with the [CNCF Telecom User Group](https://github.com/cncf/telecom-user-group) to test and demonstrate differents options.
+The initiative collaborates with the [CNCF Telecom User Group](https://github.com/cncf/telecom-user-group) to test and demonstrate different options.
 
 Note: _The CNF Testbed is still in the prototype stage. Additional reference code and benchmarking tests will be added incrementally._
 
@@ -29,7 +29,8 @@ Please review this slide [deck](https://docs.google.com/presentation/u/1/d/1nsPI
 
 **The CNF Testbed includes the following high-level goals:**
 
-- Comparing Virtual Network Functions (VNFs) vs. Cloud-native Network Functions (CNFs)
+- Development platform for CNFs
+- Comparing Virtual Network Functions (VNFs) to CNF implementations
 - Providing easily reproducible test cases and use cases
 - Providing Helm Charts for CNFs
 - Using 100% open source software
@@ -85,6 +86,15 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 
 ## Upcoming Events: 
 
+ ### TUG + CNFs At KubeCon + CloudNativeCon NA 2019
+
+Wednesday, November 20 • 3:20pm - 3:55pm - [Birds of a Feather: Telecom User Group](https://sched.co/Uakt)
+
+Thursday, November 21 • 4:25pm - 5:55pm - [Intro + Deep Dive: Cloud Native Network Function (CNF) Testbed](https://sched.co/UakA)
+
+
+## Past Events:
+
 ### TUG + CNFs At Open Networking Summit EU 2019
 
 Monday, September 23 • 08:45 - 10:15 - [Tutorial: Take a Test Drive with the Cloud Native Network Function (CNF) Testbed - Sponsored by Cloud Native Computing Foundation (Pre-registration required)](https://sched.co/ScCA)
@@ -94,16 +104,6 @@ Monday, September 23 • 10:45 - 12:15 - [CNCF Telecom User Group Meeting](https
 Wednesday, September 25 • 14:35 - 15:05 - [Cloud Native Network Provisioning with Network Service Mesh in the CNF Testbed - Taylor Carpenter, Vulk Coop & Nikolay Nikolaev, VMware](https://sched.co/SYvw)
 
 Wednesday, September 25 • 16:15 - 16:45 - [Panel Discussion: Embracing Cloud Native on the Path to 5G - Heather Kirksey, The Linux Foundation; Rabi Abdel, Vodafone; Lincoln Lavoie, UNH Interoperability Lab; Frederick Kautz, doc.ai; Taylor Carpenter, Vulk Coop](https://sched.co/SYwo)
-
-
- ### TUG + CNFs At KubeCon + CloudNativeCon NA 2019
-
-Thursday, November 21 • 10:55am - 12:25pm - [Intro + Deep Dive: Telecom User Group](https://sched.co/Uakt)
-
-Thursday, November 21 • 4:25pm - 5:55pm - [Intro + Deep Dive: Cloud Native Network Function (CNF) Testbed](https://sched.co/UakA)
-
-
-## Past Events:
 
 ### CNFs At KubeCon + CloudNativeCon China 2019
 

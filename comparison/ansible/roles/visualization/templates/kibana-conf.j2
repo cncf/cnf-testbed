@@ -1,0 +1,11 @@
+server.name: kibana
+server.host: "0"
+elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+xpack.monitoring.ui.container.elasticsearch.enabled: true
+xpack.security.authc.providers: [basic]
+elasticsearch.username: "kibana"
+elasticsearch.password: "{{ elkpasses.kibana }}"
+
+server.ssl.enabled: true
+server.ssl.key: /usr/share/kibana/config/local.key.pem
+server.ssl.certificate: /usr/share/kibana/config/local.cert.pem

@@ -1,0 +1,81 @@
+nfvbench_macs: ['aa:bb:cc:dd:ee:ff','ff:ee:dd:cc:bb:aa']
+
+privileged: true
+
+replicaCount: 1
+
+image:
+  repository: soelvkaer/vppcontainer
+  tag: latest
+  pullPolicy: IfNotPresent
+
+resources:
+  limits:
+    cpu: "3"
+    hugepages-2Mi: 200Mi
+
+volumeMounts:
+  vpp_sockets:
+    mountPath: /root/sockets
+
+## Configuration for ipsec
+cnf:
+  1:
+    main_core: 8
+    worker_cores: '12,40'
+    sock: ['memif1','int11']
+    memid: ['1','10']
+    mac: ['52:54:00:00:00:aa','52:54:00:00:01:bb']
+    owner: ['slave','master']
+    queues: 1
+    subnet: ['172.16.10.10/24','172.16.31.10/24']
+    remip: ['172.16.10.100','172.16.31.11']
+    remmac: ['{{ index .Values.nfvbench_macs 0 }}','52:54:00:00:02:aa']
+    ipsec_endpoint: false
+
+  2:
+    main_core: 10
+    worker_cores: '14,42'
+    sock: ['int11','memif2']
+    memid: ['10','2']
+    mac: ['52:54:00:00:02:aa','52:54:00:00:02:bb']
+    owner: ['slave','slave']
+    queues: 1
+    subnet: ['172.16.31.11/24','172.16.32.10/24']
+    remip: ['172.16.31.10','172.16.32.11']
+    remmac: ['52:54:00:00:01:bb','52:54:00:00:03:aa']
+    ipsec_endpoint: true
+    ipsec_ip: ['172.16.32.10','172.16.32.11']
+    ipsec_spi: ['200000','100000']
+    ipsec_key: ['714c7a456b41476442585353474b586c78796d45','47505069546a6461647565786163726865757346']
+    ipsec_direction: 'right'
+
+  3:
+    main_core: 36
+    worker_cores: '16,44'
+    sock: ['memif3','int21']
+    memid: ['3','11']
+    mac: ['52:54:00:00:03:aa','52:54:00:00:03:bb']
+    owner: ['slave','master']
+    queues: 1
+    subnet: ['172.16.32.11/24','172.16.33.10/24']
+    remip: ['172.16.32.10','172.16.33.11']
+    remmac: ['52:54:00:00:02:bb','52:54:00:00:04:aa']
+    ipsec_endpoint: true
+    ipsec_ip: ['172.16.32.11','172.16.32.10']
+    ipsec_spi: ['100000','200000']
+    ipsec_key: ['47505069546a6461647565786163726865757346','714c7a456b41476442585353474b586c78796d45']
+    ipsec_direction: 'left'
+
+  4:
+    main_core: 38
+    worker_cores: '18,46'
+    sock: ['int21','memif4']
+    memid: ['11','4']
+    mac: ['52:54:00:00:04:aa','52:54:00:00:00:bb']
+    owner: ['slave','slave']
+    queues: 1
+    subnet: ['172.16.33.11/24','172.16.20.10/24']
+    remip: ['172.16.33.10','172.16.20.100']
+    remmac: ['52:54:00:00:03:bb','{{ index .Values.nfvbench_macs 1 }}']
+    ipsec_endpoint: false

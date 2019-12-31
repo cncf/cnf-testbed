@@ -1,0 +1,11 @@
+[Unit]
+Description=Kubelet restarter
+After=kubelet.service
+Requires=kubelet.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/systemctl restart kubelet.service
+
+[Install]
+WantedBy=multi-user.target

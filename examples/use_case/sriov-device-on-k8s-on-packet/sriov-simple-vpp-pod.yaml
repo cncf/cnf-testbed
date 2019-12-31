@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sriov-simple-vpp-pod
+  labels:
+    env: test
+spec:
+  tolerations:
+  - operator: "Exists"
+  hostNetwork: true
+  containers:
+  - name: sriovdpdk
+    image: soelvkaer/vppcontainer:latest
+    imagePullPolicy: IfNotPresent
+    securityContext:
+      privileged: true
+    command: [ "/bin/bash", "/opt/vpp/run_vpp.sh" ]
+    resources:
+      requests:
+        hugepages-2Mi: 100Mi
+        memory: 200Mi
+        intel.com/vfio_ports: '1'
+      limits:
+        hugepages-2Mi: 100Mi
+        memory: 200Mi
+        intel.com/vfio_ports: '1'
+    volumeMounts:
+    - name: hugepage
+      mountPath: /dev/hugepages/
+    - name: vppconf
+      mountPath: /opt/vpp/
+  volumes:
+    - name: hugepage
+      emptyDir:
+        medium: HugePages
+    - name: vppconf
+      configMap:
+        name: vppconfig
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vppconfig
+data:
+  startup.template: |
+    unix {
+      nodaemon
+      log /var/log/vpp/vpp.log
+      full-coredump
+      cli-listen /run/vpp/cli.sock
+      gid vpp
+      startup-config /etc/vpp/setup.gate
+    }
+
+    api-trace {
+      on
+    }
+
+    api-segment {
+      gid vpp
+    }
+
+    socksvr {
+      default
+    }
+
+    cpu {
+
+    }
+
+    dpdk {
+      PCIID
+      no-multi-seg
+      no-tx-checksum-offload
+    }
+
+    plugins {
+      plugin default { disable }
+      plugin dpdk_plugin.so { enable }
+      plugin memif_plugin.so { enable }
+    }
+  run_vpp.sh: |
+    #! /bin/bash
+
+    pcidevs=$(env | grep PCIDEVICE | awk -F'=' '{print $2}')
+    echo $pcidevs
+    
+    if [ -z "$pcidevs" ]; then
+        echo "ERROR: No PCI devices listed in env"
+        exit 1
+    fi
+
+    cp /opt/vpp/startup.template /etc/vpp/startup.conf
+
+    devstring="  "
+
+    # Avoiding modifications to IFS
+    for i in $(echo $pcidevs | sed "s/,/ /g"); do
+      devstring="${devstring}dev $i "
+    done
+
+    sed -i "s/.*PCIID.*/${devstring}/g" /etc/vpp/startup.conf
+
+    vpp -c /etc/vpp/startup.conf 2>&1 | tee /etc/vpp/output.log

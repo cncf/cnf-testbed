@@ -1,0 +1,36 @@
+<source>
+  #@type http
+  @type forward
+  port 24224
+  bind 0.0.0.0
+</source>
+
+<match nfvbench.**>
+@type copy
+<store>
+    @type elasticsearch
+    host Elastic
+    port 9200
+    user fluentd
+    password {{ fluentdpass }}
+    logstash_format true
+    logstash_prefix nfvbench
+    utc_index false
+    flush_interval 15s
+</store>
+</match>
+
+<match resultnfvbench.**>
+@type copy
+<store>
+    @type elasticsearch
+    host Elastic
+    port 9200
+    user fluentd
+    password {{ fluentdpass }}
+    logstash_format true
+    logstash_prefix resultnfvbench
+    utc_index false
+    flush_interval 15s
+</store>
+</match>

@@ -1,0 +1,13 @@
+---
+apiVersion: networkservicemesh.io/v1alpha1
+kind: NetworkService
+metadata:
+  name: packet-filtering-{{ .Values.input.id }}
+spec:
+  payload: IP
+  matches:
+    - match:
+      route:
+        - destination:
+          destinationSelector:
+            app: packet-filter-{{ .Values.input.id }}

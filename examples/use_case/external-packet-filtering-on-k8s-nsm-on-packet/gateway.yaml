@@ -1,0 +1,108 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "gateway"
+      networkservicemesh.io/impl: "packet-filtering"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "gateway"
+        networkservicemesh.io/impl: "packet-filtering"
+    spec:
+      containers:
+        - name: universal-cnf-endpoint
+          image: networkservicemesh/universal-cnf-vppagent:master
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            postStart:
+              exec:
+                command: ["mount", "-o", "rw,nosuid,nodev,noexec,relatime,remount", "/sys"]
+          securityContext:
+            privileged: true
+          env:
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            limits:
+              networkservicemesh.io/socket: 1
+              hugepages-2Mi: 100Mi
+              memory: 100Mi
+            requests:
+              memory: 100Mi
+          volumeMounts:
+            - mountPath: /etc/universal-cnf/config.yaml
+              subPath: config.yaml
+              name: universal-cnf-config-volume
+            - mountPath: /etc/vpp/vpp.conf
+              subPath: vpp.conf
+              name: universal-cnf-config-volume
+            - mountPath: /dev/hugepages
+              name: hugepages
+      volumes:
+        - name: universal-cnf-config-volume
+          configMap:
+            name: universal-cnf-gateway
+        - name: hugepages
+          emptyDir:
+            medium: HugePages
+metadata:
+  name: gateway
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: universal-cnf-gateway
+data:
+  config.yaml: |
+    initactions:
+      - command:
+          name: "vppctl"
+          args: [
+            "set int ip address TenGigabitEthernet19/0/2 10.60.1.50/24",
+            "set int state TenGigabitEthernet19/0/2 up",
+            ]
+    endpoints:
+    - name: "packet-filtering"
+      labels:
+        app: "gateway"
+      ipam:
+        prefixpool: "10.60.2.0/24"
+        routes: ["10.0.0.0/9"]
+      ifname: "endpoint0"
+  vpp.conf: |
+    unix {
+      nodaemon
+      log /var/log/vpp/vpp.log
+      full-coredump
+      cli-listen /run/vpp/cli.sock
+      gid vpp
+      poll-sleep-usec 1000
+    }
+
+    api-trace {
+      on
+    }
+
+    api-segment {
+      gid vpp
+    }
+
+    socksvr {
+      default
+    }
+
+    cpu {
+
+    }
+
+    dpdk {
+      dev 0000:19:00.1 dev 0000:19:00.2
+    }
+
+    plugins {
+      plugin dpdk_plugin.so { enable }
+    }

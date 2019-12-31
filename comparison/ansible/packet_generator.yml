@@ -74,19 +74,26 @@
   - name: Configure interfaces
     include_role:
       name: mrlesmithjr.config-interfaces
-    when: not intel
   - name: Do Mellanox setup
     include_role:
       name: mellanox_nic
     when: not intel
-  - name: Reboot following MLX setup
+  - name: Update Grub
+    include_role:
+      name: grub_packet_generator
+  - name: Load VFIO-PCI on startup
+    lineinfile:
+      path: /etc/modules
+      insertafter: EOF
+      line: 'vfio-pci'
+    when: intel
+  - name: Reboot server
     reboot:
-    when: not intel
+      post_reboot_delay: 60
   - name: Ensure rc.local has been started
     service:
       name: rc-local
       state: started
-    when: not intel
   - name: Sleep for 10 seconds to ensure VFs are available
     wait_for: timeout=10
     when: not intel
@@ -96,20 +103,17 @@
   - name: Sleep for 10 seconds to ensure Facts are updated
     wait_for: timeout=10
     when: not intel
-  - name: Get trex_port_0 pci id
+  - name: Get trex_port_0 pci id (MLX)
     setup:
-      filter: "{{ ansible_eno3.pciid if intel else ansible_enp94s0f4.pciid }}"
-  - name: Get trex_port_1 pci id
+      filter: "{{ ansible_enp94s0f4.pciid }}"
+    when: not intel
+  - name: Get trex_port_1 pci id (MLX)
     setup:
-      filter: "{{ ansible_eno4.pciid if intel else ansible_enp94s0f5.pciid }}"
-  - name: Load VFIO-PCI on startup
-    lineinfile:
-      path: /etc/modules
-      insertafter: EOF
-      line: 'vfio-pci'
-    when: intel
+      filter: "{{ ansible_enp94s0f5.pciid }}"
+    when: not intel
 
   vars:
+    visualization: true
     intel: "{{ true if quad_intel is defined else false }}"
     trex_port_0_pci: "{{ ansible_eno3.pciid if intel else ansible_enp94s0f4.pciid }}"
     trex_port_1_pci: "{{ ansible_eno4.pciid if intel else ansible_enp94s0f5.pciid }}"
@@ -121,13 +125,14 @@
     config_network_bonds: true
     config_network_bridges: false
     config_network_interfaces: true
-    enable_configured_interfaces_after_defining: true
+    enable_configured_interfaces_after_defining: false
     dns_nameservers:
       - "{{ ansible_dns.nameservers[0] }}"
       - "{{ ansible_dns.nameservers[0] }}"
     network_bonds:
       - name: 'bond0'
         configure: true
+        enable: false
         method: 'static'
         address: "{{ ansible_bond0.ipv4.address }}"
         netmask: "{{ ansible_bond0.ipv4.netmask }}"
@@ -149,6 +154,7 @@
           - "{{ ansible_bond0.slaves[0] }}"
       - name: 'bond0:0'
         configure: true
+        enable: false
         method: 'static'
         address: "{{ ansible_bond0_0.ipv4.address }}"
         netmask: "{{ ansible_bond0_0.ipv4.netmask }}"
@@ -160,10 +166,11 @@
     network_interfaces:
       - name: "{{ ansible_bond0.slaves[0] }}"
         configure: true
+        enable: false
         method: 'manual'
         parameters:
           - param:
             val: 'bond-master bond0'
   roles:
-    - grub_packet_generator
     - nfvbench_common
+    - { role: "visualization", when: visualization }

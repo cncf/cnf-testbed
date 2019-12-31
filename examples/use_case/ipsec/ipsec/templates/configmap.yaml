@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "ipsec.fullname" . }}
+  labels:
+    app: {{ template "ipsec.name" . }}
+    chart: {{ include "ipsec.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+data:
+{{ range $k, $v := .Values.cnf }}
+  setup_{{$k}}.gate: |-
+    bin memif_socket_filename_add_del add id 1 filename {{ $.Values.volumeMounts.vpp_sockets.mountPath }}/{{ index .sock 0 }}.sock
+    bin memif_socket_filename_add_del add id 2 filename {{ $.Values.volumeMounts.vpp_sockets.mountPath }}/{{ index .sock 1 }}.sock
+    create interface memif id {{ index .memid 0 }} socket-id 1 hw-addr {{ index .mac 0 }} {{ index .owner 0 }} rx-queues {{ .queues }} tx-queues {{ .queues }}
+    create interface memif id {{ index .memid 1 }} socket-id 2 hw-addr {{ index .mac 1 }} {{ index .owner 1 }} rx-queues {{ .queues }} tx-queues {{ .queues }}
+    set int ip addr memif1/{{ index .memid 0 }} {{ index .subnet 0 }}
+    set int ip addr memif2/{{ index .memid 1 }} {{ index .subnet 1 }}
+    set int state memif1/{{ index .memid 0 }} up
+    set int state memif2/{{ index .memid 1 }} up
+    set ip arp static memif1/{{ index .memid 0 }} {{ index .remip 0 }} {{ tpl ( index .remmac 0 ) $ }}
+    set ip arp static memif2/{{ index .memid 1 }} {{ index .remip 1 }} {{ tpl ( index .remmac 1 ) $ }}
+    {{ if .ipsec_endpoint }}
+    create ipsec tunnel local-ip {{ index .ipsec_ip 0 }} remote-ip {{ index .ipsec_ip 1 }} local-spi {{ index .ipsec_spi 0 }} remote-spi {{ index .ipsec_spi 1 }} local-crypto-key {{ index .ipsec_key 0 }} remote-crypto-key {{ index .ipsec_key 1 }} crypto-alg aes-gcm-128
+    {{ if eq .ipsec_direction "right" }}
+    set interface unnumbered ipsec0 use memif2/{{ index .memid 1 }}
+    set interface state ipsec0 up
+    ip route add 172.16.64.0/18 via {{ index .remip 0 }}
+    ip route add 172.16.192.0/18 via {{ index .remip 1 }} ipsec0
+    {{ else }}
+    set interface unnumbered ipsec0 use memif1/{{ index .memid 0 }}
+    set interface state ipsec0 up
+    ip route add 172.16.64.0/18 via {{ index .remip 0 }} ipsec0
+    ip route add 172.16.192.0/18 via {{ index .remip 1 }}
+    {{ end }}
+    {{ else }}
+    ip route add 172.16.64.0/18 via {{ index .remip 0 }}
+    ip route add 172.16.192.0/18 via {{ index .remip 1 }}
+    {{ end }}
+  startup_{{$k}}.conf: |-
+    unix {
+      nodaemon
+      interactive
+      log /var/log/vpp/vpp.log
+      full-coredump
+      cli-listen /run/vpp/cli.sock
+      gid vpp
+      startup-config /etc/vpp/setup.gate
+    }
+
+    api-trace {
+      on
+    }
+
+    api-segment {
+      gid vpp
+    }
+
+    cpu {
+      main-core {{ .main_core }}
+      corelist-workers {{ .worker_cores }}
+    }
+
+    plugins {
+      plugin default { disable }
+      plugin memif_plugin.so { enable }
+      {{ if .ipsec_endpoint }}
+      plugin crypto_ia32_plugin.so { enable }
+      plugin crypto_ipsecmb_plugin.so { enable }
+      plugin crypto_openssl_plugin.so { enable }
+      {{ end }}
+    }
+{{ end }}
