@@ -1,5 +1,5 @@
 #!/bin/bash
-PROJECT_ROOT=$(cd ../ ; pwd -P)
+PROJECT_ROOT=${PROJECT_ROOT:-$(cd ../ ; pwd -P)}
 DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
 
 # generate_config & provisioning defaults
@@ -10,7 +10,7 @@ HOSTS_FILE=${HOSTS_FILE:-$(pwd)/data/$DEPLOY_NAME/nodes.env}
 PACKET_FACILITY=${PACKET_FACILITY:-sjc1}
 VLAN_SEGMENT=${VLAN_SEGMENT:-$DEPLOY_NAME}
 PLAYBOOK=${PLAYBOOK:-k8s_worker_vswitch_quad_intel.yml}
-KUBECONFIG=${KUBECONFIG:-$(pwd)/data/$DEPLOY_NAME/admin.conf}
+KUBECONFIG=${KUBECONFIG:-$(pwd)/data/$DEPLOY_NAME/mycluster/artifacts/admin.conf}
 
 
 if [ "$1" == "generate_config" ]; then
@@ -75,7 +75,7 @@ if [ "$1" == "vswitch" ]; then
     else
         echo 'No hosts were found, exiting'
     fi
-    docker run \
+docker run \
            -v "${PROJECT_ROOT}/comparison/ansible:/ansible" \
            -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
            -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
