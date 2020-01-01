@@ -237,7 +237,11 @@ if options[:disbond_port]
   if parsed_response["id"]
     puts "success"
   else 
-    puts "failure"
+    if parsed_response["errors"] 
+      puts parsed_response["errors"]
+    else
+      puts "failure"
+    end
   end
 end
 
@@ -250,7 +254,11 @@ if options[:bond_port]
   if parsed_response["id"]
     puts "success"
   else 
-    puts "failure"
+    if parsed_response["errors"] 
+      puts parsed_response["errors"]
+    else
+      puts "failure"
+    end
   end
 end
 # 7. Upsert 1st and 2nd vlans
