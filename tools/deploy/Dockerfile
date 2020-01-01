@@ -26,7 +26,7 @@ RUN apt update && \
     ansible-galaxy install mrlesmithjr.config-interfaces 
    
 # Install infra-provisioning
-RUN git clone https://github.com/crosscloudci/infra-provisioning.git /infra-provisioning \
+RUN git clone https://github.com/crosscloudci/infra-provisioning.git -b node_groups /infra-provisioning \
     && cp -a /infra-provisioning/terraform /terraform \
     && cp /infra-provisioning/create_nodes.sh /terraform \
     && cd /terraform \
