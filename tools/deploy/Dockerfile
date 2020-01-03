@@ -33,6 +33,9 @@ RUN git clone https://github.com/crosscloudci/infra-provisioning.git -b node_gro
     && rm /terraform/s3-backend.tf \
     && rm /terraform/reserved_override \
     && terraform init
+
+# Install yw
+RUN wget https://github.com/mikefarah/yq/releases/download/2.4.1/yq_linux_amd64 -O /usr/local/bin/yq
     
 
 # Copy Terraform Ansible Plugin

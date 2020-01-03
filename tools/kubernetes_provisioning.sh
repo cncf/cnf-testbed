@@ -4,10 +4,10 @@ DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
 
 # generate_config & provisioning defaults
 RELEASE_TYPE=${RELEASE_TYPE:-stable}
-HOSTS_FILE=${HOSTS_FILE:-$(pwd)/data/$DEPLOY_NAME/nodes.env}
+HOSTS_FILE=${HOSTS_FILE:-$(pwd)/data/$DEPLOY_NAME/kubernetes.env}
 
 # vswitch defaults
-PACKET_FACILITY=${PACKET_FACILITY:-sjc1}
+FACILITY=${FACILITY:-sjc1}
 VLAN_SEGMENT=${VLAN_SEGMENT:-$DEPLOY_NAME}
 PLAYBOOK=${PLAYBOOK:-k8s_worker_vswitch_quad_intel.yml}
 KUBECONFIG=${KUBECONFIG:-$(pwd)/data/$DEPLOY_NAME/mycluster/artifacts/admin.conf}
@@ -76,15 +76,16 @@ if [ "$1" == "vswitch" ]; then
         echo 'No hosts were found, exiting'
     fi
 docker run \
-           -v "${PROJECT_ROOT}/comparison/ansible:/ansible" \
-           -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
-           -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
-           -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
-           -e PACKET_FACILITY=${PACKET_FACILITY} \
-           -e K8S_DEPLOY_ENV=${VLAN_SEGMENT} \
-           -e ANSIBLE_HOST_KEY_CHECKING=False \
-           --entrypoint=ansible-playbook \
-           -ti cnfdeploytools:latest -i "${WORKER_IPS}," -e server_list="${WORKER_HOSTNAMES}" /ansible/$PLAYBOOK
+       --rm \
+       -v "${PROJECT_ROOT}/comparison/ansible:/ansible" \
+       -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
+       -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
+       -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
+       -e PACKET_FACILITY=${PACKET_FACILITY} \
+       -e K8S_DEPLOY_ENV=${VLAN_SEGMENT} \
+       -e ANSIBLE_HOST_KEY_CHECKING=False \
+       --entrypoint=ansible-playbook \
+       -ti cnfdeploytools:latest -i "${WORKER_IPS}," -e server_list="${WORKER_HOSTNAMES}" /ansible/$PLAYBOOK
 fi
 
 
