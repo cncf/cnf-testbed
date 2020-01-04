@@ -12,6 +12,7 @@
 
 PROJECT_ROOT := $$(pwd -P)
 DEPLOY_NAME := cnftestbed
+NIC_FILE = $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/packet_gen_nics.env
 KUBECONFIG := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/mycluster/artifacts/admin.conf
 PLAYBOOK := k8s_worker_vswitch_quad_intel.yml
 
@@ -51,7 +52,9 @@ vswitch:
 	PROJECT_ROOT=$(PROJECT_ROOT) PLAYBOOK=$(PLAYBOOK) tools/kubernetes_provisioning.sh vswitch
 
 pktgen:
-	PROJECT_ROOT=$(PROJECT_ROOT) NODE_FILE=$(NODE_FILE) tools/packet_generator_provisioning.sh
+	PROJECT_ROOT=$(PROJECT_ROOT) NIC_FILE=$(NIC_FILE) tools/packet_generator_provisioning.sh
+  PKTGEN_ETH2 := $$(cat $(NIC_FILE) | awk 'NR==1{print $1}')
+  PKTGEN_ETH3 := $$(cat $(NIC_FILE) | awk 'NR==2{print $1}')
 
 snake:
-	docker run -v $(KUBECONFIG):/tmp/admin.conf -v $(PROJECT_ROOT)/examples/use_case/3c2n-csc/:/tmp/3c2n-csc -e KUBECONFIG=/tmp/admin.conf -ti alpine/helm install csc /tmp/3c2n-csc/csc/
+	docker run -v $(KUBECONFIG):/tmp/admin.conf -v $(PROJECT_ROOT)/examples/use_case/3c2n-csc/:/tmp/3c2n-csc -e KUBECONFIG=/tmp/admin.conf -ti alpine/helm install csc --set nfvbench_macs={$(PKTGEN_ETH2),$(PKTGEN_ETH3)} /tmp/3c2n-csc/csc/
