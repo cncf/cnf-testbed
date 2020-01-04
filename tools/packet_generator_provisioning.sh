@@ -2,6 +2,7 @@
 PROJECT_ROOT=${PROJECT_ROOT:-$(cd ../ ; pwd -P)}
 DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
 NODE_FILE=${NODE_FILE:-$(pwd)/data/$DEPLOY_NAME/packet_gen.env}
+NIC_FILE=${NIC_FILE:-$(pwd)/data/$DEPLOY_NAME/packet_gen_nics.env}
 
 NIC_TYPE=${NIC_TYPE:--e quad_intel=true}
 FACILITY=${FACILITY:-sjc1}
@@ -17,6 +18,12 @@ elif ! [ -z ${NODE_FILE+x} ]; then
 else
     echo 'No hosts were found, exiting'
 fi
+
+if [ -f "$NIC_FILE" ]; then
+    echo 'a nic file for this deployment already exists, exiting'
+    exit 1
+fi
+touch "$NIC_FILE"
 
 
 PKTGEN_HOSTNAMES="$(for ((n=1;n<"${#PKTGEN_IPS_ARRAY[@]}";n++)); do echo -n $DEPLOY_NAME-pktgen$n,;done;echo -n $DEPLOY_NAME-pktgen"${#PKTGEN_IPS_ARRAY[@]}")"
@@ -35,16 +42,16 @@ docker run \
        -ti cnfdeploytools:latest -i $HOSTS /ansible/$PLAYBOOK $NIC_TYPE
 
 #Fetch NFVBench Macs
-PKTGEN_ETH2=$(docker run \
+docker run \
        --rm \
        -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
        -e ANSIBLE_HOST_KEY_CHECKING=False \
        --entrypoint=ruby \
-       -ti cnfdeploytools:latest /packet_api/l2_packet_networking.rb --show-server-ports $PKTGEN_HOSTNAMES --project-name="$PACKET_PROJECT_NAME" --packet-url='api.packet.net' --facility="$FACILITY" | jq -r '.[] | select(.name=="eth2") | .data.mac')
+       -ti cnfdeploytools:latest /packet_api/l2_packet_networking.rb --show-server-ports $PKTGEN_HOSTNAMES --project-name="$PACKET_PROJECT_NAME" --packet-url='api.packet.net' --facility="$FACILITY" | jq -r '.[] | select(.name=="eth2") | .data.mac' | tee -a $NIC_FILE
 
-PKTGEN_ETH3=$(docker run \
+docker run \
        --rm \
        -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
        -e ANSIBLE_HOST_KEY_CHECKING=False \
        --entrypoint=ruby \
-       -ti cnfdeploytools:latest /packet_api/l2_packet_networking.rb --show-server-ports $PKTGEN_HOSTNAMES --project-name="$PACKET_PROJECT_NAME" --packet-url='api.packet.net' --facility="$FACILITY" | jq -r '.[] | select(.name=="eth3") | .data.mac')
+       -ti cnfdeploytools:latest /packet_api/l2_packet_networking.rb --show-server-ports $PKTGEN_HOSTNAMES --project-name="$PACKET_PROJECT_NAME" --packet-url='api.packet.net' --facility="$FACILITY" | jq -r '.[] | select(.name=="eth3") | .data.mac' | tee -a $NIC_FILE
