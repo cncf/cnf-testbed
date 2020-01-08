@@ -1,11 +1,11 @@
 ## How to use the packet generator visualization
 
-When deploying the [packet generator](comparison/ansible/packet_generator.yml), visualization features will be deployed by default. This can be changed my modifying the following line:
+When deploying the [packet generator](https://github.com/cncf/cnf-testbed/blob/master/comparison/ansible/packet_generator.yml), visualization features will be deployed by default. This can be changed my modifying the following line:
 ```
     visualization: true
 ```
 
-The steps to deploy the packet generator can be found [here](docs/Deploy_K8s_CNF_Testbed.md#deploy-packet-generator), and will not be covered further in this document.
+The steps to deploy the packet generator can be found [here](https://github.com/cncf/cnf-testbed/blob/master/docs/Deploy_K8s_CNF_Testbed.md#deploy-packet-generator), and will not be covered further in this document.
 
 Once deployed, Kibana (visualization dashboard) can be reached at `https://<public server IP>:5601`
 
