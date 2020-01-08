@@ -23,7 +23,7 @@ hw_k8s : NODE_GROUP_ONE_NAME=$(DEPLOY_NAME)-master
 hw_k8s : NODE_GROUP_TWO_NAME=$(DEPLOY_NAME)-worker
 hw_k8s : NODE_GROUP_ONE_COUNT = 3
 hw_k8s : NODE_GROUP_TWO_COUNT = 1
-hw_k8s : NODE_GROUP_ONE_DEVICE_PLAN = m2.xlarge.x86
+hw_k8s : NODE_GROUP_ONE_DEVICE_PLAN = c1.small.x86
 hw_k8s : NODE_GROUP_TWO_DEVICE_PLAN = n2.xlarge.x86
 hw_k8s: hw
 
