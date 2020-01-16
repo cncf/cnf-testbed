@@ -5,6 +5,11 @@ NIC_FILE = $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/packet_gen_nics.env
 KUBECONFIG := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/mycluster/artifacts/admin.conf
 PLAYBOOK := k8s_worker_vswitch_quad_intel.yml
 
+deps:
+	mkdir -p data/bin
+	wget https://github.com/mikefarah/yq/releases/download/2.4.1/yq_linux_amd64 -O data/bin/yq
+	chmod +x data/bin/yq
+
 .PHONY: hw_k8s
 hw_k8s : STATE_FILE=$(PROJECT_ROOT)/data/$(DEPLOY_NAME)/kubernetes.tfstate
 hw_k8s : NODE_FILE=$(PROJECT_ROOT)/data/$(DEPLOY_NAME)/kubernetes.env

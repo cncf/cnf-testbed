@@ -3,6 +3,7 @@ PROJECT_ROOT=${PROJECT_ROOT:-$(cd ../ ; pwd -P)}
 DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
 NODE_FILE=${NODE_FILE:-$(pwd)/data/$DEPLOY_NAME/packet_gen.env}
 NIC_FILE=${NIC_FILE:-$(pwd)/data/$DEPLOY_NAME/packet_gen_nics.env}
+BIN=${PROJECT_ROOT}/data/bin
 
 NIC_TYPE=${NIC_TYPE:--e quad_intel=true}
 FACILITY=${FACILITY:-sjc1}
@@ -13,6 +14,17 @@ if ! [ -z ${PKTGEN_HOSTS+x} ]; then
     HOSTS="$PKTGEN_HOSTS,"
     PKTGEN_IPS_ARRAY=($(echo $PKTGEN_HOSTS | tr ',' ' '))
 elif ! [ -z ${NODE_FILE+x} ]; then
+    #Check if yq command is available
+    if ! which yq ; then
+        #Check if make deps has been run
+        if [ -f "$BIN/yq" ]; then
+           echo 'yq found, setting path'
+           export PATH="$BIN:$PATH"
+        else
+           echo "yq binary wasn't found, please run 'make deps'"
+           exit 1
+        fi
+    fi
     PKTGEN_IPS_ARRAY=($(yq r $NODE_FILE nodes.[*].addr | tr -d '\n''-'))
     HOSTS="$(printf "%s," "${PKTGEN_IPS_ARRAY[@]}")"
 else
