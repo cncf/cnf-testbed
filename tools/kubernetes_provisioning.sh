@@ -1,5 +1,4 @@
 #!/bin/bash
-PROJECT_ROOT=${PROJECT_ROOT:-$(cd ../ ; pwd -P)}
 DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
 
 # generate_config & provisioning defaults
@@ -7,6 +6,7 @@ RELEASE_TYPE=${RELEASE_TYPE:-stable}
 HOSTS_FILE=${HOSTS_FILE:-$(pwd)/data/$DEPLOY_NAME/kubernetes.env}
 
 # vswitch defaults
+PROJECT_ROOT=${PROJECT_ROOT:-$(cd ../ ; pwd -P)}
 FACILITY=${FACILITY:-sjc1}
 VLAN_SEGMENT=${VLAN_SEGMENT:-$DEPLOY_NAME}
 PLAYBOOK=${PLAYBOOK:-k8s_worker_vswitch_quad_intel.yml}
@@ -81,7 +81,7 @@ docker run \
        -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
        -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
        -e PROJECT_NAME="${PACKET_PROJECT_NAME}" \
-       -e PACKET_FACILITY=${PACKET_FACILITY} \
+       -e PACKET_FACILITY=${FACILITY} \
        -e K8S_DEPLOY_ENV=${VLAN_SEGMENT} \
        -e ANSIBLE_HOST_KEY_CHECKING=False \
        --entrypoint=ansible-playbook \

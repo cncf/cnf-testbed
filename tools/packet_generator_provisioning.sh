@@ -1,6 +1,6 @@
 #!/bin/bash
-PROJECT_ROOT=${PROJECT_ROOT:-$(cd ../ ; pwd -P)}
 DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
+PROJECT_ROOT=${PROJECT_ROOT:-$(cd ../ ; pwd -P)}
 NODE_FILE=${NODE_FILE:-$(pwd)/data/$DEPLOY_NAME/packet_gen.env}
 NIC_FILE=${NIC_FILE:-$(pwd)/data/$DEPLOY_NAME/packet_gen_nics.env}
 BIN=${PROJECT_ROOT}/data/bin

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
+USE_RESERVED=${USE_RESERVED:-false}
 STATE_FILE=${STATE_FILE:-$(pwd)/data/$DEPLOY_NAME/terraform.tfstate}
 NODE_FILE=${NODE_FILE:-$(pwd)/data/$DEPLOY_NAME/kubernetes.env}
-USE_RESERVED=${USE_RESERVED:-false}
 
 NODE_GROUP_ONE_NAME=${NODE_GROUP_ONE_NAME:-$DEPLOY_NAME-master}
 NODE_GROUP_TWO_NAME=${NODE_GROUP_TWO_NAME:-$DEPLOY_NAME-worker}
