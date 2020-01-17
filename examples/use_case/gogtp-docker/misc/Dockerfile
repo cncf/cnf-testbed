@@ -1,0 +1,12 @@
+FROM golang:alpine
+RUN apk --no-cache add git
+
+RUN go get github.com/wmnsk/go-gtp/examples/gw-tester/enb
+RUN go get github.com/wmnsk/go-gtp/examples/gw-tester/mme
+RUN go get github.com/wmnsk/go-gtp/examples/gw-tester/pgw
+RUN go get github.com/wmnsk/go-gtp/examples/gw-tester/sgw
+ADD ["./enb.yml","/root"]
+ADD ["./mme.yml","/root"]
+ADD ["./pgw.yml","/root"]
+ADD ["./sgw.yml","/root"]
+WORKDIR /root/
