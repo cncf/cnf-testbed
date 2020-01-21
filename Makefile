@@ -19,6 +19,17 @@ HOSTS_FILE := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/kubernetes.env
 #vSwitch
 KUBECONFIG := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/mycluster/artifacts/admin.conf
 
+# If load_envs is passed as the second argument, store all following arguments.
+ifeq (load_envs,$(word 2, $(MAKECMDGOALS)))
+  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  $(eval $(RUN_ARGS):;@:)
+endif
+
+# Use the 3rd passed argument as a file path and run include.
+ifeq (load_envs,$(firstword $(RUN_ARGS)))
+include $(word 2, $(RUN_ARGS))
+endif
+
 deps:
 	mkdir -p data/bin
 	wget https://github.com/mikefarah/yq/releases/download/2.4.1/yq_linux_amd64 -O data/bin/yq
