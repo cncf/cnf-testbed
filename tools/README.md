@@ -108,3 +108,39 @@ then source the new configuration before running the generate config & provision
 source ./vswitch-provisioning.env.example
 ./kubernetes_provisioning.sh vswitch
 ```
+
+**Reproducing the CI Environment**
+If you want to deploy the CNF-Testbed in the same way that our CI job does, you
+can do that by using the Makefile and following the steps below.
+
+Set your Packet.net project name, id & api tokens.
+```
+export PACKET_AUTH_TOKEN=YOUR_PACKET_AUTH_TOKEN
+export PROJECT_ID=YOUR_PACKET_PROJECT_ID
+export PACKET_PROJECT_NAME='YOUR PACKET PROJECT NAME'
+```
+
+Then change dir to the top level of the CNF-Testbed repo.
+```
+cd ..
+```
+
+Now run the below make commands and Make will re-create the environment used for our CI tests.
+```
+make deps 
+make hw_k8s
+make k8s
+make vswitch
+make hw_pktgen
+make pktgen
+make snake
+```
+
+
+Extra/Additional configuration:
+The steps above will automatically use the defaults for bringing up our CI environment.
+If you want to use Make to bring up a custom environment, this can be done by running 
+make and passing the load_envs argument.
+
+To run say, "make hw_k8s" with a custom environment/configuration, you could do something like:
+```make hw_k8s load_envs ./tools/hardware-provisioning.env.example```
