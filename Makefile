@@ -43,11 +43,13 @@ ifeq (load_envs,$(firstword $(LOAD_ARGS)))
 	include $(word 2, $(LOAD_ARGS))
 endif
 
-
+deps : SHELL := /bin/bash
 deps:
 	mkdir -p data/bin
 	wget https://github.com/mikefarah/yq/releases/download/2.4.1/yq_linux_amd64 -O data/bin/yq
 	chmod +x data/bin/yq
+	pushd $(PROJECT_ROOT)/tools/packet_api && docker build -t ubuntu:packet_api . && popd
+	pushd $(PROJECT_ROOT)/tools/deploy && docker build -t cnfdeploytools:latest . && popd
 
 .PHONY: hw_k8s
 hw_k8s: hw_tools
