@@ -18,12 +18,17 @@ found in hardware_provisioning.sh
 ```
 DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
 USE_RESERVED=${USE_RESERVED:-false}
-PACKET_FACILITY=${PACKET_FACILITY:-sjc1}
-PACKET_OS=${PACKET_OS:-ubuntu_16_04}
-MASTER_COUNT=${MASTER_COUNT:-1}
-MASTER_PLAN=${MASTER_PLAN:-m2.xlarge.x86}
-WORKER_COUNT=${WORKER_COUNT:-1}
-WORKER_PLAN=${WORKER_PLAN:-n2.xlarge.x86}
+STATE_FILE=${STATE_FILE:-$(pwd)/data/$DEPLOY_NAME/terraform.tfstate}
+NODE_FILE=${NODE_FILE:-$(pwd)/data/$DEPLOY_NAME/kubernetes.env}
+
+NODE_GROUP_ONE_NAME=${NODE_GROUP_ONE_NAME:-$DEPLOY_NAME-master}
+NODE_GROUP_TWO_NAME=${NODE_GROUP_TWO_NAME:-$DEPLOY_NAME-worker}
+NODE_GROUP_ONE_COUNT=${NODE_GROUP_ONE_COUNT:-1}
+NODE_GROUP_TWO_COUNT=${NODE_GROUP_TWO_COUNT:-1}
+FACILITY=${PACKET_FACILITY:-sjc1}
+NODE_GROUP_ONE_DEVICE_PLAN=${NODE_GROUP_ONE_DEVICE_PLAN:-m2.xlarge.x86}
+NODE_GROUP_TWO_DEVICE_PLAN=${NODE_GROUP_TWO_DEVICE_PLAN:-n2.xlarge.x86}
+OPERATING_SYSTEM=${OPERATING_SYSTEM:-ubuntu_16_04}
 ```
 
 If you wish to override these defaults you can update/modify the
@@ -59,7 +64,7 @@ found in kubernetes_provisioning.sh
 ```
 DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
 RELEASE_TYPE=${RELEASE_TYPE:-stable}
-HOSTS_FILE=${HOSTS_FILE:-$(pwd)/data/$DEPLOY_NAME/nodes.env}
+HOSTS_FILE=${HOSTS_FILE:-$(pwd)/data/$DEPLOY_NAME/kubernetes.env}
 ```
 
 If you wish to override these defaults you can update/modify the
@@ -88,10 +93,12 @@ Extra/Additional configuration:
 The steps above will automatically use the following defaults
 found in kubernetes_provisioning.sh
 ```
-PACKET_FACILITY=${PACKET_FACILITY:-sjc1}
+DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
+PROJECT_ROOT=${PROJECT_ROOT:-$(cd ../ ; pwd -P)}
+FACILITY=${FACILITY:-sjc1}
 VLAN_SEGMENT=${VLAN_SEGMENT:-$DEPLOY_NAME}
 PLAYBOOK=${PLAYBOOK:-k8s_worker_vswitch_quad_intel.yml}
-KUBECONFIG=${KUBECONFIG:-$(pwd)/data/$DEPLOY_NAME/admin.conf}
+KUBECONFIG=${KUBECONFIG:-$(pwd)/data/$DEPLOY_NAME/mycluster/artifacts/admin.conf}
 ```
 
 If you wish to override these defaults you can update/modify the
