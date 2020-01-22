@@ -7,10 +7,10 @@ docker network create lte-s5u --subnet 172.25.0.0/24 --ip-range 172.25.0.128/24
 docker network create lte-s5c --subnet 172.25.1.0/24 --ip-range 172.25.1.128/24
 docker network create lte-sgi --subnet 10.0.1.0/24 --ip-range 10.0.1.128/24
 
-docker run --name enb --cap-add=NET_ADMIN --tty --detach -it soelvkaer/gogtp:latest
-docker run --name mme --cap-add=NET_ADMIN --tty --detach -it soelvkaer/gogtp:latest
-docker run --name sgw --cap-add=NET_ADMIN --tty --detach -it soelvkaer/gogtp:latest
-docker run --name pgw --cap-add=NET_ADMIN --tty --detach -it soelvkaer/gogtp:latest
+docker run --name pgw --cap-add=NET_ADMIN --tty --detach -it soelvkaer/gogtp:pgw
+docker run --name sgw --cap-add=NET_ADMIN --tty --detach -it soelvkaer/gogtp:sgw
+docker run --name mme --cap-add=NET_ADMIN --tty --detach -it soelvkaer/gogtp:mme
+docker run --name enb --cap-add=NET_ADMIN --tty --detach -it soelvkaer/gogtp:enb
 docker run --name sgi-server --cap-add=NET_ADMIN --tty --detach -it ubuntu:18.04
 docker run --name ue-ext --cap-add=NET_ADMIN --tty --detach -it ubuntu:18.04
 
