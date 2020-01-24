@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gogtp.fullname" . }}
+  labels:
+    app: {{ include "gogtp.name" . }}
+    chart: {{ include "gogtp.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: {{ include "gogtp.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "gogtp.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      {{ range $k, $v := .Values.apps }}
+        - name: {{ $.Chart.Name }}-{{$k}}
+          image: "soelvkaer/gogtp:{{$k}}"
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh","-c"]
+          {{ if eq $k "enb" }}
+          args: ["sleep 30; enb"]
+          {{ else }}
+          args: ["{{$k}}"]
+          {{ end }}
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+          resources:
+            limits:
+              cpu: "3"
+          volumeMounts:
+          - name: gogtp-conf
+            subPath: {{$k}}.yml
+            mountPath: /root/{{$k}}.yml
+      {{ end }}
+      volumes:
+        - name: gogtp-conf
+          configMap:
+            name: gogtp-conf
+            items:
+            {{ range $k, $v := .Values.apps }} 
+              - key: {{$k}}.yml
+                path: {{$k}}.yml
+            {{ end }}

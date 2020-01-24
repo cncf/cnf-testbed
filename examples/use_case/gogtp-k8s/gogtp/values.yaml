@@ -1,0 +1,28 @@
+apps:
+  pgw:
+    local_addresses: 
+      s5c_addr: "127.25.1.14:2123"
+      s5u_addr: "127.25.0.14:2152"
+    sgi_if_name: "eth3"
+    route_subnet: "10.0.1.0/24"
+
+  sgw:
+    local_addresses:
+      s11_addr: "127.22.0.13:2123"
+      s1u_addr: "127.21.0.13:2152"
+      s5c_addr: "127.25.1.13:2123"
+      s5u_addr: "127.25.0.13:2152"
+
+  mme:
+    local_addresses:
+      s1c_addr: "127.21.1.12:36412"
+      s11_addr: "127.22.0.12:2123"
+    sgw_s11_ip: "127.22.0.13"
+    pgw_s5c_ip: "127.25.1.14"
+
+  enb:
+    local_addresses:
+      s1c_ip: "127.21.1.11"
+      s1u_addr: "127.21.0.11:2152"
+    mme_addr: "127.21.1.12:36412"
+    prom_addr:
