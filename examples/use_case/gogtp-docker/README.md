@@ -1,7 +1,7 @@
 ### Running container (docker) version of Go-GTP 
 Before starting, make sure you are on a node that already has Docker installed.
 
-By default, pre-built images containing the necessary Go-GTP binaries and configuration files (yaml) are used. If you prefer to build your own image this can be done using the scripts avaialble in the `misc` directory. If you build your own images make sure to update the provided scripts to use these images when running the containers.
+By default, pre-built images containing the necessary Go-GTP binaries and configuration files (yaml) are used. If you prefer to build your own image this can be done using the scripts avaialble in the `examples/network_functions/go-gtp` directory. If you build your own images make sure to update the provided scripts to use these images when running the containers.
 
 Deploy the setup using the provided script:
 ```
