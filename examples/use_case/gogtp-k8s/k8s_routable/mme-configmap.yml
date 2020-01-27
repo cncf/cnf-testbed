@@ -1,0 +1,15 @@
+---
+# Source: gogtp/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-mme
+data:
+  mme.yml: |-
+    mcc: "001" 
+    mnc: "01"
+    apn: "gw-tester.go-gtp.example"
+    local_addresses:
+      s1c_addr: "$S1_IP:36412"
+      s11_addr: "$S1_IP:2123"
+    sgw_s11_ip: "$SGW_IP"
