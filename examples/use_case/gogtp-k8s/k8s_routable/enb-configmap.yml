@@ -1,0 +1,28 @@
+---
+# Source: gogtp/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-enb
+data:
+  enb.yml: |-
+    mcc: "001" 
+    mnc: "01"
+    rat_type: 6
+    tai: 0x0001
+    eci: 0x00000001
+    local_addresses:
+      s1c_ip: "$S1_IP"
+      s1u_addr: "$S1_IP:2152"
+    mme_addr: "$MME_IP:36412"
+    prom_addr: ""
+    subscribers:
+    - imsi: "001010000000001"
+      msisdn: "814000000001"
+      imeisv: "1234500000001"
+      src_ip: "10.0.0.201"
+      i_tei: 0
+      type: "external"
+      euu_if_name: "eth1"
+      http_url: ""
+      reattach_on_reload: false

@@ -1,0 +1,51 @@
+---
+# Source: gogtp/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-sgw
+data:
+  sgw.yml: |-
+    local_addresses:
+      s11_addr: "$SGW_IP:2123"
+      s1u_addr: "$SGW_IP:2152"
+      s5c_addr: "127.0.0.1:2123"
+      s5u_addr: "127.0.0.1:2152"
+
+---
+# Source: gogtp/templates/deployment.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gogtp-sgw
+  labels:
+    app: gogtp
+spec:
+  containers:
+    - name: gogtp-sgw
+      env:
+        - name: SGW_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+      image: "gogtp/sgw:latest"
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh","-c"]
+      args: ["envsubst < sgw-template.yml > sgw.yml; sgw"]
+      securityContext:
+        capabilities:
+          add: ["NET_ADMIN"]
+      resources:
+        limits:
+          cpu: "3"
+      volumeMounts:
+        - name: gogtp-conf-sgw
+          subPath: sgw.yml
+          mountPath: /root/sgw-template.yml
+  volumes:
+    - name: gogtp-conf-sgw
+      configMap:
+        name: gogtp-conf-sgw
+        items:
+          - key: sgw.yml
+            path: sgw.yml

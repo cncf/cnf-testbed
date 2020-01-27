@@ -1,0 +1,39 @@
+---
+# Source: gogtp/templates/deployment.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gogtp-enb
+  labels:
+    app: gogtp
+spec:
+  containers:
+    - name: gogtp-enb
+      env:
+        - name: MME_IP
+          value: $MME_IP
+        - name: S1_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+      image: "gogtp/enb:latest"
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh","-c"]
+      args: ["envsubst < enb-template.yml > enb.yml; enb"]
+      securityContext:
+        capabilities:
+          add: ["NET_ADMIN"]
+      resources:
+        limits:
+          cpu: "3"
+      volumeMounts:
+        - name: gogtp-conf-enb
+          subPath: enb.yml
+          mountPath: /root/enb-template.yml
+  volumes:
+    - name: gogtp-conf-enb
+      configMap:
+        name: gogtp-conf-enb
+        items:
+          - key: enb.yml
+            path: enb.yml

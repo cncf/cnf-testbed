@@ -1,0 +1,42 @@
+---
+# Source: gogtp/templates/deployment.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gogtp-mme
+  labels:
+    app: gogtp
+spec:
+  containers:
+    - name: gogtp-mme
+      env:
+        - name: SGW_IP
+          value: $SGW_IP
+        - name: PGW_IP
+          value: $PGW_IP
+        - name: S1_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+      image: "gogtp/mme:latest"
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh","-c"]
+          
+      args: ["envsubst < mme-template.yml > mme.yml; mme"]
+      securityContext:
+        capabilities:
+          add: ["NET_ADMIN"]
+      resources:
+        limits:
+          cpu: "3"
+      volumeMounts:
+        - name: gogtp-conf-mme
+          subPath: mme.yml
+          mountPath: /root/mme-template.yml
+  volumes:
+    - name: gogtp-conf-mme
+      configMap:
+        name: gogtp-conf-mme
+        items:
+          - key: mme.yml
+            path: mme.yml

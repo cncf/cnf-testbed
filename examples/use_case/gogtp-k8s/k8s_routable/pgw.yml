@@ -1,0 +1,50 @@
+---
+# Source: gogtp/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-pgw
+data:
+  pgw.yml: |-
+    local_addresses: 
+      s5c_addr: "$PGW_IP:2123"
+      s5u_addr: "$PGW_IP:2152"
+    sgi_if_name: "eth3"
+    route_subnet: "10.0.1.0/24"
+---
+# Source: gogtp/templates/deployment.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gogtp-pgw
+  labels:
+    app: gogtp
+spec:
+  containers:
+    - name: gogtp-pgw
+      env:
+        - name: PGW_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+      image: "gogtp/pgw:latest"
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh","-c"]
+      args: ["envsubst < pgw-template.yml > pgw.yml; pgw"]
+      securityContext:
+        capabilities:
+          add: ["NET_ADMIN"]
+      resources:
+        limits:
+          cpu: "3"
+      volumeMounts:
+        - name: gogtp-conf-pgw
+          subPath: pgw.yml
+          mountPath: /root/pgw-template.yml
+  volumes:
+    - name: gogtp-conf-pgw
+      configMap:
+        name: gogtp-conf-pgw
+        items:
+          - key: pgw.yml
+            path: pgw.yml
