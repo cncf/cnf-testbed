@@ -51,7 +51,7 @@ docker run \
   --rm \
   -v $(pwd)/data/$DEPLOY_NAME:/k8s-infra/data \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
-  -ti crosscloudci/k8s-infra:v1.0.0 \
+  -ti crosscloudci/k8s-infra:multus \
   /k8s-infra/bin/k8sinfra provision --config-file=/k8s-infra/data/cluster.yml
 
 if [ "$?" == "1" ]; then
