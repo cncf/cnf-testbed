@@ -51,7 +51,7 @@ $ kubectl exec -it gogtp-ue /bin/bash
 $$ wget http://10.0.1.201
 ```
 
-You should see a successful HTTP request, following by `index.html` being saved. You can also test the connection using `ping`:
+You should see a successful HTTP request, followed by `index.html` being saved. You can also test the connection using `ping`:
 ```
 $ kubectl exec -it gogtp-ue /bin/bash
 $$ ping 10.0.1.201
