@@ -3,7 +3,18 @@
 This example use-case deploys the GoGTP service chain with Multus support on Kubernetes. The example includes two endpoints ("User Equipment" and "External Server") that can be used to test traffic through the GoGTP EPC implementation.
 
 ### Prerequisites
-A Kubernetes cluster must be available prior to running this example. The cluster must be configured with Multus to provide additional interfaces to the pods in the service chain. Steps for setting up a cluster can be found [here](https://github.com/cncf/cnf-testbed/blob/master/tools/README.md).
+A Kubernetes cluster must be available prior to running this example. The cluster must be configured with Multus to provide additional interfaces to the pods in the service chain. 
+
+A temporary fix must be applied to the tools/kubernetes_provisioning.sh script for Multus to work:
+```
+vim tools/kubernetes_provisioning.sh
+```
+Update line 54
+```
+-ti crosscloudci/k8s-infra:multus \
+```
+
+After the above changes have been made, setup the K8s pre-requisites by following the steps [here](https://github.com/cncf/cnf-testbed/tree/master/tools#pre-requisites), then provision a Kubernetes cluster using the steps [here](https://github.com/cncf/cnf-testbed/tree/master/tools#deploying-a-kubernetes-cluster-using-the-makefile--ci-tools).
 
 ### Installing the GoGTP service chain
 The service chain is deployed using Helm. You will need to point the `KUBECONFIG` environment variable to your Kubeconfig file prior to running Helm. The steps can be seen below:
