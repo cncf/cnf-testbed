@@ -26,13 +26,16 @@ RUN apt update && \
     ansible-galaxy install mrlesmithjr.config-interfaces 
    
 # Install infra-provisioning
-RUN git clone https://github.com/crosscloudci/infra-provisioning.git /infra-provisioning \
+RUN git clone https://github.com/crosscloudci/infra-provisioning.git -b node_groups /infra-provisioning \
     && cp -a /infra-provisioning/terraform /terraform \
     && cp /infra-provisioning/create_nodes.sh /terraform \
     && cd /terraform \
     && rm /terraform/s3-backend.tf \
     && rm /terraform/reserved_override \
     && terraform init
+
+# Install yw
+RUN wget https://github.com/mikefarah/yq/releases/download/2.4.1/yq_linux_amd64 -O /usr/local/bin/yq
     
 
 # Copy Terraform Ansible Plugin
