@@ -5,7 +5,7 @@ DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
 RELEASE_TYPE=${RELEASE_TYPE:-stable}
 HOSTS_FILE=${HOSTS_FILE:-$(pwd)/data/$DEPLOY_NAME/kubernetes.env}
 
-# vswitch defaults
+# vswitch and gogtp_multi defaults
 PROJECT_ROOT=${PROJECT_ROOT:-$(cd ../ ; pwd -P)}
 FACILITY=${FACILITY:-sjc1}
 VLAN_SEGMENT=${VLAN_SEGMENT:-$DEPLOY_NAME}
@@ -62,8 +62,8 @@ else
 fi
 fi
 
-#Provision vswitch
-if [ "$1" == "vswitch" ]; then
+#Provision vswitch or GoGTP multi-node
+if [ "$1" == "vswitch" ] || [ "$1" == "gogtp_multi" ]; then
     if ! [ -z ${WORKER_HOSTS+x} ]; then
         WORKER_IPS="$WORKER_HOSTS"
         WORKER_IPS_ARRAY=($(echo $WORKER_HOSTS | tr ',' ' '))
@@ -75,6 +75,7 @@ if [ "$1" == "vswitch" ]; then
     else
         echo 'No hosts were found, exiting'
     fi
+
 docker run \
        --rm \
        -v "${PROJECT_ROOT}/comparison/ansible:/ansible" \
