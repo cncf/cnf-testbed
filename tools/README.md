@@ -29,6 +29,16 @@ Run the below make commands and Make will re-create the vSwitch setup used in ou
 make vswitch
 ```
 
+## Deploying the GoGTP Multi-node network using the Makefile:
+Needed to pre-configure the network prior to running the [GoGTP Multi-node use-case](https://github.com/cncf/cnf-testbed/tree/go-gtp/examples/use_case/gogtp-k8s/k8s_multi_node).
+
+Run the below commands and Make will configure the network connection between worker nodes:
+```
+make gogtp_multi [load_envs <path/to/env/file>]
+```
+
+Information about the environment (configuration) file can be found in the use-case readme referenced above.
+
 ## Deploying a Packet Generator using the Makefile / CI tools:
 Run the below make commands and Make will re-create the packet generator setup used in our CI environment.
 ```
