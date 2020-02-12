@@ -1,6 +1,6 @@
 #Global Vars
 DEPLOY_NAME := cnftestbed
-PROJECT_ROOT := $$(pwd -P)
+PROJECT_ROOT := ${CURDIR}
 FACILITY := ewr1
 VLAN_SEGMENT := $(DEPLOY_NAME)
 NIC_FILE := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/packet_gen_nics.env
@@ -17,6 +17,10 @@ endif
 ifeq (hw_pktgen,$(firstword $(MAKECMDGOALS)))
 	include Makefile.hw_pktgen
 endif
+# GoGTP multi-node
+ifeq (gogtp_multi,$(firstword $(MAKECMDGOALS)))
+	include Makefile.gogtp_multi
+endif
 # PktGen
 NIC_TYPE := "-e quad_intel=true"
 ifeq (pktgen,$(firstword $(MAKECMDGOALS)))
@@ -24,9 +28,7 @@ ifeq (pktgen,$(firstword $(MAKECMDGOALS)))
 endif
 #K8s
 RELEASE_TYPE := stable
-HOSTS_FILE := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/kubernetes.env
 #vSwitch
-KUBECONFIG := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/mycluster/artifacts/admin.conf
 ifeq (vswitch,$(firstword $(MAKECMDGOALS)))
 	include Makefile.vswitch
 endif
@@ -42,6 +44,10 @@ endif
 ifeq (load_envs,$(firstword $(LOAD_ARGS)))
 	include $(word 2, $(LOAD_ARGS))
 endif
+
+# Update vars after loading env file
+HOSTS_FILE := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/kubernetes.env
+KUBECONFIG := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/mycluster/artifacts/admin.conf
 
 deps : SHELL := /bin/bash
 deps:
@@ -68,6 +74,12 @@ config:
 
 provision:
 	tools/kubernetes_provisioning.sh provision
+
+.PHONY: gogtp_multi
+gogtp_multi: gogtp_multi_tools
+
+gogtp_multi_tools:
+	DEPLOY_NAME=$(DEPLOY_NAME) PROJECT_ROOT=$(PROJECT_ROOT) FACILITY=$(FACILITY) VLAN_SEGMENT=$(VLAN_SEGMENT) PLAYBOOK=$(PLAYBOOK) KUBECONFIG=$(KUBECONFIG) tools/kubernetes_provisioning.sh gogtp_multi
 
 .PHONY: vswitch
 vswitch: vswitch_tools
