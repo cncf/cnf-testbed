@@ -5,22 +5,28 @@ This example use-case deploys the GoGTP service chain with Multus support on Kub
 ![GoGTP_Multi_Node](GoGTP_Multi_Node.png)
 
 ### Prerequisites
-A Kubernetes cluster must be available prior to running this example. The cluster must be configured with Multus to provide additional interfaces to the pods in the service chain. Steps for setting up a cluster can be found [here](https://github.com/cncf/cnf-testbed/blob/master/tools/README.md).
+A Kubernetes cluster must be available prior to running this example. The cluster must be configured with Multus to provide additional interfaces to the pods in the service chain. Steps for setting up a cluster can be found [here](https://github.com/cncf/cnf-testbed/tree/go-gtp/tools).
 
 ***NOTE: This example requires two worker nodes, and at this time only supports the n2.xlarge.x86 servers***
 
 ### Configuring worker nodes
-Before the service chain can be installed, the worker nodes will need to be pre-configured for connectivity between nodes to work as expected. You will need an ansible environment to do this, and steps to deploy this can be found [here](https://github.com/cncf/cnf-testbed/blob/master/docs/Deploy_K8s_CNF_Testbed.md#deploy-ansible-environment).
-
-Once deployed, follow the below steps to configure the worker nodes:
+Once the cluster has been configured, you will need to pre-configure the network to support this use-case. You can use the tools provided to provision a Kubernetes cluster to do this step. Some environment variables must be specified when running the pre-configuration, and for simplicity these can be stored in a file and referenced in the following steps:
 ```
-$ export PROJECT_NAME="<Packet_project_name>"
-$ export PACKET_FACILITY=<Facility, e.g. ewr1>
-$ export DEPLOY_ENV=<Environment name, e.g. multbr>
-$ export PACKET_API_TOKEN=<Packet_API_token>
-  - This should already be set when deploying the ansible environment
-  
-$ ansible-playbook -i "<Worker_IP #1>,<Worker_IP #2>," k8s_worker_gogtp_quad_intel.yml
+# Config 
+export DEPLOY_NAME=<Name of Kubernetes cluster/deployment>
+export VLAN_SEGMENT=${DEPLOY_NAME}
+export STATE_FILE=${PWD}/data/${DEPLOY_NAME}/terraform.tfstate
+export NODE_FILE=${PWD}/data/${DEPLOY_NAME}/kubernetes.env
+export FACILITY=<Packet facility, e.g. ewr1>
+
+# Keys
+export PACKET_AUTH_TOKEN=<YOUR_PACKET_TOKEN>
+export PROJECT_ID=<YOUR_PACKET_PROJECT_ID>
+```
+
+At this point you can go to the `cnf-testbed/tools` directory and run the Makefile. If you stored the environment variables in a file this must be referenced relative to the `tools` directory:
+```
+$ make gogtp_multi [load_envs <relative/path/to/env/file>]
 ```
 
 Once finished you can verify that VLANs have been added to the worker nodes. You can also check that bridges have been created on both worker nodes using `$ brctl show`.
