@@ -108,7 +108,7 @@ Wednesday, April 1 • 16:25 - 17:55 - [Birds of a Feather: Telecom User Group](
 
 Wednesday, November 20 • 3:20pm - 3:55pm - [Birds of a Feather: Telecom User Group](https://sched.co/Uakt)
 
-Thursday, November 21 • 4:25pm - 5:55pm - [Intro + Deep Dive: Cloud Native Network Function (CNF) Testbed](https://sched.co/UakA). [Watch the video:] (https://youtu.be/_fD_4FuU_jg)
+Thursday, November 21 • 4:25pm - 5:55pm - [Intro + Deep Dive: Cloud Native Network Function (CNF) Testbed](https://sched.co/UakA). [Watch the video:](https://youtu.be/_fD_4FuU_jg)
 
 ### TUG + CNFs At Open Networking Summit EU 2019
 
