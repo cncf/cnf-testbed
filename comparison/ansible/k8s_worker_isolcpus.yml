@@ -1,0 +1,10 @@
+---
+- hosts: all
+  vars:
+    hugepages: 10240
+  post_tasks:
+  - name: Reboot server
+    reboot:
+      post_reboot_delay: 60
+  roles:
+    - grub_vswitch

@@ -63,7 +63,7 @@ fi
 fi
 
 #Provision vswitch or GoGTP multi-node
-if [ "$1" == "vswitch" ] || [ "$1" == "gogtp_multi" ]; then
+if [ "$1" == "vswitch" ] || [ "$1" == "gogtp_multi" ] || [ "$1" == "isolcpus" ]; then
     if ! [ -z ${WORKER_HOSTS+x} ]; then
         WORKER_IPS="$WORKER_HOSTS"
         WORKER_IPS_ARRAY=($(echo $WORKER_HOSTS | tr ',' ' '))
