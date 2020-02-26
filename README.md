@@ -1,12 +1,12 @@
-# Cloud native Network Function (CNF) Testbed
+# CNF (Cloud native Network Function) Testbed
 
 The CNCF CNF Testbed provides reference code and test cases for running networking code on Kubernetes and OpenStack using emerging cloud native technologies in the Telecom domain.
 
-Status: The CNF Testbed is *not* a CNCF-hosted [project](https://www.cncf.io/projects/). Instead, it is an initiative to create a repeatable, apples-to-apples testbed that telcos and telecoms vendors can use to evaluate how CNF architectures compare to more traditional VNF ones.
+Status: The CNF Testbed is an initiative to create a repeatable, apples-to-apples testbed that telcos and telecoms vendors can use to evaluate how CNF architectures compare to more traditional VNF ones.
 
 The initiative collaborates with the [CNCF Telecom User Group](https://github.com/cncf/telecom-user-group) to test and demonstrate different options.
 
-Note: _The CNF Testbed is still in the prototype stage. Additional reference code and benchmarking tests will be added incrementally._
+Note: _Additional reference code and benchmarking tests will be added incrementally._
 
 
 ## CNF Testbed purpose and ideal outcome?
@@ -86,14 +86,29 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 
 ## Upcoming Events: 
 
+ ### TUG + CNFs At KubeCon + CloudNativeCon Europe 2020
+
+Monday, March 30 • 17:08 - 17:13 - [Build & Deploy a CNF in 5 Minutes](https://sched.co/Zeon)
+
+Tuesday, March 31 • 12:00 - 12:35 - [Birds of a Feather: CNCF CI Working Group](https://sched.co/ZeuA)
+
+Tuesday, March 31 • 14:35 - 15:10 - [Network Service Mesh to Address Cloud Native 5G Telco Networking Challenges](https://sched.co/Zelt)
+
+Tuesday, March 31 • 15:30 - 16:05 - [CNF Testbed: Creating a Cloud Native User Plane for an Evolved Packet Core](https://sched.co/ZeuG)
+
+Wednesday, April 1 • 16:25 - 17:00 - [Enabling E2E Observability via Open Source in 5G Telco CNFs](https://sched.co/Zepo)
+
+Wednesday, April 1 • 16:25 - 17:55 - [Birds of a Feather: Telecom User Group](https://sched.co/Zevr)
+
+
+
+## Past Events:
+
  ### TUG + CNFs At KubeCon + CloudNativeCon NA 2019
 
 Wednesday, November 20 • 3:20pm - 3:55pm - [Birds of a Feather: Telecom User Group](https://sched.co/Uakt)
 
-Thursday, November 21 • 4:25pm - 5:55pm - [Intro + Deep Dive: Cloud Native Network Function (CNF) Testbed](https://sched.co/UakA)
-
-
-## Past Events:
+Thursday, November 21 • 4:25pm - 5:55pm - [Intro + Deep Dive: Cloud Native Network Function (CNF) Testbed](https://sched.co/UakA). [Watch the video:](https://youtu.be/_fD_4FuU_jg)
 
 ### TUG + CNFs At Open Networking Summit EU 2019
 
