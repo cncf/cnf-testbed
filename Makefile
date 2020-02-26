@@ -21,6 +21,10 @@ endif
 ifeq (gogtp_multi,$(firstword $(MAKECMDGOALS)))
 	include Makefile.gogtp_multi
 endif
+# CPU Isolation
+ifeq (isolcpus,$(firstword $(MAKECMDGOALS)))
+        include Makefile.isolcpus
+endif
 # PktGen
 NIC_TYPE := "-e quad_intel=true"
 ifeq (pktgen,$(firstword $(MAKECMDGOALS)))
@@ -80,6 +84,12 @@ gogtp_multi: gogtp_multi_tools
 
 gogtp_multi_tools:
 	DEPLOY_NAME=$(DEPLOY_NAME) PROJECT_ROOT=$(PROJECT_ROOT) FACILITY=$(FACILITY) VLAN_SEGMENT=$(VLAN_SEGMENT) PLAYBOOK=$(PLAYBOOK) KUBECONFIG=$(KUBECONFIG) tools/kubernetes_provisioning.sh gogtp_multi
+
+.PHONY: isolcpus
+isolcpus: isolcpus_playbook
+
+isolcpus_playbook:
+	DEPLOY_NAME=$(DEPLOY_NAME) PROJECT_ROOT=$(PROJECT_ROOT) FACILITY=$(FACILITY) VLAN_SEGMENT=$(VLAN_SEGMENT) PLAYBOOK=$(PLAYBOOK) KUBECONFIG=$(KUBECONFIG) tools/kubernetes_provisioning.sh isolcpus
 
 .PHONY: vswitch
 vswitch: vswitch_tools
