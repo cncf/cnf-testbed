@@ -1,0 +1,123 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-pgw
+data:
+  pgw.yml: |-
+    local_addresses: 
+      s5c_ip: "{{ $.Values.apps.pgw.local_addresses.s5c_ip }}"
+      s5u_ip: "{{ $.Values.apps.pgw.local_addresses.s5u_ip }}"
+      sgi_ip: "{{ $.Values.apps.pgw.local_addresses.sgi_ip }}"
+    sgi_if_name: "{{ $.Values.apps.pgw.sgi_if_name }}"
+    route_subnet: "{{ $.Values.apps.pgw.route_subnet }}"
+  pgw_setup.sh: |-
+    #! /bin/bash
+    ip addr add {{ $.Values.apps.pgw.local_addresses.s5u_ip }}/24 dev net1
+    ip addr add {{ $.Values.apps.pgw.local_addresses.s5c_ip }}/24 dev net2
+    ip addr add {{ $.Values.apps.pgw.local_addresses.sgi_ip }}/24 dev net3
+    sysctl net.ipv4.ip_forward=1
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-sgw
+data:
+  sgw.yml: |-
+    local_addresses:
+      s11_ip: "{{ $.Values.apps.sgw.local_addresses.s11_ip }}"
+      s1u_ip: "{{ $.Values.apps.sgw.local_addresses.s1u_ip }}"
+      s5c_ip: "{{ $.Values.apps.sgw.local_addresses.s5c_ip }}"
+      s5u_ip: "{{ $.Values.apps.sgw.local_addresses.s5u_ip }}"
+  sgw_setup.sh: |-
+    #! /bin/bash
+    ip addr add {{ $.Values.apps.sgw.local_addresses.s11_ip }}/24 dev net1
+    ip addr add {{ $.Values.apps.sgw.local_addresses.s1u_ip }}/24 dev net2
+    ip addr add {{ $.Values.apps.sgw.local_addresses.s5u_ip }}/24 dev net3
+    ip addr add {{ $.Values.apps.sgw.local_addresses.s5c_ip }}/24 dev net4
+    sysctl net.ipv4.ip_forward=1
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-mme
+data:
+  mme.yml: |-
+    mcc: "001" 
+    mnc: "01"
+    apn: "gw-tester.go-gtp.example"
+    local_addresses:
+      s1c_addr: "{{ $.Values.apps.mme.local_addresses.s1c_addr }}"
+      s11_ip: "{{ $.Values.apps.mme.local_addresses.s11_ip }}"
+    sgw_s11_ip: "{{ $.Values.apps.mme.sgw_s11_ip }}"
+    pgw_s5c_ip: "{{ $.Values.apps.mme.pgw_s5c_ip }}"
+  mme_setup.sh: |-
+    #! /bin/bash
+    ip addr add {{ $.Values.apps.mme.local_addresses.s11_ip }}/24 dev net1
+    ip addr add {{ (split ":" .Values.apps.mme.local_addresses.s1c_addr)._0 }}/24 dev net2
+    sysctl net.ipv4.ip_forward=1
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-enb
+data:
+  enb.yml: |-
+    mcc: "001" 
+    mnc: "01"
+    rat_type: 6
+    tai: 0x0001
+    eci: 0x00000001
+    local_addresses:
+      s1c_ip: "{{ $.Values.apps.enb.local_addresses.s1c_ip }}"
+      s1u_ip: "{{ $.Values.apps.enb.local_addresses.s1u_ip }}"
+    mme_addr: "{{ $.Values.apps.enb.mme_addr }}"
+    prom_addr: "{{ $.Values.apps.enb.prom_addr }}"
+    subscribers:
+    - imsi: "001010000000001"
+      msisdn: "814000000001"
+      imeisv: "1234500000001"
+      src_ip: "10.0.0.201"
+      i_tei: 0
+      type: "external"
+      euu_if_name: "net1"
+      http_url: ""
+      reattach_on_reload: false
+  enb_setup.sh: |-
+    #! /bin/bash
+    ip addr add {{ $.Values.apps.enb.local_addresses.euu_ip }}/24 dev net1
+    ip addr add {{ $.Values.apps.enb.local_addresses.s1u_ip }}/24 dev net2
+    ip addr add {{ $.Values.apps.enb.local_addresses.s1c_ip }}/24 dev net3
+    sysctl net.ipv4.ip_forward=1
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-ue
+data:
+  setup.sh: |-
+    #! /bin/bash
+    apt-get update
+    apt-get -y install iputils-ping wget iproute2
+    ip addr add {{ $.Values.endpoints.ue.local_addresses.euu_ip }}/24 dev net1
+    ip route add {{ $.Values.endpoints.ext.local_addresses.sgi_ip }} via {{ $.Values.apps.enb.local_addresses.euu_ip }} dev net1
+    tail -f /dev/null
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-ext
+data:
+  setup.sh: |-
+    #! /bin/bash
+    apt-get update
+    apt-get -y install python3 iproute2
+    ip addr add {{ $.Values.endpoints.ext.local_addresses.sgi_ip }}/24 dev net1
+    ip route add {{ $.Values.endpoints.ue.local_addresses.euu_ip }} via {{ $.Values.apps.pgw.local_addresses.sgi_ip }} dev net1
+    /opt/bin/cmk isolate --conf-dir=/etc/cmk --socket-id={{ $.Values.apps.pgw.cpu.socket }} --pool=exclusive python3 -- -m http.server 80 --bind {{ $.Values.endpoints.ext.local_addresses.sgi_ip }}
+

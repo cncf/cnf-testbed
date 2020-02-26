@@ -1,0 +1,75 @@
+{{ range $k, $v := .Values.apps }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ $.Chart.Name }}-{{$k}}
+  annotations:
+    k8s.v1.cni.cncf.io/networks: {{ $v.networks }}
+    cmk.intel.com/mutate: "true"
+spec:
+  containers:
+  - name: {{ $.Chart.Name }}-{{$k}}
+    image: "soelvkaer/gogtpu:{{$k}}"
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/bash","-c"]
+    {{ if eq $k "enb" }}
+    args:
+    - sleep 30;
+      ./enb_setup.sh;
+      /opt/bin/cmk isolate --conf-dir=/etc/cmk --socket-id={{ $v.cpu.socket }} --pool=exclusive enb
+    {{ else }}
+    args: 
+    - ./{{$k}}_setup.sh;
+      /opt/bin/cmk isolate --conf-dir=/etc/cmk --socket-id={{ $v.cpu.socket }} --pool=exclusive {{$k}}
+    {{ end }}
+    securityContext:
+      privileged: true
+    resources:
+      requests:
+        cmk.intel.com/exclusive-cores: {{ $v.cpu.cores }}
+      limits:
+        cmk.intel.com/exclusive-cores: {{ $v.cpu.cores }}
+    volumeMounts:
+    - name: gogtp-conf-{{$k}}
+      mountPath: /root/
+  volumes:
+  - name: gogtp-conf-{{$k}}
+    configMap:
+      name: gogtp-conf-{{$k}}
+      defaultMode: 0777
+{{ end }}
+
+{{ range $k, $v := .Values.endpoints }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ $.Chart.Name }}-{{$k}}
+  annotations:
+    k8s.v1.cni.cncf.io/networks: {{ $v.networks }}
+    cmk.intel.com/mutate: "true"
+spec:
+  containers:
+  - name: {{ $.Chart.Name }}-{{$k}}
+    image: "ubuntu:18.04"
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/bash","-c"]
+    args: ["./root/setup.sh"]
+    securityContext:
+      capabilities:
+        add: ["NET_ADMIN"]
+    resources:
+      requests:
+        cmk.intel.com/exclusive-cores: {{ $v.cpu.cores }}
+      limits:
+        cmk.intel.com/exclusive-cores: {{ $v.cpu.cores }}
+    volumeMounts:
+    - name: gogtp-conf-{{$k}}
+      mountPath: /root/
+  volumes:
+  - name: gogtp-conf-{{$k}}
+    configMap:
+      name: gogtp-conf-{{$k}}
+      defaultMode: 0777
+{{ end }}
