@@ -1,0 +1,64 @@
+apps:
+  pgw:
+    networks: "lte-s5u, lte-s5c, lte-sgi"
+    cpu:
+      cores: 2
+      socket: 1
+    local_addresses: 
+      s5c_ip: "172.25.1.14"
+      s5u_ip: "172.25.0.14"
+      sgi_ip: "10.0.1.254"
+    sgi_if_name: "net3"
+    route_subnet: "10.0.1.0/24"
+
+  sgw:
+    networks: "lte-s11, lte-s1u, lte-s5u, lte-s5c"
+    cpu:
+      cores: 2
+      socket: 0
+    local_addresses:
+      s11_ip: "172.22.0.13"
+      s1u_ip: "172.21.0.13"
+      s5c_ip: "172.25.1.13"
+      s5u_ip: "172.25.0.13"
+
+  mme:
+    networks: "lte-s11, lte-s1c"
+    cpu:
+      cores: 2
+      socket: 0
+    local_addresses:
+      s1c_addr: "172.21.1.12:36412"
+      s11_ip: "172.22.0.12"
+    sgw_s11_ip: "172.22.0.13"
+    pgw_s5c_ip: "172.25.1.14"
+
+  enb:
+    networks: "lte-euu, lte-s1u, lte-s1c"
+    cpu:
+      cores: 2
+      socket: 0
+    local_addresses:
+      s1c_ip: "172.21.1.11"
+      s1u_ip: "172.21.0.11"
+      euu_ip: "10.0.0.254"
+    mme_addr: "172.21.1.12:36412"
+    prom_addr:
+
+endpoints:
+  ue:
+    networks: "lte-euu"
+    cpu:
+      # Currently not utilized in UE (no workload run by default)
+      cores: 1
+      socket: 0
+    local_addresses:
+      euu_ip: "10.0.0.201"
+
+  ext:
+    networks: "lte-sgi"
+    cpu:
+      cores: 1
+      socket: 1
+    local_addresses:
+      sgi_ip: "10.0.1.201"
