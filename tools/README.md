@@ -51,6 +51,13 @@ make pktgen
 make snake
 ```
 
+## Add CPU isolation to nodes in an existing Kubernetes cluster:
+This is necessary prior to deploying the [cpu-manager](../examples/workload-infra/cpu-manager) workload-infra example.
+To reach the correct worker nodes you must reference the environment file (load_envs) that was also used to provision HW and deploy Kubernetes.
+```
+make isolcpus [load_envs <path/to/env/file>]
+```
+
 ## Extra/Additional configuration when using Make:
 The steps above will automatically use the defaults for bringing up our CI environment.
 If you want to use Make to bring up a custom environment, this can be done by running 
