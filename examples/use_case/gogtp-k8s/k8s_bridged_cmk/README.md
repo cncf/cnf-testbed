@@ -1,20 +1,22 @@
-## Deploy GoGTP example with Multus on Kubernetes
+## Deploy GoGTP example with CPU Manager for Kubernetes (CMK) and Multus on Kubernetes
 
-This example use-case deploys the GoGTP service chain with Multus support on Kubernetes. The example includes two endpoints ("User Equipment" and "External Server") that can be used to test traffic through the GoGTP EPC implementation.
+This example use-case deploys the GoGTP service chain with CMK and Multus support on Kubernetes. The example includes two endpoints ("User Equipment" and "External Server") that can be used to test traffic through the GoGTP EPC implementation.
+
+This example utilizes CPU affinity (pinning) through CMK. By default the EPC workloads will have 2 cores (4 threads), while the Client/Server endpoints each have 1 core (2 threads). In addition the workloads are spread across both sockets on the server:
+```
+Socket 0: Client, eNB, MME, SGW
+Socket 1: Server, PGW
+```
 
 ### Prerequisites
-A Kubernetes cluster must be available prior to running this example. The cluster must be configured with Multus to provide additional interfaces to the pods in the service chain. 
+A Kubernetes cluster must be available prior to running this example, and CPU isolation must be installed for the worker nodes in the cluster. Steps for installing and configuring this can be found [here](/tools)
 
-A temporary fix must be applied to the tools/kubernetes_provisioning.sh script for Multus to work:
-```
-vim tools/kubernetes_provisioning.sh
-```
-Update line 54
-```
--ti crosscloudci/k8s-infra:multus \
-```
+Once the cluster is prepared, CMK must be installed using the cpu-manager example. Installation details can be found [here](/examples/workload-infra/cpu-manager)
 
-After the above changes have been made, setup the K8s pre-requisites by following the steps [here](https://github.com/cncf/cnf-testbed/tree/master/tools#pre-requisites), then provision a Kubernetes cluster using the steps [here](https://github.com/cncf/cnf-testbed/tree/master/tools#deploying-a-kubernetes-cluster-using-the-makefile--ci-tools).
+### Configuration
+While most of the default configuration should not be changed (unless you know what you are doing), it is possible to do some modifications to the deployment.
+
+In the [gogtp/values.yaml](gogtp/values.yaml) file, you can modify `cpu:cores/socket` to change the CPU affinity and socket placement of the individual components. Note that the default CMK configuration supports 11 cores on each socket, and going beyond that will cause the example to fail.
 
 ### Installing the GoGTP service chain
 The service chain is deployed using Helm. You will need to point the `KUBECONFIG` environment variable to your Kubeconfig file prior to running Helm. The steps can be seen below:
