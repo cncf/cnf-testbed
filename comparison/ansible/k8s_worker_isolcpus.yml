@@ -2,9 +2,10 @@
 - hosts: all
   vars:
     hugepages: 10240
+    isolated_cores: "{{ lookup('env', 'ISOLATED_CORES') }}"
   post_tasks:
   - name: Reboot server
     reboot:
       post_reboot_delay: 60
   roles:
-    - grub_vswitch
+    - grub_update

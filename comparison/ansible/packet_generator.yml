@@ -28,6 +28,8 @@
     - packet_l2
 
 - hosts: all
+  vars:
+    isolated_cores: "{{ lookup('env', 'ISOLATED_CORES') }}"
   pre_tasks:
   - name: Apt update
     apt:
@@ -80,7 +82,7 @@
     when: not intel
   - name: Update Grub
     include_role:
-      name: grub_packet_generator
+      name: grub_update
   - name: Load VFIO-PCI on startup
     lineinfile:
       path: /etc/modules

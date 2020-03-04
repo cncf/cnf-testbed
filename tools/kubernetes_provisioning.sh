@@ -11,7 +11,7 @@ FACILITY=${FACILITY:-sjc1}
 VLAN_SEGMENT=${VLAN_SEGMENT:-$DEPLOY_NAME}
 PLAYBOOK=${PLAYBOOK:-k8s_worker_vswitch_quad_intel.yml}
 KUBECONFIG=${KUBECONFIG:-$(pwd)/data/$DEPLOY_NAME/mycluster/artifacts/admin.conf}
-
+ISOLATED_CORES=${ISOLATED_CORES:-0}
 
 if [ "$1" == "generate_config" ]; then
 if ! [ -z ${MASTER_HOSTS+x} ] && ! [ -z ${WORKER_HOSTS+x} ]; then
@@ -85,6 +85,7 @@ docker run \
        -e PACKET_FACILITY=${FACILITY} \
        -e K8S_DEPLOY_ENV=${VLAN_SEGMENT} \
        -e ANSIBLE_HOST_KEY_CHECKING=False \
+       -e ISOLATED_CORES=${ISOLATED_CORES} \
        --entrypoint=ansible-playbook \
        -ti cnfdeploytools:latest -i "${WORKER_IPS}," -e server_list="${WORKER_HOSTNAMES}" /ansible/$PLAYBOOK
 fi
