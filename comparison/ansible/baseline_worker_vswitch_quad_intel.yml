@@ -23,6 +23,7 @@
     vnf: false
     baseline: false
     hugepages: 60000
+    isolated_cores: 0
     corelist_workers: 2,4,30,32
     config_network_bonds: true
     config_network_bridges: false
@@ -114,7 +115,7 @@
     reboot:
   roles:
     - mrlesmithjr.config-interfaces
-    - grub_vswitch
+    - grub_update
     - vpp_install
     - vpp_vswitch
     - kvm_install

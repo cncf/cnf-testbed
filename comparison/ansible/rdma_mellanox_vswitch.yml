@@ -19,6 +19,7 @@
     vnf: false
     baseline: false # Currently no difference in VPP config
     hugepages: 18432
+    isolated_cores: 0
     corelist_workers: 2,4,30,32
     mellanox_data_port: "{{ ansible_enp94s0f1.pciid }}"
     vlan_ids:
@@ -109,6 +110,6 @@
      reboot:
   roles:
     - mrlesmithjr.config-interfaces
-    - grub_vswitch
+    - grub_update
     - rdma_mellanox_vpp #Vpp build, install, configure
       #Has unique templating for mellanox
