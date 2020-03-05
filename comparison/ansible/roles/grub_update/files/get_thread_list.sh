@@ -74,7 +74,8 @@ function get_isolation_list () {
   # Arguments:
   #   ${1} - Enumeration method
   # Output:
-  #   CSV formatted list of threads to isoalte across all sockets
+  #   CSV formatted list of threads to isoalte across all sockets.
+  #   When ${VPP} is not 0, instead return list of threads for VPP first socket
   enumeration=${1}
   if [ "${VPP}" -eq 0 ]; then
     thread_csv=$(cat ${topo}/core_siblings_list | sort | uniq) || {
