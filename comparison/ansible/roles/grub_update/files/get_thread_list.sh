@@ -1,15 +1,21 @@
 #! /bin/bash 
 
 # Arguments:
-#   ${1} - [Optional] (int) number of cores per socket to isolate
+#   ${1} - (int) number of cores per socket to isolate
+#   ${2} - [Optional] (int) number of cores for allocating to VPP
 # Output:
-#   List of cores to isolate using GRUB
-#   If no input or 0 is provided, all cores except the first on each socket is isolated
+#   List of cores to use for either GRUB or VPP
+#   If 0 is provided in ${1}, and ${2} isnt used, all cores except the first on each socket is returned.
+#   If ${2} is provided, a matching number of threads from the first socket is returned (for VPP)
 
 set -euo pipefail
 
 DEBUG=false
 ISOLCPUS=${1:-0}
+VPP=${2:-0}
+if [ "${VPP}" -ne 0 ]; then
+  ISOLCPUS=${VPP}
+fi
 
 function debug () {
   # Arguments:
@@ -61,7 +67,7 @@ function get_enumeration () {
     else
       die "Unknown enumeration method"
     fi
-  fi  
+  fi
 }
 
 function get_isolation_list () {
@@ -70,9 +76,15 @@ function get_isolation_list () {
   # Output:
   #   CSV formatted list of threads to isoalte across all sockets
   enumeration=${1}
-  thread_csv=$(cat ${topo}/core_siblings_list | sort | uniq) || {
-    die "Failed to read thread lists"
-  }
+  if [ "${VPP}" -eq 0 ]; then
+    thread_csv=$(cat ${topo}/core_siblings_list | sort | uniq) || {
+      die "Failed to read thread lists"
+    }
+  else
+    thread_csv=$(cat /sys/devices/system/cpu/cpu0/topology/core_siblings_list) || {
+      die "Failed to read thread list"
+    }
+  fi
   modified_csv=""
   for i in ${thread_csv[@]}; do
     debug "Thread CSV: $i"

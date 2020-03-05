@@ -2,11 +2,11 @@
 - name: Copy get_thread_list.sh to server
   copy:
     src: files/get_thread_list.sh
-    dest: /tmp/
+    dest: /opt/
     mode: '0755'
 
 - name: Run get_thread_list.sh
-  command: /tmp/get_thread_list.sh {{ isolated_cores }}
+  command: /opt/get_thread_list.sh {{ isolated_cores }}
   register: thread_list
   failed_when: thread_list.rc > 0
 
