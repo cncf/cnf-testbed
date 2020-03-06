@@ -1,4 +1,9 @@
 ---
+- name: Run get_thread_list.sh
+  command: /opt/get_thread_list.sh 0 {{ corelist_workers }}
+  register: worker_threads
+  failed_when: worker_threads.rc > 0
+
 - name: Create vpp sockets directory
   file: path=/etc/vpp/sockets state=directory
 
