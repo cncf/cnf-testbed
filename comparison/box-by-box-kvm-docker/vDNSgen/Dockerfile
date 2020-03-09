@@ -4,7 +4,7 @@ COPY . /vDNSgen
 WORKDIR /vDNSgen
 
 RUN apt-get update
-RUN apt-get install -y lshw pciutils net-tools iproute bsdmainutils
+RUN apt-get --no-install-recommends install -y lshw pciutils net-tools iproute bsdmainutils
 
 CMD tail -f /dev/null
 

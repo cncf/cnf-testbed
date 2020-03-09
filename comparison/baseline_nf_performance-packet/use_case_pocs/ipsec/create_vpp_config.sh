@@ -230,7 +230,7 @@ validate_input "${@}" || die
 clean_vpp_config || die
 if [ ! -z "$(apt-cache policy pciutils | grep "Installed: (none)")" ]; then
     warn "Installing pciutils"
-    apt update && apt install -y pciutils
+    apt update && apt-get --no-install-recommends install -y pciutils
 fi
 if detect_mellanox; then
     # This is most probably Packet mlx env

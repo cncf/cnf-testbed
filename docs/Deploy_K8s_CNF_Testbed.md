@@ -17,7 +17,7 @@ Once the project on Packet has been configured, start by creating a server (x1.s
 Once the machine is running, start by installing the initial dependencies:
 ```
 $ apt update
-$ apt install -y git \
+$ apt-get --no-install-recommends install -y git \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -31,7 +31,7 @@ $ add-apt-repository \
    $(lsb_release -cs) \
    stable"
 $ apt update
-$ apt install -y docker-ce docker-ce-cli containerd.io
+$ apt-get --no-install-recommends install -y docker-ce docker-ce-cli containerd.io
 
 ## Install Kubectl (from https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 $ curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl

@@ -7,10 +7,10 @@ set -o xtrace  # print commands during script execution
 if [ "$VEDGE_STATE" == "build" ];
 then 
     sudo apt-get update -y
-    sudo apt-get install --allow-unauthenticated -y make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates -y
+    sudo apt-get --no-install-recommends install -y --allow-unauthenticated -y make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates -y
     pip install jsonschema
 
-    sudo apt-get -y install linux-headers-$(uname -r)
+    sudo apt-get --no-install-recommends install -y linux-headers-$(uname -r)
 
     # Install VPP
     export UBUNTU="xenial"
@@ -18,7 +18,7 @@ then
     sudo rm /etc/apt/sources.list.d/99fd.io.list
     sudo echo "deb [trusted=yes] https://nexus.fd.io/content/repositories/fd.io$RELEASE.ubuntu.$UBUNTU.main/ ./" | sudo tee -a /etc/apt/sources.list.d/99fd.io.list
     sudo apt-get update
-    sudo apt-get install -y vpp vpp-dpdk-dkms vpp-lib vpp-dbg vpp-plugins vpp-dev
+    sudo apt-get --no-install-recommends install -y vpp vpp-dpdk-dkms vpp-lib vpp-dbg vpp-plugins vpp-dev
     sleep 1
 
     sudo sed -i 's/^.*\(net.ipv4.ip_forward\).*/\1=1/g' /etc/sysctl.conf

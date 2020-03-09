@@ -15,8 +15,8 @@ popd
 apt-get update
 ## Ubuntu 18.04 does not have source repos enabled, but does not seem to need them for the libvirt plugin
 #apt-get build-dep vagrant ruby-libvirt
-apt-get install -y qemu libvirt-bin ebtables dnsmasq
-apt-get install -y libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
+apt-get --no-install-recommends install -y qemu libvirt-bin ebtables dnsmasq
+apt-get --no-install-recommends install -y libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
 
 vagrant plugin install vagrant-libvirt --plugin-version 0.0.43
 vagrant plugin install vagrant-disksize --plugin-version 0.1.2

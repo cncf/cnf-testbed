@@ -57,7 +57,7 @@ On the worker node, ensure that the kernel/GRUB is configured correctly. Check b
   - You can use the provided `dpdk-devbind.py` script
   - (Check current driver) `./dpdk-devbind.py -s`
   - (Bind to vfio-pci if needed) `./dpdk-devbind -b vfio-pci 0000:19:00.1 0000:19:00.2`
-  - If `vfio-pci` is not avaialble, install the `dpdk` package on the node (`apt-get install dpdk`)
+  - If `vfio-pci` is not avaialble, install the `dpdk` package on the node (`apt-get --no-install-recommends install -y dpdk`)
 
 At this point you should be ready to install the Packet-filtering example. This has only been tested on a Kubernetes worker where a host vSwitch was already installed - If this is not the case in your deployment there might be additional steps needed to configure the ports with the `vfio-pci` driver, and to configure the ports to use the same VLANs as the "Physical Server" mentioned above.
 
