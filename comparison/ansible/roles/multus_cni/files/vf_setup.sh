@@ -10,7 +10,7 @@ function logtime() {
 logfile=/var/log/port_setup.log
 
 if [ ! -e "/usr/bin/lspci" ]; then
-  apt-get install pciutils -y
+  apt-get --no-install-recommends install -y pciutils
 fi
 
 pf_ids=($(lspci | grep Eth | grep -v Virtual | awk '{print $1}' | head -n 3 | tail -n 2))

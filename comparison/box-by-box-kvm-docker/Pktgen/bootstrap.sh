@@ -11,10 +11,10 @@ set -ex
 #sudo ./setup_intel_proxy.sh
 
 sudo apt-get update -y
-sudo apt-get install linux-headers-$(uname -r) -y
+sudo apt-get --no-install-recommends install -y linux-headers-$(uname -r) -y
 
 sudo apt-get remove docker docker-engine docker.io -y
-sudo apt-get install \
+sudo apt-get --no-install-recommends install -y \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -33,7 +33,7 @@ sudo add-apt-repository \
  
 sudo apt-get update
 
-sudo apt-get install docker-ce -y
+sudo apt-get --no-install-recommends install -y docker-ce -y
 
 lspci | grep Ethernet
 

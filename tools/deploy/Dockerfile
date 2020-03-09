@@ -1,7 +1,7 @@
 FROM golang:buster as golang
 MAINTAINER "Denver Williams <denver@debian.nz>"
 
-RUN apt install -y git make
+RUN apt-get --no-install-recommends install -y git make
 RUN git clone --depth 1 https://github.com/denverwilliams/terraform-provisioner-ansible.git \
     $GOPATH/src/github.com/radekg/terraform-provisioner-ansible/ && \
     cd $GOPATH/src/github.com/radekg/terraform-provisioner-ansible/ && \
@@ -14,10 +14,10 @@ ENV TERRAFORM_ANSIBLE=v2.0.1
 
 #Install Terraform 
 RUN apt update && \
-    apt install -y software-properties-common && \ 
+    apt-get --no-install-recommends install -y software-properties-common && \ 
     apt-add-repository ppa:ansible/ansible -y && \
     apt update && \
-    apt install -y git curl ansible unzip python-netaddr && \
+    apt-get --no-install-recommends install -y git curl ansible unzip python-netaddr && \
     curl https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip > terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin && \
     rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \ 

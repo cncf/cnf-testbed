@@ -2,11 +2,11 @@
 
 echo "export DEBIAN_FRONTEND=noninteractive" | tee -a /etc/profile
 
-apt-get install -y sudo
-sudo apt-get install -y software-properties-common python-software-properties
+apt-get --no-install-recommends install -y sudo
+sudo apt-get --no-install-recommends install -y software-properties-common python-software-properties
 sudo add-apt-repository -s -y  ppa:openjdk-r/ppa
 sudo apt-get update
-sudo apt-get install --allow-unauthenticated -y wget openjdk-8-jdk bind9 bind9utils bind9-doc apt-transport-https ca-certificates kea-dhcp4-server g++ libcurl4-gnutls-dev libboost-dev kea-dev
+sudo apt-get --no-install-recommends install -y --allow-unauthenticated -y wget openjdk-8-jdk bind9 bind9utils bind9-doc apt-transport-https ca-certificates kea-dhcp4-server g++ libcurl4-gnutls-dev libboost-dev kea-dev
 sleep 1
 
 # Download DNS and DHCP config files

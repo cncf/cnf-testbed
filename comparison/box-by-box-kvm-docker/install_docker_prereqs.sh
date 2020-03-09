@@ -2,7 +2,7 @@
 
 sudo apt-get update
 
-sudo apt-get install -y  \
+sudo apt-get --no-install-recommends install -y  \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -18,7 +18,7 @@ sudo add-apt-repository -y  \
 
 sudo apt-get update
 
-sudo apt-get install -y docker-ce
+sudo apt-get --no-install-recommends install -y docker-ce
 
 # Prepare Hugepages
 echo "Setting up hugepages memory support"

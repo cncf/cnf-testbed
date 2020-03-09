@@ -8,7 +8,7 @@
     name: zlib1g-dev
 
 - name: Install kernel headers
-  shell: "apt-get -y install linux-headers-$(uname -r)"
+  shell: "apt-get --no-install-recommends install -y linux-headers-$(uname -r)"
 
 - name: Check if TRex has been cloned
   stat:

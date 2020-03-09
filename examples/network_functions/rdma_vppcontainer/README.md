@@ -15,7 +15,7 @@ Before the image can be built, Docker needs to be installed on the host. The ste
 ```
 apt-get update
 
-apt-get install \
+apt-get --no-install-recommends install -y \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -31,7 +31,7 @@ add-apt-repository \
 
 apt-get update
 
-apt-get install docker-ce docker-ce-cli containerd.io
+apt-get --no-install-recommends install -y docker-ce docker-ce-cli containerd.io
 ```
 
 ### Building the base-image

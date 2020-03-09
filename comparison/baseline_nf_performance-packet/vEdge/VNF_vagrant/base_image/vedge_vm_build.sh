@@ -2,10 +2,10 @@
 set -o xtrace  # print commands during script execution
 
 sudo apt-get update -y
-sudo apt-get install --allow-unauthenticated -y make gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates
+sudo apt-get --no-install-recommends install -y --allow-unauthenticated -y make gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates
 pip install jsonschema
 
-sudo apt-get -y install linux-headers-$(uname -r)
+sudo apt-get --no-install-recommends install -y linux-headers-$(uname -r)
 
 # Install VPP
 VPP_VERSION="18.10-release"
@@ -17,7 +17,7 @@ else
     artifacts+=(${vpp[@]/%/=${VPP_VERSION-}})
 fi
 curl -s https://packagecloud.io/install/repositories/fdio/release/script.deb.sh | bash
-apt-get install -y "${artifacts[@]}"
+apt-get --no-install-recommends install -y "${artifacts[@]}"
 sleep 1
 
 sudo sed -i 's/^.*\(net.ipv4.ip_forward\).*/\1=1/g' /etc/sysctl.conf

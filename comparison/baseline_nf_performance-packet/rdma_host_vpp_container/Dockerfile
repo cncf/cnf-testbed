@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-RUN apt update && apt install -y \
+RUN apt update && apt-get --no-install-recommends install -y \
     sudo \
     make \
     git \
