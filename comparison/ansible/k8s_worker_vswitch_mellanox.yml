@@ -23,7 +23,7 @@
     baseline: false # Currently no difference in VPP config
     hugepages: 18432
     isolated_cores: 0
-    corelist_workers: 2,4,6,30,32,34
+    corelist_workers: 3
     rx_queues: 6
     mellanox_data_port: "{{ ansible_enp94s0f1.pciid }}"
     vlan_ids:
@@ -35,7 +35,7 @@
     enable_configured_interfaces_after_defining: true
     dns_nameservers:
       - "{{ ansible_dns.nameservers[0] }}"
-      - "{{ ansible_dns.nameservers[0] }}"
+      - "{{ ansible_dns.nameservers[1] }}"
     network_bonds:
       - name: 'bond0'
         configure: true

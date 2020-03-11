@@ -10,8 +10,8 @@ metadata:
 data:
 {{ range $k, $v := .Values.cnf }}
   setup_{{$k}}.gate: |-
-    bin memif_socket_filename_add_del add id 1 filename {{ $.Values.volumeMounts.vpp_sockets.mountPath }}/{{ index .sock 0 }}.sock
-    bin memif_socket_filename_add_del add id 2 filename {{ $.Values.volumeMounts.vpp_sockets.mountPath }}/{{ index .sock 1 }}.sock
+    create memif socket id 1 filename {{ $.Values.volumeMounts.vpp_sockets.mountPath }}/{{ index .sock 0 }}.sock
+    create memif socket id 2 filename {{ $.Values.volumeMounts.vpp_sockets.mountPath }}/{{ index .sock 1 }}.sock
     create interface memif id {{ index .memid 0 }} socket-id 1 hw-addr {{ index .mac 0 }} {{ index .owner 0 }} rx-queues {{ .queues }} tx-queues {{ .queues }}
     create interface memif id {{ index .memid 1 }} socket-id 2 hw-addr {{ index .mac 1 }} {{ index .owner 1 }} rx-queues {{ .queues }} tx-queues {{ .queues }}
     set int ip addr memif1/{{ index .memid 0 }} {{ index .subnet 0 }}
