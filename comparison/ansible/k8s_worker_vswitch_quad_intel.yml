@@ -29,7 +29,7 @@
     multus_cni: false
     baseline: false
     hugepages: 10240
-    corelist_workers: 2,4,6,30,32,34
+    corelist_workers: 3
     rx_queues: 3
     config_network_bonds: true
     config_network_bridges: false
@@ -41,7 +41,7 @@
     nic_port3: "{{ ansible_eno3.pciid }}"
     dns_nameservers:
       - "{{ ansible_dns.nameservers[0] }}"
-      - "{{ ansible_dns.nameservers[0] }}"
+      - "{{ ansible_dns.nameservers[1] }}"
     network_bonds:
       - name: 'bond0'
         configure: true

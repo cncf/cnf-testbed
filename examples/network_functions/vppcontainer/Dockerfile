@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-ENV VPP_VER "19.08.1"
+ENV VPP_VER "20.01"
 
 RUN apt-get update && apt-get install -y \
     vlan \
