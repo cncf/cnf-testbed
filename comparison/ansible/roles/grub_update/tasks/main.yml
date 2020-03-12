@@ -1,0 +1,21 @@
+---
+- name: Copy get_thread_list.sh to server
+  copy:
+    src: files/get_thread_list.sh
+    dest: /opt/
+    mode: '0755'
+
+- name: Run get_thread_list.sh
+  command: /opt/get_thread_list.sh {{ isolated_cores }}
+  register: thread_list
+  failed_when: thread_list.rc > 0
+
+- name: Configure GRUB
+  lineinfile:
+    dest: /etc/default/grub
+    regexp: ^GRUB_CMDLINE_LINUX=
+    line: GRUB_CMDLINE_LINUX="console=tty0 console=ttyS1,115200n8 biosdevname=0 net.ifnames=1 numa_balancing=disable intel_pstate=disable intel_iommu=on iommu=pt isolcpus={{ thread_list.stdout }} nohz_full={{ thread_list.stdout }} rcu_nocbs={{ thread_list.stdout }} nmi_watchdog=0 audit=0 nosoftlockup processor.max_cstate=1 intel_idle.max_cstate=1 hpet=disable tsc=reliable mce=off numa_balancing=disable hugepagesz=2M hugepages={{ hugepages }}"
+
+- name: Update Grub
+  command: update-grub2
+

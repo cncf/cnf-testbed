@@ -22,6 +22,7 @@
     nic_type: "mellanox"
     baseline: false # Currently no difference in VPP config
     hugepages: 18432
+    isolated_cores: 0
     corelist_workers: 3
     rx_queues: 6
     mellanox_data_port: "{{ ansible_enp94s0f1.pciid }}"
@@ -121,7 +122,7 @@
      reboot:
   roles:
     - mrlesmithjr.config-interfaces
-    - grub_vswitch
+    - grub_update
     - { role: "avinetworks.docker", when: vswitch_container }
     - rdma_mellanox_vpp
     - vpp_config

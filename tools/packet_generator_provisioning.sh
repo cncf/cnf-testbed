@@ -9,6 +9,7 @@ NIC_TYPE=${NIC_TYPE:--e quad_intel=true}
 FACILITY=${FACILITY:-sjc1}
 VLAN_SEGMENT=${VLAN_SEGMENT:-$DEPLOY_NAME}
 PLAYBOOK=${PLAYBOOK:-packet_generator.yml}
+ISOLATED_CORES=${ISOLATED_CORES:-0}
 
 if ! [ -z ${PKTGEN_HOSTS+x} ]; then
     HOSTS="$PKTGEN_HOSTS,"
@@ -50,6 +51,7 @@ docker run \
        -e DEPLOY_ENV=${VLAN_SEGMENT} \
        -e SERVER_LIST=${PKTGEN_HOSTNAMES} \
        -e ANSIBLE_HOST_KEY_CHECKING=False \
+       -e ISOLATED_CORES=${ISOLATED_CORES} \
        --entrypoint=ansible-playbook \
        -ti cnfdeploytools:latest -i $HOSTS /ansible/$PLAYBOOK $NIC_TYPE
 

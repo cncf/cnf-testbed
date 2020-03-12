@@ -29,6 +29,7 @@
     multus_cni: false
     baseline: false
     hugepages: 10240
+    isolated_cores: "{{ lookup('env', 'ISOLATED_CORES') }}"
     corelist_workers: 3
     rx_queues: 3
     config_network_bonds: true
@@ -131,7 +132,7 @@
     reboot:
   roles:
     - mrlesmithjr.config-interfaces
-    - grub_vswitch
+    - grub_update
     - { role: "avinetworks.docker", when: vswitch_container }
     - { role: "vpp_install", when: not vswitch_container }
     - { role: "vpp_container_install", when: vswitch_container }
