@@ -86,20 +86,28 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 
 ## Upcoming Events: 
 
- ### TUG + CNFs At KubeCon + CloudNativeCon Europe 2020
+ ### TUG + CNFs At [KubeCon + CloudNativeCon Europe 2020](https://events.linuxfoundation.org/kubecon-cloudnativecon-europe/)
 
-Monday, March 30 • 17:08 - 17:13 - [Build & Deploy a CNF in 5 Minutes](https://sched.co/Zeon)
+Thursday, August 13 • 16:50 - 16:55 - [Build & Deploy a CNF in 5 Minutes](https://sched.co/Zeon)
 
-Tuesday, March 31 • 12:00 - 12:35 - [Birds of a Feather: CNCF CI Working Group](https://sched.co/ZeuA)
+Friday, August 14 • 12:00 - 12:35 - [Birds of a Feather: CNCF CI Working Group](https://sched.co/ZeuA)
 
-Tuesday, March 31 • 14:35 - 15:10 - [Network Service Mesh to Address Cloud Native 5G Telco Networking Challenges](https://sched.co/Zelt)
+Friday, August 14 • 14:35 - 15:10 - [Network Service Mesh to Address Cloud Native 5G Telco Networking Challenges](https://sched.co/Zelt)
 
-Tuesday, March 31 • 15:30 - 16:05 - [CNF Testbed: Creating a Cloud Native User Plane for an Evolved Packet Core](https://sched.co/ZeuG)
+Friday, August 14 • 15:30 - 16:05 - [CNF Testbed: Creating a Cloud Native User Plane for an Evolved Packet Core](https://sched.co/ZeuG)
 
-Wednesday, April 1 • 16:25 - 17:00 - [Enabling E2E Observability via Open Source in 5G Telco CNFs](https://sched.co/Zepo)
+Saturday, August 15 • 16:25 - 17:00 - [Enabling E2E Observability via Open Source in 5G Telco CNFs](https://sched.co/Zepo)
 
-Wednesday, April 1 • 16:25 - 17:55 - [Birds of a Feather: Telecom User Group](https://sched.co/Zevr)
+Saturday, August 15 • 16:25 - 17:55 - [Birds of a Feather: Telecom User Group](https://sched.co/Zevr)
 
+ ### TUG + CNFs At Open Networking Summit & Edge NA 2020 
+ - [TBA](https://events.linuxfoundation.org/open-networking-edge-summit-north-america/)
+ 
+ ### TUG + CNFs At Open Networking Summit & Edge EU 2020 
+- [TBA](https://events.linuxfoundation.org/open-networking-edge-summit-europe/)
+
+ ### TUG + CNFs At KubeCon + CloudNativeCon NA 2020
+- [TBA](https://events.linuxfoundation.org/kubecon-cloudnativecon-north-america/)
 
 
 ## Past Events:
