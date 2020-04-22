@@ -1,20 +1,4 @@
 ---
-- name: Backup existing Kubelet configuration
-  copy:
-    src: /etc/default/kubelet
-    dest: /etc/default/kubelet_backup
-    remote_src: yes
-
-- name: Update Kubelet configuration
-  copy:
-    src: files/kubelet
-    dest: /etc/default/
-
-- name: Add bridge configuration
-  copy:
-    src: files/10-bridge.conflist
-    dest: /etc/cni/net.d/
-
 - name: Make sure vfio-pci loads on startup
   copy:
     src: files/vfio-pci.conf
@@ -22,8 +6,8 @@
 
 - name: Add SRIOV CNI binary
   copy:
-    src: files/sriov
-    dest: /opt/cni/bin/
+    src: files/sriov_v2.3
+    dest: /opt/cni/bin/sriov
     mode: '0755'
 
 - name: Add dpdk-devbind tool
