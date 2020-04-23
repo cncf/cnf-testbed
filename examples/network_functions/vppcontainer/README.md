@@ -3,7 +3,7 @@ This base-image provides a containerized, configurable deployment of VPP v19.04.
 * CNF use-case deployments (3c2n-csc, 3c2n-csp, ipsec)
 * Host vSwitch, when using n2.xlarge servers provided by Packet (Intel X710 NIC)
 
-Configuration is currently done though a volume mount on the host, where relevant VPP configuration files are located. The local directory should contain a VPP configuration file named `startup.conf` (and any additional setup files used by this), and the directory should map to /etc/vpp/ in the container (i.e. `/etc/vpp/startup.conf`). The mapped host directory is also used for storing the VPP logs in `output.log`.
+Configuration is currently done though a volume mount on the host, where relevant VPP configuration files are located. The local directory should contain a VPP configuration file named `startup.conf` (and any additional setup files used by this), and the directory should map to /etc/vpp/ in the container (i.e. `/etc/vpp/startup.conf`). The VPP logs are unbuffered to standard output.
 
 The image is based on Ubuntu 18.04 LTS.
 
@@ -40,7 +40,7 @@ With the prerequisites installed, the vppcontainer image can be built as follows
 ./builder.sh
 ```
 
-Once completed the image can be seen with `docker image ls`. Currently, CNF Testbed does not utilize any local storage for images, but an easy solution is to upload the image to [Docker Hub](https://hub.docker.com/).
+Once completed the image can be seen with `docker images`. Currently, CNF Testbed does not utilize any local storage for images, but an easy solution is to upload the image to [Docker Hub](https://hub.docker.com/).
 
 To use Docker Hub for storing images, start by creating an account if you don't have one already. Then tag the image as follows:
 ```
