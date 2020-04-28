@@ -6,14 +6,15 @@ metadata:
 data:
   pgw.yml: |-
     local_addresses: 
-      s5c_addr: "{{ $.Values.apps.pgw.local_addresses.s5c_addr }}"
-      s5u_addr: "{{ $.Values.apps.pgw.local_addresses.s5u_addr }}"
+      s5c_ip: "{{ $.Values.apps.pgw.local_addresses.s5c_ip }}"
+      s5u_ip: "{{ $.Values.apps.pgw.local_addresses.s5u_ip }}"
+      sgi_ip: "{{ $.Values.apps.pgw.local_addresses.sgi_ip }}"
     sgi_if_name: "{{ $.Values.apps.pgw.sgi_if_name }}"
     route_subnet: "{{ $.Values.apps.pgw.route_subnet }}"
   pgw_setup.sh: |-
     #! /bin/sh
-    ip addr add {{ (split ":" .Values.apps.pgw.local_addresses.s5u_addr)._0 }}/24 dev net1
-    ip addr add {{ (split ":" .Values.apps.pgw.local_addresses.s5c_addr)._0 }}/24 dev net2
+    ip addr add {{ .Values.apps.pgw.local_addresses.s5u_ip }}/24 dev net1
+    ip addr add {{ .Values.apps.pgw.local_addresses.s5c_ip }}/24 dev net2
     ip addr add {{ .Values.apps.pgw.local_addresses.sgi_ip }}/24 dev net3
     sysctl net.ipv4.ip_forward=1
 
@@ -25,16 +26,16 @@ metadata:
 data:
   sgw.yml: |-
     local_addresses:
-      s11_addr: "{{ $.Values.apps.sgw.local_addresses.s11_addr }}"
-      s1u_addr: "{{ $.Values.apps.sgw.local_addresses.s1u_addr }}"
-      s5c_addr: "{{ $.Values.apps.sgw.local_addresses.s5c_addr }}"
-      s5u_addr: "{{ $.Values.apps.sgw.local_addresses.s5u_addr }}"
+      s11_ip: "{{ $.Values.apps.sgw.local_addresses.s11_ip }}"
+      s1u_ip: "{{ $.Values.apps.sgw.local_addresses.s1u_ip }}"
+      s5c_ip: "{{ $.Values.apps.sgw.local_addresses.s5c_ip }}"
+      s5u_ip: "{{ $.Values.apps.sgw.local_addresses.s5u_ip }}"
   sgw_setup.sh: |-
     #! /bin/sh
-    ip addr add {{ (split ":" .Values.apps.sgw.local_addresses.s11_addr)._0 }}/24 dev net1
-    ip addr add {{ (split ":" .Values.apps.sgw.local_addresses.s1u_addr)._0 }}/24 dev net2
-    ip addr add {{ (split ":" .Values.apps.sgw.local_addresses.s5u_addr)._0 }}/24 dev net3
-    ip addr add {{ (split ":" .Values.apps.sgw.local_addresses.s5c_addr)._0 }}/24 dev net4
+    ip addr add {{ .Values.apps.sgw.local_addresses.s11_ip }}/24 dev net1
+    ip addr add {{ .Values.apps.sgw.local_addresses.s1u_ip }}/24 dev net2
+    ip addr add {{ .Values.apps.sgw.local_addresses.s5u_ip }}/24 dev net3
+    ip addr add {{ .Values.apps.sgw.local_addresses.s5c_ip }}/24 dev net4
     sysctl net.ipv4.ip_forward=1
 
 ---
@@ -49,12 +50,12 @@ data:
     apn: "gw-tester.go-gtp.example"
     local_addresses:
       s1c_addr: "{{ $.Values.apps.mme.local_addresses.s1c_addr }}"
-      s11_addr: "{{ $.Values.apps.mme.local_addresses.s11_addr }}"
+      s11_ip: "{{ $.Values.apps.mme.local_addresses.s11_ip }}"
     sgw_s11_ip: "{{ $.Values.apps.mme.sgw_s11_ip }}"
     pgw_s5c_ip: "{{ $.Values.apps.mme.pgw_s5c_ip }}"
   mme_setup.sh: |-
     #! /bin/sh
-    ip addr add {{ (split ":" .Values.apps.mme.local_addresses.s11_addr)._0 }}/24 dev net1
+    ip addr add {{ .Values.apps.mme.local_addresses.s11_ip }}/24 dev net1
     ip addr add {{ (split ":" .Values.apps.mme.local_addresses.s1c_addr)._0 }}/24 dev net2
     sysctl net.ipv4.ip_forward=1
 
@@ -72,7 +73,7 @@ data:
     eci: 0x00000001
     local_addresses:
       s1c_ip: "{{ $.Values.apps.enb.local_addresses.s1c_ip }}"
-      s1u_addr: "{{ $.Values.apps.enb.local_addresses.s1u_addr }}"
+      s1u_ip: "{{ $.Values.apps.enb.local_addresses.s1u_ip }}"
     mme_addr: "{{ $.Values.apps.enb.mme_addr }}"
     prom_addr: "{{ $.Values.apps.enb.prom_addr }}"
     subscribers:
@@ -88,7 +89,7 @@ data:
   enb_setup.sh: |-
     #! /bin/sh
     ip addr add {{ .Values.apps.enb.local_addresses.euu_ip }}/24 dev net1
-    ip addr add {{ (split ":" .Values.apps.enb.local_addresses.s1u_addr)._0 }}/24 dev net2
+    ip addr add {{ .Values.apps.enb.local_addresses.s1u_ip }}/24 dev net2
     ip addr add {{ .Values.apps.enb.local_addresses.s1c_ip }}/24 dev net3
     sysctl net.ipv4.ip_forward=1
 

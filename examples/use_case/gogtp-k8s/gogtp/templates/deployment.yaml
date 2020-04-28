@@ -26,9 +26,12 @@ spec:
           imagePullPolicy: IfNotPresent
           command: ["/bin/sh","-c"]
           {{ if eq $k "enb" }}
-          args: ["sleep 30; enb"]
+          args:
+            - sleep 30;
+              /usr/local/bin/{{$k}} -config /root/{{$k}}.yml;
           {{ else }}
-          args: ["{{$k}}"]
+          args:
+            - /usr/local/bin/{{$k}} -config /root/{{$k}}.yml;
           {{ end }}
           securityContext:
             capabilities:

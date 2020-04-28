@@ -13,9 +13,14 @@ spec:
     imagePullPolicy: IfNotPresent
     command: ["/bin/sh","-c"]
     {{ if eq $k "enb" }}
-    args: ["sleep 30; ./enb_setup.sh; enb"]
+    args:
+      - sleep 30;
+        ./root/enb_setup.sh;
+        /usr/local/bin/enb -config /root/enb.yml;
     {{ else }}
-    args: ["./{{$k}}_setup.sh; {{$k}}"]
+    args:
+      - ./root/{{$k}}_setup.sh;
+        /usr/local/bin/{{$k}} -config /root/{{$k}}.yml;
     {{ end }}
     securityContext:
       privileged: true

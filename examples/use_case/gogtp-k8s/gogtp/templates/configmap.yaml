@@ -4,38 +4,39 @@ metadata:
   name: gogtp-conf
 data:
   pgw.yml: |-
-    local_addresses: 
-      s5c_addr: "{{ $.Values.apps.pgw.local_addresses.s5c_addr }}"
-      s5u_addr: "{{ $.Values.apps.pgw.local_addresses.s5u_addr }}"
+    local_addresses:
+      s5c_ip: "{{ $.Values.apps.pgw.local_addresses.s5c_ip }}"
+      s5u_ip: "{{ $.Values.apps.pgw.local_addresses.s5u_ip }}"
+      sgi_ip: "{{ $.Values.apps.pgw.local_addresses.sgi_ip }}"
     sgi_if_name: "{{ $.Values.apps.pgw.sgi_if_name }}"
     route_subnet: "{{ $.Values.apps.pgw.route_subnet }}"
 
   sgw.yml: |-
     local_addresses:
-      s11_addr: "{{ $.Values.apps.sgw.local_addresses.s11_addr }}"
-      s1u_addr: "{{ $.Values.apps.sgw.local_addresses.s1u_addr }}"
-      s5c_addr: "{{ $.Values.apps.sgw.local_addresses.s5c_addr }}"
-      s5u_addr: "{{ $.Values.apps.sgw.local_addresses.s5u_addr }}"
+      s11_ip: "{{ $.Values.apps.sgw.local_addresses.s11_ip }}"
+      s1u_ip: "{{ $.Values.apps.sgw.local_addresses.s1u_ip }}"
+      s5c_ip: "{{ $.Values.apps.sgw.local_addresses.s5c_ip }}"
+      s5u_ip: "{{ $.Values.apps.sgw.local_addresses.s5u_ip }}"
 
   mme.yml: |-
-    mcc: "001" 
+    mcc: "001"
     mnc: "01"
     apn: "gw-tester.go-gtp.example"
     local_addresses:
       s1c_addr: "{{ $.Values.apps.mme.local_addresses.s1c_addr }}"
-      s11_addr: "{{ $.Values.apps.mme.local_addresses.s11_addr }}"
+      s11_ip: "{{ $.Values.apps.mme.local_addresses.s11_ip }}"
     sgw_s11_ip: "{{ $.Values.apps.mme.sgw_s11_ip }}"
     pgw_s5c_ip: "{{ $.Values.apps.mme.pgw_s5c_ip }}"
 
   enb.yml: |-
-    mcc: "001" 
+    mcc: "001"
     mnc: "01"
     rat_type: 6
     tai: 0x0001
     eci: 0x00000001
     local_addresses:
       s1c_ip: "{{ $.Values.apps.enb.local_addresses.s1c_ip }}"
-      s1u_addr: "{{ $.Values.apps.enb.local_addresses.s1u_addr }}"
+      s1u_ip: "{{ $.Values.apps.enb.local_addresses.s1u_ip }}"
     mme_addr: "{{ $.Values.apps.enb.mme_addr }}"
     prom_addr: "{{ $.Values.apps.enb.prom_addr }}"
     subscribers:

@@ -2,9 +2,9 @@ apps:
   pgw:
     networks: "lte-s5u, lte-s5c, lte-sgi"
     node: "node2"
-    local_addresses: 
-      s5c_addr: "172.25.1.14:2123"
-      s5u_addr: "172.25.0.14:2152"
+    local_addresses:
+      s5c_ip: "172.25.1.14"
+      s5u_ip: "172.25.0.14"
       sgi_ip: "10.0.1.254"
     sgi_if_name: "net3"
     route_subnet: "10.0.1.0/24"
@@ -13,17 +13,17 @@ apps:
     networks: "lte-s11, lte-s1u, lte-s5u, lte-s5c"
     node: "node1"
     local_addresses:
-      s11_addr: "172.22.0.13:2123"
-      s1u_addr: "172.21.0.13:2152"
-      s5c_addr: "172.25.1.13:2123"
-      s5u_addr: "172.25.0.13:2152"
+      s11_ip: "172.22.0.13"
+      s1u_ip: "172.21.0.13"
+      s5c_ip: "172.25.1.13"
+      s5u_ip: "172.25.0.13"
 
   mme:
     networks: "lte-s11, lte-s1c"
     node: "node1"
     local_addresses:
       s1c_addr: "172.21.1.12:36412"
-      s11_addr: "172.22.0.12:2123"
+      s11_ip: "172.22.0.12"
     sgw_s11_ip: "172.22.0.13"
     pgw_s5c_ip: "172.25.1.14"
 
@@ -32,7 +32,7 @@ apps:
     node: "node1"
     local_addresses:
       s1c_ip: "172.21.1.11"
-      s1u_addr: "172.21.0.11:2152"
+      s1u_ip: "172.21.0.11"
       euu_ip: "10.0.0.254"
     mme_addr: "172.21.1.12:36412"
     prom_addr:
