@@ -1,2 +1,2 @@
 #! /bin/bash
-docker build -t gogtp:latest .
+docker build -t gogtpu:latest .
