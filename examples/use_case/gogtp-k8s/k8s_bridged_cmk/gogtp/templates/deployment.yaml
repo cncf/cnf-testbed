@@ -16,12 +16,12 @@ spec:
     {{ if eq $k "enb" }}
     args:
     - sleep 30;
-      ./enb_setup.sh;
-      /opt/bin/cmk isolate --conf-dir=/etc/cmk --socket-id={{ $v.cpu.socket }} --pool=exclusive enb
+      ./root/enb_setup.sh;
+      /opt/bin/cmk isolate --conf-dir=/etc/cmk --socket-id={{ $v.cpu.socket }} --pool=exclusive enb -- -config /root/{{$k}}.yml
     {{ else }}
     args: 
-    - ./{{$k}}_setup.sh;
-      /opt/bin/cmk isolate --conf-dir=/etc/cmk --socket-id={{ $v.cpu.socket }} --pool=exclusive {{$k}}
+    - ./root/{{$k}}_setup.sh;
+      /opt/bin/cmk isolate --conf-dir=/etc/cmk --socket-id={{ $v.cpu.socket }} --pool=exclusive {{$k}} -- -config /root/{{$k}}.yml
     {{ end }}
     securityContext:
       privileged: true
