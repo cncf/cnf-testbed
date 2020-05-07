@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-RUN apt update && apt install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo \
     make \
     git \
@@ -9,23 +9,33 @@ RUN apt update && apt install -y \
     libssl-dev \
     libmnl-dev \
     libnuma-dev \
-    net-tools \
     rdma-core \
     nasm \
     python-pexpect \
-    vim \
-    systemd
+    ca-certificates
 
 RUN git clone https://github.com/FDio/vpp.git --branch v20.01 --single-branch /srv/vpp
 
-RUN cd /srv/vpp \
-    && yes Y | make install-dep \
+WORKDIR /srv/vpp
+
+RUN yes Y | make install-dep \
     && make dpdk-install-dev DPDK_MLX5_PMD=y DPDK_MLX5_PMD_DLOPEN_DEPS=y \
     && cp /opt/vpp/external/x86_64/lib/librte_pmd_mlx5_glue* /usr/lib/ \
     && make pkg-deb vpp_uses_dpdk_mlx5_pmd=yes DPDK_MLX5_PMD_DLOPEN_DEPS=y \
-    && cd /srv/vpp/build-root \
-    && dpkg -i $(ls /srv/vpp/build-root/ | grep '.deb' | grep -v 'dbg' | grep -v 'python' | grep -v 'vpp-api')
+    && cd build-root \
+    && dpkg -i $(ls | grep '.deb' | grep -v 'dbg' | grep -v 'python' | grep -v 'vpp-api' | grep -v 'dev') \
+    && cd ~ \
+    && rm -rf /srv/vpp
 
-COPY shared/run_vpp.sh /tmp/
+RUN apt-get remove -y \
+    make \
+    git \
+    cpp \
+    gcc \
+    rdma-core \
+    nasm \
+    python-pexpect
 
-ENTRYPOINT ["bash", "/tmp/run_vpp.sh"]
+WORKDIR /root
+
+CMD ["/usr/bin/vpp", "-c", "/etc/vpp/startup.conf"]
