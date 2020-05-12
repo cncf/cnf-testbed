@@ -2,7 +2,7 @@
 DEPLOY_NAME=${DEPLOY_NAME:-cnftestbed}
 
 # generate_config & provisioning defaults
-RELEASE_TYPE=${RELEASE_TYPE:-stable}
+RELEASE_TYPE=${RELEASE_TYPE:-kubespray}
 HOSTS_FILE=${HOSTS_FILE:-$(pwd)/data/$DEPLOY_NAME/kubernetes.env}
 
 # vswitch and gogtp_multi defaults
@@ -36,7 +36,7 @@ docker run \
   --rm \
   -v $(pwd)/data/$DEPLOY_NAME:/k8s-infra/data \
   $HOSTS_VOLUME$HOSTS_TMP \
-  -ti crosscloudci/k8s-infra:v1.0.0 \
+  -ti crosscloudci/k8s-infra:dynamic-kubespray-update \
   /k8s-infra/bin/k8sinfra generate_config ${HOSTS_CMD} --release-type=$RELEASE_TYPE -o /k8s-infra/data/cluster.yml
 fi
 
@@ -51,7 +51,7 @@ docker run \
   --rm \
   -v $(pwd)/data/$DEPLOY_NAME:/k8s-infra/data \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
-  -ti crosscloudci/k8s-infra:multus \
+  -ti crosscloudci/k8s-infra:dynamic-kubespray-update \
   /k8s-infra/bin/k8sinfra provision --config-file=/k8s-infra/data/cluster.yml
 
 if [ "$?" == "1" ]; then
