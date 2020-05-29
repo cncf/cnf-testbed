@@ -1,0 +1,155 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-pgw
+data:
+  pgw.yml: |-
+    local_addresses: 
+      s5c_ip: "{{ $.Values.apps.pgw.local_addresses.s5c_ip }}"
+      s5u_ip: "{{ $.Values.apps.pgw.local_addresses.s5u_ip }}"
+      sgi_ip: "{{ $.Values.apps.pgw.local_addresses.sgi_ip }}"
+    sgi_if_name: "{{ $.Values.apps.pgw.sgi_if_name }}"
+    route_subnet: "{{ $.Values.apps.pgw.route_subnet }}"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-sgw
+data:
+  sgw.yml: |-
+    local_addresses:
+      s11_ip: "{{ $.Values.apps.sgw.local_addresses.s11_ip }}"
+      s1u_ip: "{{ $.Values.apps.sgw.local_addresses.s1u_ip }}"
+      s5c_ip: "{{ $.Values.apps.sgw.local_addresses.s5c_ip }}"
+      s5u_ip: "{{ $.Values.apps.sgw.local_addresses.s5u_ip }}"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-mme
+data:
+  mme.yml: |-
+    mcc: "001" 
+    mnc: "01"
+    apn: "gw-tester.go-gtp.example"
+    local_addresses:
+      s1c_addr: "{{ $.Values.apps.mme.local_addresses.s1c_addr }}"
+      s11_ip: "{{ $.Values.apps.mme.local_addresses.s11_ip }}"
+    sgw_s11_ip: "{{ $.Values.apps.mme.sgw_s11_ip }}"
+    pgw_s5c_ip: "{{ $.Values.apps.mme.pgw_s5c_ip }}"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-enb
+data:
+  enb.yml: |-
+    mcc: "001" 
+    mnc: "01"
+    rat_type: 6
+    tai: 0x0001
+    eci: 0x00000001
+    local_addresses:
+      s1c_ip: "{{ $.Values.apps.enb.local_addresses.s1c_ip }}"
+      s1u_ip: "{{ $.Values.apps.enb.local_addresses.s1u_ip }}"
+    mme_addr: "{{ $.Values.apps.enb.mme_addr }}"
+    prom_addr: "{{ $.Values.apps.enb.prom_addr }}"
+    subscribers:
+    - imsi: "001010000000001"
+      msisdn: "814000000001"
+      imeisv: "1234500000001"
+      src_ip: "{{ $.Values.apps.enb.local_addresses.euu_ip }}"
+      i_tei: 0
+      type: "external"
+      euu_if_name: "{{ $.Values.apps.enb.local_addresses.euu_if }}"
+      http_url: ""
+      reattach_on_reload: false
+
+{{ range $k, $v := .Values.apps }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-setup-{{ $k }}
+data:
+  setup.sh: |-
+    #! /bin/sh
+    sysctl net.ipv4.ip_forward=1
+    cp $1 /tmp.yml
+    replace_once()
+    {
+            sed -i "1,/${1}/ s/${1}/${2}/" $3 
+    }
+    ports=$(echo "{{ $v.ports }}")
+    for port in $ports; do
+        for ip in $(ip route list | awk '{print $7}'); do
+            firstSegment=$(echo "${ip}" | cut -d . -f 1-3)
+            lastSegment=$(echo "${ip}" | cut -d . -f 4 | cut -d / -f 1)
+            nextOp=$((lastSegment + 1))
+            prevOp=$((lastSegment - 1))
+            targetIp="${firstSegment}.${nextOp}"
+            prevIp="${firstSegment}.${prevOp}"
+
+            if_name=$(ip route list | grep ${ip} | awk '{print $3}')   
+            if wget -O /dev/null --timeout 3 "${targetIp}:${port}"; then
+                plus="${firstSegment}.[+]${port}"
+                replace_once ${plus} ${targetIp} tmp.yml
+                star="${firstSegment}.[*]${port}"
+                replace_once ${star} ${ip} tmp.yml
+                ip_if="${firstSegment}.IF${port}"                                 
+                replace_once ${ip_if} ${if_name} tmp.yml
+                success="true"
+            fi
+            if wget -O /dev/null --timeout 3 "${prevIp}:${port}"; then
+                minus="${firstSegment}.[-]${port}"
+                replace_once ${minus} ${prevIp} tmp.yml
+                star="${firstSegment}.[*]${port}"
+                replace_once ${star} ${ip} tmp.yml
+                ip_if="${firstSegment}.IF${port}"                                 
+                replace_once ${ip_if} ${if_name} tmp.yml
+                success="true"
+            fi
+        done
+        if [ -z ${success} ]; then
+          exit 1;
+        fi
+        unset success 
+    done
+    mv tmp.yml $2
+    /usr/local/bin/{{ $k }} -config $2
+{{ end }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-ue
+data:
+  setup.sh: |-
+    #! /bin/bash
+    apt-get update
+    apt-get -y install iputils-ping wget iproute2
+    euu_ip="{{ .Values.endpoints.ue.local_addresses.euu_ip }}"
+    final_ip=$(ip route list | grep ${euu_ip} | awk '{print $9}' | awk -F "." '{print $1"."$2"."$3"."$4+1}')
+    ip route add {{ .Values.endpoints.ue.local_addresses.sgi_ip }} via ${final_ip} dev nsm0
+    tail -f /dev/null
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogtp-conf-ext
+data:
+  setup.sh: |-
+    #! /bin/bash
+    apt-get update
+    apt-get -y install python3 iproute2
+    sgi_ip="{{ .Values.endpoints.ext.local_addresses.sgi_ip }}"
+    final_ip=$(ip route list | grep ${sgi_ip} | awk '{print $9}' | awk -F "." '{print $1"."$2"."$3"."$4+1}')
+    listen_ip=$(ip route list | grep ${sgi_ip} | awk '{print $9}')
+    ip route add {{ .Values.endpoints.ext.local_addresses.euu_ip }} via ${final_ip} dev nsm0
+    python3 -m http.server 80 --bind ${listen_ip}

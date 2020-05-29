@@ -1,0 +1,129 @@
+{{ range $k, $v := .Values.apps }}
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: {{ $k }}
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: {{ $k }}
+        networkservicemesh.io/impl: {{ $.Chart.Name }}
+    spec:
+      containers:
+      {{ if $v.endpoint_ip }}
+      - name: sidecar-nse
+        image: networkservicemesh/4g-network-sidecar-nse:latest
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: ENDPOINT_NETWORK_SERVICE
+            value: "{{ $.Chart.Name }}"
+          - name: ENDPOINT_LABELS
+            value: "app={{ $k }}"
+          - name: CLIENT_NETWORK_SERVICE
+            value: "{{ $.Chart.Name }}"
+          - name: CLIENT_LABELS
+            value: "app={{ $k }}"
+          - name: TRACER_ENABLED
+            value: "true"
+          - name: IP_ADDRESS
+            value: {{ $v.endpoint_ip }}
+        resources:
+          limits:
+            networkservicemesh.io/socket: 1
+      {{ end }}
+      - name: python
+        image: python:slim
+        command: ["python", "-m", "http.server", "{{ $v.idPort }}"]
+        imagePullPolicy: IfNotPresent
+      - name: {{ $.Chart.Name }}-{{ $k }}
+        image: "soelvkaer/gogtp:{{$k}}"
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh","-c"]
+        {{ if eq $k "enb" }}
+        args:
+          - sleep 40;
+            ./setup/setup.sh /root/enb.yml /enb.yml;
+        {{ else }}
+        args:
+          - sleep 10;
+            ./setup/setup.sh /root/{{$k}}.yml /{{$k}}.yml;
+        {{ end }}
+        securityContext:
+          privileged: true
+        resources:
+          limits:
+            cpu: "3"
+        volumeMounts:
+        - name: gogtp-conf-{{$k}}
+          mountPath: /root/
+        - name: gogtp-setup-{{$k}}
+          mountPath: /setup/
+      volumes:
+      - name: gogtp-conf-{{$k}}
+        configMap:
+          name: gogtp-conf-{{$k}}
+          defaultMode: 0777
+      - name: gogtp-setup-{{$k}}
+        configMap:
+          name: gogtp-setup-{{$k}}
+          defaultMode: 0777
+      nodeSelector:
+        kubernetes.io/hostname: {{ $v.node }}
+metadata:
+  name: {{ $.Chart.Name }}-{{$k}}
+  annotations:
+    {{ if $v.networks }}
+    ns.networkservicemesh.io: {{ $local := dict "first" true }}{{ range $i, $network := $v.networks }}{{ if not $local.first }},{{ end }}{{$.Chart.Name}}?app={{ $network }}{{ $_ := set $local "first" false }}{{ end }}
+    {{ end }}
+{{ end }}
+
+{{ range $k, $v := .Values.endpoints }}
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: {{ $k }}
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: {{ $k }}
+        networkservicemesh.io/impl: {{ $.Chart.Name }}
+    spec:
+      containers:
+      - name: python
+        image: python:slim
+        command: ["python", "-m", "http.server", "{{ $v.idPort }}"]
+        imagePullPolicy: IfNotPresent
+      - name: {{ $.Chart.Name }}-{{$k}}
+        image: "ubuntu:18.04"
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash","-c"]
+        args: ["./root/setup.sh"]
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        resources:
+          limits:
+            cpu: "3"
+        volumeMounts:
+        - name: gogtp-conf-{{$k}}
+          mountPath: /root/
+      volumes:
+      - name: gogtp-conf-{{$k}}
+        configMap:
+          name: gogtp-conf-{{$k}}
+          defaultMode: 0777
+      nodeSelector:
+        kubernetes.io/hostname: {{ $v.node }}
+metadata:
+  name: {{ $.Chart.Name }}-{{$k}}
+  annotations:
+    ns.networkservicemesh.io: {{ $local := dict "first" true }}{{ range $i, $network := $v.networks }}{{ if not $local.first }},{{ end }}{{$.Chart.Name}}?app={{ $network }}{{ $_ := set $local "first" false }}{{ end }}
+{{ end }}

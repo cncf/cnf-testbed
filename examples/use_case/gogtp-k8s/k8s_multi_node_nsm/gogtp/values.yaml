@@ -1,0 +1,79 @@
+apps:
+  pgw:
+    node: "node2"
+    idPort: "1234"
+    real: true
+    endpoint_ip: "10.60.1.0/24"
+    networks: 
+      - lte-s5u
+      - lte-s5c
+    ports: "1235 1239"
+    local_addresses: 
+      s5c_ip: "10.60.2.*1235"
+      s5u_ip: "10.60.2.*1235"
+      sgi_ip: "10.60.1.*1239"
+    sgi_if_name: "10.60.1.IF1239"
+    route_subnet: "10.60.0.0/16"
+
+  sgw:
+    node: "node1"
+    idPort: "1235"
+    real: true
+    endpoint_ip: "10.60.2.0/24"
+    networks: 
+      - lte-s11
+      - lte-s1u
+    ports: "1234 1236 1237"
+    local_addresses:
+      s11_ip: "10.60.3.*1236"
+      s1u_ip: "10.60.4.*1237"
+      s5c_ip: "10.60.2.*1234"
+      s5u_ip: "10.60.2.*1234"
+
+  mme:
+    node: "node1"
+    idPort: "1236"
+    real: true
+    endpoint_ip: "10.60.3.0/24"
+    networks: 
+    ports: "1237 1235"
+    local_addresses:
+      s1c_addr: "0.0.0.0:36412"
+      s11_ip: "0.0.0.0"
+    sgw_s11_ip: "10.60.3.-1235"
+    pgw_s5c_ip: "10.60.2.1"
+
+  enb:
+    node: "node1"
+    idPort: "1237"
+    real: true
+    endpoint_ip: "10.60.4.0/24"
+    networks: 
+      - lte-s1c
+    ports: "1235 1236 1238"
+    local_addresses:
+      s1c_ip: "10.60.3.*1236"
+      s1u_ip: "10.60.4.*1235"
+      euu_ip: "10.60.4.-1238"
+      euu_if: "10.60.4.IF1238"
+    mme_addr: "10.60.3.+1236:36412"
+    prom_addr:
+
+endpoints:
+  ue:
+    node: "node1"
+    idPort: "1238"
+    networks: 
+      - lte-euu
+    local_addresses:
+      euu_ip: "10.60.4.*"
+      sgi_ip: "10.60.1.0/24"
+
+  ext:
+    node: "node2"
+    idPort: "1239"
+    networks: 
+      - lte-sgi
+    local_addresses:
+      sgi_ip: "10.60.1.*"
+      euu_ip: "10.60.4.0/24"

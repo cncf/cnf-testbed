@@ -1,0 +1,57 @@
+---
+apiVersion: networkservicemesh.io/v1alpha1
+kind: NetworkService
+metadata:
+  name: {{ $.Chart.Name }}
+spec:
+  payload: IP
+  matches:
+    - match:
+      sourceSelector:
+        app: lte-sgi
+      route:
+        - destination:
+          destinationSelector:
+            app: pgw
+    - match:
+      sourceSelector:
+        app: lte-s5u
+      route:
+        - destination:
+          destinationSelector:
+            app: sgw
+    - match:
+      sourceSelector:
+        app: lte-s5c
+      route:
+        - destination:
+          destinationSelector:
+            app: sgw
+    - match:
+      sourceSelector:
+        app: lte-s11
+      route:
+        - destination:
+          destinationSelector:
+            app: mme
+    - match:
+      sourceSelector:
+        app: lte-s1u
+      route:
+        - destination:
+          destinationSelector:
+            app: enb
+    - match:
+      sourceSelector:
+        app: lte-s1c
+      route:
+        - destination:
+          destinationSelector:
+            app: mme
+    - match:
+      sourceSelector:
+        app: lte-euu
+      route:
+        - destination:
+          destinationSelector:
+            app: enb
