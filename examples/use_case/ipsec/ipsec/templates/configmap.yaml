@@ -18,8 +18,8 @@ data:
     set int ip addr memif2/{{ index .memid 1 }} {{ index .subnet 1 }}
     set int state memif1/{{ index .memid 0 }} up
     set int state memif2/{{ index .memid 1 }} up
-    set ip arp static memif1/{{ index .memid 0 }} {{ index .remip 0 }} {{ tpl ( index .remmac 0 ) $ }}
-    set ip arp static memif2/{{ index .memid 1 }} {{ index .remip 1 }} {{ tpl ( index .remmac 1 ) $ }}
+    set ip neighbor static memif1/{{ index .memid 0 }} {{ index .remip 0 }} {{ tpl ( index .remmac 0 ) $ }}
+    set ip neighbor static memif2/{{ index .memid 1 }} {{ index .remip 1 }} {{ tpl ( index .remmac 1 ) $ }}
     {{ if .ipsec_endpoint }}
     create ipsec tunnel local-ip {{ index .ipsec_ip 0 }} remote-ip {{ index .ipsec_ip 1 }} local-spi {{ index .ipsec_spi 0 }} remote-spi {{ index .ipsec_spi 1 }} local-crypto-key {{ index .ipsec_key 0 }} remote-crypto-key {{ index .ipsec_key 1 }} crypto-alg aes-gcm-128
     {{ if eq .ipsec_direction "right" }}

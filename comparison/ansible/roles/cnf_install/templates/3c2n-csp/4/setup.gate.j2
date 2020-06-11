@@ -7,8 +7,8 @@ set int ip addr memif2/4 172.16.20.11/24
 set int state memif1/10 up
 set int state memif2/4 up
 
-set ip arp static memif1/10 172.16.31.10 52:54:01:00:01:bb
-set ip arp static memif2/4 172.16.20.101 {{ nfvbench_macs[1] }}
+set ip neighbor static memif1/10 172.16.31.10 52:54:01:00:01:bb
+set ip neighbor static memif2/4 172.16.20.101 {{ nfvbench_macs[1] }}
 
 ip route add 172.16.64.0/18 via 172.16.31.10
 ip route add 172.16.192.0/18 via 172.16.20.101

@@ -8,8 +8,8 @@ create interface memif id 2 socket-id 2 hw-addr 52:54:00:00:02:bb slave rx-queue
 set interface ip address memif2/2 172.16.32.10/24
 set interface state memif2/2 up
 
-set ip arp static memif1/10 172.16.31.10 52:54:00:00:01:bb
-set ip arp static memif2/2 172.16.32.11 52:54:00:00:03:aa
+set ip neighbor static memif1/10 172.16.31.10 52:54:00:00:01:bb
+set ip neighbor static memif2/2 172.16.32.11 52:54:00:00:03:aa
 
 ip route add 172.16.64.0/18 via 172.16.31.10
 
