@@ -53,6 +53,7 @@ endif
 # Update vars after loading env file
 HOSTS_FILE := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/kubernetes.env
 KUBECONFIG := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/mycluster/artifacts/admin.conf
+NIC_FILE := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/packet_gen_nics.env
 
 deps : SHELL := /bin/bash
 deps:

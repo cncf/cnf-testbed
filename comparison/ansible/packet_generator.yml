@@ -28,8 +28,6 @@
     - packet_l2
 
 - hosts: all
-  vars:
-    isolated_cores: "{{ lookup('env', 'ISOLATED_CORES') }}"
   pre_tasks:
   - name: Apt update
     apt:
@@ -116,7 +114,9 @@
 
   vars:
     visualization: true
+    hugepages: 10240
     intel: "{{ true if quad_intel is defined else false }}"
+    isolated_cores: "{{ lookup('env', 'ISOLATED_CORES') }}"
     trex_port_0_pci: "{{ ansible_eno3.pciid if intel else ansible_enp94s0f4.pciid }}"
     trex_port_1_pci: "{{ ansible_eno4.pciid if intel else ansible_enp94s0f5.pciid }}"
     mellanox_pf: "enp94s0f1"
