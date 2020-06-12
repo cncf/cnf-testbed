@@ -2,7 +2,7 @@
 - name: Docker start opnfv/nfvbench (Intel)
   docker_container:
     name: nfvbench
-    image: opnfv/nfvbench:3.4.1
+    image: opnfv/nfvbench:4.3.0
     state: started
     network_mode: host
     privileged: true
@@ -16,7 +16,7 @@
 - name: Docker start opnfv/nfvbench (Mellanox)
   docker_container:
     name: nfvbench
-    image: opnfv/nfvbench:3.4.1
+    image: opnfv/nfvbench:4.3.0
     state: started
     network_mode: host
     privileged: true
@@ -34,7 +34,7 @@
   when: not intel
 
 - name: Allow shared use of NIC in TRex (i40e)
-  command: docker exec -i nfvbench sed -e '/self.check_i40e_binds(if_list)/ s/^#*/#/' -i /opt/trex/v2.56/dpdk_setup_ports.py
+  command: docker exec -i nfvbench sed -e '/self.check_i40e_binds(if_list)/ s/^#*/#/' -i /opt/trex/v2.79/dpdk_setup_ports.py
   when: intel
 
 - name: Write nfvbench config file
