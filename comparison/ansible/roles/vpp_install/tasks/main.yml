@@ -54,10 +54,8 @@
     name: "{{ packages }}"
   vars:
     packages:
-    - vpp={{vpp_ver}}-release
-    - vpp-dev={{vpp_ver}}-release
-    - vpp-dbg={{vpp_ver}}-release
     - libvppinfra={{vpp_ver}}-release
+    - vpp={{vpp_ver}}-release
     - vpp-plugin-core={{vpp_ver}}-release
     - vpp-plugin-dpdk={{vpp_ver}}-release
   when: ansible_os_family == "Debian"
