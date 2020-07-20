@@ -117,7 +117,7 @@
     hugepages: 10240
     intel: "{{ true if quad_intel is defined else false }}"
     isolated_cores: "{{ lookup('env', 'ISOLATED_CORES') }}"
-    trex_port_0_pci: "{{ ansible_eno3.pciid if intel else ansible_enp94s0f4.pciid }}"
+    trex_port_0_pci: "{{ ansible_eno2.pciid if intel else ansible_enp94s0f4.pciid }}"
     trex_port_1_pci: "{{ ansible_eno4.pciid if intel else ansible_enp94s0f5.pciid }}"
     mellanox_pf: "enp94s0f1"
     nfvbench_service_chain_count: 3
@@ -180,7 +180,7 @@
             val: 'layer3+4'
           - param: 'bond-lacp-rate'
             val: '1'
-        slaves: "{{ lookup('vars','bond_intel_' + intel) }}"
+        slaves: "{{ lookup('vars','bond_intel_' + intel | string | lower) }}"
       - name: 'bond0:0'
         configure: true
         enable: false
@@ -192,7 +192,7 @@
             val: "route add -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
           - param: 'post-down'
             val: "route del -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
-    network_interfaces: "{{ lookup('vars','intf_intel_' + intel) }}"
+    network_interfaces: "{{ lookup('vars','intf_intel_' + intel | string | lower) }}"
 
   roles:
     - nfvbench_common
