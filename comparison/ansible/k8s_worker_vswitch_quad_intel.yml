@@ -13,8 +13,6 @@
       vlan1:
         interface: eth1
       vlan2:
-        interface: eth2
-      vlan3:
         interface: eth3
   roles:
     - packet_l2
@@ -39,7 +37,7 @@
     # Never build from source here
     vpp_src: false
     nic_port2: "{{ ansible_eno2.pciid }}"
-    nic_port3: "{{ ansible_eno3.pciid }}"
+    nic_port3: "{{ ansible_eno4.pciid }}"
     dns_nameservers:
       - "{{ ansible_dns.nameservers[0] }}"
       - "{{ ansible_dns.nameservers[1] }}"
@@ -64,7 +62,8 @@
           - param: 'bond-lacp-rate'
             val: '1'
         slaves:
-          - "{{ ansible_bond0.slaves[0] }}"
+          - "eno1"
+          - "eno3"
       - name: 'bond0:0'
         configure: true
         method: 'static'
@@ -76,7 +75,13 @@
           - param: 'post-down'
             val: "route del -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
     network_interfaces:
-      - name: "{{ ansible_bond0.slaves[0] }}"
+      - name: "eno1"
+        configure: true
+        method: 'manual'
+        parameters:
+          - param:
+            val: 'bond-master bond0'
+      - name: "eno3"
         configure: true
         method: 'manual'
         parameters:
@@ -97,9 +102,6 @@
     pip:
       name: docker-py
     when: vswitch_container
-  - name: Get bond interface slaves
-    setup:
-      filter: "{{ ansible_bond0.slaves }}"
   - name: Get dns servers
     setup: 
       filter: "{{ ansible_dns.nameservers }}"
@@ -124,9 +126,9 @@
   - name: Get NIC port 2 pci id
     setup:
       filter: "{{ ansible_eno2.pciid }}"
-  - name: Get NIC port 3 pci id
+  - name: Get NIC port 4 pci id
     setup:
-      filter: "{{ ansible_eno3.pciid }}"
+      filter: "{{ ansible_eno4.pciid }}"
   post_tasks:
   - name: Reboot Server
     reboot:

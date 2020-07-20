@@ -244,7 +244,7 @@ else
     else
         # This is most probably Packet quad intel env
         VPP_INTERFACES=( "TenGigabitEthernet1a/0/1"
-                         "TenGigabitEthernet1a/0/2" )
+                         "TenGigabitEthernet1a/0/3" )
     fi
     generate_vpp_config_intel || die
 fi

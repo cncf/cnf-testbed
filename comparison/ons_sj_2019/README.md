@@ -40,7 +40,7 @@ The configuration should look similar to the below.
 ```
               Name               Idx    State  MTU (L3/IP4/IP6/MPLS)     Counter          Count
 TenGigabitEthernet1a/0/1          1      up          9200/0/0/0
-TenGigabitEthernet1a/0/2          2      up          9200/0/0/0
+TenGigabitEthernet1a/0/3          2      up          9200/0/0/0
 local0                            0     down          0/0/0/0
 memif1/1                          3      up          9000/0/0/0
 memif2/2                          4      up          9000/0/0/0
@@ -79,7 +79,7 @@ Start out by copying the existing startup to the new filename, i.e. `cp /tmp/vpp
 -    num-rx-queues 2
 +    num-rx-queues 4
    }
--  dev 0000:1a:00.1 dev 0000:1a:00.2
+-  dev 0000:1a:00.1 dev 0000:1a:00.3
 +  dev 0000:1a:00.1
    no-multi-seg
    no-tx-checksum-offload
@@ -241,7 +241,7 @@ bin memif_socket_filename_add_del add id 12 filename /etc/vpp/sockets/memif12.so
 create interface memif id 12 socket-id 12 master
 
 set int state TenGigabitEthernet1a/0/1 up
-set int state TenGigabitEthernet1a/0/2 up
+set int state TenGigabitEthernet1a/0/3 up
 
 set int l2 bridge TenGigabitEthernet1a/0/1 1
 set int l2 bridge memif1/1 1
@@ -256,13 +256,13 @@ set int l2 bridge memif9/9 1
 set int l2 bridge memif10/10 2
 set int l2 bridge memif11/11 2
 set int l2 bridge memif12/12 3
-set int l2 bridge TenGigabitEthernet1a/0/2 3
+set int l2 bridge TenGigabitEthernet1a/0/3 3
 
 set int mtu 9200 TenGigabitEthernet1a/0/1
-set int mtu 9200 TenGigabitEthernet1a/0/2
+set int mtu 9200 TenGigabitEthernet1a/0/3
 
 set int state TenGigabitEthernet1a/0/1 up
-set int state TenGigabitEthernet1a/0/2 up
+set int state TenGigabitEthernet1a/0/3 up
 set int state memif1/1 up
 set int state memif2/2 up
 set int state memif3/3 up
