@@ -28,7 +28,7 @@ The host vSwitch (VPP) configuration must be updated prior to running this examp
 On the worker node, start by checking the PCI devices used by VPP:
 ```
 $ grep dev /etc/vpp/startup.conf | grep -v default
-## (example, n2.xlarge) dev 0000:1a:00.1 dev 0000:1a:00.2
+## (example, n2.xlarge) dev 0000:1a:00.1 dev 0000:1a:00.3
 ## (example, m2.xlarge) dev 0000:5e:00.1
 ## n2.xlarge (Intel) servers have two devices, m2.xlarge (Mellanox) has one device
 ```
@@ -40,7 +40,7 @@ $ cp /etc/vpp/templates/3c2n-csp.gate /etc/vpp/setup.gate
 
 Once the filw has been replaced, open it (`/etc/vpp/setup.gate`) with your favorite editor, and make sure the device names match the PCI devices listed previously. Make sure all instances of the name are updated:
 ```
-## (example, n2.xlarge) TenGigabitEthernet1a/0/1, TenGigabitEthernet1a/0/2
+## (example, n2.xlarge) TenGigabitEthernet1a/0/1, TenGigabitEthernet1a/0/3
 ## (example, m2.xlarge) TwentyFiveGigabitEthernet5e/0/1
 ```
 

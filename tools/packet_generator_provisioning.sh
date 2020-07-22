@@ -61,7 +61,7 @@ docker run \
        -e PACKET_API_TOKEN=${PACKET_AUTH_TOKEN} \
        -e ANSIBLE_HOST_KEY_CHECKING=False \
        --entrypoint=ruby \
-       -ti cnfdeploytools:latest /packet_api/l2_packet_networking.rb --show-server-ports $PKTGEN_HOSTNAMES --project-name="$PACKET_PROJECT_NAME" --packet-url='api.packet.net' --facility="$FACILITY" | jq -r '.[] | select(.name=="eth2") | .data.mac' | tee -a $NIC_FILE
+       -ti cnfdeploytools:latest /packet_api/l2_packet_networking.rb --show-server-ports $PKTGEN_HOSTNAMES --project-name="$PACKET_PROJECT_NAME" --packet-url='api.packet.net' --facility="$FACILITY" | jq -r '.[] | select(.name=="eth1") | .data.mac' | tee -a $NIC_FILE
 
 docker run \
        --rm \

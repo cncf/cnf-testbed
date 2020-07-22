@@ -217,7 +217,7 @@ $ ./run_test.sh
 Let it run for a bit until you see the following lines:
 ```
 ## When using "n2.xlarge.x86" (Intel NIC)
-INFO    Port 0: Ethernet Controller X710 for 10GbE SFP+ speed=10Gbps mac=e4:43:4b:56:c4:32 pci=0000:1a:00.2 driver=net_i40e
+INFO    Port 0: Ethernet Controller X710 for 10GbE SFP+ speed=10Gbps mac=e4:43:4b:56:c4:31 pci=0000:1a:00.1 driver=net_i40e
 INFO    Port 1: Ethernet Controller X710 for 10GbE SFP+ speed=10Gbps mac=e4:43:4b:56:c4:33 pci=0000:1a:00.3 driver=net_i40e
 
 ## When using "m2.xlarge.x86" (Mellanox NIC)

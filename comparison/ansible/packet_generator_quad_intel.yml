@@ -58,7 +58,7 @@
       filter: "{{ ansible_bond0_0.ipv4.network }}"
   - name: Get trex_port_0 pci id
     setup:
-      filter: "{{ ansible_eno3.pciid }}"
+      filter: "{{ ansible_eno2.pciid }}"
   - name: Get trex_port_1 pci id
     setup:
       filter: "{{ ansible_eno4.pciid }}"
@@ -67,7 +67,7 @@
   #   reboot:
 
   vars:
-    trex_port_0_pci: "{{ ansible_eno3.pciid }}"
+    trex_port_0_pci: "{{ ansible_eno2.pciid }}"
     trex_port_1_pci: "{{ ansible_eno4.pciid }}"
     nfvbench_service_chain_count: 1
     nfvbench_mac_addrs_left: "'52:54:00:00:00:aa'"
@@ -103,7 +103,8 @@
           - param: 'bond-lacp-rate'
             val: '1'
         slaves:
-          - "{{ ansible_bond0.slaves[0] }}"
+          - "eno1"
+          - "eno3"
       - name: 'bond0:0'
         configure: true
         method: 'static'
@@ -115,7 +116,13 @@
           - param: 'post-down'
             val: "route del -net 10.0.0.0/8 gw {{ ansible_bond0_0.ipv4.network }}"
     network_interfaces:
-      - name: "{{ ansible_bond0.slaves[0] }}"
+      - name: "eno1"
+        configure: true
+        method: 'manual'
+        parameters:
+          - param:
+            val: 'bond-master bond0'
+      - name: "eno3"
         configure: true
         method: 'manual'
         parameters:

@@ -76,10 +76,10 @@
     wait_for: timeout=10
   - name: Get trex_port_0 pci id
     setup:
-      filter: "{{ ansible_enp94s0f4.pciid }}"
+      filter: "{{ ansible_enp94s1f2.pciid }}"
   - name: Get trex_port_1 pci id
     setup:
-      filter: "{{ ansible_enp94s0f5.pciid }}"
+      filter: "{{ ansible_enp94s1f3.pciid }}"
   post_tasks:
   - name: Reboot Server
     reboot:
@@ -89,8 +89,8 @@
       restart: yes
 
   vars:
-    trex_port_0_pci: "{{ ansible_enp94s0f4.pciid }}"
-    trex_port_1_pci: "{{ ansible_enp94s0f5.pciid }}"
+    trex_port_0_pci: "{{ ansible_enp94s1f2.pciid }}"
+    trex_port_1_pci: "{{ ansible_enp94s1f3.pciid }}"
     mellanox_pf: "enp94s0f1"
     nfvbench_service_chain_count: 1
     nfvbench_mac_addrs_left: "'52:54:00:00:00:aa'"

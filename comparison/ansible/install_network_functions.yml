@@ -26,12 +26,12 @@
         msg: "Traffic Generator: {{ ansible_hostname }}"
     - name: get TG MACs (MLX)
       set_fact:
-        tg_mac1: "{{ ansible_enp94s0f4.macaddress }}"
-        tg_mac2: "{{ ansible_enp94s0f5.macaddress }}"
+        tg_mac1: "{{ ansible_enp94s1f2.macaddress }}"
+        tg_mac2: "{{ ansible_enp94s1f3.macaddress }}"
       when: sut_nic == "mellanox"
     - name: get TG MACs (Intel)
       set_fact:
-        tg_mac1: "{{ ansible_eno3.macaddress }}"
+        tg_mac1: "{{ ansible_eno2.macaddress }}"
         tg_mac2: "{{ ansible_eno4.macaddress }}"
       when: sut_nic == "intel"
     - debug:
