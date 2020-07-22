@@ -3,21 +3,31 @@
   apt:
     name: python-pexpect
 
+- apt_repository:
+    repo: ppa:deadsnakes/ppa
+
+- name: Install Python3.6 for Ubuntu LTS 16.04
+  apt:
+    name: python3.6
+
 - name: Get tarball
   get_url:
-    url: http://content.mellanox.com/ofed/MLNX_OFED-4.3-1.0.1.0/MLNX_OFED_LINUX-4.3-1.0.1.0-ubuntu16.04-x86_64.tgz
-    dest: /tmp/MLNX_OFED_LINUX-4.3-1.0.1.0-ubuntu16.04-x86_64.tgz
+    url: http://content.mellanox.com/ofed/MLNX_OFED-4.6-1.0.1.1/MLNX_OFED_LINUX-4.6-1.0.1.1-ubuntu16.04-x86_64.tgz
+    dest: /tmp/MLNX_OFED_LINUX-4.6-1.0.1.1-ubuntu16.04-x86_64.tgz
 
 - name: Expand the tarball
   unarchive:
-    src: /tmp/MLNX_OFED_LINUX-4.3-1.0.1.0-ubuntu16.04-x86_64.tgz
+    src: /tmp/MLNX_OFED_LINUX-4.6-1.0.1.1-ubuntu16.04-x86_64.tgz
     dest: /tmp
     remote_src: true
 
 - name: Install OFED
   command: ./mlnxofedinstall --with-mft --with-mstflint --dpdk --upstream-libs --force
   args:
-    chdir: /tmp/MLNX_OFED_LINUX-4.3-1.0.1.0-ubuntu16.04-x86_64
+    chdir: /tmp/MLNX_OFED_LINUX-4.6-1.0.1.1-ubuntu16.04-x86_64
+  retries: 2
+  register: ofedresult
+  until: ofedresult.rc == 0
 
 - name: Enable VFs
   template: src=rc.local.j2 dest=/etc/rc.local
