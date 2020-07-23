@@ -21,7 +21,7 @@ Find the 64bit debian package and download to the Ubuntu host system
 **Script**
 
 ```
-git clone git@github.com:cncf/cnfs.git
+git clone --depth 1 git@github.com:cncf/cnfs.git
 cd cnfs/comparison/box-by-box-kvm-docker
 chmod +x install_kvm_prereqs.sh
 ./install_kvm_prereqs.sh
@@ -58,7 +58,7 @@ Install Docker following the docker-ce install documentation https://docs.docker
  
  **Script**
  ```
-git clone git@github.com:cncf/cnfs.git
+git clone --depth 1 git@github.com:cncf/cnfs.git
 cd cnfs/comparison/box-by-box-kvm-docker
 chmod +x install_docker_prereqs.sh
 ./install_docker_prereqs.sh
@@ -70,4 +70,4 @@ Test that docker is installed correctly with: `docker run hello-world`
 
 ### Clone comparison code
 
-git clone git@github.com:cncf/cnfs.git
+git clone --depth 1 git@github.com:cncf/cnfs.git

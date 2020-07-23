@@ -39,7 +39,7 @@ $ chmod +x ./kubectl
 $ mv ./kubectl /usr/local/bin/kubectl
 
 ## Clone CNF Testbed
-$ git clone https://github.com/cncf/cnf-testbed.git
+$ git clone --depth 1 https://github.com/cncf/cnf-testbed.git
 ```
 
 Then, create a keypair on the workstation:

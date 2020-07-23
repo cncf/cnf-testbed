@@ -180,7 +180,7 @@ function install_vpp_mlx () {
     fi
 
     # Build and install VPP
-    git clone --branch stable/1807 https://gerrit.fd.io/r/vpp || {
+    git clone --depth 1 --branch stable/1807 https://gerrit.fd.io/r/vpp || {
         die "Failed to clone vpp!"
     }
     pushd vpp
