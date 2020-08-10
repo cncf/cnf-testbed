@@ -31,7 +31,7 @@ bash <(curl -sL https://get.docker.com)
 Once your docker environment is in existence, we will want to clone the CNCF/CNFS git repository, either by using the git client if you have one installed:
 
 ```
-git clone https://github.com/cncf/cnfs.git
+git clone --depth 1 https://github.com/cncf/cnfs.git
 ```
 
 Or by downloading and extracting the latest bundle:
@@ -86,7 +86,7 @@ Optionally, specify the facility (PACKET_FACILITY) and machine type (PACKET_MAST
 Example usage:
 
 ```
-git clone https://github.com/cncf/cnfs.git
+git clone --depth 1 https://github.com/cncf/cnfs.git
 cd cnfs/comparison/openstack_chained_nf_test/deploy_openstack
 export PACKET_PROJECT_ID=YOUR_PACKET_PROJECT_ID 
 export PACKET_AUTH_TOKEN=YOUR_PACKET_API_KEY

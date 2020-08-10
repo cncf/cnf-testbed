@@ -5,7 +5,7 @@ Start by ensuring that your system ssh keys are availiable under ~/.ssh/id_rsa a
 Example usage:
 
 ```
-git clone https://github.com/cncf/cnfs.git
+git clone --depth 1 https://github.com/cncf/cnfs.git
 cd cnfs/comparison/cnf_edge_throughput/packet_generator
 export PACKET_PROJECT_ID=YOUR_PACKET_PROJECT_ID 
 export PACKET_AUTH_TOKEN=YOUR_PACKET_API_KEY

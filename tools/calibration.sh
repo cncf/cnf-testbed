@@ -51,7 +51,7 @@ function install_jitter_tool () {
 
     if [ ! -d pma_tools ]; then
         rm -rf pma_tools || die "Failed to delete pma_tools directory!"
-        git clone https://gerrit.fd.io/r/pma_tools || die "Failed to clone!"
+        git clone --depth 1 https://gerrit.fd.io/r/pma_tools || die "Failed to clone!"
         pushd pma_tools/jitter
         make
         popd

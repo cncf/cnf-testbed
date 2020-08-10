@@ -7,7 +7,7 @@ Set the environment variables for the project id (PACKET_PROJECT_ID), API key (P
 Example usage:
 
 ```
-git clone https://github.com/cncf/cnfs.git
+git clone --depth 1 https://github.com/cncf/cnfs.git
 cd cnfs/comparison/openstack_chained_nf_test/deploy_openstack
 export PACKET_PROJECT_ID=YOUR_PACKET_PROJECT_ID 
 export PACKET_AUTH_TOKEN=YOUR_PACKET_API_KEY

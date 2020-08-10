@@ -106,7 +106,7 @@ Caveats:
     1. edit global.env file with packet.net details
     1. load environment  variables
     ```
-    git clone git@github.com:cncf/cnfs.git
+    git clone --depth 1 git@github.com:cncf/cnfs.git
     cd cnfs/comparison/kubecon18-chained_nf_test
     cp template.env global.env
     emacs global.env

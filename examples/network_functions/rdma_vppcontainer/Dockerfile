@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python-pexpect \
     ca-certificates
 
-RUN git clone https://github.com/FDio/vpp.git --branch v20.01 --single-branch /srv/vpp
+RUN git clone --depth 1 https://github.com/FDio/vpp.git --branch v20.01 --single-branch /srv/vpp
 
 WORKDIR /srv/vpp
 

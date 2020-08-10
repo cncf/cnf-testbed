@@ -4,7 +4,7 @@ LABEL maintainer="Andrew Kutz <akutz@vmware.com>"
 
 RUN apk --no-cache add git
 # Build the IBM Bluemix Terraform provider
-RUN git clone https://github.com/IBM-Cloud/terraform-provider-ibm.git \
+RUN git clone --depth 1 https://github.com/IBM-Cloud/terraform-provider-ibm.git \
     $GOPATH/src/github.com/IBM-Cloud/terraform-provider-ibm && \
     go install github.com/IBM-Cloud/terraform-provider-ibm
 
@@ -15,7 +15,7 @@ RUN git clone https://github.com/terraform-providers/terraform-provider-oci.git 
     go install github.com/terraform-providers/terraform-provider-oci
 
 # Build the Packet.net terraform provider
-RUN git clone https://github.com/terraform-providers/terraform-provider-packet.git \
+RUN git clone --depth 1 https://github.com/terraform-providers/terraform-provider-packet.git \
     $GOPATH/src/github.com/terraform-providers/terraform-provider-packet && \
     cd $GOPATH/src/github.com/terraform-providers/terraform-provider-packet && \
     go install github.com/terraform-providers/terraform-provider-packet

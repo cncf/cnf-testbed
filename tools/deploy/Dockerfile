@@ -2,7 +2,7 @@ FROM golang:buster as golang
 MAINTAINER "Denver Williams <denver@debian.nz>"
 
 RUN apt install -y git make
-RUN git clone https://github.com/denverwilliams/terraform-provisioner-ansible.git \
+RUN git clone --depth 1 https://github.com/denverwilliams/terraform-provisioner-ansible.git \
     $GOPATH/src/github.com/radekg/terraform-provisioner-ansible/ && \
     cd $GOPATH/src/github.com/radekg/terraform-provisioner-ansible/ && \
     make build-linux
@@ -26,7 +26,7 @@ RUN apt update && \
     ansible-galaxy install mrlesmithjr.config-interfaces 
    
 # Install infra-provisioning
-RUN git clone https://github.com/crosscloudci/infra-provisioning.git -b node_groups /infra-provisioning \
+RUN git clone --depth 1 https://github.com/crosscloudci/infra-provisioning.git -b node_groups /infra-provisioning \
     && cp -a /infra-provisioning/terraform /terraform \
     && cp /infra-provisioning/create_nodes.sh /terraform \
     && cd /terraform \
