@@ -19,7 +19,10 @@
     - "/opt/Elastic"
 
 - name: Add Elasticsearch configuration
-  template: src=elasticsearch-conf.j2 dest=/opt/Elastic/elasticsearch.yml
+  template:
+    src: elasticsearch-conf.j2
+    dest: /opt/Elastic/elasticsearch.yml
+    mode: '0644'
 
 - name: Docker start Elasticsearch
   docker_container:
@@ -59,7 +62,10 @@
     dest: /root/elastic_pass
 
 - name: Template certificate config
-  template: src=cert.j2 dest=/tmp/cert.conf
+  template:
+    src: cert.j2
+    dest: /tmp/cert.conf
+    mode: '0644'
 
 - name: Generate self signed certificate
   command: openssl req -config /tmp/cert.conf -new -x509 -sha256 -newkey rsa:2048 -nodes \
@@ -84,7 +90,10 @@
     - "local.cert.pem" 
 
 - name: Add Kibana configuration
-  template: src=kibana-conf.j2 dest=/opt/Kibana/kibana.yml
+  template:
+    src: kibana-conf.j2
+    dest: /opt/Kibana/kibana.yml
+    mode: '0644'
 
 - name: Docker start Kibana
   docker_container:
@@ -159,7 +168,10 @@
     status_code: 200
 
 - name: Add Fluentd configuration
-  template: src=fluentd-conf.j2 dest=/opt/Fluentd/fluentd.conf
+  template:
+    src: fluentd-conf.j2
+    dest: /opt/Fluentd/fluentd.conf
+    mode: '0644'
 
 - name: Copy Fluentd dockerfile to server
   copy:
