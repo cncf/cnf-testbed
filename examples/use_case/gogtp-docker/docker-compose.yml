@@ -1,0 +1,147 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2020
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+version: '2.4'
+
+services:
+  enb:
+    image: enb:0.7.5
+    build:
+      context: /opt/go-gtp/enb
+    volumes:
+      - /etc/go-gtp/enb_default.yml:/etc/enb.yml
+    networks:
+      lte-s1u:
+        ipv4_address: 172.21.0.11
+      lte-euu:
+        ipv4_address: 10.0.0.254
+      lte-s1c:
+        ipv4_address: 172.21.1.11
+    depends_on:
+      - sgw
+      - mme
+      - pgw
+    cap_add:
+      - NET_ADMIN
+  mme:
+    image: mme:0.7.5
+    build:
+      context: /opt/go-gtp/mme
+    volumes:
+      - /etc/go-gtp/mme_default.yml:/etc/mme.yml
+    networks:
+      lte-s11:
+        ipv4_address: 172.22.0.12
+      lte-s1c:
+        ipv4_address: 172.21.1.12
+  sgw:
+    image: sgw:0.7.5
+    build:
+      context: /opt/go-gtp/sgw
+    volumes:
+      - /etc/go-gtp/sgw_default.yml:/etc/sgw.yml
+    networks:
+      lte-s11:
+        ipv4_address: 172.22.0.13
+      lte-s1u:
+        ipv4_address: 172.21.0.13
+      lte-s5u:
+        ipv4_address: 172.25.0.13
+      lte-s5c:
+        ipv4_address: 172.25.1.13
+    cap_add:
+      - NET_ADMIN
+  pgw:
+    image: pgw:0.7.5
+    build:
+      context: /opt/go-gtp/pgw
+    volumes:
+      - /etc/go-gtp/pgw_default.yml:/etc/pgw.yml
+    networks:
+      lte-s5u:
+        ipv4_address: 172.25.0.14
+      lte-s5c:
+        ipv4_address: 172.25.1.14
+      lte-sgi:
+        ipv4_address: 10.0.1.254
+    cap_add:
+      - NET_ADMIN
+
+networks:
+  lte-euu:
+    driver: overlay
+    driver_opts:
+      com.docker.network.driver.overlay.vxlanid_list: 2
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/24
+          ip_range: 10.0.0.128/24
+  lte-sgi:
+    driver: overlay
+    driver_opts:
+      com.docker.network.driver.overlay.vxlanid_list: 3
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.1.0/24
+          ip_range: 10.0.1.128/24
+  lte-s1u:
+    driver: overlay
+    driver_opts:
+      com.docker.network.driver.overlay.vxlanid_list: 4
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/24
+          ip_range: 172.21.0.128/24
+  lte-s1c:
+    driver: overlay
+    driver_opts:
+      com.docker.network.driver.overlay.vxlanid_list: 5
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.1.0/24
+          ip_range: 172.21.1.128/24
+  lte-s11:
+    driver: overlay
+    driver_opts:
+      com.docker.network.driver.overlay.vxlanid_list: 6
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/24
+          ip_range: 172.22.0.128/24
+  lte-s5u:
+    driver: overlay
+    driver_opts:
+      com.docker.network.driver.overlay.vxlanid_list: 7
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/24
+          ip_range: 172.25.0.128/24
+  lte-s5c:
+    driver: overlay
+    driver_opts:
+      com.docker.network.driver.overlay.vxlanid_list: 8
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.1.0/24
+          ip_range: 172.25.1.128/24
