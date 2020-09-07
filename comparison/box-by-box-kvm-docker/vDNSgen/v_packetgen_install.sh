@@ -16,7 +16,7 @@ chmod +x dns_test.sh
 chmod +x set_dns_packet_rate
 
 sudo apt-get update -y
-sudo apt-get --no-install-recommends install -y --allow-unauthenticated -y make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates -y
+sudo apt-get --no-install-recommends install -y --allow-unauthenticated make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates
 pip install jsonschema
 
 # Install VPP

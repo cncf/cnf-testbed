@@ -9,7 +9,7 @@ chmod +x cnf_dns_test.sh
 chmod +x set_dns_packet_rate.sh
 
 apt-get update -y
-apt-get --no-install-recommends install -y --allow-unauthenticated -y make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates tcpdump iputils-ping dnsutils vim
+apt-get --no-install-recommends install -y --allow-unauthenticated make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates tcpdump iputils-ping dnsutils vim
 pip install jsonschema
 
 # Install VPP

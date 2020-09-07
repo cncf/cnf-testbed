@@ -1,7 +1,7 @@
 FROM golang:buster as golang
 MAINTAINER "Denver Williams <denver@debian.nz>"
 
-RUN apt-get --no-install-recommends install -y git make
+RUN apt-get --no-install-recommends install -y apt-utils git make
 RUN git clone --depth 1 https://github.com/denverwilliams/terraform-provisioner-ansible.git \
     $GOPATH/src/github.com/radekg/terraform-provisioner-ansible/ && \
     cd $GOPATH/src/github.com/radekg/terraform-provisioner-ansible/ && \

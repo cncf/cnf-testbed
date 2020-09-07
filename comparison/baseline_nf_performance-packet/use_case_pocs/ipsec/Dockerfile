@@ -9,7 +9,7 @@ CMD mkdir ~/sockets
 CMD tail -f /dev/null
 
 RUN apt-get update -y && \
-    apt-get --no-install-recommends install -y --allow-unauthenticated -y \
+    apt-get --no-install-recommends install -y --allow-unauthenticated \
         make \
         gcc \
         libcurl4-openssl-dev \

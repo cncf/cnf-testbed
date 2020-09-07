@@ -34,7 +34,7 @@ curl -L https://packagecloud.io/fdio/release/gpgkey |sudo apt-key add -
 rm /etc/apt/sources.list.d/99fd.io.list
 echo "deb [trusted=yes] https://packagecloud.io/fdio/release/ubuntu/ bionic main" | tee -a /etc/apt/sources.list.d/99fd.io.list
 apt-get update
-apt-get --no-install-recommends install -y vpp vpp-lib vpp-plugins vpp-dbg vpp-dev vpp-api-java vpp-api-python vpp-api-lua
+apt-get --no-install-recommends install -y apt-utils ca-certificates vpp vpp-lib vpp-plugins vpp-dbg vpp-dev vpp-api-java vpp-api-python vpp-api-lua
 
 config_sysctl
 

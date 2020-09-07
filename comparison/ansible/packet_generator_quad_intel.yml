@@ -31,7 +31,7 @@
     pip:
       name: docker-py
   - name: Install kernel headers
-    shell: "apt-get --no-install-recommends install -y linux-headers-$(uname -r)"
+    shell: "apt-get --no-install-recommends install -y apt-utils ca-certificates linux-headers-$(uname -r)"
   - name: Get bond interface slaves
     setup:
       filter: "{{ ansible_bond0.slaves }}"

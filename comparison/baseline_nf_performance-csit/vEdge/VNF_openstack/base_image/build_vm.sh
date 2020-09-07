@@ -18,7 +18,7 @@ fi
 SUDO=$(which sudo)
 
 if [ -z "$(which virt-sysprep)" ] ; then
-  $SUDO apt-get --no-install-recommends install -y libguestfs-tools
+  $SUDO apt-get --no-install-recommends install -y apt-utils ca-certificates libguestfs-tools
 fi
 
 # Build the VM with vagrant

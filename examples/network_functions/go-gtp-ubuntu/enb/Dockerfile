@@ -1,8 +1,8 @@
 FROM ubuntu:18.04
-RUN apt-get update && apt-get --no-install-recommends install -y \
+RUN apt update && apt-get --no-install-recommends install -y apt-utils ca-certificates \
     software-properties-common
 RUN add-apt-repository ppa:longsleep/golang-backports
-RUN apt-get update && apt-get --no-install-recommends install -y \
+RUN apt update && apt-get --no-install-recommends install -y \
     git \
     golang-1.14 \
     iproute2
