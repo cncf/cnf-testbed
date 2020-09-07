@@ -102,7 +102,7 @@ data:
   setup.sh: |-
     #! /bin/bash
     apt-get update
-    apt-get --no-install-recommends install -y iputils-ping wget iproute2
+    apt-get --no-install-recommends install -y apt-utils ca-certificates iputils-ping wget iproute2
     ip addr add {{ $.Values.endpoints.ue.local_addresses.euu_ip }}/24 dev net1
     ip route add {{ $.Values.endpoints.ext.local_addresses.sgi_ip }} via {{ $.Values.apps.enb.local_addresses.euu_ip }} dev net1
     tail -f /dev/null

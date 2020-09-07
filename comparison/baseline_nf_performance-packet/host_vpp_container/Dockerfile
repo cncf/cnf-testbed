@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 
 ENV VPP_VER "19.04.1"
 
-RUN apt-get update && apt-get --no-install-recommends install -y \
+RUN apt-get update && apt-get --no-install-recommends install -y apt-utils ca-certificates \
     vlan \
     vim \
     curl \

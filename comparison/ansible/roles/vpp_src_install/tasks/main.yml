@@ -126,7 +126,7 @@
   when: ansible_os_family == 'RedHat'
 
 - name: Install vpp packages
-  command: apt-get --no-install-recommends install -y {{item.path}}
+  command: apt-get --no-install-recommends install -y apt-utils ca-certificates {{item.path}}
   with_items: "{{vpp['files']}}"
   when: ansible_os_family == 'Debian'
 

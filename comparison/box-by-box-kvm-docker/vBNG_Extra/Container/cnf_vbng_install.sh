@@ -4,7 +4,7 @@
 cd /vBNG
 
 apt-get update -y
-apt-get --no-install-recommends install -y --allow-unauthenticated -y make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates vim
+apt-get --no-install-recommends install -y --allow-unauthenticated make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates vim
 pip install jsonschema
 
 # Install VPP

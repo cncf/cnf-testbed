@@ -26,7 +26,7 @@ RUN set -ex \
 		ruby \
 	' \
 	&& apt-get update \
-	&& apt-get --no-install-recommends install -y --no-install-recommends $buildDeps \
+	&& apt-get --no-install-recommends install -y apt-utils ca-certificates $buildDeps \
 	&& rm -rf /var/lib/apt/lists/* \
 	\
 	&& wget -O ruby.tar.xz "https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR%-rc}/ruby-$RUBY_VERSION.tar.xz" \
