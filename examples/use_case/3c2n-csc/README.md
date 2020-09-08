@@ -2,6 +2,8 @@
 
 This example installs the snake service chain example on a kubernetes worker node. Each node connects through a host vSwitch (VPP) using Memif interfaces.
 
+![Example "Snake" service chain](snake.png)
+
 ### Prerequisites
 A Kubernetes deployment with a host vSwitch (VPP) must be deployed prior to installing this example. A guide to deploying K8s can be found in [Deploy_K8s_CNF_Testbed.md](https://github.com/cncf/cnf-testbed/blob/master/docs/Deploy_K8s_CNF_Testbed.md)
 
