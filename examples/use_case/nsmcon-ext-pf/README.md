@@ -99,7 +99,7 @@ $ (example) echo "-eno3" > /sys/class/net/bond0/bonding/slaves
 
 A good way to check how the ports are mapped is to use lshw as follows:
 ```
-$ apt-get install lshw
+$ apt-get --no-install-recommends install -y lshw
 $ lshw -c network -businfo
 Bus info          Device     Class          Description
 =======================================================

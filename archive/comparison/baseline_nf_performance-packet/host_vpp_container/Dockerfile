@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 
 ENV VPP_VER "19.04.1"
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get --no-install-recommends install -y apt-utils ca-certificates \
     vlan \
     vim \
     curl \
@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN curl -s https://packagecloud.io/install/repositories/fdio/release/script.deb.sh | bash
 
-RUN apt-get install -y \
+RUN apt-get --no-install-recommends install -y \
     dpdk \
     vpp=${VPP_VER}-release \
     vpp-plugin-core=${VPP_VER}-release \

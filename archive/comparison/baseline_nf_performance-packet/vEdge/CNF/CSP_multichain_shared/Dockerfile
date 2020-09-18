@@ -9,7 +9,7 @@ CMD mkdir ~/sockets
 CMD tail -f /dev/null
 
 RUN apt-get update -y && \
-    apt-get install --allow-unauthenticated -y \
+    apt-get --no-install-recommends install -y --allow-unauthenticated \
         make \
         gcc \
         libcurl4-openssl-dev \
@@ -23,7 +23,7 @@ RUN apt-get update -y && \
 
 RUN curl -s https://packagecloud.io/install/repositories/fdio/release/script.deb.sh | bash
 
-RUN apt-get install -y \
+RUN apt-get --no-install-recommends install -y \
         dpdk \
         vpp=${VPP_VER}-release \
         vpp-plugin-core=${VPP_VER}-release \

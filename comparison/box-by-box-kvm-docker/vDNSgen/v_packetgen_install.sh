@@ -16,7 +16,7 @@ chmod +x dns_test.sh
 chmod +x set_dns_packet_rate
 
 sudo apt-get update -y
-sudo apt-get install --allow-unauthenticated -y make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates -y
+sudo apt-get --no-install-recommends install -y --allow-unauthenticated make wget gcc libcurl4-openssl-dev python-pip bridge-utils apt-transport-https ca-certificates
 pip install jsonschema
 
 # Install VPP
@@ -25,7 +25,7 @@ export RELEASE=".stable.1804"
 sudo rm /etc/apt/sources.list.d/99fd.io.list
 sudo echo "deb [trusted=yes] https://nexus.fd.io/content/repositories/fd.io$RELEASE.ubuntu.$UBUNTU.main/ ./" | sudo tee -a /etc/apt/sources.list.d/99fd.io.list
 sudo apt-get update
-sudo apt-get install -y vpp vpp-dpdk-dkms vpp-lib vpp-dbg vpp-plugins vpp-dev
+sudo apt-get --no-install-recommends install -y vpp vpp-dpdk-dkms vpp-lib vpp-dbg vpp-plugins vpp-dev
 sleep 1
 
 sudo service vpp stop

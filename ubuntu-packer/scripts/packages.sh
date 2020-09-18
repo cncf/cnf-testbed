@@ -16,7 +16,7 @@ nfs-common
 
 if [[ $INSTALL_DEV_PACKAGES  =~ true || $INSTALL_DEV_PACKAGES =~ 1 ||
         $INSTALL_DEV_PACKAGES =~ yes ]]; then
-  apt-get -y install $DEV_PACKAGES
+  apt-get --no-install-recommends install -y apt-utils ca-certificates $DEV_PACKAGES
 fi
 
-apt-get -y install $ESSENTIAL_PACKAGES
+apt-get --no-install-recommends install -y $ESSENTIAL_PACKAGES

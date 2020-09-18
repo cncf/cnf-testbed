@@ -148,7 +148,7 @@ function install_vpp_intel () {
         artifacts+=(${vpp[@]/%/=${VPP_VERSION-}})
     fi
     curl -s https://packagecloud.io/install/repositories/fdio/release/script.deb.sh | sudo bash
-    sudo apt-get install -y "${artifacts[@]}" || die "VPP installation failed!"
+    sudo apt-get --no-install-recommends install -y apt-utils ca-certificates "${artifacts[@]}" || die "VPP installation failed!"
     sleep 1
 
     if installed vpp; then
@@ -176,7 +176,7 @@ function install_vpp_mlx () {
 
     # Check for git
     if ! installed git; then
-        apt install git
+        apt-get --no-install-recommends install -y git
     fi
 
     # Build and install VPP
