@@ -43,7 +43,7 @@ Once this is done the server can be restarted using `reboot`
 Find the PCI devices that will be used for traffic
 ```
 lspci | grep Eth
-  - Run 'apt install pciutils' if lspci is not installed
+  - Run 'apt-get --no-install-recommends install -y pciutils' if lspci is not installed
   5e:00.0 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]
   5e:00.1 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]
 ```

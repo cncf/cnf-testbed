@@ -22,14 +22,14 @@ To test connctivity, the following steps can be used from two separeate terminal
 ## Terminal 1
 $ docker exec -it sgi-server /bin/bash
   $ apt-get update
-  $ apt-get -y install python3 iproute2
+  $ apt-get --no-install-recommends install -y python3 iproute2
   $ ip r add 10.0.0.201 via 10.0.1.254 dev eth1
   $ python3 -m http.server 80
 
 ## Terminal 2
 $ docker exec -it ue-ext /bin/bash
   $ apt-get update
-  $ apt-get -y install iputils-ping wget iproute2
+  $ apt-get --no-install-recommends install -y iputils-ping wget iproute2
   $ ip r add 10.0.1.201 via 10.0.0.254 dev eth1
   $ wget http://10.0.1.201
   # You should see wget fetching index.html from the remote web server

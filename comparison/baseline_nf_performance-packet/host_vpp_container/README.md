@@ -29,7 +29,7 @@ _Installation steps taken from [docker.com](https://docs.docker.com/install/linu
 ```
 apt-get update
 
-apt-get install \
+apt-get --no-install-recommends install -y \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -45,7 +45,7 @@ add-apt-repository \
 
 apt-get update
 
-apt-get install docker-ce docker-ce-cli containerd.io
+apt-get --no-install-recommends install -y docker-ce docker-ce-cli containerd.io
 ```
 
 ### Build and run VPP container

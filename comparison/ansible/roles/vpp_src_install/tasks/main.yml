@@ -126,7 +126,7 @@
   when: ansible_os_family == 'RedHat'
 
 - name: Install vpp packages
-  command: apt install {{item.path}}
+  command: apt-get --no-install-recommends install -y apt-utils ca-certificates {{item.path}}
   with_items: "{{vpp['files']}}"
   when: ansible_os_family == 'Debian'
 
@@ -137,7 +137,7 @@
   when: ansible_os_family == 'RedHat'
 
 - name: Install vpp plugins packages
-  command: apt install {{item.path}}
+  command: apt-get --no-install-recommends install -y {{item.path}}
   with_items: "{{vpp_plugin['files']}}"
   when: ansible_os_family == 'Debian'
 
@@ -148,7 +148,7 @@
   when: ansible_os_family == 'RedHat'
 
 - name: Install vpp api python packages
-  command: apt install {{item.path}}
+  command: apt-get --no-install-recommends install -y {{item.path}}
   with_items: "{{vpp_api_python['files']}}"
   when: ansible_os_family == 'Debian'
 
