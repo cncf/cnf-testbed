@@ -1,0 +1,14 @@
+create bridge-domain 1
+
+create loopback interface
+
+create host-interface name enp94s1f2
+
+#set int l2 bridge host-enp94s1f2 1
+#set int l2 bridge loop0 1
+
+set int state host-enp94s1f2 up
+#set int state loop0 up
+
+set interface ip address loop0 172.16.120.20/24
+

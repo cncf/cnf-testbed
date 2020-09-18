@@ -1,0 +1,14 @@
+bin memif_socket_filename_add_del add id 1 filename /root/sockets/memif11.sock
+bin memif_socket_filename_add_del add id 2 filename /root/sockets/memif12.sock
+create interface memif id 11 socket-id 1 hw-addr 52:54:02:00:02:aa slave rx-queues 1 tx-queues 1
+create interface memif id 12 socket-id 2 hw-addr 52:54:02:00:00:bb slave rx-queues 1 tx-queues 1
+set int ip addr memif1/11 172.16.31.11/24
+set int ip addr memif2/12 172.16.20.12/24
+set int state memif1/11 up
+set int state memif2/12 up
+
+set ip neighbor static memif1/11 172.16.31.10 52:54:02:00:01:bb
+set ip neighbor static memif2/12 172.16.20.102 {{ nfvbench_macs[1] }}
+
+ip route add 172.16.64.0/18 via 172.16.31.10
+ip route add 172.16.192.0/18 via 172.16.20.102

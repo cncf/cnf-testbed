@@ -1,0 +1,82 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      networkservicemesh.io/app: "packet-filter"
+      networkservicemesh.io/impl: "packet-filtering"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        networkservicemesh.io/app: "packet-filter"
+        networkservicemesh.io/impl: "packet-filtering"
+    spec:
+      containers:
+        - name: universal-cnf-endpoint
+          image: networkservicemesh/universal-cnf-vppagent:master
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TRACER_ENABLED
+              value: "true"
+          resources:
+            limits:
+              networkservicemesh.io/socket: 1
+          volumeMounts:
+            - mountPath: /etc/universal-cnf/config.yaml
+              subPath: config.yaml
+              name: universal-cnf-config-volume
+      volumes:
+        - name: universal-cnf-config-volume
+          configMap:
+            name: universal-cnf-packet-filter
+metadata:
+  name: packet-filter
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: universal-cnf-packet-filter
+data:
+  config.yaml: |
+    initactions:
+      - client:
+          name: "packet-filtering"
+          ifname: "client0"
+          routes: ["10.60.3.0/24"]
+          labels:
+            app: "packet-filter"
+    endpoints:
+    - name: "packet-filtering"
+      labels:
+        app: "packet-filter"
+      ipam:
+        prefixpool: "10.60.3.0/24"
+        routes: ["10.60.1.0/24", "10.60.2.0/24"]
+      ifname: "endpoint0"
+      action:
+        dpconfig:
+          acls:
+            - name: "acl-1"
+              rules:
+              - action: 2
+                iprule:
+                  icmp:
+                    icmptyperange:
+                      first: 8
+                      last: 8
+                    icmpcoderange:
+                      first: 0
+                      last: 65535
+              - action: 2
+                iprule:
+                  tcp:
+                    sourceportrange:
+                      lowerport: 0
+                      upperport: 65535
+                    destinationportrange:
+                      lowerport: 80
+                      upperport: 80
+              interfaces:
+                ingress: ["endpoint0"]

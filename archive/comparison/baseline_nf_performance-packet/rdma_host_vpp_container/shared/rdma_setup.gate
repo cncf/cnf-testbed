@@ -1,0 +1,27 @@
+create bridge-domain 1
+create bridge-domain 2
+
+bin memif_socket_filename_add_del add id 1 filename /etc/vpp/sockets/memif1.sock
+bin memif_socket_filename_add_del add id 2 filename /etc/vpp/sockets/memif2.sock
+
+create interface memif id 1 socket-id 1 master
+create interface memif id 2 socket-id 2 master
+
+create sub TwentyFiveGigabitEthernet5e/0/1 1087
+create sub TwentyFiveGigabitEthernet5e/0/1 1088
+
+set int l2 bridge TwentyFiveGigabitEthernet5e/0/1.1087 1
+set int l2 bridge memif1/1 1
+set int l2 bridge TwentyFiveGigabitEthernet5e/0/1.1088 2
+set int l2 bridge memif2/2 2
+
+set int mtu 9200 TwentyFiveGigabitEthernet5e/0/1
+
+set int state TwentyFiveGigabitEthernet5e/0/1 up
+set int state TwentyFiveGigabitEthernet5e/0/1.1087 up
+set int state TwentyFiveGigabitEthernet5e/0/1.1088 up
+set int state memif1/1 up
+set int state memif2/2 up
+
+set interface l2 tag-rewrite TwentyFiveGigabitEthernet5e/0/1.1087 pop 1
+set interface l2 tag-rewrite TwentyFiveGigabitEthernet5e/0/1.1088 pop 1

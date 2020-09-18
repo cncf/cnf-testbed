@@ -1,0 +1,10 @@
+create bridge-domain 1
+
+tap connect tap0 hwaddr random
+
+set int l2 bridge TwentyFiveGigabitEthernet5e/0/4 1
+set int l2 bridge tapcli-0 1
+
+set int state TwentyFiveGigabitEthernet5e/0/4 up
+set int state tapcli-0 up
+

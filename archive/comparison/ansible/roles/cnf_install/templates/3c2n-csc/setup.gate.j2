@@ -1,0 +1,80 @@
+create bridge-domain 1
+create bridge-domain 2
+create bridge-domain 3
+
+bin memif_socket_filename_add_del add id 1 filename /etc/vpp/sockets/memif1.sock
+create interface memif id 1 socket-id 1 master
+bin memif_socket_filename_add_del add id 2 filename /etc/vpp/sockets/memif2.sock
+create interface memif id 2 socket-id 2 master
+bin memif_socket_filename_add_del add id 3 filename /etc/vpp/sockets/memif3.sock
+create interface memif id 3 socket-id 3 master
+bin memif_socket_filename_add_del add id 4 filename /etc/vpp/sockets/memif4.sock
+create interface memif id 4 socket-id 4 master
+bin memif_socket_filename_add_del add id 5 filename /etc/vpp/sockets/memif5.sock
+create interface memif id 5 socket-id 5 master
+bin memif_socket_filename_add_del add id 6 filename /etc/vpp/sockets/memif6.sock
+create interface memif id 6 socket-id 6 master
+bin memif_socket_filename_add_del add id 7 filename /etc/vpp/sockets/memif7.sock
+create interface memif id 7 socket-id 7 master
+bin memif_socket_filename_add_del add id 8 filename /etc/vpp/sockets/memif8.sock
+create interface memif id 8 socket-id 8 master
+bin memif_socket_filename_add_del add id 9 filename /etc/vpp/sockets/memif9.sock
+create interface memif id 9 socket-id 9 master
+bin memif_socket_filename_add_del add id 10 filename /etc/vpp/sockets/memif10.sock
+create interface memif id 10 socket-id 10 master
+bin memif_socket_filename_add_del add id 11 filename /etc/vpp/sockets/memif11.sock
+create interface memif id 11 socket-id 11 master
+bin memif_socket_filename_add_del add id 12 filename /etc/vpp/sockets/memif12.sock
+create interface memif id 12 socket-id 12 master
+
+set int l2 bridge memif1/1 1
+set int l2 bridge memif2/2 2
+set int l2 bridge memif3/3 2
+set int l2 bridge memif4/4 3
+set int l2 bridge memif5/5 1
+set int l2 bridge memif6/6 2
+set int l2 bridge memif7/7 2
+set int l2 bridge memif8/8 3
+set int l2 bridge memif9/9 1
+set int l2 bridge memif10/10 2
+set int l2 bridge memif11/11 2
+set int l2 bridge memif12/12 3
+
+set int state memif1/1 up
+set int state memif2/2 up
+set int state memif3/3 up
+set int state memif4/4 up
+set int state memif5/5 up
+set int state memif6/6 up
+set int state memif7/7 up
+set int state memif8/8 up
+set int state memif9/9 up
+set int state memif10/10 up
+set int state memif11/11 up
+set int state memif12/12 up
+
+{% if intel_nic %}
+set int state TenGigabitEthernet1a/0/1 up
+set int state TenGigabitEthernet1a/0/3 up
+
+set int l2 bridge TenGigabitEthernet1a/0/1 1
+set int l2 bridge TenGigabitEthernet1a/0/3 3
+
+set int mtu 9200 TenGigabitEthernet1a/0/1
+set int mtu 9200 TenGigabitEthernet1a/0/3
+{% else %}
+create sub TwentyFiveGigabitEthernet5e/0/1 {{ vlans[0] }}
+create sub TwentyFiveGigabitEthernet5e/0/1 {{ vlans[1] }}
+
+set int l2 bridge TwentyFiveGigabitEthernet5e/0/1.{{ vlans[0] }} 1
+set int l2 bridge TwentyFiveGigabitEthernet5e/0/1.{{ vlans[1] }} 3
+
+set int state TwentyFiveGigabitEthernet5e/0/1 up
+set int state TwentyFiveGigabitEthernet5e/0/1.{{ vlans[0] }} up
+set int state TwentyFiveGigabitEthernet5e/0/1.{{ vlans[1] }} up
+
+set int mtu 9200 TwentyFiveGigabitEthernet5e/0/1
+
+set interface l2 tag-rewrite TwentyFiveGigabitEthernet5e/0/1.{{ vlans[0] }} pop 1
+set interface l2 tag-rewrite TwentyFiveGigabitEthernet5e/0/1.{{ vlans[1] }} pop 1
+{% endif %}

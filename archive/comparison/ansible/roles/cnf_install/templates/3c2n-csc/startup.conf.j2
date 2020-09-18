@@ -1,0 +1,27 @@
+unix {
+  nodaemon
+  log /var/log/vpp/vpp.log
+  full-coredump
+  cli-listen /run/vpp/cli.sock
+  gid vpp
+  startup-config /etc/vpp/setup.gate
+  cli-prompt CNF#{{ item }}:
+}
+
+api-trace {
+  on
+}
+
+api-segment {
+  gid vpp
+}
+
+cpu {
+  main-core {{ cnf.main_core[item|int - 1] }}
+  corelist-workers {{ cnf.worker_cores[item|int - 1] }}
+}
+
+plugins {
+  plugin default { disable }
+  plugin memif_plugin.so { enable }
+}

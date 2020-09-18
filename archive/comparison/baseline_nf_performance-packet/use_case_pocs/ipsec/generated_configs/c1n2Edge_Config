@@ -1,0 +1,62 @@
+cat /etc/vpp/setup.gate
+create memif socket id 1 filename /root/sockets/int11.sock
+create interface memif id 10 socket-id 1 hw-addr 52:54:00:00:02:aa slave rx-queues 1 tx-queues 1
+set interface ip address memif1/10 172.16.31.11/24
+set interface state memif1/10 up
+
+create memif socket id 2 filename /root/sockets/memif2.sock
+create interface memif id 2 socket-id 2 hw-addr 52:54:00:00:02:bb slave rx-queues 1 tx-queues 1
+set interface ip address memif2/2 172.16.32.10/24
+set interface state memif2/2 up
+
+set ip arp static memif1/10 172.16.31.10 52:54:00:00:01:bb
+set ip arp static memif2/2 172.16.32.11 52:54:00:00:03:aa
+
+ip route add 172.16.64.0/18 via 172.16.31.10
+
+create ipsec tunnel local-ip 172.16.32.10 remote-ip 172.16.32.11 local-spi 200000 remote-spi 100000 local-crypto-key 714c7a456b41476442585353474b586c78796d45 remote-crypto-key 47505069546a6461647565786163726865757346 crypto-alg aes-gcm-128
+
+set interface unnumbered ipsec0 use memif2/2
+set interface state ipsec0 up
+ip route add 172.16.192.0/18 via 172.16.32.11 ipsec0
+
+#####
+
+cat /etc/vpp/startup.conf
+unix {
+  nodaemon
+  log /var/log/vpp/vpp.log
+  full-coredump
+  cli-listen /run/vpp/cli.sock
+  gid vpp
+  startup-config /etc/vpp/setup.gate
+  cli-prompt CNF#2:
+}
+
+api-trace {
+  on
+}
+
+api-segment {
+  gid vpp
+}
+
+cpu {
+  main-core 8
+  corelist-workers 12,40
+}
+
+dpdk {
+  no-pci
+  no-multi-seg
+  no-tx-checksum-offload
+}
+
+plugins {
+  plugin default { disable }
+  plugin memif_plugin.so { enable }
+  plugin dpdk_plugin.so { enable }
+  plugin crypto_ia32_plugin.so { enable }
+  plugin crypto_ipsecmb_plugin.so { enable }
+  plugin crypto_openssl_plugin.so { enable }
+}
