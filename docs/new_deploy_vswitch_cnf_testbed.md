@@ -2,7 +2,7 @@
 
 This document will show how to set up a CNF Testbed environment. Everything will be deployed on servers hosted by Packet.com.
 
-Before deploying the vSwitch, make sure that a CNF Testbed Kubernetes Cluster has already been deployed. Steps for doing this can be found here **INSERT LINK ONCE DONE**. The environment file used for deploying the Kubernetes cluster will be used for deploying the vSwitch as well.
+Before deploying the vSwitch, make sure that a CNF Testbed Kubernetes Cluster has already been deployed. Steps for doing this can be found [here](new_deploy_cnf_testbed_k8s.md). The environment file used for deploying the Kubernetes cluster will be used for deploying the vSwitch as well.
 
 ## Prerequisites
 Before starting the deployment you will need access to a project on Packet. Note down the **PROJECT_NAME** and **PROJECT_ID**, both 
@@ -52,5 +52,5 @@ $ vppctl show version
 
 Else, if `vswitch_container: true`:
 ```
-$ docker exec -it vppcontainer vppctl show version **VERIFY**
+$ docker exec -it vppcontainer vppctl show version
 ```
