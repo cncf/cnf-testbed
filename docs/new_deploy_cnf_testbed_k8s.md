@@ -106,8 +106,9 @@ export NODE_GROUP_THREE_NAME=${DEPLOY_NAME}-extra
 ## Name to append "group three" hostnames that are used for extra K8s worker nodes
 export NODE_GROUP_THREE_DEVICE_PLAN=n2.xlarge.x86
 ## Instance type for nodes. Use either 'n2.xlarge.x86' or 'm2.xlarge.x86'
+## If planning to install the vSwitch later, group two and three must use the same instance type
 export NODE_GROUP_THREE_COUNT=0
-## Number of nodes to deploy
+## Number of nodes to deploy - By default the extra group is not used
 
 ###########################
 #### Advanced settings ####
