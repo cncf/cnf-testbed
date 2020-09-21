@@ -60,7 +60,7 @@ Change to the CNF Testbed directory created previously (default: cnf-testbed), a
 $ make deps
 ```
 
-## Deploy K8s cluster
+## Deploy CNF Testbed Kubernetes Cluster
 This section will show how to deploy one or more K8s clusters on Packet. 
 
 Start by going to the `tools/` directory. Copy or edit the [k8s-example.env](tools/k8s-example.env) file (for this guide the filename `k8s-example.env` is used). The default content of the file is described below.
