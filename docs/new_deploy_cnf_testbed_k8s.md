@@ -63,7 +63,7 @@ $ make deps
 ## Deploy CNF Testbed Kubernetes Cluster
 This section will show how to deploy one or more K8s clusters on Packet. 
 
-Start by going to the `tools/` directory. Copy or edit the [k8s-example.env](tools/k8s-example.env) file (for this guide the filename `k8s-example.env` is used). The default content of the file is described below.
+Start by going to the `tools/` directory. Copy or edit the [k8s-example.env](../tools/k8s-example.env) file (for this guide the filename `k8s-example.env` is used). The default content of the file is described below.
 ```
 #####################################
 #### Packet.com Project Settings ####
@@ -92,7 +92,7 @@ export NODE_GROUP_ONE_COUNT=1
 ## Number of nodes to deploy - Use an odd number to avoid errors with K8s deployment
 
 #### Kubernetes "Worker" Node Group ####
-export NODE_GROUP_TWO_NAME=${DEPLOY_NAME}-
+export NODE_GROUP_TWO_NAME=${DEPLOY_NAME}-worker
 ## Name to append "group two" hostnames that are used for K8s worker nodes
 export NODE_GROUP_TWO_DEVICE_PLAN=n2.xlarge.x86
 ## Instance type for nodes. Use either 'n2.xlarge.x86' or 'm2.xlarge.x86'
@@ -126,12 +126,14 @@ export NODE_FILE=${PWD}/data/${DEPLOY_NAME}/kubernetes.env
 
 After updating the file, return to the CNF Testbed directory. From here, start server provisioning using the Makefile:
 ```
-$ make hw_k8s
+$ make hw_k8s load_envs ${PWD}/tools/k8s-example.env
+## Update the path to the environment file if needed
 ```
 
 After a few minutes the servers will be provisioned. Continue with deploying Kubernetes:
 ```
-$ make k8s
+$ make k8s load_envs ${PWD}/tools/k8s-example.env
+## Update the path to the environment file if needed
 ```
 
 Once completed, the Kubernetes cluster is ready for use. If Kubectl is installed on the workstation machine, the kubeconfig file can be in found from the cnf-testbed directory in `${PWD}/data/${DEPLOY_NAME}/mycluster/artifacts/admin.conf`. Configure Kubectl to use this file, and check that the cluster is ready:
