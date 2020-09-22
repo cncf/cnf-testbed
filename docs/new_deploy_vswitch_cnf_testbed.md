@@ -55,4 +55,4 @@ Else, if `vswitch_container: true`:
 $ docker exec -it vppcontainer vppctl show version
 ```
 
-If `multus_cni: true` has been configured, the next steps for installing the SRIOV plugins can be found [here](../examples/workload-infra/multus_sriov).
+If `multus_cni: true` has been configured, the next steps for installing the SRIOV plugins can be found [here](/examples/workload-infra/multus_sriov).
