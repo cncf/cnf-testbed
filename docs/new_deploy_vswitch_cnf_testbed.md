@@ -5,7 +5,7 @@ This document will show how to set up a CNF Testbed environment. Everything will
 Before deploying the vSwitch, make sure that a CNF Testbed Kubernetes Cluster has already been deployed. Steps for doing this can be found [here](new_deploy_cnf_testbed_k8s.md). The environment file used for deploying the Kubernetes cluster will be used for deploying the vSwitch as well.
 
 ## Prerequisites
-Before starting the deployment you will need access to a project on Packet. Note down the **PROJECT_NAME** and **PROJECT_ID**, both 
+Before starting the deployment you will need access to a project on Packet. Note down the **PROJECT_NAME** and **PROJECT_ID**, both
 found through the Packet web portal, as these will be used throughout the deployment for provisioning servers and configuring the network. You will also need a personal **PACKET_AUTH_TOKEN**, which is created and found in personal settings under API Keys.
 
 You should also make sure that you have a keypair available for SSH access. You can add your public key to the project on Packet through the web portal, which ensures that you will have passwordless SSH access to all servers used for deploying the CNF Testbed.
@@ -23,7 +23,7 @@ corelist_workers: 3
 rx_queues: 3
 ## Number of receive queues per NIC port in the vSwitch
 multus_cni: false
-## Configure the node for use with SRIOV Network Device Plugin (examples/workload-infra/multus_sriov)
+## Configure the node for use with SRIOV Network Device Plugin and CNI (examples/workload-infra/multus_sriov)
 ## Changing this to true disables the vSwitch
 ```
 
@@ -54,3 +54,5 @@ Else, if `vswitch_container: true`:
 ```
 $ docker exec -it vppcontainer vppctl show version
 ```
+
+If `multus_cni: true` has been configured, the next steps for installing the SRIOV plugins can be found [here](../examples/workload-infra/multus_sriov).
