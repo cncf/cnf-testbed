@@ -11,7 +11,7 @@ found through the Packet web portal, as these will be used throughout the deploy
 You should also make sure that you have a keypair available for SSH access. You can add your public key to the project on Packet through the web portal, which ensures that you will have passwordless SSH access to all servers used for deploying the CNF Testbed.
 
 ## Prepare workstation / jump server
-The steps for setting up a workstation can be found [here](/docs/new_deploy_cnf_testbed_k8s.md#prepare-workstation--jump-server)
+The steps for setting up a workstation can be found [here](/docs/Deploy_cnf_testbed_k8s.md#prepare-workstation--jump-server)
 
 ## Deploy CNF Testbed Packet Generator
 Start by going to the `tools/` directory. Copy or edit the [pktgen-example.env](/tools/pktgen-example.env) file (for this guide the filename pktgen-example.env is used). The default content of the file is described below.
