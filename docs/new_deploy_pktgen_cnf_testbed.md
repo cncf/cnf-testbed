@@ -88,9 +88,7 @@ Before use cases can be deployed, the MAC addresses of the packet generator must
 ```
 $ ./run_tests.sh
 (...)
-Port 0: Ethernet Controller X710 for 10GbE SFP+ speed=10Gbps mac=aa:bb:cc:dd:ee:ff pci=0000:1a:00.1 
-driver=net_i40e
-Port 1: Ethernet Controller X710 for 10GbE SFP+ speed=10Gbps mac=ff:ee:dd:cc:bb:aa pci=0000:1a:00.3 
-driver=net_i40e
+Port 0: Ethernet Controller X710 for 10GbE SFP+ speed=10Gbps mac=aa:bb:cc:dd:ee:ff pci=0000:1a:00.1 driver=net_i40e
+Port 1: Ethernet Controller X710 for 10GbE SFP+ speed=10Gbps mac=ff:ee:dd:cc:bb:aa pci=0000:1a:00.3 driver=net_i40e
 ## At this point the generator can be stopped using ctrl+c
 ```
