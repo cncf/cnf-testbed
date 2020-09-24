@@ -49,3 +49,9 @@ $ helm install csp ./csp/
 
 Follow the steps listed in [Deploy Packet Generator](/docs/Deploy_pktgen_cnf_testbed.md). The packet generator should already be configured to work with this example use case.
 
+### Removing the Pipeline service chain example
+
+To remove this example use case, run the below command:
+```
+$ helm delete csp
+```
