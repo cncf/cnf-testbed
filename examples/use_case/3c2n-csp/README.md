@@ -38,7 +38,7 @@ $ docker restart vppcontainer
 
 ### Installing the Pipeline service chain example
 
-Start by modifying the first line in `./csp/values.yaml` to include the MAC addresses of the packet generator that were collected as part of the prerequisites. Once that is done, install the example by running the below commands from this directory:
+Start by modifying the first line in [csp/values.yaml](./csp/values.yaml) to include the MAC addresses of the packet generator that were collected as part of the prerequisites. Once that is done, install the example by running the below commands from this directory:
 ```
 ## set environment variable for KUBECONFIG (replace path to match your location)
 $ export KUBECONFIG=<path>/<to>/kubeconfig
