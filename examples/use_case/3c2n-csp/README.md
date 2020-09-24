@@ -11,7 +11,7 @@ A Kubernetes deployment with a host vSwitch (VPP) must be deployed prior to inst
 
 You should have a `kubeconfig` file ready on the machine, as it is used to deploy the example on a worker node.
 
-Helm must be installed prior to installing this example. The steps listed below are based on [https://helm.sh](https://helm.sh/docs/intro/install/)
+Helm must be installed prior to installing this example. The steps listed below are based on [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/)
 ```
 $ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 $ chmod 700 get_helm.sh
