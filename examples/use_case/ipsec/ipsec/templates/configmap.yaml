@@ -21,16 +21,20 @@ data:
     set ip neighbor static memif1/{{ index .memid 0 }} {{ index .remip 0 }} {{ tpl ( index .remmac 0 ) $ }}
     set ip neighbor static memif2/{{ index .memid 1 }} {{ index .remip 1 }} {{ tpl ( index .remmac 1 ) $ }}
     {{ if .ipsec_endpoint }}
-    create ipsec tunnel local-ip {{ index .ipsec_ip 0 }} remote-ip {{ index .ipsec_ip 1 }} local-spi {{ index .ipsec_spi 0 }} remote-spi {{ index .ipsec_spi 1 }} local-crypto-key {{ index .ipsec_key 0 }} remote-crypto-key {{ index .ipsec_key 1 }} crypto-alg aes-gcm-128
+    ipsec sa add 10 spi {{ index .ipsec_spi 0 }} esp crypto-alg aes-cbc-128 crypto-key {{ index .ipsec_key 0 }} integ-alg sha1-96 integ-key {{ index .ipsec_key 1 }}
+    ipsec sa add 20 spi {{ index .ipsec_spi 1 }} esp crypto-alg aes-cbc-128 crypto-key {{ index .ipsec_key 0 }} integ-alg sha1-96 integ-key {{ index .ipsec_key 1 }}
+    ipsec spd add 1
     {{ if eq .ipsec_direction "right" }}
-    set interface unnumbered ipsec0 use memif2/{{ index .memid 1 }}
-    set interface state ipsec0 up
+    set interface ipsec spd memif2/{{ index .memid 1 }} 1
+    ipsec policy add spd 1 priority 10 inbound action protect sa 20 local-ip-range 172.16.64.0 - 172.16.127.255 remote-ip-range 172.16.192.0 - 172.16.255.255
+    ipsec policy add spd 1 priority 10 outbound action protect sa 10 local-ip-range 172.16.64.0 - 172.16.127.255 remote-ip-range 172.16.192.0 - 172.16.255.255
     ip route add 172.16.64.0/18 via {{ index .remip 0 }}
-    ip route add 172.16.192.0/18 via {{ index .remip 1 }} ipsec0
+    ip route add 172.16.192.0/18 via {{ index .remip 1 }} memif2/{{ index .memid 1 }}
     {{ else }}
-    set interface unnumbered ipsec0 use memif1/{{ index .memid 0 }}
-    set interface state ipsec0 up
-    ip route add 172.16.64.0/18 via {{ index .remip 0 }} ipsec0
+    set interface ipsec spd memif1/{{ index .memid 0 }} 1
+    ipsec policy add spd 1 priority 10 inbound action protect sa 20 local-ip-range 172.16.192.0 - 172.16.255.255 remote-ip-range 172.16.64.0 - 172.16.127.255
+    ipsec policy add spd 1 priority 10 outbound action protect sa 10 local-ip-range 172.16.192.0 - 172.16.255.255 remote-ip-range 172.16.64.0 - 172.16.127.255
+    ip route add 172.16.64.0/18 via {{ index .remip 0 }} memif1/{{ index .memid 0 }}
     ip route add 172.16.192.0/18 via {{ index .remip 1 }}
     {{ end }}
     {{ else }}
