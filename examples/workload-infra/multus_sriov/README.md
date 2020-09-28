@@ -58,7 +58,7 @@ kube-system   kube-multus-ds-amd64-xxxxx                             1/1     Run
 kube-system   kube-proxy-xxxx-worker-1.xxxx.packet.local             1/1     Running   1          1h
 kube-system   kube-sriov-device-plugin-amd64-xxxxx                   1/1     Running   0          1h
 
-$ kubectl get node $(kubectl get node | grep worker | awk '{print $1}') -o json | jq '.status.allocatable'
+$ kubectl get node $(kubectl get node --no-headers | grep -v master | awk '{print $1}') -o json | jq '.status.allocatable'
 {
   "cpu": "55",
   "ephemeral-storage": "210667024855",
