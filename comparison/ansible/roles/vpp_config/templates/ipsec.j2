@@ -2,13 +2,13 @@ create bridge-domain 1
 create bridge-domain 2
 create bridge-domain 3
 
-bin memif_socket_filename_add_del add id 1 filename /etc/vpp/sockets/memif1.sock
+create memif socket id 1 filename /etc/vpp/sockets/memif1.sock
 create interface memif id 1 socket-id 1 master
-bin memif_socket_filename_add_del add id 2 filename /etc/vpp/sockets/memif2.sock
+create memif socket id 2 filename /etc/vpp/sockets/memif2.sock
 create interface memif id 2 socket-id 2 master
-bin memif_socket_filename_add_del add id 3 filename /etc/vpp/sockets/memif3.sock
+create memif socket id 3 filename /etc/vpp/sockets/memif3.sock
 create interface memif id 3 socket-id 3 master
-bin memif_socket_filename_add_del add id 4 filename /etc/vpp/sockets/memif4.sock
+create memif socket id 4 filename /etc/vpp/sockets/memif4.sock
 create interface memif id 4 socket-id 4 master
 
 set int l2 bridge memif1/1 1
