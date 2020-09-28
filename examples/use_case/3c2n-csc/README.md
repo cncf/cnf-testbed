@@ -5,44 +5,26 @@ This example installs the snake service chain example on a kubernetes worker nod
 ![Example "Snake" service chain](snake.png)
 
 ### Prerequisites
-A Kubernetes deployment with a host vSwitch (VPP) must be deployed prior to installing this example. A guide to deploying K8s can be found in [Deploy_K8s_CNF_Testbed.md](https://github.com/cncf/cnf-testbed/blob/master/docs/Deploy_K8s_CNF_Testbed.md)
+A Kubernetes deployment with a host vSwitch (VPP) must be deployed prior to installing this example. Guides for setting this up can be found here:
+* [Provision HW and deploy CNF Testbed Kubernetes cluster](/docs/Deploy_cnf_testbed_k8s.md)
+* [Deploy vSwitch (VPP) in CNF Testbed Kubernetes cluster](/docs/Deploy_vswitch_cnf_testbed.md)
 
 You should have a `kubeconfig` file ready on the machine, as it is used to deploy the example on a worker node.
 
-Helm must be installed prior to installing this example. The steps listed below are based on [https://helm.sh](https://helm.sh/docs/using_helm/#from-script)
+Helm must be installed prior to installing this example. The steps listed below are based on [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/)
 ```
-$ curl -LO https://git.io/get_helm.sh
+$ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 $ chmod 700 get_helm.sh
 $ ./get_helm.sh
-$ helm init --service-account tiller
-
-## You might need to run the below if versions are mismatched
-  $ helm init --upgrade
 ```
 
-You will also need to configure a packet generator to test the example. Steps for doing this can be found in [Deploy Packet Generator](https://github.com/cncf/cnf-testbed/blob/master/docs/Deploy_K8s_CNF_Testbed.md#deploy-packet-generator). Be sure to note down the MAC addresses of the ports as mentioned in the section, as these will be needed prior to deploying the example
+You will also need to configure a packet generator to test the example. Steps for doing this can be found in [Deploy Packet Generator](/docs/Deploy_pktgen_cnf_testbed.md). Be sure to note down the MAC addresses of the ports as mentioned in the section, as these will be needed prior to deploying the example.
 
 **Preparing the K8s worker node**
 
-The host vSwitch (VPP) configuration must be updated prior to running this example.
-
-On the worker node, start by checking the PCI devices used by VPP:
-```
-$ grep dev /etc/vpp/startup.conf | grep -v default
-## (example, n2.xlarge) dev 0000:1a:00.1 dev 0000:1a:00.3
-## (example, m2.xlarge) dev 0000:5e:00.1
-## n2.xlarge (Intel) servers have two devices, m2.xlarge (Mellanox) has one device
-```
-
-Now replace the configuration file with the one for this example as follows:
+Before installing this (3c2n-csc) example use case, the vSwitch (VPP) configuration needs to be updated. SSH to the worker node and replace the vSwitch configuration as shown below:
 ```
 $ cp /etc/vpp/templates/3c2n-csc.gate /etc/vpp/setup.gate
-```
-
-Once the filw has been replaced, open it (`/etc/vpp/setup.gate`) with your favorite editor, and make sure the device names match the PCI devices listed previously. Make sure all instances of the name are updated:
-```
-## (example, n2.xlarge) TenGigabitEthernet1a/0/1, TenGigabitEthernet1a/0/3
-## (example, m2.xlarge) TwentyFiveGigabitEthernet5e/0/1
 ```
 
 Once that has been done, restart the vSwitch using the below step (depending on how the vSwitch is deployed):
@@ -56,14 +38,22 @@ $ docker restart vppcontainer
 
 ### Installing the Snake service chain example
 
-Start by modifying the first line in `./csc/values.yaml` to include the MAC addresses of the packet generator that were collected as part of the prerequisites. Once that is done, install the example by running the below commands from this directory:
+_Make sure no other example use cases is currently installed - Check using `helm list` and delete using `helm delete <name>` if necessary
+
+Start by modifying the first line in [csc/values.yaml](./csc/values.yaml) to include the MAC addresses of the packet generator that were collected as part of the prerequisites. Once that is done, install the example by running the below commands from this directory:
 ```
 ## set environment variable for KUBECONFIG (replace path to match your location)
 $ export KUBECONFIG=<path>/<to>/kubeconfig
-$ helm install ./csc/
+$ helm install csc ./csc/
 ```
 
 ### Testing the Snake service chain example
 
-Follow the steps listed in [Run Traffic Benchmark](https://github.com/cncf/cnf-testbed/blob/master/docs/Deploy_K8s_CNF_Testbed.md#run-traffic-benchmark). The packet generator should be configured for 3 chains with this example
+Follow the steps listed in [Deploy Packet Generator](/docs/Deploy_pktgen_cnf_testbed.md). The packet generator should already be configured to work with this example use case.
 
+### Removing the Snake service chain example
+
+To remove this example use case, run the below command:
+```
+$ helm delete csc
+```
