@@ -30,7 +30,7 @@ The service chain can be seen below:
 ### Prerequisites
 A Kubernetes deployment with NSM installed must be available. For steps to install NSM see this [README.md](https://github.com/cncf/cnf-testbed/blob/wip-new-examples-structure/examples/workload-infra/nsm-k8s/README.md)
 
-The worker node(s) in the Kubernetes cluster must be `n2.xlarge.x86` (Intel NIC) servers from [Packet](https://www.packet.com/).
+The worker node(s) in the Kubernetes cluster must be `n2.xlarge.x86` (Intel NIC) servers from [Equinix Metal](https://metal.equinix.com/).
 
 You should have a `kubeconfig` file ready on the machine.
 

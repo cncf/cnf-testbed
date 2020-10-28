@@ -4,15 +4,15 @@ _Updated December 18th, 2019_
 
 _Small changes to filenames_
 
-This document will show how to set up a CNF Testbed environment. Everything will be deployed on servers hosted by [Packet](https://www.packet.com/).
+This document will show how to set up a CNF Testbed environment. Everything will be deployed on servers hosted by [Equinix Metal](https://metal.equinix.com/).
 
 ## Prerequisites
-Before starting the deployment you will need access to a project on Packet. Note down the **PROJECT_NAME** and **PROJECT_ID**, both found through the Packet web portal, as these will be used throughout the deployment for provisioning servers and configuring the network.
+Before starting the deployment you will need access to a project on Equinix Metal. Note down the **PROJECT_NAME** and **PROJECT_ID**, both found through the Equinix Metal web portal, as these will be used throughout the deployment for provisioning servers and configuring the network.
 
-You should also make sure that you have a keypair available for SSH access. You can add your public key to the project on Packet through the web portal, which ensures that you will have passwordless SSH access to all servers used for deploying the CNF Testbed.
+You should also make sure that you have a keypair available for SSH access. You can add your public key to the project on Equinix Metal through the web portal, which ensures that you will have passwordless SSH access to all servers used for deploying the CNF Testbed.
 
 ## Prepare workstation / jump server
-Once the project on Packet has been configured, start by creating a server (x1.small.x86, Ubuntu 18.04 LTS) to use as workstation for deploying and managing the CNF Testbed.
+Once the project on Equinix Metal has been configured, start by creating a server (x1.small.x86, Ubuntu 18.04 LTS) to use as workstation for deploying and managing the CNF Testbed.
 
 Once the machine is running, start by installing the initial dependencies:
 ```
@@ -48,7 +48,7 @@ Then, create a keypair on the workstation:
 $ ssh-keygen -t rsa -b 4096
 ```
 
-Add this key to the project on Packet as well, since it will be used throughout the CNF Testbed installation.
+Add this key to the project on Equinix Metal as well, since it will be used throughout the CNF Testbed installation.
 
 Update `/etc/resolv.conf` with the following addresses:
 ```
@@ -84,7 +84,7 @@ $ screen -S <name>
 ## Running the "cnfdeploytools" container
 $ cd ~/cnf-testbed
 $ docker run -e PACKET_API_TOKEN=<Auth token> -v $(pwd)/comparison/ansible:/ansible -v ~/.ssh/id_rsa:/root/.ssh/id_rsa --entrypoint /bin/bash -ti cnfdeploytools:latest
-  # Replace <Auth token> with the key for your project at Packet
+  # Replace <Auth token> with the key for your project at Equinix Metal
 $$ cd /ansible/
 ```
 When running commands in the Ansible container, each line will be prepended with `$$` instead of `$` when in the host.
@@ -92,7 +92,7 @@ When running commands in the Ansible container, each line will be prepended with
 This container environment is not used for deploying the K8s clusters. When the environment is needed it will be mentioned (deploying packet generator and CNFs)
 
 ## Deploy K8s cluster
-This section will show how to deploy one or more K8s clusters on Packet. The examples used here will deploy 1 master and 1 worker node, with the option to scale it out prior to deployment.
+This section will show how to deploy one or more K8s clusters on Equinix Metal. The examples used here will deploy 1 master and 1 worker node, with the option to scale it out prior to deployment.
 
 There are a few options available when deploying a K8s cluster, as there are two different types of servers (Intel or Mellanox NIC) available, and when using Intel NIC it is possible to run the host vSwitch (VPP) either in the host or in a container.
 
@@ -101,7 +101,7 @@ Start by going to the `tools/` directory. Copy the `k8s-cluster.env.example` fil
 export NAME=quadintel
   # This is the unique name for the deployment
 export K8S_DEPLOY_ENV=k8sworker
-  # This is used to handle VLANs in the project on Packet
+  # This is used to handle VLANs in the project on Equinix Metal
   # VLANs will be created in a PACKET_FACILITY scope (see below)
   # VLANs are named as "{K8S_DEPLOY_ENV}vlan"
   # This can be used to re-use VLANs for multiple clusters
@@ -121,7 +121,7 @@ export NODE_OS=ubuntu_18_04
   # Specifies the OS to be used
   # Only tested with Ubuntu 18.04 LTS
 export PACKET_FACILITY=ewr1
-  # The Packet facility to use for the cluster
+  # The Equinix Metal facility to use for the cluster
   # This can be used with "K8S_DEPLOY_ENV" to re-use VLANs on different deployments
 export ETCD_VERSION=v3.2.8
   # etcd version (do not change)
@@ -136,11 +136,11 @@ export PLAYBOOK=k8s_worker_vswitch_mellanox.yml # Mellanox NIC
 #export PLAYBOOK=k8s_worker_vswitch_quad_intel.yml # Intel NIC
   # See above
 export PACKET_AUTH_TOKEN=your-auth-token
-  # The auth token for your project at Packet
+  # The auth token for your project at Equinix Metal
 export PACKET_PROJECT_ID=your-project-id
-  # The project ID for your project at Packet
+  # The project ID for your project at Equinix Metal
 export PACKET_PROJECT_NAME="CNCF Testbed" # CNCF Testbed is default, this must be set if using another project
-  # The name of your project at Packet
+  # The name of your project at Equinix Metal
 ```
 
 If you specified `WORKER_NODE_TYPE=n2.xlarge.x86` and `PLAYBOOK=k8s_worker_vswitch_quad_intel.yml` in the environment file above, there is another small step before deploying. Go back to the `cnf-testbed/` directory and then open the file `comparison/ansible/k8s_worker_vswitch_quad_intel.yml`. In this file looks for the `vswitch_container` line, which can be modified:
@@ -160,16 +160,16 @@ $ source k8s-cluster.env
 $ ./deploy_k8s_cluster.sh
 ```
 
-If the playbooks completes successfully, you should be able to find your new machines and VLANs in the Packet web portal under your project. You should be able to SSH to the machines from the workstation using the IPs listed at Packet.
+If the playbooks completes successfully, you should be able to find your new machines and VLANs in the Equinix Metal web portal under your project. You should be able to SSH to the machines from the workstation using the IPs listed at Equinix Metal.
 
 At this point, go ahead and make a backup of the `kubeconfig` file which can be found in `cnf-testbed/tools/data`, as this can be useful when deploying CNFs. To make the file available from inside the Ansible environment (container), the `kubeconfig` file should be placed somewhere in the `cnf-testbed/comparison/ansible` directory. You can rename the file as you see fit.
 
 If you want to deploy multiple clusters, update the `k8s-cluster.env` file (at least change "NAME") and source the file. Also, delete the `.pem` files found in `tools/data/` before running `deploy_k8s_cluster.sh` again.
 
 ## Deploy packet generator
-To test the network performance of the K8s clusters, we need to configure a packet generator. This will run on a separate server in your project on Packet, and must be configured with the same deploy environment (VLANs) as the clusters.
+To test the network performance of the K8s clusters, we need to configure a packet generator. This will run on a separate server in your project on Equinix Metal, and must be configured with the same deploy environment (VLANs) as the clusters.
 
-Start by provisioning a server using the Packet web portal:
+Start by provisioning a server using the Equinix Metal web portal:
   * Hostname: Select a hostname that makes the server easily identifiable
   * Location: Same location used in `PACKET_FACILITY` while deploying K8s clusters
   * Type: `n2.xlarge.x86` (preferred) or `m2.xlarge.x86`
@@ -196,7 +196,7 @@ $$ export DEPLOY_ENV=<Deploy environment>
 $$ export SERVER_LIST=<Hostname>
   # Hostname of the server
 $$ export PROJECT_NAME="<Project name>"
-  # Name of the project on Packet
+  # Name of the project on Equinix Metal
 ```
 
 With the environment defined, the packet generator can be installed. Note the comma (,) following `<Server IP>`, which must be included:
