@@ -14,9 +14,9 @@ docker build -t cnfdeploytools:latest  ../../tools/deploy/
 
 ### Openstack deploy
 
-*Deploying Openstack to reserved Packet machines (currently all Intel)*
+*Deploying Openstack to reserved Equinix Metal machines (currently all Intel)*
 
-Follow common steps https://github.com/cncf/cnf-testbed/blob/master/docs/steps_to_deploy_testbed.mkd#common-steps
+Follow common steps [here](./steps_to_deploy_testbed.mkd#common-steps)
 
 Then do the following:
 
@@ -27,7 +27,7 @@ Then do the following:
 PROVISION_ONLY=true ./deploy_openstack_cluster.sh
 ```
 
-3. Manually update comparison/ansible/inventory with the IPs for the new servers as seen in the Packet web ui
+3. Manually update comparison/ansible/inventory with the IPs for the new servers as seen in the [Equinix Metal Console](http://console.equinix.com/)
 
 4. Re-run provisioning to finish setting up servers and vlan
 ```
@@ -45,7 +45,7 @@ Steps to build and use provisioning tools when in comparison/kubecon18-chained_n
 
 _Get a shell in the tool container_
 Prereqs:
-- Packet API token
+- Equinix Metal API token
 - SSH key with access to target servers
 
 Run the tools container and cd into the /ansible directory
@@ -71,7 +71,7 @@ ansible-playbook -i "147.75.39.241," packet_generator_quad_intel.yml -e server_l
 ```
 
 
-### Playing with Packet
+### Playing with Equinix Metal
 Looking at device assignment and other goodies from the API:
 
 ```

@@ -6,7 +6,7 @@ This directory provides a way to reproduce chained vnf vs cnf testing results.
 ## What is the goal?
 
 #### To compare the performance of NF's on Openstack and Kubernetes with a reproducable set of steps.
-- Using packet.net for bare metal provisioning
+- Using [Equinix Metal](https://metal.equinix.com/) for bare metal provisioning
 - Minimal user prerequisite software (ssh,git,docker)
 - Minimal scripted steps to setup, execute tests and destroy 
 
@@ -41,7 +41,7 @@ This directory provides a way to reproduce chained vnf vs cnf testing results.
 
 
 ---
-## Worker/compute Equipment in use at packet hosting CNF and VNFs
+## Worker/compute Equipment in use at Equinix Metal hosting CNF and VNFs
 
 The Kubernetes and Openstack clusters will have 2-3 machines which run the network functions.
 
@@ -54,7 +54,7 @@ Specs at a glance:
 - NIC: Quad port Intel x710
 
 
-The system hardware configuration is based on the [Packet m2.xlarge.x86](https://www.packet.com/cloud/servers/m2-xlarge/).
+The system hardware configuration is based on the m2.xlarge.x86 server from [Equinix Metal](https://metal.equinix.com/).
 
 The default [dual port Mellanox ConnectX-4 NIC](https://www.dell.com/en-us/shop/mellanox-connectx-4-lx-dual-port-25gbe-da-sfp-rndc-customer-install/apd/406-bblh/networking) has been replaced by [quad port Intel x710 NIC.](https://www.dell.com/en-us/shop/dell-intel-x710-quad-port-10gb-da-sfp-network-daughter-card/apd/555-bckl/networking).  The NIC ports are connected to 10GbE ports on the top-of-rack switches.
 
@@ -64,7 +64,7 @@ The default [dual port Mellanox ConnectX-4 NIC](https://www.dell.com/en-us/shop/
 
 ## Test Results
 
-[Current results directory](https://github.com/cncf/cnfs/tree/master/comparison/kubecon18-chained_nf_test/results)
+[Current results directory](./results)
 
 # Links for extensive results or nfvbench logs?
 ---
@@ -77,10 +77,10 @@ The default [dual port Mellanox ConnectX-4 NIC](https://www.dell.com/en-us/shop/
 Caveats: 
 - As of 12/18 the Quad port Intel NIC is not publically available. It should become publically available in Q1/19.**
 - Some custom BIOS changes will be needed for Quad port Intel 
-- This documentation assumes you have a [packet] account.
+- This documentation assumes you have an Equinix Metal account.
 
 
-**CNCF is not responsible for any charges on your packet.net account.  Please verify that all servers are deleted when your testing is completed via the [Packet Portal](https://app.packet.net)**
+**CNCF is not responsible for any charges on your Equinix Metal account. Please verify that all servers are deleted when your testing is completed via the [Equinix Metal Console](https://console.equinix.com/)**
 
 ---
 
@@ -90,9 +90,9 @@ Caveats:
     1. [docker](https://docs.docker.com/install/)
     1. [git](https://help.github.com/articles/set-up-git/)
 
-1. Create [packet] account
+1. Create [Equinix Metal](https://metal.equinix.com/) account
 
-1.  Create [packet account setup] variables
+1.  Create [Equinix Metal account setup](https://metal.equinix.com/developers/docs/) variables
 
     1. preserve your project ID UUID in 
     1. create and preserve project-specific api key
@@ -103,8 +103,8 @@ Caveats:
     1. Clone the test repository 
     1. Change into the test directory
     1. create global environment file from template
-    1. edit global.env file with packet.net details
-    1. load environment  variables
+    1. edit global.env file with Equinix Metal details
+    1. load environment variables
     ```
     git clone --depth 1 git@github.com:cncf/cnfs.git
     cd cnfs/comparison/kubecon18-chained_nf_test
@@ -113,9 +113,9 @@ Caveats:
     . ./global.env  
     ```
 1. Kubernetes deploy and test execution 
-    1. Build k8s cluster on packet 
+    1. Build k8s cluster on Equinix Metal
         1. [quad intel additional steps](https://github.com/cncf/cnfs/tree/master/docs/quad_intel_install.md)
-    1. packet Layer 2 setup
+    1. Equinix Metal Layer 2 setup
     1. Execute k8s test
 
     ```
@@ -127,9 +127,9 @@ Caveats:
 
 
 1. Openstack deploy and test execution
-    1. Build Openstack cluster on packet
+    1. Build Openstack cluster on Equinix Metal
         1. [quad intel additional steps](https://github.com/cncf/cnfs/tree/master/docs/quad_intel_install.md)
-    1. packet Layer 2 setup
+    1. Equinix Metal Layer 2 setup
     1. Execute Openstack test
     ```
     ./deploy_openstack_test_case
@@ -141,5 +141,3 @@ Caveats:
 
 # Where do people go looking for results?
 
-[packet]: https://www.packet.net "Packet.net"
-[packet account setup]: https://help.packet.net/article/13-portal#display--description "packet setup"

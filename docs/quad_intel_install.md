@@ -6,19 +6,19 @@ Between deployment and test execute these additional configuration steps are req
 ## BIOS  
 
 
-1. Go to the [packet app] of your project
+1. Go to the [Equinix Metal Console](http://console.equinix.com/) of your project
 1. Under each of your quad intel nodes retrieve out-of-band console information
-    ![oob](https://raw.githubusercontent.com/cncf/cnfs/master/docs/images/oob.png)
+    ![oob](./images/oob.png)
 1. ssh connect to the supplied address
 1. login and reboot node ```shutdown -r now```
 1. Hit F2 when prompted to enter the bios.
 1. When done enter ESC to save changes and reboot
 
-![system_bios](https://raw.githubusercontent.com/cncf/cnfs/master/docs/images/system_bios.png)
+![system_bios](./images/system_bios.png)
 
-![system_devices](https://raw.githubusercontent.com/cncf/cnfs/master/docs/images/system_devices.png)
+![system_devices](./images/system_devices.png)
 
-![system_profile](https://raw.githubusercontent.com/cncf/cnfs/master/docs/images/system_profile.png)
+![system_profile](./images/system_profile.png)
 
 ## GRUB alteration
 
@@ -39,6 +39,3 @@ Between deployment and test execute these additional configuration steps are req
 
     ```shutdown -r now```
 
-[packet]: https://www.packet.net "Packet.net"
-[packet app]: https://app.packet.net "Packet portal"
-[packet account setup]: https://help.packet.net/article/13-portal#display--description "packet setup"

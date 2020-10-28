@@ -15,14 +15,14 @@ export PACKET_FACILITY=nrt1
 ../tools/deploy_openstack_cluster.sh
 
 3) If everyting runs through successfully, then the first node (cat ansible/inventory and use the first address under the [all] parameters) has a script to create networks with a VLAN parameter.  This process currently still uses manual procesess:
- - 1 Set the network type in the packet UI to hybrid for each of the crated nodes
+ - 1 Set the network type in the [Equinix Metal Console](http://console.equinix.com/) to hybrid for each of the crated nodes
  - 2 Create two vlans in the PACKET_FACILITY defined above if they don't already exist
  - 3 Run the /root/create_vlans.sh script to create Neutron VLAN networks via the VPP driver
  - 4 Launch nodes (an example create_instance.sh script in /root is there to help).
 
 --
 Troubleshooting:
-1) If nodes are not accessible to Ansible, reboot the nodes via the Packet UI, and ensure you can log in (ansible/inventory will have a list of the nodes that shoudl be reachable).
+1) If nodes are not accessible to Ansible, reboot the nodes via the Equinix Metal Console, and ensure you can log in (ansible/inventory will have a list of the nodes that shoudl be reachable).
 2) If rerunning the ../tools/deploy_openstack_cluster.sh script still fails, run the ../tools/destroy_openstack_cluster.sh script and try again.
 
 

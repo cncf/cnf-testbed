@@ -1,4 +1,4 @@
-# Deploy K8s to Packet
+# Deploy K8s to Equinix Metal
 
 See [common setup steps](steps_to_deploy_testbed.mkd#common-steps) for the cnf testbed.
 
@@ -14,24 +14,24 @@ docker build -t cnfdeploytools:latest -f deploy/Dockerfile deploy/
 
 ## Access to build machines
 
-Ensure SSH public/private key pair setup on Packet (in [common setup steps](steps_to_deploy_testbed.mkd#common-steps)) is available at $HOME/.ssh/id_rsa[.pub] on the workstation starting the deployment
+Ensure SSH public/private key pair setup on [Equinix Metal](https://metal.equinix.com/) (in [common setup steps](steps_to_deploy_testbed.mkd#common-steps)) is available at $HOME/.ssh/id_rsa[.pub] on the workstation starting the deployment
 
 If you're running on a local host or any other host outside of the cluster LAN, you will need to set your primary DNS to 147.75.69.23 and disable dnsmasq in order for the generated hostnames to be reachable 
 
-## Deployment to Packet
+## Deployment to Equinix Metal
 
 Brings up a k8s cluster, provisions L2 Networking & installs VPP vSwitch on master and compute nodes
 
-1. Create k8s-cluster.env with Packet and cluster info.  (See [k8s-cluster.env.example](tools/k8s-cluster.env.example))
-   * Add your Packet Auth token with Network configuration capabilities
-   * Add your Packet Project ID
-   * Add your Packet Project Name (Quotes are needed to escape any spaces in the name)
-   * Add your Packet Facility (for L2 provisioning)
+1. Create k8s-cluster.env with Equinix Metal and cluster info.  (See [k8s-cluster.env.example](tools/k8s-cluster.env.example))
+   * Add your Equinix Metal Auth token with Network configuration capabilities
+   * Add your Equinix Metal Project ID
+   * Add your Equinix Metal Project Name (Quotes are needed to escape any spaces in the name)
+   * Add your Equinix Metal Facility (for L2 provisioning)
    * Set NODE_PLAN to m2.xlarge for a Mellanox NIC machine and n2.xlarge for a Intel NIC machine
    * Set DEPLOY_ENV to generate VLAN descriptions or make use of pre-existing vlans (more on that below)
 2. If using reserved instances, copy [k8s_worker_override.tf.disabled](tools/k8s_worker_override.tf.disabled) to k8s_worker_override.tf
     * `cp k8s_worker_override.tf.disabled k8s_worker_override.tf`
-3. Next source the k8s-cluster.env file in the cnfs/tools dir, which has packet api token, k8s version, node types ect - and deploy
+3. Next source the k8s-cluster.env file in the cnfs/tools dir, which has Equinix Metal API token, k8s version, node types ect - and deploy
 
 
     ```
@@ -73,7 +73,7 @@ VLAN assignments
 1. cross-cloud provisioner creates hosts via terraform and deploys kubernetes
 2. when VPP is enabled (defualt) ansible-playbook runs the playbook specified in the .env file (default: k8s_worker_vswitch_mellanox.yml) to setup the k8s cluster L2 networking
 
-PACKET
+EQUINIX METAL
   - create vlans (ansible)
   - remove ports from bond (ansible)
   - assign vlans to ports (ansible)
@@ -82,9 +82,9 @@ HOST
   - removes ports from bond on worker nodes (ansible)
   - sets up vpp on worker node (ansible)
 
-## VPP Vlan considerations with packet
+## VPP Vlan considerations with Equinix Metal
 
-Packet projects are limited to a maximum of 12 virtual networks. Because of this, the ability to create vlans dynamically may become limited depending on the number of co-existing test environments. These playbooks are configured to re-use dynamically created VLANs but in some cases vlans may have been created ahead of time and need to be re-used. In such cases, one just needs to alter their configuration so that the generated name of the vlan matches the description of the vlan in the packet environment. The playbook generates vlan names as such:
+Equinix Metal projects are limited to a maximum of 12 virtual networks. Because of this, the ability to create vlans dynamically may become limited depending on the number of co-existing test environments. These playbooks are configured to re-use dynamically created VLANs but in some cases vlans may have been created ahead of time and need to be re-used. In such cases, one just needs to alter their configuration so that the generated name of the vlan matches the description of the vlan in the Equinix Metal environment. The playbook generates vlan names as such:
 
 ```
 {deploy environment}vlan1

@@ -1,4 +1,4 @@
-# Deploy OpenStack to Packet
+# Deploy OpenStack to Equinix Metal
 
 See [common setup steps](steps_to_deploy_testbed.mkd#common-steps) for the cnf testbed.
 
@@ -14,23 +14,23 @@ docker build -t cnfdeploytools:latest -f deploy/Dockerfile deploy/
 
 ## SSH access to build machines
 
-Ensure SSH public/private key pair setup on Packet (in [common setup steps](steps_to_deploy_testbed.mkd#common-steps)) is available at $HOME/.ssh/id_rsa[.pub] on the workstation starting the deployment
+Ensure SSH public/private key pair setup on [Equinix Metal](https://metal.equinix.com/) (in [common setup steps](steps_to_deploy_testbed.mkd#common-steps)) is available at $HOME/.ssh/id_rsa[.pub] on the workstation starting the deployment
 
 ## Deploy the OpenStack cluster
 Brings up an OpenStack cluster, provisions L2 Networking & installs VPP vSwitch on master and compute nodes
 
-1. Create openstack-cluster.env with Packet and cluster info.  (See [os-cluster.env.example](tools/os-cluster.env.example))
-   * Add your Packet Auth token with Network configuration capabilities
-   * Add your Packet Project ID
-   * Add your Packet Project Name (Quotes are needed to escape any spaces in the name)
-   * Add your Packet Facility (for L2 provisioning)
+1. Create openstack-cluster.env with Equinix Metal and cluster info.  (See [os-cluster.env.example](tools/os-cluster.env.example))
+   * Add your Equinix Metal Auth token with Network configuration capabilities
+   * Add your Equinix Metal Project ID
+   * Add your Equinix Metal Project Name (Quotes are needed to escape any spaces in the name)
+   * Add your Equinix Metal Facility (for L2 provisioning)
    * Set NODE_PLAN to m2.xlarge for a Mellanox NIC machine and n2.xlarge for a Intel NIC machine
    * Set DEPLOY_ENV to generate VLAN descriptions or make use of pre-existing vlans (more on that below)
    * If using reserved instances
      * copy [reserved_override.tf.disabled](tools/terrafrom-ansible/reserved_override.tf.disabled) to override.tf in cnf-testbed/tools/terrafrom-ansible/ : `cp terraform-ansible/reserved_override.tf.disabled terraform-ansible/override.tf`
      * Create an inventory file of reserved instances at cnf-testbed/comparison/ansible/inventory (see below for details)
 3. Next source the openstack-cluster.env file and run the deploy script
-   * Note this process can take approximately an hour, depending on the speed with which the Packet.net machines are built. If you are running this test from a remote machine, it is recommended that you launch a session with a tool like `tmux` or `screen` in order to avoid a partial build if the session fails
+   * Note this process can take approximately an hour, depending on the speed with which the Equinix Metal machines are built. If you are running this test from a remote machine, it is recommended that you launch a session with a tool like `tmux` or `screen` in order to avoid a partial build if the session fails
 
 
     ```
@@ -42,14 +42,14 @@ Brings up an OpenStack cluster, provisions L2 Networking & installs VPP vSwitch 
 
 The Openstack deploy can also be done in stages as follows
 
-## Provision packet machines
+## Provision Equinix Metal machines
 
-This can be done with the Packet web ui or by invoking only the terraform portion of the deployment like such: 
+This can be done with the [Equinix Metal Console](http://console.equinix.com/) or by invoking only the terraform portion of the deployment like such:
 `PROVISION_ONLY=true ./deploy_openstack_cluster.sh`
 
-#### Issue: Packet Terraform provider unable to add reserved instances to it's state file
+#### Issue: Equinix Metal Terraform provider unable to add reserved instances to it's state file
 
-Because of a [Terraform Packet provider bug](https://github.com/cncf/cnf-testbed/issues/215) an inventory file for reserved instances must be manually created with the reserved instance IP addresses. 
+Because of a [Terraform Equinix Metal provider bug](https://github.com/cncf/cnf-testbed/issues/215) an inventory file for reserved instances must be manually created with the reserved instance IP addresses.
 
 ```
 [etcd]
@@ -137,7 +137,7 @@ By default, the openstack_chef_create.yaml playbook will set up VPP as the opens
 ```
 
 * vpp_network - When set to false, OVS will be deployed as the L2 instead
-* create_vlans - When set to false, the VLANs for the packet hosts will not be automatically created in packet and configured in the packet hosts
+* create_vlans - When set to false, the VLANs for the Equinix Metal hosts will not be automatically created and configured in the hosts
 * create_masquerade - When set to false, the playbook will not create the openstack vlan and subnet representations in openstack, nor will it add the iptables nat masquerade postroute rule to allow internet access from openstack compute hosts
     * Note: this setting is dependent on facts set during the create_vlans portion of the playbook and therefore create_vlans must be true for this functionality to work
 
@@ -145,9 +145,9 @@ To override the layer 2 settings, update your `os-cluster.env` file's ANSIBLE_AR
 
 `export ANSIBLE_ARGS="-e \"vpp_network=false create_vlans=false create_masquerade=false\""`
 
-## VPP Vlan considerations with packet
+## VPP Vlan considerations with Equinix Metal
 
-Packet projects are limited to a maximum of 12 virtual networks. Because of this, the ability to create vlans dynamically may become limited depending on the number of co-existing test environments. These playbooks are configured to re-use dynamically created VLANs but in some cases vlans may have been created ahead of time and need to be re-used. In such cases, one just needs to alter their configuration so that the generated name of the vlan matches the description of the vlan in the packet environment. The playbook generates vlan names as such:
+Equinix Metal projects are limited to a maximum of 12 virtual networks. Because of this, the ability to create vlans dynamically may become limited depending on the number of co-existing test environments. These playbooks are configured to re-use dynamically created VLANs but in some cases vlans may have been created ahead of time and need to be re-used. In such cases, one just needs to alter their configuration so that the generated name of the vlan matches the description of the vlan in the Equinix Metal environment. The playbook generates vlan names as such:
 
 ```
 {deploy environment}testvlan1
@@ -162,18 +162,18 @@ Inbound access into the Virutal Machines is possible when using the ```create_ma
 
 On a new deployment, ensure that the create_masquerade variable is set to false on creation (see the Layer 2 section and add create_masquerade=false to the ANSIBLE_ARGS '-e' parameter).  If a deployment is already complete, you can remove the `netext` network from the router and delete the network.
 
-In either case, with a Packet.net environment, one should:
+In either case, with an Equinix Metal environment, one should:
 
 1) ensure there is a separate network (e.g. VLAN) for client traffic forwarding available
 2) ensure that the client traffic VLAN is the only one with a gateway set so that routed traffic flows by default over that network
-3) create an additional IPv4 "Public" network segment of at least /29 CIDR size and allocate the entire network to the control node via the Packet.net API/UI (or route a similar network to the control node)
+3) create an additional IPv4 "Public" network segment of at least /29 CIDR size and allocate the entire network to the control node via the Equinix Metal API or Console (or route a similar network to the control node)
 4) run the create_masq.sh script with the new network information, overriding the default:
 
 ```
 create_masq.sh {gateway_network_VLAN_id} {public_v4_network} {public_v4_CIDR} {public_v4_gateway}
 ```
 
-For example, if the network that Packet assigned is 10.11.12.0/29, and VLAN 2113 was created for gateway access:
+For example, if the network that Equinix Metal assigned is 10.11.12.0/29, and VLAN 2113 was created for gateway access:
 
 ```
 create_masq.sh 2113 10.11.12.0 29 10.11.12.1

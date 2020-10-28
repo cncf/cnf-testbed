@@ -14,7 +14,7 @@ $ kubectl get nodes
 ```
 
 ### Changing configuration
-The default configuration provided here will work with a single `n2.xlarge.x86` (Packet.com) worker node. If you have a different server (CPUs) or more nodes, it is possible to modify the configuration to support this. You can change the configuration by modifying the arguments given in the line starting with `/cmk/cmk.py cluster-init` in the [cmk-cluster-init-pod.yaml](cpu-manager/cmk-cluster-init-pod.yaml) file found in this directory.
+The default configuration provided here will work with a single `n2.xlarge.x86` ([Equinix Metal](https://metal.equinix.com/)) worker node. If you have a different server (CPUs) or more nodes, it is possible to modify the configuration to support this. You can change the configuration by modifying the arguments given in the line starting with `/cmk/cmk.py cluster-init` in the [cmk-cluster-init-pod.yaml](cpu-manager/cmk-cluster-init-pod.yaml) file found in this directory.
 
 More details about the configuration can be found [here](https://github.com/intel/CPU-Manager-for-Kubernetes#usage-summary). Be aware that changes can cause the deployment to fail, or result in unexpected behavior.
 

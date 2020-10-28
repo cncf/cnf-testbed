@@ -1,14 +1,14 @@
 # Deploy CNF Testbed Kubernetes Cluster
 
-This document will show how to set up a CNF Testbed environment. Everything will be deployed on servers hosted by [Packet.com](https://www.packet.com/).
+This document will show how to set up a CNF Testbed environment. Everything will be deployed on servers hosted by [Equinix Metal](https://metal.equinix.com/).
 
 ## Prerequisites
-Before starting the deployment you will need access to a project on Packet. Note down the **PROJECT_NAME** and **PROJECT_ID**, both found through the Packet web portal, as these will be used throughout the deployment for provisioning servers and configuring the network. You will also need a personal **PACKET_AUTH_TOKEN**, which is created and found in personal settings under API Keys.
+Before starting the deployment you will need access to a project on Equinix Metal. Note down the **PROJECT_NAME** and **PROJECT_ID**, both found through the Equinix Metal web portal, as these will be used throughout the deployment for provisioning servers and configuring the network. You will also need a personal **PACKET_AUTH_TOKEN**, which is created and found in personal settings under API Keys.
 
-You should also make sure that you have a keypair available for SSH access. You can add your public key to the project on Packet through the web portal, which ensures that you will have passwordless SSH access to all servers used for deploying the CNF Testbed.
+You should also make sure that you have a keypair available for SSH access. You can add your public key to the project on Equinix Metal through the web portal, which ensures that you will have passwordless SSH access to all servers used for deploying the CNF Testbed.
 
 ## Prepare workstation / jump server
-Once the project on Packet has been configured, start by creating a server, e.g. x1.small.x86 with Ubuntu 18.04 LTS, to use as workstation for deploying and managing the CNF Testbed.
+Once the project on Equinix Metal has been configured, start by creating a server, e.g. x1.small.x86 with Ubuntu 18.04 LTS, to use as workstation for deploying and managing the CNF Testbed.
 
 Once the workstation machine is running, start by installing the following dependencies:
 ```
@@ -53,7 +53,7 @@ Then, create a keypair on the workstation:
 $ ssh-keygen -t rsa -b 4096
 ```
 
-Add this key to the project on Packet as well, since it will be used throughout the CNF Testbed installation.
+Add this key to the project on Equinix Metal as well, since it will be used throughout the CNF Testbed installation.
 
 Change to the CNF Testbed directory created previously (default: cnf-testbed), and use the provided Makefile to install additional dependencies:
 ```
@@ -61,33 +61,33 @@ $ make deps
 ```
 
 ## Deploy CNF Testbed Kubernetes Cluster
-This section will show how to deploy one or more K8s clusters on Packet. 
+This section will show how to deploy one or more K8s clusters on Equinix Metal.
 
 Start by going to the `tools/` directory. Copy or edit the [k8s-example.env](/tools/k8s-example.env) file (for this guide the filename `k8s-example.env` is used). The default content of the file is described below.
 ```
-#####################################
-#### Packet.com Project Settings ####
-#####################################
+########################################
+#### Equinix Metal Project Settings ####
+########################################
 export PACKET_AUTH_TOKEN=your-auth-token
 export PACKET_PROJECT_ID=your-project-id
 export PACKET_PROJECT_NAME="your-project-name"
 ## These three values are the ones collected as part of the prerequisites earlier.
 
-########################################
-#### Packet.com Server Provisioning ####
-########################################
+###########################################
+#### Equinix Metal Server Provisioning ####
+###########################################
 export DEPLOY_NAME=cnftestbed
 ## Prefix to use for server hostname and VLANs
 export VLAN_SEGMENT=${DEPLOY_NAME}
 ## Prefix of the VLAN segments created during deployment
 export FACILITY=ewr1
-## Facility to use for deployment (others can be found through Packet.com web portal)
+## Facility to use for deployment (others can be found through Equinix Metal web portal)
 
 #### Kubernetes "Master" Node Group ####
 export NODE_GROUP_ONE_NAME=${DEPLOY_NAME}-master
 ## Name to append "group one" hostnames that are used for K8s master nodes
 export NODE_GROUP_ONE_DEVICE_PLAN=c1.small.x86
-## Instance type for nodes (others can be found through Packet.com web portal)
+## Instance type for nodes (others can be found through Equinix Metal web portal)
 export NODE_GROUP_ONE_COUNT=1
 ## Number of nodes to deploy - Use an odd number to avoid errors with K8s deployment
 
