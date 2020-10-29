@@ -14,7 +14,7 @@ RUN git clone https://github.com/terraform-providers/terraform-provider-oci.git 
     cd $GOPATH/src/github.com/terraform-providers/terraform-provider-oci ; git checkout tags/v3.0.0 ; cd - && \ 
     go install github.com/terraform-providers/terraform-provider-oci
 
-# Build the Packet.net terraform provider
+# Build the Equinix Metal terraform provider
 RUN git clone --depth 1 https://github.com/terraform-providers/terraform-provider-packet.git \
     $GOPATH/src/github.com/terraform-providers/terraform-provider-packet && \
     cd $GOPATH/src/github.com/terraform-providers/terraform-provider-packet && \
