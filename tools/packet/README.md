@@ -1,4 +1,4 @@
-# Useful tools for working with Packet.net
+# Useful tools for working with Equinix Metal
 
 capacity.sh {quantity}
 

@@ -18,7 +18,7 @@ OPENSTACK_DEPLOY_TIME=0
 
 if [ ! "$SKIP_PROVISIONING" = "true" ] ; then
 
-  # NOTE: Inventory needs to be created ahead of time for reserved Packets instances
+  # NOTE: Inventory needs to be created ahead of time for reserved Equinix Metal instances
   if [ ! -f ${parentdir}/comparison/ansible/inventory ]; then
     echo "[all:vars]" > ${parentdir}/comparison/ansible/inventory
     echo "ansible_ssh_extra_args='-o StrictHostKeyChecking=no'" >> ${parentdir}/comparison/ansible/inventory
@@ -92,5 +92,5 @@ time docker run --rm \
   --entrypoint ansible-playbook -ti cnfdeploytools:latest ${ANSIBLE_ARGS} /ansible/openstack_chef_install.yml
 OPENSTACK_DEPLOY_TIME=$SECONDS
 
-[[ ! "$SKIP_PROVISIONING" == "true" ]] && echo "$(($PACKET_SERVER_DEPLOY / 60)) minutes and $(($PACKET_SERVER_DEPLOY % 60)) seconds elapsed - Packet.net Infra Setup."
+[[ ! "$SKIP_PROVISIONING" == "true" ]] && echo "$(($PACKET_SERVER_DEPLOY / 60)) minutes and $(($PACKET_SERVER_DEPLOY % 60)) seconds elapsed - Equinix Metal Infra Setup."
 echo "$(($OPENSTACK_DEPLOY_TIME / 60)) minutes and $(($OPENSTACK_DEPLOY_TIME % 60)) seconds elapsed - Openstack Deploy."

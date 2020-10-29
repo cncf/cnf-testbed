@@ -4,11 +4,11 @@ If you want to deploy the CNF-Testbed in the same way that our CI job does, you
 can do that by using the Makefile and following the steps below.
 
 ## Pre-requisites:
-Set your Packet.net project name, id & api tokens.
+Set your [Equinix Metal] project name, id & api tokens. These can be found through the [Console].
 ```
-export PACKET_AUTH_TOKEN=YOUR_PACKET_AUTH_TOKEN
-export PROJECT_ID=YOUR_PACKET_PROJECT_ID
-export PACKET_PROJECT_NAME='YOUR PACKET PROJECT NAME'
+export PACKET_AUTH_TOKEN=YOUR_EQUINIX_METAL_AUTH_TOKEN
+export PROJECT_ID=YOUR_EQUINIX_METAL_PROJECT_ID
+export PACKET_PROJECT_NAME='YOUR EQUINIX METAL PROJECT NAME'
 ```
 
 Then change dir to the top level of the CNF-Testbed repo and build the deps.
@@ -70,13 +70,13 @@ To run say, "make hw_k8s" with a custom environment/configuration, you could do 
 
 # Deploy the CNF-Testbed using the CLI tools directly.
 
-## Deploy Hardware/Infra at Packet.net
+## Deploy Hardware/Infra at Equinix Metal
 
-Set your Packet.net account project & api tokens.
+Set your [Equinix Metal] ([Console]) account project & api tokens.
 Then run hardware_provisioning.sh
 ```
-export PACKET_PROJECT_ID=YOUR_PACKET_PROJECT_ID 
-export PACKET_AUTH_TOKEN=YOUR_PACKET_API_KEY
+export PACKET_PROJECT_ID=YOUR_EQUINIX_METAL_PROJECT_ID
+export PACKET_AUTH_TOKEN=YOUR_EQUINIX_METAL_API_KEY
 ./hardware_provisioning.sh
 ```
 
@@ -150,11 +150,11 @@ source ./kubernetes-provisioning.env.example
 
 ## Provision the VPP vSwitch
 
-Set your Packet.net project name & api tokens.
+Set your [Equinix Metal] ([Console]) project name & api tokens.
 Then run kubernetes_provisioning.sh vswitch
 ```
-export PACKET_PROJECT_NAME='YOUR PACKET PROJECT NAME' 
-export PACKET_AUTH_TOKEN=YOUR_PACKET_API_KEY
+export PACKET_PROJECT_NAME='YOUR EQUINIX METAL PROJECT NAME'
+export PACKET_AUTH_TOKEN=YOUR_EQUINIX_METAL_API_KEY
 ./kubernetes_provisioning.sh vswitch
 ```
 
@@ -181,3 +181,5 @@ source ./vswitch-provisioning.env.example
 ./kubernetes_provisioning.sh vswitch
 ```
 
+- [Equinix Metal]: https://metal.equinix.com/ "Equinix Metal"
+- [Console]: http://console.equinix.com/ "Console"
