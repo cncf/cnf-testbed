@@ -28,7 +28,7 @@ echo "$(($VSWITCH_ELAPSED_TIME / 60)) minutes and $(($VSWITCH_ELAPSED_TIME % 60)
 
 #   - cross-cloud (terraform) => run ansible playbook k8s_cluster.yml 
 #   - include playbooks to setup k8s cluster
-# PACKET
+# EQUINIX METAL
 #   - create vlans (ansible)
 #   - remove ports from bond (ansible)
 #   - assign vlans to ports (ansible)

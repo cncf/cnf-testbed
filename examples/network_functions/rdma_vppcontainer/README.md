@@ -1,6 +1,6 @@
 ## rdma_vppcontainer base-image
 This base-image provides a containerized, configurable deployment of VPP v19.04(*). The container serves the following purpose:
-* Host vSwitch, when using m2.xlarge servers provided by Packet (Mellanox ConnectX-4 NIC)
+* Host vSwitch, when using m2.xlarge servers provided by [Equinix Metal](https://metal.equinix.com/) (Mellanox ConnectX-4 NIC)
 
 Configuration is currently done though a volume mount on the host, where relevant VPP configuration files are located. The local directory should contain a VPP configuration file named `startup.conf` (and any additional setup files used by this), and the directory should map to /etc/vpp/ in the container (i.e. `/etc/vpp/startup.conf`). The mapped host directory is also used for storing the VPP logs in `output.log`.
 

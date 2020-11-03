@@ -212,7 +212,7 @@ function warn () {
 validate_input "${@}" || die
 clean_vpp_config || die
 if [[ "$csp_nic" == "mellanox" ]]; then
-    # This is most probably Packet mlx env
+    # This is most probably Equinix Metal mlx env
     VPP_INTERFACES=( "TwentyFiveGigabitEthernet5e/0/1" )
     generate_vpp_config_mlx || die
 else
@@ -221,7 +221,7 @@ else
         VPP_INTERFACES=( "TwentyFiveGigabitEthernet3b/0/0"
                          "TwentyFiveGigabitEthernet3b/0/1" )
     else
-        # This is most probably Packet quad intel env
+        # This is most probably Equinix Metal quad intel env
         VPP_INTERFACES=( "TenGigabitEthernet1a/0/1"
                          "TenGigabitEthernet1a/0/3" )
     fi

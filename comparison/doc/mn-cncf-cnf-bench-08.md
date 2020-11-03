@@ -140,7 +140,7 @@
 
 		- [x] 008
 
-### packet.net
+### Equinix Metal
 
 - 8x8 VSCs
 
@@ -436,7 +436,7 @@
 
 		- [ ] 008
 
-### packet.net
+### Equinix Metal
 
 - 8x8 VSCs
 
@@ -694,7 +694,7 @@
 
 		- [ ] 008
 
-### packet.net
+### Equinix Metal
 
 - 8x8 VSCs
 
@@ -952,7 +952,7 @@
 
 		- [ ] 008
 
-### packet.net
+### Equinix Metal
 
 - 8x8 VSCs
 
@@ -1210,7 +1210,7 @@
 
 		- [ ] 008
 
-### packet.net
+### Equinix Metal
 
 - 8x8 VSCs
 
@@ -1468,7 +1468,7 @@
 
 		- [ ] 008
 
-### packet.net
+### Equinix Metal
 
 - 8x8 VSCs
 
@@ -1726,7 +1726,7 @@
 
 		- [ ] 008
 
-### packet.net
+### Equinix Metal
 
 - 8x8 VSCs
 

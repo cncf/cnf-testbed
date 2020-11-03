@@ -1,7 +1,7 @@
 ## vppcontainer base-image
 This base-image provides a containerized, configurable deployment of VPP v19.04.1. The container serves multiple purposes:
 * CNF use-case deployments (3c2n-csc, 3c2n-csp, ipsec)
-* Host vSwitch, when using n2.xlarge servers provided by Packet (Intel X710 NIC)
+* Host vSwitch, when using n2.xlarge servers provided by [Equinix Metal](https://metal.equinix.com/) (Intel X710 NIC)
 
 Configuration is currently done though a volume mount on the host, where relevant VPP configuration files are located. The local directory should contain a VPP configuration file named `startup.conf` (and any additional setup files used by this), and the directory should map to /etc/vpp/ in the container (i.e. `/etc/vpp/startup.conf`). The VPP logs are unbuffered to standard output.
 

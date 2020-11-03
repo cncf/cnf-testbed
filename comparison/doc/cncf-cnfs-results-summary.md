@@ -26,7 +26,7 @@ memif for inter-connected CNFs.
 Benchmarked physical test environments:
 
 1. FD.io CSIT 2n-skx testbed t22 (Xeon Platinum 8180)
-2. packet.net 2n-skx testbed (Xeon Gold 6150)
+2. [Equinix Metal](https://metal.equinix.com/) 2n-skx testbed (Xeon Gold 6150)
 
 ADD outputs of lspci for above
 
@@ -207,7 +207,7 @@ the bi-directional link rate.
   010   5.3   ---   ---   ---   ---   ---      010   3.4   ---   ---   ---   ---   ---
 ```
 
-### Packet.net 2n-skx, pcdr4sw = (1:1)
+### Equinix Metal 2n-skx, pcdr4sw = (1:1)
 
 ```
   Testbed:      tg-quad01, sut-quad02-sut
@@ -311,7 +311,7 @@ the bi-directional link rate.
   010  10.0   ---   ---   ---   ---   ---      010   6.3   ---   ---   ---   ---   ---
 ```
 
-### Packet.net 2n-skx, pcdr4sw = (2:1)
+### Equinix Metal 2n-skx, pcdr4sw = (2:1)
 
 ```
   Testbed:      tg-quad01, sut-quad02-sut

@@ -2,7 +2,7 @@
 
 This example is used to install a modified version of the packet-filtering service chain using NSM ([Network Service Mesh](https://networkservicemesh.io/)). This version includes an "External" Gateway attached to physical network ports, which allows for connectivity between the clients and a separate server node.
 
-This use-case is best deployed on a Kubernetes worker that has been configured to use a host vSwitch, as this will do additional configuration which is necessary for the external gateway to function correctly. A few steps are listed in the prerequisites section to ensure configuration is correct, but details on some steps, e.g. Packet infrastructure configuration, has been omitted.
+This use-case is best deployed on a Kubernetes worker that has been configured to use a host vSwitch, as this will do additional configuration which is necessary for the external gateway to function correctly. A few steps are listed in the prerequisites section to ensure configuration is correct, but details on some steps, e.g. [Equinix Metal](https://metal.equinix.com/) infrastructure configuration, has been omitted.
 
 The service chain can be seen below:
 ```
@@ -35,7 +35,7 @@ $ chmod +x kubectl
 $ mv kubectl /usr/local/bin/kubectl
 ```
 
-In addition you will need to create a new server to be used as the "Physical Server" endpoint. This README will use the `n2.xlarge` (Intel NIC), but the `m2.xlarge` (Mellanox NIC) or other servers that allow Mixed Networking and assigning VLANs to ports can be utilized. Configure the machine with Mixed Networking through Packet, and assign VLANs to interfaces matching those used in the Kubernetes deployment.
+In addition you will need to create a new server to be used as the "Physical Server" endpoint. This README will use the `n2.xlarge` (Intel NIC), but the `m2.xlarge` (Mellanox NIC) or other servers that allow Mixed Networking and assigning VLANs to ports can be utilized. Configure the machine with Mixed Networking through the [Equinix Metal Console](http://console.equinix.com/), and assign VLANs to interfaces matching those used in the Kubernetes deployment.
 
 **Additional steps to ensure the node is prepared for the use-case**
 

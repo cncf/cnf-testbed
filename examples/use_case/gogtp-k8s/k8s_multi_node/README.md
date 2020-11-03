@@ -17,11 +17,11 @@ export DEPLOY_NAME=<Name of Kubernetes cluster/deployment>
 export VLAN_SEGMENT=${DEPLOY_NAME}
 export STATE_FILE=${PWD}/data/${DEPLOY_NAME}/terraform.tfstate
 export NODE_FILE=${PWD}/data/${DEPLOY_NAME}/kubernetes.env
-export FACILITY=<Packet facility, e.g. ewr1>
+export FACILITY=<Equinix Metal facility, e.g. ewr1>
 
 # Keys
-export PACKET_AUTH_TOKEN=<YOUR_PACKET_TOKEN>
-export PROJECT_ID=<YOUR_PACKET_PROJECT_ID>
+export PACKET_AUTH_TOKEN=<YOUR_EQUINIX_METAL_TOKEN>
+export PROJECT_ID=<YOUR_EQUINIX_METAL_PROJECT_ID>
 ```
 
 At this point you can go to the `cnf-testbed/tools` directory and run the Makefile. If you stored the environment variables in a file this must be referenced relative to the `tools` directory:

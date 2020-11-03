@@ -51,7 +51,7 @@ memif6/6                          8      up          9000/0/0/0
 ```
 
 ### Switching from 2 to 1 port configuration
-Start by changing the Network configuration for the server (through app.packet.net). Change the Layer 2 configuration to use the following VLAN configuration
+Start by changing the Network configuration for the server [here](http://console.equinix.com/). Change the Layer 2 configuration to use the following VLAN configuration
 * 1076 (eth1), 1078 (eth1)
 
 Once the layer 2 infrastructure has been modified, log in to the VPP container running on the worker node.

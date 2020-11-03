@@ -26,7 +26,7 @@ If the list is empty, you will need to do an additional step to enable SRIOV on 
 
 **Enable SRIOV on the NIC**
 
-Conenct to the out-of-band console (information can be found on the Packet web portal) and reboot the Kubernetes worker node. During reboot, enter the BIOS configuration using the information shown in the console (you will have to enter a few inputs, e.g. <ESC> + <2> to enter <F2> during the boot process). Once you are in the BIOS, change the NIC virtualization mode at the path shown below: 
+Conenct to the out-of-band console (information can be found in the [Equinix Metal Console](http://console.equinix.com/)) and reboot the Kubernetes worker node. During reboot, enter the BIOS configuration using the information shown in the console (you will have to enter a few inputs, e.g. <ESC> + <2> to enter <F2> during the boot process). Once you are in the BIOS, change the NIC virtualization mode at the path shown below:
 ```
 System BIOS >> Device Settings >> Ethernet Converged Network Adapter X710 >> Device Level Configuration >> Virtualization Mode = SR-IOV
 ```
