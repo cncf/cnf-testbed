@@ -3,7 +3,7 @@ This use-case is a variation of the [External Packet-filtering](https://github.c
 
 This variation has two external gateways, each connected to an external interfaces on a different server. Both the Kernel ("Simple") and VPP Client can reach both external interfaces by pinging their IP addresses.
 
-This use-case is best deployed on a Kubernetes worker that has been configured to use a host vSwitch, as this will do additional configuration which is necessary for the external gateways to function correctly. A few steps are listed in the prerequisites section to ensure configuration is correct, but details on some steps, e.g. Packet infrastructure configuration, has been omitted.
+This use-case is best deployed on a Kubernetes worker that has been configured to use a host vSwitch, as this will do additional configuration which is necessary for the external gateways to function correctly. A few steps are listed in the prerequisites section to ensure configuration is correct, but details on some steps, e.g. [Equinix Metal](https://metal.equinix.com/) infrastructure configuration, has been omitted.
 
 The service chain can be seen below:
 ```
@@ -110,7 +110,7 @@ pci@0000:1a:00.3  eno4       network        Ethernet Controller X710 for 10GbE S
                   bond0      network        Ethernet interface
 ```
 
-If the VLANs were added to eth1 and eth2 in the Packet web portal, this would correspond to eno2 and eno3 in the table above. To use the example we need to isolate the interfaces, which will be done through two network namespaces, "left" and "right":
+If the VLANs were added to eth1 and eth2 in the [Equinix Metal Console](http://console.equinix.com/), this would correspond to eno2 and eno3 in the table above. To use the example we need to isolate the interfaces, which will be done through two network namespaces, "left" and "right":
 
 ```
 $ ip netns add left

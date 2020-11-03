@@ -3,7 +3,7 @@
 - ansible - common code for all tests belongs here
 - baseline_nf_performance-csit - single and multichain tests on fd.io CSIT testbed-only (LF restricted access) [WIP]
   * KVM and Docker
-- baseline_nf_performance-packet - single chain tests on Packet based csit-baseline_nf_performance test code [WIP]
+- baseline_nf_performance-packet - single chain tests on Equinix Metal based csit-baseline_nf_performance test code [WIP]
   * KVM and Docker
 - box-by-box-kvm-docker - comparison of CNF to VNFs on Docker and KVM (HISTORICAL) 
 - doc - general reference documentation

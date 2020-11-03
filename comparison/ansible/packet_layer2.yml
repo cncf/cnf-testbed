@@ -1,7 +1,7 @@
 ---
 - hosts: localhost
   tasks:
-    - name: Configure Packet switch for quad port intel machines
+    - name: Configure Eqinix Metal switch for quad port intel machines
       import_role:
         name: packet_l2
       when: quad_intel is defined
@@ -19,7 +19,7 @@
           vlan3:
             interface: eth3
 
-    - name: Configure Packet switch for dual port mellanox machines
+    - name: Configure Equinix Metal switch for dual port mellanox machines
       import_role:
         name: packet_l2
       when: dual_mellanox is defined

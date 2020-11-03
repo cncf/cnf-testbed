@@ -83,7 +83,7 @@ pci@0000:1a:00.3  eno4       network        Ethernet Controller X710 for 10GbE S
                   bond0      network        Ethernet interface
 ```
 
-If the VLANs were added to eth1 and eth2 in the Packet web portal, this would correspond to eno2 and eno3 in the table above. To use the example we need to isolate the interfaces, which will be done through two network namespaces, "left" and "right":
+If the VLANs were added to eth1 and eth2 in the [Equinix Metal Console](http://console.equinix.com/), this would correspond to eno2 and eno3 in the table above. To use the example we need to isolate the interfaces, which will be done through two network namespaces, "left" and "right":
 ```
 $ ip netns add left
 $ ip netns add right

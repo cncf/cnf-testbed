@@ -12,12 +12,12 @@ popd
 ```
 
 ### Running the cncfdeploytools container
-To use the tool you must have a Packet.net API token available. Replace <PACKET_AUTH_TOKEN> below and run the commands from this directory.
+To use the tool you must have a [Equinix Metal](https://metal.equinix.com/) API token available. Replace <EQUINIX_METAL_AUTH_TOKEN> below and run the commands from this directory.
 
 The docker command will run the container and you should end up with a terminal pointed at the /terraform directory
 ```
 cd ..
-docker run -e PACKET_API_TOKEN=<PACKET_AUTH_TOKEN> -v $(pwd)/ansible:/ansible -v ~/.ssh/x1smallws01:/root/.ssh/id_rsa --entrypoint /bin/bash -ti cnfdeploytools:latest
+docker run -e PACKET_API_TOKEN=<EQUINIX_METAL_AUTH_TOKEN> -v $(pwd)/ansible:/ansible -v ~/.ssh/x1smallws01:/root/.ssh/id_rsa --entrypoint /bin/bash -ti cnfdeploytools:latest
 ```
 In the container, switch to the ansible directory
 ```
@@ -29,10 +29,10 @@ The following section assumes that you are in the cncfdeploytools container (see
 
 Unless otherwise noted, the following environment variables should be set before running any of the playbooks:
 ```
-export PACKET_FACILITY=<Packet.net facility where your server(s) are running>
+export PACKET_FACILITY=<Equinix Metal facility where your server(s) are running>
 export DEPLOY_ENV=<Name of environment, used when creating VLANs (Will re-use VLANs if they already exist)>
 export SERVER_LIST=<Hotname of server(s) to be used>
-export PROJECT_NAME=<Name of Packet.net project>
+export PROJECT_NAME=<Name of Equinix Metal project>
 ```
 
 Before deploying to a server, verify that it is accessible from the container using ssh

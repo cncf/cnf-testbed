@@ -1,6 +1,6 @@
-# Install OpenStack on Packet.net bare metal with Chef
+# Install OpenStack on Equinix Metal bare metal with Chef
 
-To launch OpenStack in Packet, we'll leverage a number of tools in order to automate as much of the process as possible. This will inculde:
+To launch OpenStack in [Equinix Metal](https://metal.equinix.com/), we'll leverage a number of tools in order to automate as much of the process as possible. This will inculde:
 
 * Terraform
 * Ansible
@@ -45,11 +45,11 @@ docker build -t cnfdeploytools:latest  ../../../tools/deploy/
 ```
 
 ## SSH "root" key for Ansible
-Now we have an image, but we still need some credentials both _in_ packet (speciifcally an ssh public key), and for the local machine.  First, we need to make sure that the ssh key that is associated with the shell that is going to launch the docker container we built in the previous step is available, as the launch scripts expect to use the default ssh private key to connect via ansible.  In addition, the code expects that file to be called id_rsa and the public key to be called id_rsa.pub.  There is also an expectation that these keys are in the /root/.ssh/ directory.
+Now we have an image, but we still need some credentials both _in_ [Equinix Metal](https://metal.equinix.com/) (speciifcally an ssh public key), and for the local machine.  First, we need to make sure that the ssh key that is associated with the shell that is going to launch the docker container we built in the previous step is available, as the launch scripts expect to use the default ssh private key to connect via ansible.  In addition, the code expects that file to be called id_rsa and the public key to be called id_rsa.pub.  There is also an expectation that these keys are in the /root/.ssh/ directory.
 
-It is also necessary to upload the id_rsa.pub key into Packet.net as a public key associated with, and with access to the project that is going to be targeted by the installer.
+It is also necessary to upload the id_rsa.pub key into the [Equinix Metal Console](http://console.equinix.com/) as a public key associated with, and with access to the project that is going to be targeted by the installer.
 
-## Packet.net Project and API Keys
+## Equinix Metal Project and API Keys
 
 After the ssh key has been uploaded, we need to create a file (or add to our shell environment) for two environment variables:
 
@@ -57,23 +57,23 @@ After the ssh key has been uploaded, we need to create a file (or add to our she
 export PACKET_PROJECT_ID=abcdef12-b8a8-435e-b8b7-123445689abc
 export PACKET_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
-The project ID is available in the project settings tab of the Packet.net UI, and the AUTH Token is called an API Token in the Packet.net UI.
+The project ID is available in the project settings tab of the [Equinix Metal Console](http://console.equinix.com/), and the AUTH Token is called an API Token in the Console.
 
 ## Public IP Addressing
 
-In order for external access to be possible in the packet.net environment, we'll want to ask Packet for a set of additional IP addresses that we can then associate with our controller.  The initial reqquest is done in the Network section of the Project.  Often, an 8 address block may be adequate for a small test system, and larger blocks can be allocated to the system in the same fashion.
+In order for external access to be possible in the Equinix Metal environment, we'll want to ask for a set of additional IP addresses that we can then associate with our controller.  The initial reqquest is done in the Network section of the Project.  Often, an 8 address block may be adequate for a small test system, and larger blocks can be allocated to the system in the same fashion.
 
-Once the block is requested (and occasionally run through the packet approval process), we can capture the lowest order IP address and the CIDR netmask, and we will use that information later to add the addresses to our controller host.
+Once the block is requested (and occasionally run through the Equinix Metal approval process), we can capture the lowest order IP address and the CIDR netmask, and we will use that information later to add the addresses to our controller host.
 
 ## L2 Tenant networks
 
-If L2 tenant networks are going to be used in the packet environment (perhaps with a tool like VPP), it is necessary to capture that information up front as well, and as we do not currently automate this proces, it is also necessary to create the networks in the Packet.net UI, and again, mark down the specific VLAN IDs provided for the VLANs created.
+If L2 tenant networks are going to be used in the Equinix Metal environment (perhaps with a tool like VPP), it is necessary to capture that information up front as well, and as we do not currently automate this proces, it is also necessary to create the networks in the Equinix Metal Console, and again, mark down the specific VLAN IDs provided for the VLANs created.
 
 ## Host buildout and configuration
 
 We're now at a point where we have our build image, we have our security credentials defined, and we have the network information we'll need for the deployment
 
-**Deploy an OpenStack cluster to Packet**
+**Deploy an OpenStack cluster to Equinix Metal**
 
 ```
 docker build -t cnfdeploytools:latest  ../../../tools/deploy/
@@ -88,8 +88,8 @@ Example usage:
 ```
 git clone --depth 1 https://github.com/cncf/cnfs.git
 cd cnfs/comparison/openstack_chained_nf_test/deploy_openstack
-export PACKET_PROJECT_ID=YOUR_PACKET_PROJECT_ID 
-export PACKET_AUTH_TOKEN=YOUR_PACKET_API_KEY
+export PACKET_PROJECT_ID=YOUR_EQUINIX_METAL_PROJECT_ID
+export PACKET_AUTH_TOKEN=YOUR_EQUINIX_METAL_API_KEY
 export PACKET_FACILITY="sjc1"
 export PACKET_MASTER_DEVICE_PLAN="m2.xlarge.x86"
 ```

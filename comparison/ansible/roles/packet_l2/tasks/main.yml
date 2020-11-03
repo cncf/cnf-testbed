@@ -1,7 +1,7 @@
 - name: Show vlan data before create
   debug: var=vlans
  
-- name: Create or find a Packet VLAN
+- name: Create or find a Equinix Metal VLAN
   command: ruby /packet_api/l2_packet_networking.rb --create-vlan="{{ deploy_env }}{{ item.key }}" --project-name="{{ project_name }}" --packet-url='api.packet.net' --facility="{{ facility }}"
   with_dict: "{{ vlans }}"
   register: vlandata
