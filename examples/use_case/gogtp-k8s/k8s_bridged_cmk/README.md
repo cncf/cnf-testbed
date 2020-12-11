@@ -28,13 +28,13 @@ $ export KUBECONFIG=<path>/<to>/kubeconfig
 $ kubectl apply -f gogtp-bridges.yml
 
 ## Install the service chain
-$ helm install ./gogtp/
+$ helm install gogtp ./gogtp/
 ```
 
 Wait for approximately 30 seconds before checking that the eNB is running:
 ```
 $ kubectl logs gogtp-enb
-net.ipv4.ip_forward = 1 
+net.ipv4.ip_forward = 1
 [eNB] 2020/01/31 13:23:46 Established S1-MME connection with 172.21.1.12:36412
 [eNB] 2020/01/31 13:23:46 Started serving S1-U on 172.21.0.11:2152
 [eNB] 2020/01/31 13:23:46 Successfully established tunnel for 001010000000001

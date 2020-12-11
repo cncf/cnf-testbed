@@ -38,12 +38,11 @@ $ chmod +x kubectl
 $ mv kubectl /usr/local/bin/kubectl
 ```
 
-Helm must also be installed prior to installing this example. The steps listed below are based on [https://helm.sh](https://helm.sh/docs/using_helm/#from-script)
+Helm must also be installed prior to installing this example. The steps listed below are based on [https://helm.sh](https://helm.sh/docs/intro/install/)
 ```
-$ curl -LO https://git.io/get_helm.sh
+$ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 $ chmod 700 get_helm.sh
 $ ./get_helm.sh
-$ helm init --service-account tiller
 
 ## You might need to run the below if versions are mismatched
   $ helm init --upgrade
@@ -57,7 +56,7 @@ Install the Gateway and router example by running the below commands from this d
 ```
 ## set environment variable for KUBECONFIG (replace path to match your location)
 $ export KUBECONFIG=<path>/<to>/kubeconfig
-$ helm install --name=gwr helm/gwr/ 
+$ helm install gwr ./helm/gwr/
 ```
 
 ### Testing the GW-Routers example

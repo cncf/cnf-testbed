@@ -12,7 +12,7 @@ A Kubernetes cluster must be available prior to running this example. The cluste
 ### Configuring worker nodes
 Once the cluster has been configured, you will need to pre-configure the network to support this use-case. You can use the tools provided to provision a Kubernetes cluster to do this step. Some environment variables must be specified when running the pre-configuration, and for simplicity these can be stored in a file and referenced in the following steps:
 ```
-# Config 
+# Config
 export DEPLOY_NAME=<Name of Kubernetes cluster/deployment>
 export VLAN_SEGMENT=${DEPLOY_NAME}
 export STATE_FILE=${PWD}/data/${DEPLOY_NAME}/terraform.tfstate
@@ -41,13 +41,13 @@ $ export KUBECONFIG=<path>/<to>/kubeconfig
 $ kubectl apply -f gogtp-bridges.yml
 
 ## Install the service chain
-$ helm install ./gogtp/
+$ helm install gogtp ./gogtp/
 ```
 
 Wait for approximately 30 seconds before checking that the eNB is running:
 ```
 $ kubectl logs gogtp-enb
-net.ipv4.ip_forward = 1 
+net.ipv4.ip_forward = 1
 [eNB] 2020/01/31 13:23:46 Established S1-MME connection with 172.21.1.12:36412
 [eNB] 2020/01/31 13:23:46 Started serving S1-U on 172.21.0.11:2152
 [eNB] 2020/01/31 13:23:46 Successfully established tunnel for 001010000000001

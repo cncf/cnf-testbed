@@ -11,5 +11,5 @@ Once everything is configured, install the VPP CNFs using the below commands
 ```
 ## set environment variable for KUBECONFIG (replace path to match your location)
 $ export KUBECONFIG=<path>/<to>/kubeconfig
-$ helm install ./vpp/
+$ helm install vpp-ipfwd ./vpp/
 ```

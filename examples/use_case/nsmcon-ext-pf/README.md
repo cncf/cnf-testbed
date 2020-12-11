@@ -41,12 +41,11 @@ $ chmod +x kubectl
 $ mv kubectl /usr/local/bin/kubectl
 ```
 
-Helm must also be installed prior to installing this example. The steps listed below are based on [helm.sh](https://helm.sh/docs/using_helm/#from-script)
+Helm must be installed prior to installing this example. The steps listed below are based on [https://helm.sh](https://helm.sh/docs/intro/install/)
 ```
-$ curl -LO https://git.io/get_helm.sh
+$ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 $ chmod 700 get_helm.sh
 $ ./get_helm.sh
-$ helm init --service-account tiller
 
 ## You might need to run the below if versions are mismatched
   $ helm init --upgrade
@@ -84,7 +83,7 @@ extport:
   right:  "0000:1a:00.3"
 
 ## Install the example
-$ helm install --name=nsmconpf helm/nsmconpf/
+$ helm install nsmconpf ./helm/nsmconpf/
 ```
 
 ### Testing the NSMCon External Packet-filtering Example

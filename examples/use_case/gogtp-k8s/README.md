@@ -1,18 +1,17 @@
 ## Deploy GoGTP example on Kubernetes
 
-This example use-case deploys the GoGTP service chain on Kubernetes. 
+This example use-case deploys the GoGTP service chain on Kubernetes.
 
 ### Prerequisites
 A Kubernetes cluster must be available prior to running this example.
 
 You should have a `kubeconfig` file ready on the machine, as it is used to deploy the example on a worker node.
 
-Helm must be installed prior to installing this example. The steps listed below are based on [https://helm.sh](https://helm.sh/docs/using_helm/#from-script)
+Helm must be installed prior to installing this example. The steps listed below are based on [https://helm.sh](https://helm.sh/docs/intro/install/)
 ```
-$ curl -LO https://git.io/get_helm.sh
+$ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 $ chmod 700 get_helm.sh
 $ ./get_helm.sh
-$ helm init --service-account tiller
 
 ## You might need to run the below if versions are mismatched
   $ helm init --upgrade
@@ -23,7 +22,7 @@ The service chain is deployed using Helm. You will need to point the `KUBECONFIG
 ```
 ## set environment variable for KUBECONFIG (replace path to match your location)
 $ export KUBECONFIG=<path>/<to>/kubeconfig
-$ helm install ./gogtp/
+$ helm install gogtp ./gogtp/
 ```
 
 ### Limitations
