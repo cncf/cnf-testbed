@@ -70,7 +70,12 @@ __Pull Requests__
 
 ## Meeting Time
 
-The CNF Testbed is discussed as part of the CNCF Telecom User Group. Please see https://github.com/cncf/telecom-user-group#meeting-time.
+The CNF Testbed is discussed as part of the CNCF Telecom User Group
+- Please see https://github.com/cncf/telecom-user-group#meeting-time
+
+Join the weekly CNF Testbed contributor meetings
+- Meetings every Thursday at 14:15 - 15:00 UTC
+- Meeting minutes are [here](https://docs.google.com/document/d/1IbrgjqIkOCvrrSG0DRE6X62UUZpBq-818Mn8q0nkkd0/edit)
 
 ## Meeting Minutes
 
