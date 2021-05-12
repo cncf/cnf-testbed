@@ -79,7 +79,7 @@ config:
 	HOSTS_FILE=$(HOSTS_FILE) DEPLOY_NAME=$(DEPLOY_NAME) RELEASE_TYPE=$(RELEASE_TYPE)  tools/kubernetes_provisioning.sh generate_config
 
 provision:
-	tools/kubernetes_provisioning.sh provision
+	DEPLOY_NAME=$(DEPLOY_NAME) tools/kubernetes_provisioning.sh provision
 
 .PHONY: gogtp_multi
 gogtp_multi: gogtp_multi_tools
