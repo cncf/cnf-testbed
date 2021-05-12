@@ -7,6 +7,9 @@ NIC_FILE := $(PROJECT_ROOT)/data/$(DEPLOY_NAME)/packet_gen_nics.env
 ISOLATED_CORES := 0
 
 # Default vars
+
+#K8s
+RELEASE_TYPE := kubespray
 #HW
 USE_RESERVED := false
 OPERATING_SYSTEM := ubuntu_18_04
@@ -31,8 +34,7 @@ NIC_TYPE := "-e quad_intel=true"
 ifeq (pktgen,$(firstword $(MAKECMDGOALS)))
 	include Makefile.pktgen
 endif
-#K8s
-RELEASE_TYPE := kubespray
+
 #vSwitch
 ifeq (vswitch,$(firstword $(MAKECMDGOALS)))
 	include Makefile.vswitch

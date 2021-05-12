@@ -36,7 +36,7 @@ docker run \
   --rm \
   -v $(pwd)/data/$DEPLOY_NAME:/k8s-infra/data \
   $HOSTS_VOLUME$HOSTS_TMP \
-  -ti crosscloudci/k8s-infra:dynamic-kubespray-update \
+  -ti crosscloudci/k8s-infra:latest \
   /k8s-infra/bin/k8sinfra generate_config ${HOSTS_CMD} --release-type=$RELEASE_TYPE -o /k8s-infra/data/cluster.yml
 fi
 
@@ -51,7 +51,7 @@ docker run \
   --rm \
   -v $(pwd)/data/$DEPLOY_NAME:/k8s-infra/data \
   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
-  -ti crosscloudci/k8s-infra:dynamic-kubespray-update \
+  -ti crosscloudci/k8s-infra:latest \
   /k8s-infra/bin/k8sinfra provision --config-file=/k8s-infra/data/cluster.yml
 
 if [ "$?" == "1" ]; then
