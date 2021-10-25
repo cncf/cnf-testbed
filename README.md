@@ -4,7 +4,7 @@ The CNCF CNF Testbed provides reference code and test cases for running networki
 
 Status: The CNF Testbed is an initiative to create a repeatable, apples-to-apples testbed that telcos and telecoms vendors can use to evaluate how CNF architectures compare to more traditional VNF ones.
 
-The initiative collaborates with the [CNCF Telecom User Group](https://github.com/cncf/telecom-user-group) to test and demonstrate different options.
+The initiative collaborates with the [CNF Working Group](https://github.com/cncf/cnf-wg) and [CNF Test Suite](https://github.com/cncf/cnf-testsuite) to test and demonstrate different options.
 
 Note: _Additional reference code and benchmarking tests will be added incrementally._
 
@@ -70,12 +70,13 @@ __Pull Requests__
 
 ## Meeting Time
 
-The CNF Testbed is discussed as part of the CNCF Telecom User Group
-- Please see https://github.com/cncf/telecom-user-group#meeting-time
-
-Join the weekly CNF Testbed contributor meetings
+Join the weekly CNF Testbed and Test Suite contributor meetings
 - Meetings every Thursday at 14:15 - 15:00 UTC
 - Meeting minutes are [here](https://docs.google.com/document/d/1IbrgjqIkOCvrrSG0DRE6X62UUZpBq-818Mn8q0nkkd0/edit)
+
+The CNF Testbed may also be discussed as part of the CNCF Telecom User Group
+- Please see https://github.com/cncf/telecom-user-group#meeting-time
+
 
 ## Meeting Minutes
 
@@ -84,8 +85,9 @@ Upcoming and past meeting agenda/notes are available [here](https://tinyurl.com/
 ## Slack
 
 [https://slack.cncf.io/](https://slack.cncf.io/)
+- #cnf-testbed-dev (Testing and R&D) 
+- #cnf-testsuite-dev (Testing and R&D) 
 - #tug (Telecom User Group)
-- #cnf-testbed (Testing and R&D) 
 - #nsm (Network Service Mesh)
 
 
