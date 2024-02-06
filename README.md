@@ -1,4 +1,20 @@
+# ARCHIVED and UNMAINTAINED PROJECT
+
+**This project is no longer maintained**
+
+See [Cloud Native Telecom Initiative (CNTI)](https://wiki.lfnetworking.org/pages/viewpage.action?pageId=113213592) for active areas that continued the work previously seen in this project.
+- [CNTI Test Catalog](https://github.com/cnti-testcatalog) (previously CNF Test Suite)
+- [CNTI Best Practices](https://github.com/lfn-cnti/bestpractices) (previously CNF WG)
+- [CNTI Certification](https://github.com/lfn-cnti/certification) (previously CNF Certification)
+
+
 # CNF (Cloud native Network Function) Testbed
+
+**This project is no longer maintained**
+
+----
+
+
 
 The CNCF CNF Testbed provides reference code and test cases for running networking code on Kubernetes and OpenStack using emerging cloud native technologies in the Telecom domain.
 
